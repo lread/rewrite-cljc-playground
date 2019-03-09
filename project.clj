@@ -5,10 +5,13 @@
             :url "http://opensource.org/licenses/MIT"
             :year 2015
             :key "mit"}
+
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.clojure/clojurescript "1.10.520"
                   :exclusions [org.apache.ant/ant]]
                  [org.clojure/tools.reader "1.3.2"]]
+
+  :source-paths ["src/clj/" "src/cljs/"]
 
   :clean-targets ^{:protect false} [:target-path :compile-path "out"]
 
@@ -23,7 +26,7 @@
 
               :cljsbuild {:builds
                           [{:id "test"
-                            :source-paths ["test"]
+                            :source-paths ["test/cljs" "test/cljc"]
                             :compiler {:output-dir "target/cljsbuild/test/out"
                                        :output-to "target/cljsbuild/test/main.js"
                                        :main rewrite-clj.runner
