@@ -81,7 +81,8 @@
     children)
   (replace-children [this children']
     (assoc this :children children'))
-
+  (leader-length [_]
+    2)
   Object
   (toString [this]
     (node/string this)))

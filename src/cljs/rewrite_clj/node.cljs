@@ -43,6 +43,9 @@
 (def inner?
   "See [[protocols/inner?]]"
   prot/inner?)
+(def leader-length
+  "See [[protocols/leader-length]]"
+  prot/leader-length)
 (def printable-only?
   "See [[protocols/printable-only?]]"
   prot/printable-only?)

@@ -11,7 +11,7 @@
                   :exclusions [org.apache.ant/ant]]
                  [org.clojure/tools.reader "1.3.2"]]
 
-  :source-paths ["src/clj/" "src/cljs/"]
+  :source-paths ["src/clj/" "src/cljc" "src/cljs/"]
 
   :clean-targets ^{:protect false} [:target-path :compile-path "out"]
 

@@ -30,7 +30,8 @@
     (when sexpr-count
       (node/assert-sexpr-count children' sexpr-count))
     (assoc this :children children'))
-
+  (leader-length [_]
+    (inc (count prefix)))
   Object
   (toString [this]
     (node/string this)))
@@ -54,7 +55,8 @@
   (replace-children [this children']
     (node/assert-sexpr-count children' 2)
     (assoc this :children children'))
-
+  (leader-length [_]
+    1)
   Object
   (toString [this]
     (node/string this)))
@@ -78,7 +80,8 @@
   (replace-children [this children']
     (node/assert-sexpr-count children' 1)
     (assoc this :children children'))
-
+  (leader-length [_]
+    1)
   Object
   (toString [this]
     (node/string this)))

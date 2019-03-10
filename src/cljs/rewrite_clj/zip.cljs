@@ -11,9 +11,9 @@
             [rewrite-clj.zip.insert :as ins]
             [rewrite-clj.zip.removez :as rm]
             [rewrite-clj.zip.seqz :as sz]
+            [rewrite-clj.zip.subedit :as subedit]
+            [rewrite-clj.zip.walk :as walk]
             [clojure.zip :as z]))
-
-
 
 (def node
   "Function reference to clojure.zip/node"
@@ -203,3 +203,5 @@
 (def assoc
   "See [[seqz/assoc]]"
   sz/assoc)
+
+;; Walk
