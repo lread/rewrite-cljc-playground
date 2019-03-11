@@ -3,205 +3,81 @@
   (:refer-clojure :exclude [next find replace remove
                             seq? map? vector? list? set?
                             print map get assoc])
-  (:require [rewrite-clj.zip.base :as base]
-            [rewrite-clj.parser :as p]
-            [rewrite-clj.zip.move :as m]
-            [rewrite-clj.zip.findz :as f]
-            [rewrite-clj.zip.editz :as ed]
-            [rewrite-clj.zip.insert :as ins]
-            [rewrite-clj.zip.removez :as rm]
-            [rewrite-clj.zip.seqz :as sz]
-            [rewrite-clj.zip.subedit :as subedit]
-            [rewrite-clj.zip.walk :as walk]
-            [clojure.zip :as z]))
+  (:require [rewrite-clj.zip.base]
+            [rewrite-clj.parser]
+            [rewrite-clj.zip.move]
+            [rewrite-clj.zip.findz]
+            [rewrite-clj.zip.editz]
+            [rewrite-clj.zip.insert]
+            [rewrite-clj.zip.removez]
+            [rewrite-clj.zip.seqz]
+            [rewrite-clj.zip.subedit :include-macros true]
+            [rewrite-clj.zip.walk]
+            [rewrite-clj.custom-zipper.core :as z])
+  (:require-macros [rewrite-clj.potemkin-cljs :refer [import-vars import-def]]))
 
-(def node
-  "Function reference to clojure.zip/node"
-  z/node)
-(def root
-  "Function reference to clojure.zip/root"
-  z/root)
+(import-vars
+ [rewrite-clj.custom-zipper.core
+  node position root]
 
+ [rewrite-clj.zip.base
+  child-sexprs
+  edn* edn
+  tag sexpr
+  length
+  ;; TODO: value - deprecated in clj... wasn't in cljs
+  ;; not applicable for cljs: of-file
+   of-string
+   string root-string
+  ;; TODO: print print-root
+  ]
 
-(def of-string
-  "See [[base/of-string]]"
-  base/of-string)
-(def root-string
-  "See [[base/root-string]]"
-  base/root-string)
-(def string
-  "See [[base/string]]"
-  base/string)
-(def tag
-  "See [[base/tag]]"
-  base/tag)
-(def sexpr
-  "See [[base/sexpr]]"
-  base/sexpr)
+ [rewrite-clj.zip.editz
+  replace edit splice
+  prefix suffix]
 
+ [rewrite-clj.zip.findz
+  find find-next
+  find-depth-first
+  find-next-depth-first
+  find-tag find-next-tag
+  find-value find-next-value
+  find-token find-next-token
+  ;; clsj extras
+  find-last-by-pos
+  find-tag-by-pos]
 
+ [rewrite-clj.zip.insert
+  insert-right insert-left
+  insert-child append-child]
 
+ [rewrite-clj.zip.move
+  left right up down prev next
+  leftmost rightmost
+  leftmost? rightmost? end?]
 
-;; **********************************
-;; Originally in rewrite-clj.zip.move
-;; **********************************
-(def right
-  "See [[move/right]]"
-  m/right)
-(def left
-  "See [[move/left]]"
-  m/left)
-(def down
-  "See [[move/down]]"
-  m/down)
-(def up
-  "See [[move/up]]"
-  m/up)
-(def next
-  "See [[move/next]]"
-  m/next)
-(def end?
-  "See [[move/end?]]"
-  m/end?)
-(def rightmost?
-  "See [[move/rightmost?]]"
-  m/rightmost?)
-(def leftmost?
-  "See [[move/leftmost?]]"
-  m/leftmost?)
-(def prev
-  "See [[move/prev]]"
-  m/prev)
-(def leftmost
-  "See [[move/leftmost]]"
-  m/leftmost)
-(def rightmost
-  "See [[move/rightmost]]"
-  m/rightmost)
+ [rewrite-clj.zip.removez
+  remove
+  ;; cljs extras
+  remove-preserve-newline]
 
+ [rewrite-clj.zip.seqz
+  seq? list? vector? set? map?
+  map map-keys map-vals
+  get assoc]
 
+ [rewrite-clj.zip.subedit
+  edit-node
+  subedit-node]
 
-;; **********************************
-;; Originally in rewrite-clj.zip.findz
-;; **********************************
-(def find
-  "See [[findz/find]]"
-  f/find)
-(def find-last-by-pos
-  "See [[findz/find-last-by-pos]]"
-  f/find-last-by-pos)
-(def find-depth-first
-  "See [[findz/find-depth-first]]"
-  f/find-depth-first)
-(def find-next
-  "See [[findz/find-next]]"
-  f/find-next)
-(def find-next-depth-first
-  "See [[findz/find-next-depth-first]]"
-  f/find-next-depth-first)
-(def find-tag
-  "See [[findz/find-tag]]"
-  f/find-tag)
-(def find-next-tag
-  "See [[findz/find-next-tag]]"
-  f/find-next-tag)
-(def find-tag-by-pos
-  "See [[findz/tag-by-pos]]"
-  f/find-tag-by-pos)
-(def find-token
-  "See [[findz/find-token]]"
-  f/find-token)
-(def find-next-token
-  "See [[findz/find-next-token]]"
-  f/find-next-token)
-(def find-value
-  "See [[findz/find-value]]"
-  f/find-value)
-(def find-next-value
-  "See [[findz/find-next-value]]"
-  f/find-next-value)
+ [rewrite-clj.zip.walk
+  prewalk
+  postwalk]
 
-
-
-;; **********************************
-;; Originally in rewrite-clj.zip.editz
-;; **********************************
-(def replace
-  "See [[editz/replace]]"
-  ed/replace)
-(def edit
-  "See [[editz/edit]]"
-  ed/edit)
-(def splice
-  "See [[editz/splice]]"
-  ed/splice)
-(def prefix
-  "See [[editz/prefix]]"
-  ed/prefix)
-(def suffix
-  "See [[editz/suffix]]"
-  ed/suffix)
-
-;; **********************************
-;; Originally in rewrite-clj.zip.removez
-;; **********************************
-(def remove
-  "See [[removez/remove]]"
-  rm/remove)
-(def remove-preserve-newline
-  "See [[removez/remove-preserve-newline]]"
-  rm/remove-preserve-newline)
-
-
-;; **********************************
-;; Originally in rewrite-clj.zip.insert
-;; **********************************
-(def insert-right
-  "See [[insert/insert-right]]"
-  ins/insert-right)
-(def insert-left
-  "See [[insert/insert-left]]"
-  ins/insert-left)
-(def insert-child
-  "See [[insert/insert-child]]"
-  ins/insert-child)
-(def append-child
-  "See [[insert/append-child]]"
-  ins/append-child)
-
-
-;; **********************************
-;; Originally in rewrite-clj.zip.seqz
-;; **********************************
-(def seq?
-  "See [[seqz/seq?]]"
-  sz/seq?)
-(def list?
-  "See [[seqz/list?]]"
-  sz/list?)
-(def vector?
-  "See [[seqz/vector?]]"
-  sz/vector?)
-(def set?
-  "See [[seqz/set?]]"
-  sz/set?)
-(def map?
-  "See [[seqz/map?]]"
-  sz/map?)
-(def map-vals
-  "See [[seqz/map-vals]]"
-  sz/map-vals)
-(def map-keys
-  "See [[seqz/map-keys]]"
-  sz/map-keys)
-(def map
-  "See [[seqz/map]]"
-  sz/map)
-(def get
-  "See [[seqz/get]]"
-  sz/get)
-(def assoc
-  "See [[seqz/assoc]]"
-  sz/assoc)
-
-;; Walk
+ [rewrite-clj.zip.whitespace
+  whitespace? linebreak?
+  whitespace-or-comment?
+  skip skip-whitespace
+  skip-whitespace-left
+  prepend-space append-space
+  prepend-newline append-newline])

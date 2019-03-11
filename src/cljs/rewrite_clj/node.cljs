@@ -1,205 +1,107 @@
 (ns rewrite-clj.node
   "Facade for node related namespaces."
   (:require [rewrite-clj.node.coercer]
-            [rewrite-clj.node.protocols :as prot]
-            [rewrite-clj.node.keyword :as kw-node]
-            [rewrite-clj.node.seq :as seq-node]
-            [rewrite-clj.node.whitespace :as ws-node]
-            [rewrite-clj.node.token :as tok-node]
-            [rewrite-clj.node.comment :as cmt-node]
-            [rewrite-clj.node.forms :as fm-node]
-            [rewrite-clj.node.meta :as mt-node]
-            [rewrite-clj.node.stringz :as s-node]
-            [rewrite-clj.node.reader-macro :as rm-node]
-            [rewrite-clj.node.quote :as q-node]
-            [rewrite-clj.node.uneval :as ue-node]
-            [rewrite-clj.node.fn :as f-node]))
+            [rewrite-clj.node.protocols]
+            [rewrite-clj.node.keyword]
+            [rewrite-clj.node.seq]
+            [rewrite-clj.node.whitespace]
+            [rewrite-clj.node.token]
+            [rewrite-clj.node.comment]
+            [rewrite-clj.node.forms]
+            [rewrite-clj.node.meta]
+            [rewrite-clj.node.stringz]
+            [rewrite-clj.node.reader-macro]
+            [rewrite-clj.node.quote]
+            [rewrite-clj.node.uneval]
+            [rewrite-clj.node.fn])
+  (:require-macros [rewrite-clj.potemkin-cljs :refer [import-vars import-def]]))
 
+(import-vars
+ [rewrite-clj.node.protocols
+  coerce
+  children
+  child-sexprs
+  ;TODO: concat-strings
+  inner?
+  leader-length
+  length
+  printable-only?
+  replace-children
+  sexpr
+  ;TODO: sexprs
+  string
+  tag]
 
+ [rewrite-clj.node.comment
+  comment-node
+  comment?]
 
+ [rewrite-clj.node.fn
+  fn-node]
 
+ [rewrite-clj.node.forms
+  forms-node]
 
-; *******************************
-; see rewrite-clj.node.protocols
-; *******************************
-(def tag
-  "See [[protocols/tag]]"
-  prot/tag)
-(def sexpr
-  "See [[protocols/sexpr]]"
-  prot/sexpr)
-(def string
-  "See [[protocols/string]]"
-  prot/string)
-(def children
-  "See [[protocols/children]]"
-  prot/children)
-(def child-sexprs
-  "See [[protocols/sexprs]]"
-  prot/child-sexprs)
-(def replace-children
-  "See [[protocols/replace-children]]"
-  prot/replace-children)
-(def inner?
-  "See [[protocols/inner?]]"
-  prot/inner?)
-(def leader-length
-  "See [[protocols/leader-length]]"
-  prot/leader-length)
-(def printable-only?
-  "See [[protocols/printable-only?]]"
-  prot/printable-only?)
-(def coerce
-  "See [[protocols/coerce]]"
-  prot/coerce)
-(def length
-  "See [[protocols/length]]"
-  prot/length)
+ ;; TODO: do we have integet nodes in cljs?
+ ;;[rewrite-clj.node.integer
+ ;; integer-node]
 
+ [rewrite-clj.node.keyword
+  keyword-node]
 
-; *******************************
-; see rewrite-clj.node.forms
-; *******************************
-(def forms-node
-  "see [[forms/forms-node]]"
-  fm-node/forms-node)
-(def keyword-node
-  "see [[keyword/keyword-node]]"
-  kw-node/keyword-node)
+ [rewrite-clj.node.meta
+  meta-node
+  raw-meta-node]
 
+ ;; TODO:
+ ;;[rewrite-clj.node.regex
+ ;; regex-node]
 
-; *******************************
-; see rewrite-clj.node.seq
-; *******************************
-(def list-node
-  "See [[seq/list-node]]"
-  seq-node/list-node)
-(def vector-node
-  "See [[seq/vector-node]]"
-  seq-node/vector-node)
-(def set-node
-  "See [[seq/set-node]]"
-  seq-node/set-node)
-(def map-node
-  "See [[seq/map-node]]"
-  seq-node/map-node)
+ [rewrite-clj.node.reader-macro
+  deref-node
+  eval-node
+  reader-macro-node
+  var-node]
 
+ [rewrite-clj.node.seq
+  list-node
+  map-node
+  ;TODO: namespaced-map-node
+  set-node
+  vector-node]
 
-; *******************************
-; see rewrite-clj.node.string
-; *******************************
-(def string-node
-  "See [[stringz/string-node]]"
-  s-node/string-node)
+ [rewrite-clj.node.stringz
+  string-node]
 
+ [rewrite-clj.node.quote
+  quote-node
+  syntax-quote-node
+  unquote-node
+  unquote-splicing-node]
 
+ [rewrite-clj.node.token
+  token-node]
 
-; *******************************
-; see rewrite-clj.node.comment
-; *******************************
-(def comment-node
-  "See [[comment/comment-node]]"
-  cmt-node/comment-node)
-(def comment?
-  "See [[comment/comment?]]"
-  cmt-node/comment?)
+ [rewrite-clj.node.uneval
+  uneval-node]
 
-; *******************************
-; see rewrite-clj.node.whitespace
-; *******************************
-(def comma-separated
-  ws-node/comma-separated)
-(def line-separated
-  ws-node/line-separated)
-(def linebreak?
-  ws-node/linebreak?)
-(def newlines
-  ws-node/newlines)
-(def newline-node
-  ws-node/newline-node)
-(def spaces
-  ws-node/spaces)
-(def whitespace-node
-  ws-node/whitespace-node)
-(def whitespace?
-  ws-node/whitespace?)
-(def comma-node
-  ws-node/comma-node)
-(def comma?
-  ws-node/comma?)
-(def whitespace-nodes
-  ws-node/whitespace-nodes)
+ [rewrite-clj.node.whitespace
+  comma-separated
+  line-separated
+  linebreak?
+  newlines
+  newline-node
+  spaces
+  whitespace-node
+  whitespace?
+  comma-node
+  comma?
+  whitespace-nodes])
 
+;; ## Predicates
 
 (defn whitespace-or-comment?
   "Check whether the given node represents whitespace or comment."
   [node]
   (or (whitespace? node)
       (comment? node)))
-
-
-; *******************************
-; see rewrite-clj.node.token
-; *******************************
-(def token-node
-  "See [[token/token-node]]"
-  tok-node/token-node)
-
-
-; *******************************
-; see rewrite-clj.node.reader-macro
-; *******************************
-(def var-node
-  "See [[reader-macro/var-node]]"
-  rm-node/var-node)
-(def eval-node
-  "See [[reader-macro/eval-node]]"
-  rm-node/eval-node)
-(def reader-macro-node
-  "See [[reader-macro/reader-macro-node]]"
-  rm-node/reader-macro-node)
-(def deref-node
-  "See [[reader-macro/deref-node]]"
-  rm-node/deref-node)
-
-
-; *******************************
-; see rewrite-clj.node.quote
-; *******************************
-(def quote-node
-  "See [[quote/quote-node]]"
-  q-node/quote-node)
-(def syntax-quote-node
-  "See [[quote/syntax-quote-node]]"
-  q-node/syntax-quote-node)
-(def unquote-node
-  "See [[quote/unquote-node]]"
-  q-node/unquote-node)
-(def unquote-splicing-node
-  "See [[quote/unquote-splicing-node]]"
-  q-node/unquote-splicing-node)
-
-
-; *******************************
-; see rewrite-clj.node.uneval
-; *******************************
-(def uneval-node
-  "See [[uneval/uneval-node]]"
-  ue-node/uneval-node)
-
-
-; *******************************
-; see rewrite-clj.node.meta
-; *******************************
-(def meta-node
-  "See [[meta/meta-node]]"
-  mt-node/meta-node)
-(def raw-meta-node
-  mt-node/raw-meta-node)
-
-; *******************************
-; see rewrite-clj.node.fn
-; *******************************
-(def fn-node
-  "See [[fn/fn-node]]"
-  f-node/fn-node)

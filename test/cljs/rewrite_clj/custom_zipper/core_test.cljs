@@ -1,11 +1,11 @@
 (ns rewrite-clj.custom-zipper.core-test
   (:require [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop :include-macros true]
-            [clojure.test :refer-macros [deftest is are testing run-tests]]
+            [clojure.test :refer [deftest is are testing run-tests]]
             [clojure.test.check :refer-macros [quick-check]]
             [rewrite-clj.node :as node]
             [rewrite-clj.node.generators :as g]
-            [clojure.test.check.clojure-test :refer-macros [defspec]]
+            [clojure.test.check.clojure-test :refer [defspec]]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.custom-zipper.utils :as u]))

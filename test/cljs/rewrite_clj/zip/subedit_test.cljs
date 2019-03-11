@@ -1,5 +1,5 @@
 (ns rewrite-clj.zip.subedit-test
-  (:require [clojure.test :refer-macros [deftest is testing run-tests]]
+  (:require [clojure.test :refer [deftest is testing run-tests]]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]
             [rewrite-clj.zip.subedit :refer-macros [subedit-> edit->]]
