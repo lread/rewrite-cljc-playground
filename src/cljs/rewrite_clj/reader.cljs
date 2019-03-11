@@ -32,6 +32,10 @@
   (< -1 (.indexOf #js [\" \: \; \' \@ \^ \` \~
                        \( \) \[ \] \{ \} \\ nil] c)))
 
+(defn comma?
+  [c]
+  (< -1 (.indexOf #js [","] c)))
+
 (defn ^boolean whitespace?
   "Checks whether a given character is whitespace"
   [ch]
@@ -187,8 +191,8 @@
                  (identical? (. ns (substring (- (.-length ns) 2) (.-length ns))) ":/"))
             (identical? (aget name (dec (.-length name))) ":")
             (not (== (.indexOf token "::" 1) -1)))
-      (cljs.tools.reader.impl.errors/reader-error reader 
-                                                  "Invalid token: " 
+      (cljs.tools.reader.impl.errors/reader-error reader
+                                                  "Invalid token: "
 						  token)
       (if (and (not (nil? ns)) (> (.-length ns) 0))
         (keyword (.substring ns 0 (.indexOf ns "/")) name)

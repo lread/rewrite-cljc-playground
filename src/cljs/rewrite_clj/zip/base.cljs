@@ -3,28 +3,34 @@
   (:require [rewrite-clj.node :as node]
             [rewrite-clj.parser :as p]
             [rewrite-clj.zip.whitespace :as ws]
-            [clojure.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 ;; ## Zipper
-
 (defn edn*
-  "Create zipper over the given Clojure/EDN node."
-  [node]
-  (z/zipper
-    node/inner?
-    (comp seq node/children)
-    node/replace-children
-    node))
+  "Create zipper over the given Clojure/EDN node.
+   If `:track-position?` is set, this will create a custom zipper that will
+   return the current row/column using `rewrite-clj.zip/position`. (Note that
+   this custom zipper will be incompatible with `clojure.zip`'s functions.)"
+  ([node]
+   (edn* node {}))
+  ([node {:keys [track-position?]}]
+   (if track-position?
+     (z/custom-zipper node)
+     (z/zipper node))))
 
 (defn edn
-  "Create zipper over the given Clojure/EDN node and move
-   to the first non-whitespace/non-comment child."
-  [node]
-  (if (= (node/tag node) :forms)
-    (let [top (edn* node)]
-      (or (-> top z/down ws/skip-whitespace)
-          top))
-    (recur (node/forms-node [node]))))
+  "Create zipper over the given Clojure/EDN node and move to the first
+   non-whitespace/non-comment child.
+   If `:track-position?` is set, this will create a custom zipper that will
+   return the current row/column using `rewrite-clj.zip/position`. (Note that
+   this custom zipper will be incompatible with `clojure.zip`'s functions.)"
+  ([node] (edn node {}))
+  ([node {:keys [track-position?] :as options}]
+   (if (= (node/tag node) :forms)
+     (let [top (edn* node options)]
+       (or (-> top z/down ws/skip-whitespace)
+           top))
+     (recur (node/forms-node [node]) options))))
 
 ;; ## Inspection
 
@@ -49,13 +55,12 @@
   (or (some-> zloc z/node node/length) 0))
 
 
-;; ## Read
-
+;; ## Rea?
 (defn of-string
   "Create zipper from String."
-  [s]
-  (some-> s p/parse-string-all edn))
-
+  ([s] (of-string s {}))
+  ([s options]
+   (some-> s p/parse-string-all (edn options))))
 
 ;; ## Write
 

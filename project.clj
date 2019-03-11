@@ -21,7 +21,8 @@
                          "junitReporter" {"outputDir" "target/out/test-results"}}}}
 
   :profiles {:dev
-             {:plugins [[lein-cljsbuild "1.1.7"]
+             {:dependencies [[org.clojure/test.check "0.9.0"]]
+              :plugins [[lein-cljsbuild "1.1.7"]
                         [lein-doo "0.1.11"]]
 
               :cljsbuild {:builds

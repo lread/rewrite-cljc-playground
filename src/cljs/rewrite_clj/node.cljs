@@ -104,29 +104,32 @@
   "See [[comment/comment?]]"
   cmt-node/comment?)
 
-
-
 ; *******************************
 ; see rewrite-clj.node.whitespace
 ; *******************************
-(def whitespace-node
-  "See [[whitespace/whitespace-node]]"
-  ws-node/whitespace-node)
+(def comma-separated
+  ws-node/comma-separated)
+(def line-separated
+  ws-node/line-separated)
+(def linebreak?
+  ws-node/linebreak?)
+(def newlines
+  ws-node/newlines)
 (def newline-node
-  "See [[whitespace/newline-node]]"
   ws-node/newline-node)
 (def spaces
-  "See [[whitespace/spaces]]"
   ws-node/spaces)
-(def newlines
-  "See [[whitespace/newlines]]"
-  ws-node/newlines)
+(def whitespace-node
+  ws-node/whitespace-node)
 (def whitespace?
-  "See [[whitespace/whitespace?]]"
   ws-node/whitespace?)
-(def linebreak?
-  "See [[whitespace/linebreak?]]"
-  ws-node/linebreak?)
+(def comma-node
+  ws-node/comma-node)
+(def comma?
+  ws-node/comma?)
+(def whitespace-nodes
+  ws-node/whitespace-nodes)
+
 
 (defn whitespace-or-comment?
   "Check whether the given node represents whitespace or comment."
@@ -191,6 +194,8 @@
 (def meta-node
   "See [[meta/meta-node]]"
   mt-node/meta-node)
+(def raw-meta-node
+  mt-node/raw-meta-node)
 
 ; *******************************
 ; see rewrite-clj.node.fn

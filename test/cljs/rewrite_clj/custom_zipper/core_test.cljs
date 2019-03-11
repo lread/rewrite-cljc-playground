@@ -1,10 +1,11 @@
 (ns rewrite-clj.custom-zipper.core-test
   (:require [clojure.test.check.generators :as gen]
-            [clojure.test.check.properties :as prop]
-            [clojure.test :refer-macros [deftest is testing run-tests]]
+            [clojure.test.check.properties :as prop :include-macros true]
+            [clojure.test :refer-macros [deftest is are testing run-tests]]
+            [clojure.test.check :refer-macros [quick-check]]
             [rewrite-clj.node :as node]
             [rewrite-clj.node.generators :as g]
-            ;[clojure.test.check.clojure-test :as tc]
+            [clojure.test.check.clojure-test :refer-macros [defspec]]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.custom-zipper.utils :as u]))
@@ -124,7 +125,7 @@
                  (let [zloc' ((operations op) zloc)]
                    (z/root zloc')
                    zloc')
-                 (catch Throwable t
+                 (catch :default t
                    nil))
                zloc)
            ops)))
