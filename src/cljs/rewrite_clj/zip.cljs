@@ -14,7 +14,8 @@
             [rewrite-clj.zip.subedit :include-macros true]
             [rewrite-clj.zip.walk]
             [rewrite-clj.custom-zipper.core :as z])
-  (:require-macros [rewrite-clj.potemkin-cljs :refer [import-vars import-def]]))
+  (:require-macros rewrite-clj.zip
+                   [rewrite-clj.potemkin-cljs :refer [import-vars import-def]]))
 
 (import-vars
  [rewrite-clj.custom-zipper.core
@@ -81,3 +82,31 @@
   skip-whitespace-left
   prepend-space append-space
   prepend-newline append-newline])
+
+;; ## Base Operations
+;; TODO: figure out how to hook these up with defbase instead of def
+(def right* rewrite-clj.custom-zipper.core/right)
+(def left* rewrite-clj.custom-zipper.core/left)
+(def up* rewrite-clj.custom-zipper.core/up)
+(def down* rewrite-clj.custom-zipper.core/down)
+(def next* rewrite-clj.custom-zipper.core/next)
+(def prev* rewrite-clj.custom-zipper.core/prev)
+(def rightmost* rewrite-clj.custom-zipper.core/rightmost)
+(def leftmost* rewrite-clj.custom-zipper.core/leftmost)
+(def replace* rewrite-clj.custom-zipper.core/replace)
+(def edit* rewrite-clj.custom-zipper.core/edit)
+(def remove* rewrite-clj.custom-zipper.core/remove)
+(def insert-left* rewrite-clj.custom-zipper.core/insert-left)
+(def insert-right* rewrite-clj.custom-zipper.core/insert-right)
+
+;; ## DEPRECATED
+
+(defn ^{:deprecated "0.4.0"} ->string
+  "DEPRECATED. Use `string` instead."
+  [zloc]
+  (string zloc))
+
+(defn ^{:deprecated "0.4.0"} ->root-string
+  "DEPRECATED. Use `root-string` instead."
+  [zloc]
+  (root-string zloc))

@@ -121,5 +121,4 @@
   "Create a node representing an EDN map namespace."
   [children]
   (assert-namespaced-map-children children)
-  (println "kids asserted")
   (->NamespacedMapNode children))

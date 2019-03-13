@@ -121,9 +121,7 @@
     \' (node/var-node (parse-printables reader :var 1 true))
     \= (node/eval-node (parse-printables reader :eval 1 true))
     \_ (node/uneval-node (parse-printables reader :uneval 1 true))
-    \: (do
-         (println "reading namespaced map")
-         (node/namespaced-map-node (parse-printables reader :keyword 2)))
+    \: (node/namespaced-map-node (parse-printables reader :keyword 2))
     \? (do
          ;; we need to examine the next character, so consume one (known \?)
          (reader/next reader)

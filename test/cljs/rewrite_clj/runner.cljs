@@ -3,6 +3,7 @@
             [rewrite-clj.node-test]
             [rewrite-clj.paredit-test]
             [rewrite-clj.parser-test]
+            [rewrite-clj.regression-test]
             [rewrite-clj.zip-test]
             [rewrite-clj.node.coerce-test]
             [rewrite-clj.node.node-test]
@@ -22,6 +23,7 @@
 (doo-tests 'rewrite-clj.node-test
            'rewrite-clj.paredit-test
            'rewrite-clj.parser-test
+           'rewrite-clj.regression-test
            'rewrite-clj.zip-test
            'rewrite-clj.node.coerce-test
            'rewrite-clj.node.node-test

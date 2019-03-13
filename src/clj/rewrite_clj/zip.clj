@@ -7,3 +7,15 @@
  [rewrite-clj.zip.subedit
   edit-> edit->>
   subedit-> subedit->>])
+
+(defmacro defbase
+  [sym base]
+  (let [{:keys [arglists]} (meta
+                            (ns-resolve
+                             (symbol (namespace base))
+                             (symbol (name base))))
+        sym (with-meta
+              sym
+              {:doc (format "Directly call '%s' on the given arguments." base)
+               :arglists `(quote ~arglists)})]
+    `(def ~sym ~base)))

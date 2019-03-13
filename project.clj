@@ -33,6 +33,7 @@
                                        :main rewrite-clj.runner
                                        :source-map true
                                        :optimizations :none
+                                       :warnings {:fn-deprecated false}
                                        :pretty-print true}}]}}
 
              :doc {:plugins  [[funcool/codeina "0.1.0"
