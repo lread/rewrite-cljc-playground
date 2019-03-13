@@ -12,7 +12,7 @@
     (let [[mta data] (node/sexprs children)]
       (assert (implements? IWithMeta data)
               (str "cannot attach metadata to: " (pr-str data)))
-      (with-meta data (if (map? mta) mta {mta true}))))
+      (vary-meta data merge (if (map? mta) mta {mta true}))))
   (length [_]
     (+ (count prefix) (node/sum-lengths children)))
   (string [_]

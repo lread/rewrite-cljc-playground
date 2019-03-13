@@ -1,6 +1,8 @@
 (ns rewrite-clj.parser.string
-  (:require [rewrite-clj.node :as node]
-            [rewrite-clj.reader :as r]
+  (:require [rewrite-clj.parser.utils :as u]
+            [rewrite-clj.node :as node]
+            [clojure.tools.reader.edn :as edn]
+            [clojure.tools.reader.reader-types :as r]
             [goog.string :as gstring]
             [clojure.string :as string]))
 
@@ -13,7 +15,7 @@
 
 (defn- read-string-data
   [^not-native reader]
-  (r/ignore reader)
+  (u/ignore reader)
   (let [buf (gstring/StringBuffer.)]
     (loop [escape? false
            lines []]
@@ -28,14 +30,21 @@
               (do
                 (.append buf c)
                 (recur (and (not escape?) (identical? c \\)) lines)))
-        (r/throw-reader reader "Unexpected EOF while reading string.")))))
+        (u/throw-reader reader "Unexpected EOF while reading string.")))))
 
 (defn parse-string
   [^not-native reader]
   (node/string-node (read-string-data reader)))
 
-(defn parse-regex
+;; TODO: differs from clj... not sure why.  clj version has introduce regex node... but still a bit different.. might be due to
+;; differences between clj and cljs?
+#_(defn parse-regex
   [^not-native reader]
   (let [lines (read-string-data reader)
         regex (string/join "\n" lines)]
     (node/token-node (re-pattern regex) (str "#\"" regex "\""))))
+;; let's try clj version
+(defn parse-regex
+  [reader]
+  (let [h (read-string-data reader)]
+    (string/join "\n" h)))

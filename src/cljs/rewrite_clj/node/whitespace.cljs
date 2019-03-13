@@ -13,18 +13,6 @@
    the eventual character count."
   count)
 
-
-;; TODO
-;; (defmacro with-newline-fn
-;;   [f & body]
-;;   `(binding [*newline-fn* (comp *newline-fn* ~f)]
-;;      ~@body))
-
-;; (defmacro with-count-fn
-;;   [f & body]
-;;   `(binding [*count-fn* (comp *count-fn* ~f)]
-;;      ~@body))
-
 ;; ## Nodes
 
 (defrecord WhitespaceNode [whitespace]
@@ -66,6 +54,7 @@
 
 ;; TODO
 ;; (node/make-printable! WhitespaceNode)
+;; (node/make-printable! CommaNode)
 ;; (node/make-printable! NewlineNode)
 
 ;; ## Constructors
@@ -80,6 +69,7 @@
 (defn whitespace-node
   "Create whitespace node."
   [s]
+  {:pre [(string-of? s r/space?)]}
   (->WhitespaceNode s))
 
 (defn comma-node
@@ -91,6 +81,7 @@
 (defn newline-node
   "Create newline node."
   [s]
+  {:pre [(string-of? s r/linebreak?)]}
   (->NewlineNode s))
 
 (defn- classify-whitespace

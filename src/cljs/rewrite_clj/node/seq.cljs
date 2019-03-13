@@ -1,7 +1,7 @@
 (ns rewrite-clj.node.seq
   (:require [rewrite-clj.node.protocols :as node]))
 
-;; ## Node
+;; ## Nodes
 
 (defn wrap-vec [s] (str "[" s "]"))
 (defn wrap-list [s] (str "(" s ")"))
@@ -41,8 +41,59 @@
   (toString [this]
     (node/string this)))
 
+(defn- assert-namespaced-map-children
+  [children]
+  (let [exs (node/sexprs children)]
+    (assert (= (count exs) 2)
+            "can only contain 2 non-whitespace forms.")
+    (assert (keyword? (first exs))
+            "first form in namespaced map needs to be keyword.")
+    (assert (map? (second exs))
+            "second form in namespaced map needs to be map.")))
+
+(defrecord NamespacedMapNode [children]
+  node/Node
+  (tag [this]
+    :namespaced-map)
+  (printable-only? [_] false)
+  (sexpr [this]
+    (let [[nspace' m] (node/sexprs children)
+          nspace (if (namespace nspace')
+                   (-> (ns-aliases *ns*)
+                       (get (symbol (name nspace')))
+                       (ns-name)
+                       (name))
+                   (name nspace'))]
+      (assert nspace
+              (str "could not resolve namespace alias for namespaced map: "
+                   (namespace nspace')))
+      (->> (for [[k v] m
+                 :let [k' (cond (not (keyword? k)) k
+                                (namespace k)      k
+                                :else (keyword nspace (name k)))]]
+             [k' v])
+           (into {}))))
+  (length [_]
+    (+ 1 (node/sum-lengths children)))
+  (string [this]
+    (str "#" (node/concat-strings children)))
+
+  node/InnerNode
+  (inner? [_] true)
+  (children [_] children)
+  (replace-children [this children']
+    (assert-namespaced-map-children children')
+    (assoc this :children children'))
+  (leader-length [_]
+    1)
+
+  Object
+  (toString [this]
+    (node/string this)))
+
 ;; TODO
-;(node/make-printable! SeqNode)
+;; (node/make-printable! SeqNode)
+;; (node/make-printable! NamespacedMapNode)
 
 ;; ## Constructors
 
@@ -65,3 +116,10 @@
   "Create a node representing an EDN map."
   [children]
   (->SeqNode :map wrap-map 2 #(apply hash-map %) children))
+
+(defn namespaced-map-node
+  "Create a node representing an EDN map namespace."
+  [children]
+  (assert-namespaced-map-children children)
+  (println "kids asserted")
+  (->NamespacedMapNode children))

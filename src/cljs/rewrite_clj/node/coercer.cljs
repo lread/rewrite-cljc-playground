@@ -8,15 +8,17 @@
             [rewrite-clj.node.meta :refer [MetaNode meta-node]]
             [rewrite-clj.node.fn :refer [FnNode]]
             [rewrite-clj.node.protocols :refer [NodeCoerceable coerce]]
-            [rewrite-clj.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode]]
+            [rewrite-clj.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
             [rewrite-clj.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
             [rewrite-clj.node.token :refer [TokenNode token-node]]
-            [rewrite-clj.node.whitespace :refer [WhitespaceNode NewlineNode whitespace-node space-separated]]))
+            [rewrite-clj.node.whitespace :refer [WhitespaceNode NewlineNode whitespace-node space-separated]]
+            [rewrite-clj.node.whitespace :as ws]))
 
 ;; ## Helpers
 
 (defn node-with-meta
   [n value]
+  ;; TODO: can this now match clojure?
   (if (implements? IWithMeta value)
     (let [mta (meta value)]
       (if (empty? mta)
@@ -34,7 +36,11 @@
       (token-node v)
       v)))
 
-;; Number
+(extend-protocol NodeCoerceable
+  nil
+  (coerce [v]
+    (token-node nil)))
+
 (extend-protocol NodeCoerceable
   number
   (coerce [n]
@@ -42,7 +48,6 @@
      (token-node n)
      n)))
 
-;; Number
 (extend-protocol NodeCoerceable
   string
   (coerce [n]
@@ -79,41 +84,48 @@
 
 ;; ## Maps
 
-(let [comma (whitespace-node ", ")
-      space (whitespace-node " ")]
+(let [comma (ws/whitespace-nodes ", ")
+      space (ws/whitespace-node " ")]
   (defn- map->children
     [m]
     (->> (mapcat
-           (fn [[k v]]
-             [(coerce k) space (coerce v) comma])
-           m)
-         (butlast)
+          (fn [[k v]]
+            (list* (coerce k) space (coerce v) comma))
+          m)
+         (drop-last (count comma))
          (vec))))
 
+(defn- record-node
+  [m]
+  (reader-macro-node
+   [(token-node (type m))
+    (map-node (map->children m))]))
 
+(defn- is-record?
+  [v]
+  (record? v))
+;; TODO: a record is not a PersistentHashMap in cljs so this does not work
 (extend-protocol NodeCoerceable
   PersistentHashMap
   (coerce [m]
     (node-with-meta
-      (map-node (map->children m))
-      m)))
-
-
-
-
-;(seq-node vector-node [1])
+     (if (is-record? m)
+       (record-node m)
+       (map-node (map->children m)))
+     m)))
 
 ;; ## Vars
 
-;; (extend-protocol NodeCoerceable
-;;   Var
-;;   (coerce [v]
-;;     (-> (str v)
-;;         (subs 2)
-;;         (symbol)
-;;         (token-node)
-;;         (vector)
-;;         (var-node))))
+(extend-protocol NodeCoerceable
+  ;; TODO: was clojure.lang.var for clj
+  Var
+  (coerce [v]
+    (-> (str v)
+        (subs 2)
+        (symbol)
+        (token-node)
+        (vector)
+        (var-node))))
 
 ;; ## Existing Nodes
 

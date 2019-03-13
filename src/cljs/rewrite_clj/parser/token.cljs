@@ -3,7 +3,7 @@
             [rewrite-clj.reader :as r]
             [goog.string :as gstring]))
 
-
+;; TODO: these are cljs optimizations
 (defn- join-2 [a b]
   (-> a gstring/StringBuffer. (.append b) .toString))
 
@@ -28,7 +28,7 @@
 
 (defn- read-to-char-boundary
   [^not-native reader]
-  (let [c (r/read-char reader)]
+  (let [c (r/next reader)]
     (join-2 c (if (not (identical? c \\))
                 (read-to-boundary reader allowed-default?)
                 ""))))
@@ -46,7 +46,7 @@
       (node/token-node value value-string)
       (let [s (join-2 value-string suffix)]
         (node/token-node
-          (r/read-string s)
+          (r/string->edn s)
           s)))))
 
 
@@ -55,11 +55,11 @@
 (defn parse-token
   "Parse a single token."
   [^not-native reader]
-  (let [first-char (r/read-char reader)
+  (let [first-char (r/next reader)
         s (join-2 first-char (if (identical? first-char \\)
                          (read-to-char-boundary reader)
                          (read-to-boundary reader allowed-default?)))
-        v (r/read-string s)]
+        v (r/string->edn s)]
     (if (symbol? v)
       (symbol-node reader v s)
       (node/token-node v s))))

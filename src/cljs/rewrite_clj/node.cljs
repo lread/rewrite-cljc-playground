@@ -1,19 +1,20 @@
 (ns rewrite-clj.node
   "Facade for node related namespaces."
   (:require [rewrite-clj.node.coercer]
-            [rewrite-clj.node.protocols]
-            [rewrite-clj.node.keyword]
-            [rewrite-clj.node.seq]
-            [rewrite-clj.node.whitespace]
-            [rewrite-clj.node.token]
             [rewrite-clj.node.comment]
+            [rewrite-clj.node.fn]
             [rewrite-clj.node.forms]
+            [rewrite-clj.node.keyword]
             [rewrite-clj.node.meta]
-            [rewrite-clj.node.stringz]
-            [rewrite-clj.node.reader-macro]
+            [rewrite-clj.node.protocols]
             [rewrite-clj.node.quote]
+            [rewrite-clj.node.reader-macro]
+            [rewrite-clj.node.regex]
+            [rewrite-clj.node.seq]
+            [rewrite-clj.node.stringz]
+            [rewrite-clj.node.token]
             [rewrite-clj.node.uneval]
-            [rewrite-clj.node.fn])
+            [rewrite-clj.node.whitespace])
   (:require-macros [rewrite-clj.potemkin-cljs :refer [import-vars import-def]]))
 
 (import-vars
@@ -21,14 +22,14 @@
   coerce
   children
   child-sexprs
-  ;TODO: concat-strings
+  concat-strings
   inner?
   leader-length
   length
   printable-only?
   replace-children
   sexpr
-  ;TODO: sexprs
+  sexprs
   string
   tag]
 
@@ -53,9 +54,8 @@
   meta-node
   raw-meta-node]
 
- ;; TODO:
- ;;[rewrite-clj.node.regex
- ;; regex-node]
+ [rewrite-clj.node.regex
+  regex-node]
 
  [rewrite-clj.node.reader-macro
   deref-node
@@ -66,7 +66,7 @@
  [rewrite-clj.node.seq
   list-node
   map-node
-  ;TODO: namespaced-map-node
+  namespaced-map-node
   set-node
   vector-node]
 

@@ -31,6 +31,7 @@
                             :compiler {:output-dir "target/cljsbuild/test/out"
                                        :output-to "target/cljsbuild/test/main.js"
                                        :main rewrite-clj.runner
+                                       :source-map true
                                        :optimizations :none
                                        :pretty-print true}}]}}
 

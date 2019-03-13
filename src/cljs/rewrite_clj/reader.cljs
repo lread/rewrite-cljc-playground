@@ -1,30 +1,23 @@
 (ns rewrite-clj.reader
   (:refer-clojure :exclude [peek next])
-  (:require [cljs.tools.reader :as r]
-            [cljs.tools.reader.reader-types :as reader-types]
+  (:require [clojure.tools.reader.edn :as edn]
+            [cljs.tools.reader.reader-types :as r]
             [cljs.tools.reader.impl.commons :refer [parse-symbol]]
             [goog.string :as gstring]
+            goog.string.format
             [rewrite-clj.node.protocols :as nd]))
 
-(def read-char reader-types/read-char)
-(def get-column-number reader-types/get-column-number)
-(def get-line-number reader-types/get-line-number)
-(def peek-char reader-types/peek-char)
-(def indexing-push-back-reader reader-types/indexing-push-back-reader)
-(def unread reader-types/unread)
-(def read-string r/read-string)
 
-;; TODO: try to get goog.string.format up and running !
 (defn throw-reader
-  "Throw reader exception, including line/column."
+  "Throw reader exception, including line meb/column."
   [^not-native reader fmt & data]
-  (let [c (get-column-number reader)
-        l (get-line-number reader)]
+  (let [c (r/get-column-number reader)
+        l (r/get-line-number reader)]
     (throw
-      (js/Error.
-        (str data fmt
-             " [at line " l ", column " c "]")))))
-
+     (js/Error.
+     ;; TODO: Create interop version of format
+      (str (apply gstring/format fmt data)
+           " [at line " l ", column " c "]")))))
 
 (defn boundary?
   "Check whether a given char is a token boundary."
@@ -39,7 +32,6 @@
 (defn ^boolean whitespace?
   "Checks whether a given character is whitespace"
   [ch]
-  ;(or (gstring/isBreakingWhitespace ch) (identical? \, ch))
   (< -1 (.indexOf #js [\return \newline \tab \space ","] ch)))
 
 (defn ^boolean linebreak?
@@ -56,6 +48,7 @@
   [c]
   (or (whitespace? c) (boundary? c)))
 
+;; TODO: why is this not inside func? must be for performance.
 (def buf (gstring/StringBuffer. ""))
 
 (defn read-while
@@ -67,13 +60,13 @@
   ([^not-native reader p? eof?]
     (.clear buf)
     (loop []
-      (if-let [c (read-char reader)]
+      (if-let [c (r/read-char reader)]
         (if (p? c)
           (do
             (.append buf c)
             (recur))
           (do
-            (unread reader c)
+            (r/unread reader c)
             (.toString buf)))
         (if eof?
           (.toString buf)
@@ -95,33 +88,51 @@
     (read-until
       reader
       #(or (nil? %) (linebreak? %)))
-    (read-char reader)))
+    (r/read-char reader)))
 
 (defn string->edn
   "Convert string to EDN value."
   [s]
-  (read-string s))
+  (edn/read-string s))
 
 (defn ignore
   "Ignore the next character."
   [^not-native reader]
-  (read-char reader)
+  (r/read-char reader)
   nil)
-
 
 (defn next
   "Read next char."
   [^not-native reader]
-  (read-char reader))
+  (r/read-char reader))
+
+(defn unread
+  "Unreads a char. Puts the char back on the reader."
+  [reader ch]
+  (r/unread reader ch))
 
 (defn peek
   "Peek next char."
   [^not-native reader]
-  (peek-char reader))
+  (r/peek-char reader))
 
-
+(defn position
+  "Create map of `row-k` and `col-k` representing the current reader position."
+  [reader row-k col-k]
+  {row-k (r/get-line-number reader)
+   col-k (r/get-column-number reader)})
 
 (defn read-with-meta
+  "Use the given function to read value, then attach row/col metadata."
+  [^not-native reader read-fn]
+  (let [start-position (position reader :row :col)]
+    (if-let [entry (read-fn reader)]
+      (->> (position reader :end-row :end-col)
+           (merge start-position)
+           (with-meta entry)))))
+
+;; TODO: using clj version above for now...
+#_(defn read-with-meta
   "Use the given function to read value, then attach row/col metadata."
   [^not-native reader read-fn]
   (let [row (get-line-number reader)
@@ -171,7 +182,8 @@
           (if (= n 1) "" "s")))
       vs)))
 
-(defn- re-matches*
+;; TODO: Why does cljs version need these next two?
+#_(defn- re-matches*
   [re s]
   (let [matches (.exec re s)]
     (when (and (not (nil? matches))
@@ -180,7 +192,7 @@
         (aget matches 0)
         matches))))
 
-(defn read-keyword
+#_(defn read-keyword
   [^not-native reader initch]
   (let [tok (#'cljs.tools.reader/read-token reader :keyword (read-char reader))
         a (re-matches* (re-pattern "^[:]?([^0-9/].*/)?([^0-9/][^/]*)$") tok)
@@ -194,12 +206,12 @@
       (cljs.tools.reader.impl.errors/reader-error reader
                                                   "Invalid token: "
 						  token)
-      (if (and (not (nil? ns)) (> (.-length ns) 0))
+      (if (and (not (nil? ns)) (> ( .-length ns) 0))
         (keyword (.substring ns 0 (.indexOf ns "/")) name)
         (keyword (.substring token 1))))))
 
-;; (let [form-rdr (r/indexing-push-back-reader "(+ 1 1)")]
-;;   (read-include-linebreak form-rdr))
-
-
-;(re-matches* (re-pattern "^[:]?([^0-9/].*/)?([^0-9/][^/]*)$") ":%dill.*")
+(defn string-reader
+  "Create reader for strings."
+  [s]
+  (r/indexing-push-back-reader
+   (r/string-push-back-reader s)))

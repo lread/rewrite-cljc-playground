@@ -3,6 +3,10 @@
 
 ;; ## Node
 
+;; :foo - plain old
+;; ::foo - to current namespace
+;; :my.ns/foo - to valid explicit namespace
+;; ::my/foo - to valid :as alias
 (defrecord KeywordNode [k namespaced?]
   node/Node
   (tag [_] :token)
@@ -10,10 +14,10 @@
   (sexpr [_]
     (if (and namespaced?
              (not (namespace k)))
-;;       (keyword
-;;         (name (ns-name *ns*))
-;;         (name k))
-      (throw (js/Error. "Namespaced keywords not supported !"))
+      (keyword
+       (name
+        (ns-name *ns*))
+       (name k))
       k))
   (length [this]
     (let [c (inc (count (name k)))]
