@@ -4,6 +4,7 @@
             [rewrite-clj.paredit-test]
             [rewrite-clj.parser-test]
             [rewrite-clj.regression-test]
+            [rewrite-clj.transform-test]
             [rewrite-clj.zip-test]
             [rewrite-clj.node.coerce-test]
             [rewrite-clj.node.node-test]
@@ -24,6 +25,7 @@
            'rewrite-clj.paredit-test
            'rewrite-clj.parser-test
            'rewrite-clj.regression-test
+           'rewrite-clj.transform-test
            'rewrite-clj.zip-test
            'rewrite-clj.node.coerce-test
            'rewrite-clj.node.node-test
