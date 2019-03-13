@@ -18,7 +18,7 @@
   (toString [this]
     (node/string this)))
 
-;;(node/make-printable! CommentNode)
+(node/make-printable! CommentNode)
 
 ;; ## Constructor
 
@@ -31,6 +31,3 @@
   "Check whether a node represents a comment."
   [node]
   (= (node/tag node) :comment))
-
-
-

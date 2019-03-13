@@ -33,8 +33,7 @@
   (toString [this]
     (node/string this)))
 
-;; TODO: Macro fun !
-;(node/make-printable! FormsNode)
+(node/make-printable! FormsNode)
 
 ;; ## Constructor
 

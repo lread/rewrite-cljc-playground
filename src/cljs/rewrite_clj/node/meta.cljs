@@ -31,8 +31,7 @@
   (toString [this]
     (node/string this)))
 
-;; TODO
-;(node/make-printable! MetaNode)
+(node/make-printable! MetaNode)
 
 ;; ## Constructor
 

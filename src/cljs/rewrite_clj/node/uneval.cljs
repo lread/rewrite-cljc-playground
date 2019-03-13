@@ -27,7 +27,7 @@
   (toString [this]
     (node/string this)))
 
-;(node/make-printable! UnevalNode)
+(node/make-printable! UnevalNode)
 
 ;; ## Constructor
 

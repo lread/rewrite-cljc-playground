@@ -51,11 +51,9 @@
   (toString [this]
     (node/string this)))
 
-
-;; TODO
-;; (node/make-printable! WhitespaceNode)
-;; (node/make-printable! CommaNode)
-;; (node/make-printable! NewlineNode)
+(node/make-printable! WhitespaceNode)
+(node/make-printable! CommaNode)
+(node/make-printable! NewlineNode)
 
 ;; ## Constructors
 

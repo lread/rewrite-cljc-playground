@@ -12,7 +12,7 @@
   (length [_] 1)
   (string [_] (str "#\"" pattern "\"")))
 
-;;(node/make-printable! RegexNode)
+(node/make-printable! RegexNode)
 
 ;; ## Constructor
 

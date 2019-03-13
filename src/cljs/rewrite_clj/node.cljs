@@ -105,3 +105,16 @@
   [node]
   (or (whitespace? node)
       (comment? node)))
+
+;; ## Value
+
+(defn ^{:deprecated "0.4.0"} value
+  "DEPRECATED: Get first child as a pair of tag/sexpr (if inner node),
+   or just the node's own sexpr. (use explicit analysis of `children`
+   `child-sexprs` instead) "
+  [node]
+  (if (inner? node)
+    (some-> (children node)
+            (first)
+            ((juxt tag sexpr)))
+    (sexpr node)))

@@ -87,8 +87,7 @@
   (toString [this]
     (node/string this)))
 
-;; TODO
-;(node/make-printable! FnNode)
+(node/make-printable! FnNode)
 
 ;; ## Constructor
 

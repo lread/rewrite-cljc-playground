@@ -1,5 +1,8 @@
 (ns rewrite-clj.node.protocols
-  (:require [clojure.string :as s]))
+  (:require [clojure.string :as string]
+            [goog.string :as gstring]
+             goog.string.format)
+  (:require-macros rewrite-clj.node.protocols))
 
 (defprotocol Node
   "Protocol for EDN/Clojure nodes."
@@ -70,29 +73,35 @@
   (if (inner? node)
     (sexprs (children node))))
 
-
 (defprotocol NodeCoerceable
   "Protocol for values that can be coerced to nodes."
   (coerce [_]))
 
+;; ## Print helper
 
-;; TODO: Need to handle format !!!!
-;; (defn- node->string
-;;   [node]
-;;   (let [n (str (if (printable-only? node)
-;;                  (pr-str (string node))
-;;                  (string node)))
-;;         n' (if (re-find #"\n" n)
-;;              (->> (s/replace n #"\r?\n" "\n  ")
-;;                   (format "%n  %s%n"))
-;;              (str " " n))]
-;;     (format "<%s:%s>" (name (tag node)) n')))
+(defn- ^:no-doc node->string
+  ^String
+  [node]
+  (let [n (str (if (printable-only? node)
+                 (pr-str (string node))
+                 (string node)))
+        n' (if (re-find #"\n" n)
+             (->> (string/replace n #"\r?\n" "\n  ")
+                  (gstring.format "\n  %s\n"))
+             (str " " n))]
+    (gstring.format "<%s:%s>" (name (tag node)) n')))
 
 
-;; (defn write-node
-;;   [writer node]
-;;   (str writer (node->string node)))
+(defn ^:no-doc write-node
+  [^java.io.Writer writer node]
+  (pr (node->string node))
+  #_(.write writer (node->string node)))
 
+(defn make-printable! [obj]
+  (extend-protocol IPrintWithWriter
+    obj
+    (-pr-writer [o writer _opts]
+      (-write writer (node->string o)))))
 
 ;; ## Helpers
 
@@ -137,4 +146,4 @@
 (defn ^:no-doc +extent
   [[row col] [row-extent col-extent]]
   [(+ row row-extent)
-(cond-> col-extent (zero? row-extent) (+ col))])
+   (cond-> col-extent (zero? row-extent) (+ col))])

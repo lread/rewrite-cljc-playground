@@ -16,7 +16,7 @@
     (node/string this)))
 
 ; TODO
-;(node/make-printable! TokenNode)
+(node/make-printable! TokenNode)
 
 ;; ## Constructor
 

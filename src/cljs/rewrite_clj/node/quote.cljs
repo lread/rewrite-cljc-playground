@@ -27,7 +27,7 @@
   (toString [this]
     (node/string this)))
 
-;(node/make-printable! QuoteNode)
+(node/make-printable! QuoteNode)
 
 ;; ## Constructors
 

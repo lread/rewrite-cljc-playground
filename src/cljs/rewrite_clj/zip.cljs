@@ -26,11 +26,11 @@
   edn* edn
   tag sexpr
   length
-  ;; TODO: value - deprecated in clj... wasn't in cljs
-  ;; not applicable for cljs: of-file
-   of-string
-   string root-string
-  ;; TODO: print print-root
+  value
+  ;; TODO: not applicable for cljs: of-file
+  of-string
+  string root-string
+  print print-root
   ]
 
  [rewrite-clj.zip.editz

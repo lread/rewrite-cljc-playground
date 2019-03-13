@@ -19,7 +19,8 @@
             [rewrite-clj.zip.walk-test]
             [rewrite-clj.zip.whitespace-test]
             [rewrite-clj.custom-zipper.core-test]
-            [rewrite-clj.custom-zipper.utils-test]))
+            [rewrite-clj.custom-zipper.utils-test]
+            [rewrite-clj.examples.cljx-test]))
 
 (doo-tests 'rewrite-clj.node-test
            'rewrite-clj.paredit-test
@@ -40,4 +41,5 @@
            'rewrite-clj.zip.walk-test
            'rewrite-clj.zip.whitespace-test
            'rewrite-clj.custom-zipper.core-test
-           'rewrite-clj.custom-zipper.utils-test)
+           'rewrite-clj.custom-zipper.utils-test
+           'rewrite-clj.examples.cljx-test)

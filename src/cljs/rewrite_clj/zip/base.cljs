@@ -54,8 +54,13 @@
   [zloc]
   (or (some-> zloc z/node node/length) 0))
 
+(defn ^{:deprecated "0.4.0"} value
+  "DEPRECATED. Return a tag/s-expression pair for inner nodes, or
+   the s-expression itself for leaves."
+  [zloc]
+  (some-> zloc z/node node/value))
 
-;; ## Rea?
+;; ## Read
 (defn of-string
   "Create zipper from String."
   ([s] (of-string s {}))
@@ -74,22 +79,25 @@
   [zloc]
   (some-> zloc z/root node/string))
 
-;; (defn- print!
-;;   [s writer]
-;;   (if writer
-;;     (.write ^java.io.Writer writer s)
-;;     (recur s *out*)))
+;; We don't have a writer for cljs but we do have an *out*
+(defn- print!
+  [^String s writer]
+  ;; TODO: cljs has no print? using pr for now
+  (pr s)
+  #_(if writer
+    (.write ^java.io.Writer writer s)
+    (recur s *out*)))
 
-;; (defn print
-;;   "Print current zipper location."
-;;   [zloc & [writer]]
-;;   (some-> zloc
-;;           string
-;;           (print! writer)))
+(defn print
+  "Print current zipper location."
+  [zloc & [writer]]
+  (some-> zloc
+          string
+          (print! writer)))
 
-;; (defn print-root
-;;   "Zip up and print root node."
-;;   [zloc & [writer]]
-;;   (some-> zloc
-;;           root-string
-;;           (print! writer)))
+(defn print-root
+  "Zip up and print root node."
+  [zloc & [writer]]
+  (some-> zloc
+          root-string
+          (print! writer)))

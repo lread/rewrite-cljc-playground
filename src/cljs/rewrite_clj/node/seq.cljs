@@ -91,9 +91,8 @@
   (toString [this]
     (node/string this)))
 
-;; TODO
-;; (node/make-printable! SeqNode)
-;; (node/make-printable! NamespacedMapNode)
+(node/make-printable! SeqNode)
+(node/make-printable! NamespacedMapNode)
 
 ;; ## Constructors
 

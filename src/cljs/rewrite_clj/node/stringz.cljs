@@ -35,7 +35,7 @@
   (toString [this]
     (node/string this)))
 
-;(node/make-printable! StringNode)
+(node/make-printable! StringNode)
 
 ;; ## Constructors
 

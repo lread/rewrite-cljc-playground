@@ -36,11 +36,7 @@
   (toString [this]
     (node/string this)))
 
-
-
-
-;; TODO
-;;(node/make-printable! KeywordNode)
+(node/make-printable! KeywordNode)
 
 ;; ## Constructor
 

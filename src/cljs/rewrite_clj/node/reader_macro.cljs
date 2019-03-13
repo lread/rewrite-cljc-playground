@@ -86,10 +86,9 @@
   (toString [this]
     (node/string this)))
 
-;; TODO:
-;; (node/make-printable! ReaderNode)
-;; (node/make-printable! ReaderMacroNode)
-;; (node/make-printable! DerefNode)
+(node/make-printable! ReaderNode)
+(node/make-printable! ReaderMacroNode)
+(node/make-printable! DerefNode)
 
 ;; ## Constructors
 
