@@ -21,7 +21,12 @@
                          "junitReporter" {"outputDir" "target/out/test-results"}}}}
 
   :profiles {:dev
-             {:dependencies [[org.clojure/test.check "0.9.0"]]
+             {:dependencies [[org.clojure/test.check "0.9.0"]
+                             [com.bhauman/figwheel-main "0.2.0"]]
+
+              :source-paths ["test/cljs" "test/cljc"]
+              :resource-paths ["target"]
+
               :plugins [[lein-cljsbuild "1.1.7"]
                         [lein-doo "0.1.11"]]
 
@@ -43,4 +48,5 @@
                              :src-dir-uri "https://github.com/rundis/rewrite-cljs/blob/master/"
                              :src-linenum-anchor-prefix "L"}}}
 
-  :aliases {"auto-test" ["with-profile" "dev" "do" "clean," "cljsbuild" "auto" "test"]})
+  :aliases {"auto-test" ["with-profile" "dev" "do" "clean," "cljsbuild" "auto" "test"]
+            "fig" ["trampoline" "run" "-m" "figwheel.main"]})

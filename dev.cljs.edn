@@ -1,0 +1,3 @@
+^{:watch-dirs ["src/cljs" "test/cljs" ]
+  :auto-testing true}
+{:main rewrite-clj.hello-figwheel}
