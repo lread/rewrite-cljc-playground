@@ -1,8 +1,7 @@
 (ns rewrite-clj.node.protocols
   (:require [clojure.string :as string]
             [goog.string :as gstring]
-             goog.string.format)
-  (:require-macros rewrite-clj.node.protocols))
+             goog.string.format))
 
 (defprotocol Node
   "Protocol for EDN/Clojure nodes."
