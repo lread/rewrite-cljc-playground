@@ -2,7 +2,7 @@
   :description "Comment-/Whitespace-preserving rewriting of EDN documents."
   :url "https://github.com/rundis/rewrite-cljs"
   :license {:name "MIT License"
-            :url "http://opensource.org/licenses/MIT"
+            :url "https://opensource.org/licenses/MIT"
             :year 2015
             :key "mit"}
 
@@ -22,7 +22,7 @@
 
   :profiles {:dev
              {:dependencies [[org.clojure/test.check "0.9.0"]
-                             [com.bhauman/figwheel-main "0.2.0"]]
+                             [com.bhauman/figwheel-main "0.2.1-SNAPSHOT"]]
 
               :source-paths ["test/cljs" "test/cljc"]
               :resource-paths ["target"]
