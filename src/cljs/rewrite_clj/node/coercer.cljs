@@ -1,5 +1,6 @@
 (ns rewrite-clj.node.coercer
-  (:require [rewrite-clj.node.comment :refer [CommentNode]]
+  (:require [clojure.string :as string]
+            [rewrite-clj.node.comment :refer [CommentNode]]
             [rewrite-clj.node.forms :refer [FormsNode]]
             [rewrite-clj.node.keyword :refer [KeywordNode]]
             [rewrite-clj.node.quote :refer [QuoteNode]]
@@ -18,14 +19,20 @@
 
 (defn node-with-meta
   [n value]
-  ;; TODO: can this now match clojure?
-  (if (implements? IWithMeta value)
+  ;; TODO: clojure a bit different here
+  (if (satisfies? IWithMeta value)
     (let [mta (meta value)]
       (if (empty? mta)
         n
         (meta-node (coerce mta) n)))
     n))
 
+(defn- record-node
+  [m]
+  (reader-macro-node
+   ;; TODO: cljs conversion dance.
+   [(token-node (symbol (string/replace (pr-str (type m)) "/" ".")))
+    (map-node (map->children m))]))
 
 ;; ## Tokens
 
@@ -33,8 +40,11 @@
   object
   (coerce [v]
     (node-with-meta
-      (token-node v)
-      v)))
+     ;; TODO: cljs only
+     (if (record? v)
+       (record-node v)
+       (token-node v))
+     v)))
 
 (extend-protocol NodeCoerceable
   nil
@@ -95,21 +105,13 @@
          (drop-last (count comma))
          (vec))))
 
-(defn- record-node
-  [m]
-  (reader-macro-node
-   [(token-node (type m))
-    (map-node (map->children m))]))
-
-(defn- is-record?
-  [v]
-  (record? v))
 ;; TODO: a record is not a PersistentHashMap in cljs so this does not work
+;; review clj cljs interop for this one
 (extend-protocol NodeCoerceable
   PersistentHashMap
   (coerce [m]
     (node-with-meta
-     (if (is-record? m)
+     (if (record? m)
        (record-node m)
        (map-node (map->children m)))
      m)))
@@ -141,7 +143,7 @@
   ReaderMacroNode (coerce [v] v)
   DerefNode       (coerce [v] v)
   StringNode      (coerce [v] v)
-  ;UnevalNode      (coerce [v] v)
+  UnevalNode      (coerce [v] v)
   NewlineNode     (coerce [v] v)
   SeqNode         (coerce [v] v)
   TokenNode       (coerce [v] v)

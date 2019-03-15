@@ -29,6 +29,7 @@
                            `(import-def ~from-ns ~d))]
     `(do ~@expanded-imports)))
 
+;; To experiment with... can this bring macros into my api?
 ;; http://side-effects-bang.blogspot.com/2015/06/importing-vars-in-clojurescript.html
 (defmacro import-vars2 [[_quote ns]]
   `(do

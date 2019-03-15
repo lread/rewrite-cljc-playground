@@ -19,7 +19,8 @@
     3.14
     3.14M
     3e14
-;;TODO: ratios are not valid in cljs    3/4
+    ;;TODO: ratios are not valid in cljs, but cljs should be able to parse them, then again this is a coerce test.
+    ;; 3/4
 
   ;; symbol/keyword/string/...
     'symbol
@@ -53,14 +54,13 @@
     (is (satisfies? node/Node n))
     (is (string? (node/string n)))
     (is (= (str sexpr) (str (node/sexpr n))))
-    ;;TODO: no class in cljs
-    ;;(is (= (class sexpr) (class (node/sexpr n))))
+    (is (= (type sexpr) (type (node/sexpr n))))
     ))
 
 (deftest t-vars
   (let [n (coerce #'identity)]
     (is (satisfies? node/Node n))
-    ;; TODO was clojure.core/identity for clj
+    ;; TODO: will be clojure.core for clj
     (is (= '(var cljs.core/identity) (node/sexpr n)))))
 
 (deftest t-nil
@@ -71,8 +71,7 @@
 
 (defrecord Foo-Bar [a])
 
-;; TODO: not yet working for cljs
-#_(deftest t-records
+(deftest t-records
   (let [v (Foo-Bar. 0)
         n (coerce v)]
     (is (satisfies? node/Node n))
