@@ -1,5 +1,5 @@
 (ns rewrite-clj.node-test
-  (:require [cljs.test :refer-macros [deftest is testing run-tests]]
+  (:require [clojure.test :refer-macros [deftest is testing run-tests]]
             [rewrite-clj.node :as n]
             [rewrite-clj.parser :as p]))
 
@@ -52,4 +52,3 @@
                       [cljs-time.format :as tf]]))"
           res (p/parse-string sample)]
       (is (= sample (n/string res))))))
-

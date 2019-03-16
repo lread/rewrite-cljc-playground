@@ -1,12 +1,12 @@
-(ns rewrite-clj.zip.editz
+(ns ^:no-doc rewrite-clj.zip.editz
   (:refer-clojure :exclude [replace])
   (:require [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]
             [rewrite-clj.zip.removez :as r]
             [rewrite-clj.zip.utils :as u]
             [rewrite-clj.zip.whitespace :as ws]
-            [rewrite-clj.node :as n]
-            [clojure.zip :as z]))
+            [rewrite-clj.node :as node]
+            [rewrite-clj.custom-zipper.core :as z]))
 
 ;; ## In-Place Modification
 
@@ -15,15 +15,15 @@
    the given value. (The value will be coerced to a node if
    possible.)"
   [zloc value]
-  (z/replace zloc (n/coerce value)))
+  (z/replace zloc (node/coerce value)))
 
 (defn- edit-node
   "Create s-expression from node, apply the function and create
    node from the result."
   [node f]
-  (-> (n/sexpr node)
+  (-> (node/sexpr node)
       (f)
-      (n/coerce)))
+      (node/coerce)))
 
 (defn edit
   "Apply the given function to the s-expression at the given
@@ -48,9 +48,9 @@
   [zloc]
   (if (z/branch? zloc)
     (if-let [children (->> (z/children zloc)
-                           (drop-while n/whitespace?)
+                           (drop-while node/whitespace?)
                            (reverse)
-                           (drop-while n/whitespace?)
+                           (drop-while node/whitespace?)
                            (seq))]
       (let [loc (->> (reduce z/insert-right zloc children)
                      (u/remove-and-move-right))]
@@ -66,7 +66,7 @@
         e' (cond (string? e) (str-fn e)
                  (keyword? e) (keyword (namespace e) (str-fn (name e)))
                  (symbol? e) (symbol (namespace e) (str-fn (name e))))]
-    (z/replace zloc (n/token-node e'))))
+    (z/replace zloc (node/token-node e'))))
 
 (defn- edit-multi-line
   [zloc line-fn]

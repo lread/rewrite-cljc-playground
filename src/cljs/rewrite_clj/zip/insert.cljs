@@ -2,7 +2,7 @@
   (:require [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.whitespace :as ws]
             [rewrite-clj.node :as node]
-            [clojure.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 (def ^:private space
   (node/spaces 1))

@@ -1,10 +1,10 @@
-(ns rewrite-clj.zip.findz
+(ns ^:no-doc rewrite-clj.zip.findz
   (:refer-clojure :exclude [find])
   (:require [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip.whitespace :as ws]
-            [clojure.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 ;; ## Helpers
 
@@ -16,7 +16,7 @@
            (additional node)))
     #(= (base/tag %) t)))
 
-
+;; TODO: this was in cljs version only
 (defn in-range? [{:keys [row col end-row end-col]} {r :row c :col}]
   (and (>= r row)
        (<= r end-row)
@@ -41,7 +41,7 @@
         (first))))
 
 
-
+;; TODO: this was in cljs version only
 (defn find-last-by-pos
   "Find last node (if more than one node) that is in range of pos and
   satisfying the given predicate depth first from initial zipper
@@ -98,7 +98,7 @@
    (->> (tag-predicate t)
         (find-next zloc f))))
 
-
+;; TODO: this was in cljs version only
 (defn find-tag-by-pos
   "Find node with the given tag and pos depth-first from initial zipper location."
   ([zloc pos t]

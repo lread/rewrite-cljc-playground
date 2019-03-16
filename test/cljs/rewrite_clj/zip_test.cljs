@@ -1,5 +1,5 @@
 (ns rewrite-clj.zip-test
-  (:require [cljs.test :refer-macros [deftest is testing run-tests]]
+  (:require [clojure.test :refer-macros [deftest is testing run-tests]]
             [rewrite-clj.zip :as z]
             [rewrite-clj.node :as n]))
 

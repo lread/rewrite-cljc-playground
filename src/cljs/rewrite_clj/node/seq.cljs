@@ -1,17 +1,11 @@
-(ns rewrite-clj.node.seq
-  (:require [rewrite-clj.node.protocols :as node]))
+(ns ^:no-doc rewrite-clj.node.seq
+  (:require [rewrite-clj.node.protocols :as node]
+            [rewrite-clj.interop :as interop]))
 
 ;; ## Nodes
 
-(defn wrap-vec [s] (str "[" s "]"))
-(defn wrap-list [s] (str "(" s ")"))
-(defn wrap-set [s] (str "#{" s "}"))
-(defn wrap-map [s] (str "{" s "}"))
-
-
-
 (defrecord SeqNode [tag
-                    wrap-fn
+                    format-string
                     wrap-length
                     seq-fn
                     children]
@@ -25,7 +19,7 @@
     (+ wrap-length (node/sum-lengths children)))
   (string [this]
     (->> (node/concat-strings children)
-         wrap-fn))
+         (interop/simple-format format-string)))
 
   node/InnerNode
   (inner? [_]
@@ -59,6 +53,7 @@
   (sexpr [this]
     (let [[nspace' m] (node/sexprs children)
           nspace (if (namespace nspace')
+                   ;; TODO: what to do for cljs? asctually does this even make sense for clj?
                    (-> (ns-aliases *ns*)
                        (get (symbol (name nspace')))
                        (ns-name)
@@ -99,22 +94,22 @@
 (defn list-node
   "Create a node representing an EDN list."
   [children]
-  (->SeqNode :list wrap-list 2 #(apply list %) children))
+  (->SeqNode :list "(%s)" 2 #(apply list %) children))
 
 (defn vector-node
   "Create a node representing an EDN vector."
   [children]
-  (->SeqNode :vector  wrap-vec 2 vec children))
+  (->SeqNode :vector "[%s]" 2 vec children))
 
 (defn set-node
   "Create a node representing an EDN set."
   [children]
-  (->SeqNode :set  wrap-set 3 set children))
+  (->SeqNode :set "#{%s}" 3 set children))
 
 (defn map-node
   "Create a node representing an EDN map."
   [children]
-  (->SeqNode :map wrap-map 2 #(apply hash-map %) children))
+  (->SeqNode :map "{%s}" 2 #(apply hash-map %) children))
 
 (defn namespaced-map-node
   "Create a node representing an EDN map namespace."

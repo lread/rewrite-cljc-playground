@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.keyword
+(ns ^:no-doc rewrite-clj.node.keyword
   (:require [rewrite-clj.node.protocols :as node]))
 
 ;; ## Node
@@ -27,10 +27,8 @@
           (+ 1 c (count nspace))
           c))))
   (string [_]
-    (let [v (pr-str k)]
-      (if namespaced?
-        (str ":" v)
-        v)))
+    (str (if namespaced? ":")
+         (pr-str k)))
 
   Object
   (toString [this]

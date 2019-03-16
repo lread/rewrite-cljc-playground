@@ -34,7 +34,7 @@
   [reader]
   (reader/read-with-meta reader parse-next*))
 
-;; # Paraser Helpers
+;; # Parser Helpers
 
 (defn- parse-delim
   [^not-native reader delimiter]
@@ -78,7 +78,7 @@
   (when *delimiter*
     (reader/throw-reader reader "Unexpected EOF.")))
 
-;; Whitespace
+;; ### Whitespace
 
 (defmethod parse-next* :whitespace
   [reader]

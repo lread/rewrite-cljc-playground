@@ -1,7 +1,8 @@
-(ns rewrite-clj.node.protocols
+(ns ^{:added "0.4.0"} rewrite-clj.node.protocols
   (:require [clojure.string :as string]
-            [goog.string :as gstring]
-             goog.string.format))
+            [rewrite-clj.interop :as interop]))
+
+;; ## Node
 
 (defprotocol Node
   "Protocol for EDN/Clojure nodes."
@@ -34,16 +35,17 @@
        (remove printable-only?)
        (map sexpr)))
 
-(defn sum-lengths
+(defn ^:no-doc sum-lengths
   "Sum up lengths of the given nodes."
   [nodes]
   (reduce + (map length nodes)))
 
-(defn concat-strings
+(defn ^:no-doc concat-strings
   "Convert nodes to strings and concatenate them."
   [nodes]
   (reduce str (map string nodes)))
 
+;; ## Inner Node
 
 (defprotocol InnerNode
   "Protocol for non-leaf EDN/Clojure nodes."
@@ -72,11 +74,13 @@
   (if (inner? node)
     (sexprs (children node))))
 
+;; ## Coerceable
+
 (defprotocol NodeCoerceable
   "Protocol for values that can be coerced to nodes."
   (coerce [_]))
 
-;; ## Print helper
+;; ## Print Helper
 
 (defn- ^:no-doc node->string
   ^String
@@ -86,9 +90,9 @@
                  (string node)))
         n' (if (re-find #"\n" n)
              (->> (string/replace n #"\r?\n" "\n  ")
-                  (gstring.format "\n  %s\n"))
+                  (interop/simple-format "\n  %s\n"))
              (str " " n))]
-    (gstring.format "<%s:%s>" (name (tag node)) n')))
+    (interop/simple-format "<%s:%s>" (name (tag node)) n')))
 
 
 (defn ^:no-doc write-node
@@ -102,15 +106,23 @@
     (-pr-writer [o writer _opts]
       (-write writer (node->string o)))))
 
+;; TODO: clj version
+#_(defmacro ^:no-doc make-printable!
+    [class]
+    `(defmethod print-method ~class
+       [node# w#]
+       (write-node w# node#)))
+
 ;; ## Helpers
 
-(defn assert-sexpr-count
+(defn  ^:no-doc assert-sexpr-count
   [nodes c]
   (assert
-    (= (count (remove printable-only? nodes)) c)
-   (str "can only contain" c " non-whitespace form(s).")))
+   (= (count (remove printable-only? nodes)) c)
+   (interop/simple-format "can only contain %d non-whitespace form%s."
+                          c (if (= c 1) "" "s"))))
 
-(defn assert-single-sexpr
+(defn ^:no-doc assert-single-sexpr
   [nodes]
   (assert-sexpr-count nodes 1))
 

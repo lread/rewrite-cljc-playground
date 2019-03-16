@@ -4,6 +4,7 @@
             [rewrite-clj.node.comment]
             [rewrite-clj.node.fn]
             [rewrite-clj.node.forms]
+            [rewrite-clj.node.integer]
             [rewrite-clj.node.keyword]
             [rewrite-clj.node.meta]
             [rewrite-clj.node.protocols]
@@ -43,9 +44,8 @@
  [rewrite-clj.node.forms
   forms-node]
 
- ;; TODO: do we have integet nodes in cljs?
- ;;[rewrite-clj.node.integer
- ;; integer-node]
+ [rewrite-clj.node.integer
+  integer-node]
 
  [rewrite-clj.node.keyword
   keyword-node]

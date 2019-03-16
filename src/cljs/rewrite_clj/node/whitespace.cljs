@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.whitespace
+(ns ^:no-doc rewrite-clj.node.whitespace
   (:require [rewrite-clj.node.protocols :as node]
             [rewrite-clj.reader :as r]))
 

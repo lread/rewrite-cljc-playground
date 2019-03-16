@@ -1,9 +1,9 @@
-(ns rewrite-clj.zip.removez
+(ns ^:no-doc rewrite-clj.zip.removez
   (:refer-clojure :exclude [remove])
   (:require [rewrite-clj.zip.move :as m]
             [rewrite-clj.zip.utils :as u]
             [rewrite-clj.zip.whitespace :as ws]
-            [clojure.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 
 (defn- remove-trailing-space
@@ -45,6 +45,7 @@
            z/remove)
        (ws/skip-whitespace z/prev)))
 
+;; TODO: this was in cljs version only... if we want to keep it we could DRY these two funcs
 (defn remove-preserve-newline
   "Same as remove but preserves newlines"
   [zloc]
@@ -59,4 +60,3 @@
                                                 (not (ws/linebreak? %))))
            z/remove)
        (ws/skip-whitespace z/prev)))
-

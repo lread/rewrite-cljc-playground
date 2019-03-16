@@ -12,7 +12,7 @@
             [rewrite-clj.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
             [rewrite-clj.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
             [rewrite-clj.node.token :refer [TokenNode token-node]]
-            [rewrite-clj.node.whitespace :refer [WhitespaceNode NewlineNode whitespace-node space-separated]]
+            [rewrite-clj.node.whitespace :refer [WhitespaceNode NewlineNode whitespace-node]]
             [rewrite-clj.node.whitespace :as ws]))
 
 ;; ## Helpers
@@ -26,6 +26,17 @@
         n
         (meta-node (coerce mta) n)))
     n))
+
+(let [comma (ws/whitespace-nodes ", ")
+      space (ws/whitespace-node " ")]
+  (defn- map->children
+    [m]
+    (->> (mapcat
+          (fn [[k v]]
+            (list* (coerce k) space (coerce v) comma))
+          m)
+         (drop-last (count comma))
+         (vec))))
 
 (defn- record-node
   [m]
@@ -73,7 +84,7 @@
   [f sq]
   (node-with-meta
     (->> (map coerce sq)
-         (space-separated)
+         (ws/space-separated)
          (vec)
          (f))
     sq))
@@ -94,16 +105,7 @@
 
 ;; ## Maps
 
-(let [comma (ws/whitespace-nodes ", ")
-      space (ws/whitespace-node " ")]
-  (defn- map->children
-    [m]
-    (->> (mapcat
-          (fn [[k v]]
-            (list* (coerce k) space (coerce v) comma))
-          m)
-         (drop-last (count comma))
-         (vec))))
+
 
 ;; TODO: a record is not a PersistentHashMap in cljs so this does not work
 ;; review clj cljs interop for this one

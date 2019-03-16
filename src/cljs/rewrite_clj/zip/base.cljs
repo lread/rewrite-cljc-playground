@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.base
+(ns ^:no-doc rewrite-clj.zip.base
   (:refer-clojure :exclude [print])
   (:require [rewrite-clj.node :as node]
             [rewrite-clj.parser :as p]
@@ -44,7 +44,7 @@
   [zloc]
   (some-> zloc z/node node/sexpr))
 
-(defn child-sexprs
+(defn ^{:added "0.4.4"} child-sexprs
   "Get children as s-expressions."
   [zloc]
   (some-> zloc z/node node/child-sexprs))
@@ -67,25 +67,34 @@
   ([s options]
    (some-> s p/parse-string-all (edn options))))
 
+;; TODO: clj only
+#_(defn of-file
+    "Create zipper from File."
+    ([f] (of-file f {}))
+    ([f options]
+     (some-> f p/parse-file-all (edn options))))
+
 ;; ## Write
 
-(defn string
+(defn ^{:added "0.4.0"} string
   "Create string representing the current zipper location."
   [zloc]
   (some-> zloc z/node node/string))
 
-(defn root-string
+(defn ^{:added "0.4.0"} root-string
   "Create string representing the zipped-up zipper."
   [zloc]
   (some-> zloc z/root node/string))
 
-;; We don't have a writer for cljs but we do have an *out*
 (defn- print!
   [^String s writer]
   ;; TODO: cljs has no print? using pr for now
   (pr s)
-  #_(if writer
-    (.write ^java.io.Writer writer s)
+  (if writer
+    ;; TODO: clj only
+    #_(.write ^java.io.Writer writer s)
+    ;; TODO: is that right? maybe should just ignore writer for cljs
+    (-write *out* s)
     (recur s *out*)))
 
 (defn print

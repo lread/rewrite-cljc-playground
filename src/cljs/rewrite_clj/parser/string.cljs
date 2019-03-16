@@ -1,22 +1,24 @@
-(ns rewrite-clj.parser.string
+(ns ^:no-doc rewrite-clj.parser.string
   (:require [rewrite-clj.parser.utils :as u]
             [rewrite-clj.node :as node]
             [clojure.tools.reader.edn :as edn]
             [clojure.tools.reader.reader-types :as r]
-            [goog.string :as gstring]
+            [goog.string :as gstring :refer [StringBuffer]]
             [clojure.string :as string]))
 
 (defn- flush-into
   "Flush buffer and add string to the given vector."
   [lines buf]
   (let [s (.toString buf)]
+    ;; TODO: clj
+    #_(.setLength buf 0)
     (.set buf "")
     (conj lines s)))
 
 (defn- read-string-data
   [^not-native reader]
   (u/ignore reader)
-  (let [buf (gstring/StringBuffer.)]
+  (let [buf (StringBuffer.)]
     (loop [escape? false
            lines []]
       (if-let [c (r/read-char reader)]

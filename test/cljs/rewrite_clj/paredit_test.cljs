@@ -1,5 +1,5 @@
 (ns rewrite-clj.paredit-test
-  (:require [cljs.test :refer-macros [deftest is testing run-tests]]
+  (:require [clojure.test :refer-macros [deftest is testing run-tests]]
             [rewrite-clj.zip :as z]
             [clojure.zip :as zz]
             [rewrite-clj.paredit :as pe]))

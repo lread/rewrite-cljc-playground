@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.token
+(ns ^:no-doc rewrite-clj.node.token
   (:require [rewrite-clj.node.protocols :as node]))
 
 ;; ## Node
@@ -8,14 +8,13 @@
   (tag [_] :token)
   (printable-only? [_] false)
   (sexpr [_] value)
-  (length [_] (.-length string-value))
+  (length [_] (count string-value))
   (string [_] string-value)
 
   Object
   (toString [this]
     (node/string this)))
 
-; TODO
 (node/make-printable! TokenNode)
 
 ;; ## Constructor

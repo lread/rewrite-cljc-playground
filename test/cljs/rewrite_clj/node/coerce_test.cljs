@@ -1,5 +1,5 @@
 (ns rewrite-clj.node.coerce-test
-  (:require [cljs.test :refer [deftest is are testing run-tests]]
+  (:require [clojure.test :refer [deftest is are testing run-tests]]
             [rewrite-clj.node.protocols :as node :refer [coerce]]
             [rewrite-clj.node.coercer]
             [rewrite-clj.parser :as p]))
@@ -10,9 +10,7 @@
          (is (satisfies? node/Node n))
          (is (string? (node/string n)))
          (is (= ?sexpr (node/sexpr n)))
-         ;; TODO: no class in cljs
-         ;; (is (= (class ?sexpr) (class (node/sexpr n))))
-         )
+         (is (= (type ?sexpr) (type (node/sexpr n)))))
 ;; numbers
     3
     3N
@@ -54,8 +52,7 @@
     (is (satisfies? node/Node n))
     (is (string? (node/string n)))
     (is (= (str sexpr) (str (node/sexpr n))))
-    (is (= (type sexpr) (type (node/sexpr n))))
-    ))
+    (is (= (type sexpr) (type (node/sexpr n))))))
 
 (deftest t-vars
   (let [n (coerce #'identity)]

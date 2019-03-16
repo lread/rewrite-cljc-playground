@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.meta
+(ns ^:no-doc rewrite-clj.node.meta
   (:require [rewrite-clj.node.protocols :as node]
             [rewrite-clj.node.whitespace :as ws]))
 

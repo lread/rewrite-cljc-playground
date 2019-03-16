@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.comment
+(ns ^:no-doc rewrite-clj.node.comment
   (:require [rewrite-clj.node.protocols :as node]))
 
 ;; ## Node
@@ -25,6 +25,7 @@
 (defn comment-node
   "Create node representing an EDN comment."
   [s]
+  {:pre [(re-matches #"[^\r\n]*[\r\n]?" s)]}
   (->CommentNode s))
 
 (defn comment?

@@ -1,7 +1,7 @@
-(ns rewrite-clj.node.stringz
+(ns ^:no-doc rewrite-clj.node.stringz
   (:require [rewrite-clj.node.protocols :as node]
-            [cljs.tools.reader :as r]
-            [clojure.string :as s]))
+            [clojure.tools.reader.edn :as edn]
+            [clojure.string :as string]))
 
 ;; ## Node
 
@@ -11,7 +11,7 @@
 
 (defn- join-lines
   [lines]
-  (s/join "\n" lines))
+  (string/join "\n" lines))
 
 (defrecord StringNode [lines]
   node/Node
@@ -24,7 +24,7 @@
   (sexpr [_]
     (join-lines
       (map
-        (comp r/read-string wrap-string)
+        (comp edn/read-string wrap-string)
         lines)))
   (length [_]
     (+ 2 (reduce + (map count lines))))

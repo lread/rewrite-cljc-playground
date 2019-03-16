@@ -1,11 +1,10 @@
 (ns rewrite-clj.node.node-test
   (:require [clojure.test.check.properties :as prop :include-macros true]
-            [cljs.test :refer [deftest is are testing run-tests]]
+            [clojure.test :refer [deftest is are testing run-tests]]
             [clojure.test.check :refer-macros [quick-check]]
             [rewrite-clj.node :as node]
             [rewrite-clj.node.generators :as g]
-            [clojure.test.check.clojure-test :refer-macros [defspec]]
-            ))
+            [clojure.test.check.clojure-test :refer-macros [defspec]]))
 
 (defspec t-nodes-with-children-report-accurate-leader-lengths
   (prop/for-all [node (g/node g/container-node-types)]

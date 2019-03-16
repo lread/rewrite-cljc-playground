@@ -12,10 +12,12 @@
   [zloc]
   (some-> zloc z/node node/linebreak?))
 
+;; TODO: cljs only
 (defn comment?
   [zloc]
   (some-> zloc z/node node/comment?))
 
+;; TODO: cljs only
 (defn whitespace-not-linebreak?
   [zloc]
   (and
@@ -38,7 +40,7 @@
        (drop-while p?)
        (first)))
 
-(defn skip-whitespace
+(defn ^:no-doc skip-whitespace
   "Perform the given movement (default: `z/right`) until a non-whitespace/
    non-comment node is encountered."
   ([zloc] (skip-whitespace z/right zloc))

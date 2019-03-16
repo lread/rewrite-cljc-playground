@@ -1,21 +1,21 @@
 (ns rewrite-clj.zip.insert-test
-  (:require [cljs.test :refer [deftest is are testing run-tests]]
+  (:require [clojure.test :refer [deftest is are testing run-tests]]
             [clojure.string :as string]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]
             [rewrite-clj.zip.insert :refer [insert-right insert-left insert-child append-child]]
-            [rewrite-clj.custom-zipper.core :as z]))
+            [rewrite-clj.custom-zipper.core :as z]
+            [rewrite-clj.interop :as interop]))
 
 (deftest t-whitespace-aware-insertion
   (are [?fmt ?m ?n ?f ?s]
       (let [elements (->> (base/of-string
-                           ;;TODO: converted from format... might confuse future maintainer as to why we used %s?
-                            (string/replace ?fmt #"%s" "1 2 3 4"))
-                           (iterate ?m))
-             loc (nth elements ?n)
-             loc' (?f loc 'x)]
-         (is (= (base/tag loc') (base/tag loc)))
-         (is (= ?s (base/root-string loc'))))
+                           (interop/simple-format ?fmt "1 2 3 4"))
+                          (iterate ?m))
+            loc (nth elements ?n)
+            loc' (?f loc 'x)]
+        (is (= (base/tag loc') (base/tag loc)))
+        (is (= ?s (base/root-string loc'))))
     "[%s]"   m/next     0    insert-right     "[1 2 3 4] x"
     "[%s]"   m/next     1    insert-right     "[1 x 2 3 4]"
     "[%s]"   m/next     2    insert-right     "[1 2 x 3 4]"

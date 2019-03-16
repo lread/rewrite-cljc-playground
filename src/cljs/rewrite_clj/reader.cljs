@@ -3,20 +3,18 @@
   (:require [clojure.tools.reader.edn :as edn]
             [cljs.tools.reader.reader-types :as r]
             [cljs.tools.reader.impl.commons :refer [parse-symbol]]
-            [goog.string :as gstring]
-            goog.string.format
+            [goog.string :as gstring :refer [StringBuffer]]
+            [rewrite-clj.interop :as interop]
             [rewrite-clj.node.protocols :as nd]))
 
-
 (defn throw-reader
-  "Throw reader exception, including line meb/column."
+  "Throw reader exception, including line line/column."
   [^not-native reader fmt & data]
   (let [c (r/get-column-number reader)
         l (r/get-line-number reader)]
     (throw
      (js/Error.
-     ;; TODO: Create interop version of format
-      (str (apply gstring/format fmt data)
+      (str (apply interop/simple-format fmt data)
            " [at line " l ", column " c "]")))))
 
 (defn boundary?
@@ -48,29 +46,27 @@
   [c]
   (or (whitespace? c) (boundary? c)))
 
-;; TODO: why is this not inside func? must be for performance.
-(def buf (gstring/StringBuffer. ""))
+(let [buf (StringBuffer. "")]
+  (defn read-while
+    "Read while the chars fulfill the given condition. Ignores
+    the unmatching char."
+    ([^not-native reader p?]
+     (read-while reader p? (not (p? nil))))
 
-(defn read-while
-  "Read while the chars fulfill the given condition. Ignores
-  the unmatching char."
-  ([^not-native reader p?]
-   (read-while reader p? (not (p? nil))))
-
-  ([^not-native reader p? eof?]
-    (.clear buf)
-    (loop []
-      (if-let [c (r/read-char reader)]
-        (if (p? c)
-          (do
-            (.append buf c)
-            (recur))
-          (do
-            (r/unread reader c)
-            (.toString buf)))
-        (if eof?
-          (.toString buf)
-          (throw-reader reader "Unexpected EOF."))))))
+    ([^not-native reader p? eof?]
+     (.clear buf)
+     (loop []
+       (if-let [c (r/read-char reader)]
+         (if (p? c)
+           (do
+             (.append buf c)
+             (recur))
+           (do
+             (r/unread reader c)
+             (.toString buf)))
+         (if eof?
+           (.toString buf)
+           (throw-reader reader "Unexpected EOF.")))))))
 
 (defn read-until
   "Read until a char fulfills the given condition. Ignores the
@@ -215,3 +211,12 @@
   [s]
   (r/indexing-push-back-reader
    (r/string-push-back-reader s)))
+
+#_(defn file-reader
+  "Create reader for files."
+  ^clojure.tools.reader.reader_types.IndexingPushbackReader
+  [f]
+  (-> (io/file f)
+      (io/reader)
+      (PushbackReader. 2)
+      (r/indexing-push-back-reader 2)))

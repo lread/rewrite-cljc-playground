@@ -1,11 +1,13 @@
 (ns rewrite-clj.parser.token
   (:require [rewrite-clj.node :as node]
             [rewrite-clj.reader :as r]
-            [goog.string :as gstring]))
+            [goog.string :refer [StringBuffer]]))
 
 ;; TODO: these are cljs optimizations
+;; the code is less readable, but should work for clj as well.
+
 (defn- join-2 [a b]
-  (-> a gstring/StringBuffer. (.append b) .toString))
+  (-> a StringBuffer. (.append b) .toString))
 
 (defn- ^boolean allowed-default? [c]
   false)
@@ -57,8 +59,8 @@
   [^not-native reader]
   (let [first-char (r/next reader)
         s (join-2 first-char (if (identical? first-char \\)
-                         (read-to-char-boundary reader)
-                         (read-to-boundary reader allowed-default?)))
+                               (read-to-char-boundary reader)
+                               (read-to-boundary reader allowed-default?)))
         v (r/string->edn s)]
     (if (symbol? v)
       (symbol-node reader v s)

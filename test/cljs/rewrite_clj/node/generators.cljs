@@ -15,13 +15,14 @@
      gen/string-ascii)
     (gen/elements ["" "\r" "\n"]))))
 
-;; TODO: What do we do for cljs?
-#_(def integer-node
+(def integer-node
   (gen/fmap
    (fn [[n base]]
      (node/integer-node n base))
    (gen/tuple
-    (gen/choose Long/MIN_VALUE Long/MAX_VALUE)
+    (gen/choose Number.MIN_SAFE_INTEGER Number.MAX_SAFE_INTEGER)
+    ;; TODO: clj version
+    #_(gen/choose Long/MIN_VALUE Long/MAX_VALUE)
     (gen/choose 2 36))))
 
 (def keyword-node
@@ -58,7 +59,7 @@
 (def ^:private node-specs
   {;leaves           generator
    :comment          comment-node
-;   :integer          integer-node
+   :integer          integer-node
    :keyword          keyword-node
    :newline          newline-node
    :string           string-node

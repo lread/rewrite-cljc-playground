@@ -1,5 +1,5 @@
 (ns rewrite-clj.zip.base-test
-  (:require [cljs.test :refer [deftest is are testing run-tests]]
+  (:require [clojure.test :refer [deftest is are testing run-tests]]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.custom-zipper.core :as z]))
