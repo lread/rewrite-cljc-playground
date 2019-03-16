@@ -1,25 +1,26 @@
 (ns rewrite-clj.node
   "Facade for node related namespaces."
-  (:require [rewrite-clj.node.coercer]
-            [rewrite-clj.node.comment]
-            [rewrite-clj.node.fn]
-            [rewrite-clj.node.forms]
-            [rewrite-clj.node.integer]
-            [rewrite-clj.node.keyword]
-            [rewrite-clj.node.meta]
-            [rewrite-clj.node.protocols]
-            [rewrite-clj.node.quote]
-            [rewrite-clj.node.reader-macro]
-            [rewrite-clj.node.regex]
-            [rewrite-clj.node.seq]
-            [rewrite-clj.node.stringz]
-            [rewrite-clj.node.token]
-            [rewrite-clj.node.uneval]
-            [rewrite-clj.node.whitespace])
-  (:require-macros [rewrite-clj.potemkin-cljs :refer [import-vars import-def]]))
+  (:refer-clojure :exclude [string coerce])
+  (:require [rewrite-clj.internal.node.coerce]
+            [rewrite-clj.internal.node.comment]
+            [rewrite-clj.internal.node.fn]
+            [rewrite-clj.internal.node.forms]
+            [rewrite-clj.internal.node.integer]
+            [rewrite-clj.internal.node.keyword]
+            [rewrite-clj.internal.node.meta]
+            [rewrite-clj.internal.node.protocols]
+            [rewrite-clj.internal.node.quote]
+            [rewrite-clj.internal.node.reader-macro]
+            [rewrite-clj.internal.node.regex]
+            [rewrite-clj.internal.node.seq]
+            [rewrite-clj.internal.node.string]
+            [rewrite-clj.internal.node.token]
+            [rewrite-clj.internal.node.uneval]
+            [rewrite-clj.internal.node.whitespace])
+  (:require-macros [rewrite-clj.internal.potemkin-cljs :refer [import-vars import-def]]))
 
 (import-vars
- [rewrite-clj.node.protocols
+ [rewrite-clj.internal.node.protocols
   coerce
   children
   child-sexprs
@@ -34,58 +35,58 @@
   string
   tag]
 
- [rewrite-clj.node.comment
+ [rewrite-clj.internal.node.comment
   comment-node
   comment?]
 
- [rewrite-clj.node.fn
+ [rewrite-clj.internal.node.fn
   fn-node]
 
- [rewrite-clj.node.forms
+ [rewrite-clj.internal.node.forms
   forms-node]
 
- [rewrite-clj.node.integer
+ [rewrite-clj.internal.node.integer
   integer-node]
 
- [rewrite-clj.node.keyword
+ [rewrite-clj.internal.node.keyword
   keyword-node]
 
- [rewrite-clj.node.meta
+ [rewrite-clj.internal.node.meta
   meta-node
   raw-meta-node]
 
- [rewrite-clj.node.regex
+ [rewrite-clj.internal.node.regex
   regex-node]
 
- [rewrite-clj.node.reader-macro
+ [rewrite-clj.internal.node.reader-macro
   deref-node
   eval-node
   reader-macro-node
   var-node]
 
- [rewrite-clj.node.seq
+ [rewrite-clj.internal.node.seq
   list-node
   map-node
   namespaced-map-node
   set-node
   vector-node]
 
- [rewrite-clj.node.stringz
+ [rewrite-clj.internal.node.string
   string-node]
 
- [rewrite-clj.node.quote
+ [rewrite-clj.internal.node.quote
   quote-node
   syntax-quote-node
   unquote-node
   unquote-splicing-node]
 
- [rewrite-clj.node.token
+ [rewrite-clj.internal.node.token
   token-node]
 
- [rewrite-clj.node.uneval
+ [rewrite-clj.internal.node.uneval
   uneval-node]
 
- [rewrite-clj.node.whitespace
+ [rewrite-clj.internal.node.whitespace
   comma-separated
   line-separated
   linebreak?

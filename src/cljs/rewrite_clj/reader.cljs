@@ -4,8 +4,8 @@
             [cljs.tools.reader.reader-types :as r]
             [cljs.tools.reader.impl.commons :refer [parse-symbol]]
             [goog.string :as gstring :refer [StringBuffer]]
-            [rewrite-clj.interop :as interop]
-            [rewrite-clj.node.protocols :as nd]))
+            [rewrite-clj.internal.interop :as interop]
+            [rewrite-clj.internal.node.protocols :as nd]))
 
 (defn throw-reader
   "Throw reader exception, including line line/column."
