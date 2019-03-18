@@ -6,7 +6,6 @@
             [rewrite-clj.internal.zip.seq :as sq]
             [rewrite-clj.internal.custom-zipper.core :as z]))
 
-
 (let [v (base/of-string "[1 2 3]")
       m (base/of-string "{:a 0, :b 1}")
       e (base/of-string "{}")]

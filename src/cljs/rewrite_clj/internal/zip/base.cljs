@@ -58,6 +58,7 @@
   "DEPRECATED. Return a tag/s-expression pair for inner nodes, or
    the s-expression itself for leaves."
   [zloc]
+  ;; ignore deprecated warning - calling deprecated from deprecated
   (some-> zloc z/node node/value))
 
 ;; ## Read

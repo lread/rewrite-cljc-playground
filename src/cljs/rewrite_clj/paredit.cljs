@@ -291,7 +291,7 @@
           (u/remove-left-while ws/whitespace-not-linebreak?)
           (#(if (and (z/left slurpee-loc)
                      (not (ws/linebreak? (zz/left %))))
-              (ws/prepend-space %)
+              (ws/insert-space-left %)
               %))
           (u/remove-right-while ws/whitespace-or-comment?)
           zz/remove
