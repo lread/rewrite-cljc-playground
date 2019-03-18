@@ -9,7 +9,7 @@
 ;functional hierarchical zipper, with navigation, editing and enumeration
 ;see Huet
 
-(ns ^{:doc "Functional hierarchical zipper, with navigation, editing,
+(ns ^:no-doc ^{:doc "Functional hierarchical zipper, with navigation, editing,
   and enumeration.  See Huet"
        :author "Rich Hickey"}
   rewrite-clj.internal.custom-zipper.core
@@ -23,7 +23,7 @@
 ;; To not force users into using this custom zipper, the following flag
 ;; is used to dispatch to `clojure.zip` when set to `false`.
 
-(defn ^:no-doc custom-zipper
+(defn custom-zipper
   [root]
   {::custom? true
    :node     root

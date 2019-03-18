@@ -1,7 +1,6 @@
-(ns rewrite-clj.internal.interop
+(ns ^:no-doc rewrite-clj.internal.interop
   #?(:cljs (:require [goog.string :as gstring]
-                     goog.string.format))
-  #?(:cljs (:import [goog.string StringBuffer] )))
+                     goog.string.format)))
 
 (defn simple-format
   "Interop version of string format
@@ -30,8 +29,3 @@
   [data]
   #?(:clj (instance? clojure.lang.IMeta data)
      :cljs (implements? IWithMeta data)))
-
-(def StringBuffer2
-  #?(:clj (extend StringBuffer
-            (clear [this] (.setLength this 0)))
-     :cljs gstring/StringBuffer))

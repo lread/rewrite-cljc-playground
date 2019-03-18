@@ -1,5 +1,5 @@
 (ns rewrite-clj.zip
-  "Client facing facade for zipper functions"
+  "API for zipper navigation and updating Clojure/ClojureScript source code."
   (:refer-clojure :exclude [next find replace remove
                             seq? map? vector? list? set?
                             print map get assoc])

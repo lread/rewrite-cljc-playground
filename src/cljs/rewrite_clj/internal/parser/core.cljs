@@ -1,4 +1,4 @@
-(ns rewrite-clj.internal.parser.core
+(ns ^:no-doc rewrite-clj.internal.parser.core
   (:require [rewrite-clj.node :as node]
             [rewrite-clj.reader :as reader]
             [rewrite-clj.internal.parser.keyword :refer [parse-keyword]]

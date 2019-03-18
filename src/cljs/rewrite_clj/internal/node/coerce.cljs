@@ -1,4 +1,4 @@
-(ns rewrite-clj.internal.node.coerce
+(ns ^:no-doc rewrite-clj.internal.node.coerce
   (:require [clojure.string :as string]
             [rewrite-clj.internal.node.comment :refer [CommentNode]]
             [rewrite-clj.internal.node.forms :refer [FormsNode]]

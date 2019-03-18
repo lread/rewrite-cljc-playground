@@ -1,13 +1,13 @@
-(ns rewrite-clj.internal.parser.token
+(ns ^:no-doc rewrite-clj.internal.parser.token
   (:require [rewrite-clj.node :as node]
-            [rewrite-clj.reader :as r]
-            [rewrite-clj.internal.interop :as interop]))
+            [rewrite-clj.reader :as r])
+  (:import [goog.string StringBuffer]))
 
 ;; TODO: these are cljs optimizations
 ;; the code is less readable, but should work for clj as well.
 
 (defn- join-2 [a b]
-  (-> a interop/StringBuffer2. (.append b) .toString))
+  (-> a StringBuffer. (.append b) .toString))
 
 (defn- ^boolean allowed-default? [c]
   false)

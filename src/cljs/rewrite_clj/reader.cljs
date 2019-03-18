@@ -1,10 +1,12 @@
-(ns rewrite-clj.reader
+;; TODO: probably belongs under internal
+(ns ^:no-doc rewrite-clj.reader
   (:refer-clojure :exclude [peek next])
   (:require [clojure.tools.reader.edn :as edn]
             [cljs.tools.reader.reader-types :as r]
             [cljs.tools.reader.impl.commons :refer [parse-symbol]]
             [rewrite-clj.internal.interop :as interop]
-            [rewrite-clj.internal.node.protocols :as nd]))
+            [rewrite-clj.internal.node.protocols :as nd])
+  (:import [goog.string StringBuffer]))
 
 (defn throw-reader
   "Throw reader exception, including line line/column."
@@ -58,7 +60,7 @@
    (read-while reader p? (not (p? nil))))
 
   ([^not-native reader p? eof?]
-   (let [buf (interop/StringBuffer2.)]
+   (let [buf (StringBuffer.)]
      (loop []
        (if-let [c (r/read-char reader)]
          (if (p? c)

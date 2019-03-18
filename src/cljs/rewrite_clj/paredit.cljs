@@ -1,6 +1,5 @@
 (ns rewrite-clj.paredit
-  "This namespace provides zipper operations for performing paredit type of
-  operations on clojure/clojurescript forms.
+  "API for paredit zipper operations on Clojure/ClojureScript forms.
 
   You might find inspirational examples here: http://pub.gajendra.net/src/paredit-refcard.pdf"
   (:require [rewrite-clj.zip :as z]

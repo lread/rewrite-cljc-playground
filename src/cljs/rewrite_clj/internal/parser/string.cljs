@@ -3,8 +3,8 @@
             [clojure.tools.reader.reader-types :as r]
             [clojure.string :as string]
             [rewrite-clj.node :as node]
-            [rewrite-clj.internal.parser.utils :as u]
-            [rewrite-clj.internal.interop :as interop]))
+            [rewrite-clj.internal.parser.utils :as u])
+  (:import [goog.string StringBuffer]))
 
 (defn- flush-into
   "Flush buffer and add string to the given vector."
@@ -16,7 +16,7 @@
 (defn- read-string-data
   [^not-native reader]
   (u/ignore reader)
-  (let [buf (interop/StringBuffer2.)]
+  (let [buf (StringBuffer.)]
     (loop [escape? false
            lines []]
       (if-let [c (r/read-char reader)]

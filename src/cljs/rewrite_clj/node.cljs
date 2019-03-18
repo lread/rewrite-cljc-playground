@@ -1,5 +1,5 @@
 (ns rewrite-clj.node
-  "Facade for node related namespaces."
+  "API to create and evaluate zipper tree nodes."
   (:refer-clojure :exclude [string coerce])
   (:require [rewrite-clj.internal.node.coerce]
             [rewrite-clj.internal.node.comment]

@@ -1,4 +1,4 @@
-(ns ^{:added "0.4.0"} rewrite-clj.internal.node.protocols
+(ns ^:no-doc ^{:added "0.4.0"} rewrite-clj.internal.node.protocols
   (:require [clojure.string :as string]
             [rewrite-clj.internal.interop :as interop]))
 

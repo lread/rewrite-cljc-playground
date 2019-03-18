@@ -1,4 +1,4 @@
-(ns rewrite-clj.internal.custom-zipper.core)
+(ns ^:no-doc rewrite-clj.internal.custom-zipper.core)
 
 (defmacro defn-switchable
   [sym docstring params & body]
