@@ -15,8 +15,7 @@
     (if (and namespaced?
              (not (namespace k)))
       (keyword
-       (name
-        (ns-name *ns*))
+       (name (ns-name *ns*))
        (name k))
       k))
   (length [this]

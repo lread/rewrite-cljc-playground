@@ -6,8 +6,8 @@
 ;; ## Node
 
 (defn- wrap-string
-  [v]
-  (str "\"" v "\""))
+  [s]
+  (str "\"" s "\""))
 
 (defn- join-lines
   [lines]

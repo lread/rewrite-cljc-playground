@@ -3,9 +3,9 @@
             [clojure.test.check.properties :as prop :include-macros true]
             [clojure.test :refer [deftest is are testing run-tests]]
             [clojure.test.check :refer-macros [quick-check]]
+            [clojure.test.check.clojure-test :refer [defspec]]
             [rewrite-clj.node :as node]
             [rewrite-clj.internal.node.generators :as g]
-            [clojure.test.check.clojure-test :refer [defspec]]
             [rewrite-clj.internal.zip.base :as base]
             [rewrite-clj.internal.custom-zipper.core :as z]
             [rewrite-clj.internal.custom-zipper.utils :as u]))

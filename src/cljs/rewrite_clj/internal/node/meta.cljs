@@ -1,6 +1,7 @@
 (ns ^:no-doc rewrite-clj.internal.node.meta
   (:require [rewrite-clj.internal.node.protocols :as node]
-            [rewrite-clj.internal.node.whitespace :as ws]))
+            [rewrite-clj.internal.node.whitespace :as ws]
+            [rewrite-clj.internal.interop :as interop]))
 
 ;; ## Node
 
@@ -10,7 +11,7 @@
   (printable-only? [_] false)
   (sexpr [_]
     (let [[mta data] (node/sexprs children)]
-      (assert (implements? IWithMeta data)
+      (assert (interop/meta-available? data)
               (str "cannot attach metadata to: " (pr-str data)))
       (vary-meta data merge (if (map? mta) mta {mta true}))))
   (length [_]

@@ -1,6 +1,8 @@
 (ns ^:no-doc rewrite-clj.internal.node.fn
   (:require [clojure.walk :as w]
-            [rewrite-clj.internal.node.protocols :as node]))
+            [clojure.string :as string]
+            [rewrite-clj.internal.node.protocols :as node]
+            [rewrite-clj.internal.interop :as interop]))
 
 ;; ## Conversion
 
@@ -22,23 +24,21 @@
   [n]
   (cond (= n "&") 0
         (= n "") 1
-        (re-matches #"\d+" n) (js/parseInt n)
-        :else (throw (js/Error. "arg literal must be %, %& or %integer."))))
+        (re-matches #"\d+" n) (interop/str->int n)
+        :else (throw (ex-info "arg literal must be %, %& or %integer." {}))))
 
-;; TODO: No promises available
 (defn- symbol->gensym
   "If symbol starting with `%`, convert to respective gensym."
   [sym-seq vararg? max-n sym]
-  (if (symbol? sym)
+  (when (symbol? sym)
     (let [nm (name sym)]
-      (if (= (.indexOf nm "%") 0)
+      (when (string/starts-with? nm "%")
         (let [i (sym-index (subs nm 1))]
-;;           (if (and (= i 0) (not (realized? vararg?)))
-;;             (deliver vararg? true))
+          (when (and (= i 0) (not @vararg?))
+            (reset! vararg? true))
           (swap! max-n max i)
           (nth sym-seq i))))))
 
-;; TODO: No promises available
 (defn- fn-walk
   "Walk the form and create an expand function form."
   [form]
@@ -48,16 +48,15 @@
                                 (str "p" i "__"))
                          s (name (gensym base))]]
                (symbol (str s "#")))
-        vararg? false ;(promise)
+        vararg? (atom false)
         max-n (atom 0)
         body (w/prewalk
                #(or (symbol->gensym syms vararg? max-n %) %)
                form)]
     (construct-fn
       (take @max-n (rest syms))
-      nil
-;;       (if (deref vararg? 0 nil)
-;;         (first syms))
+      (if @vararg?
+        (first syms))
       body)))
 
 ;; ## Node

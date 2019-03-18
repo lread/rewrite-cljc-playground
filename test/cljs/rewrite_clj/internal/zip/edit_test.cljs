@@ -47,8 +47,7 @@
     "[1 [;;comment\n]]"         "[1 ;;comment\n]"
     "[1 [2\n;;comment\n]]"      "[1 2\n;;comment\n]"))
 
-;; TODO: no integer-node in cljs
-#_(deftest t-replacement-using-a-hand-crafted-node
+(deftest t-replacement-using-a-hand-crafted-node
   (are [?node ?s]
        (let [root (base/of-string "[1 2 3]")]
          (is (= ?s

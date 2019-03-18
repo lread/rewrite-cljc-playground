@@ -19,7 +19,7 @@
   node/Node
   (tag [_] :whitespace)
   (printable-only? [_] true)
-  (sexpr [_] (throw (js/Error. "Unsupported operation")))
+  (sexpr [_] (throw (ex-info "unsupported operation" {})))
   (length [_] (count whitespace))
   (string [_] whitespace)
 
@@ -31,7 +31,7 @@
   node/Node
   (tag [_] :comma)
   (printable-only? [_] true)
-  (sexpr [_] (throw (js/Error. "Unsupported operation")))
+  (sexpr [_] (throw (ex-info "unsupported operation" {})))
   (length [_] (count commas))
   (string [_] commas)
 
@@ -43,7 +43,7 @@
   node/Node
   (tag [_] :newline)
   (printable-only? [_] true)
-  (sexpr [_] (throw (js/Error. "Unsupported operation")))
+  (sexpr [_] (throw (ex-info "unsupported operation" {})))
   (length [_] (*count-fn* newlines))
   (string [_] (*newline-fn* newlines))
 

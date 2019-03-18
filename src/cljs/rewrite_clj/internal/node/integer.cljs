@@ -1,5 +1,6 @@
 (ns ^:no-doc rewrite-clj.internal.node.integer
-  (:require [rewrite-clj.internal.node.protocols :as node]))
+  (:require [rewrite-clj.internal.node.protocols :as node]
+            [rewrite-clj.internal.interop :as interop]))
 
 ;; ## Node
 
@@ -14,9 +15,7 @@
     (let [sign (if (< value 0)
                  "-")
           abs-value (cond-> value (< value 0) -)
-          s (.toString abs-value base)
-          ;; TODO: clj version
-          #_(.toString (biginteger abs-value) base)
+          s (interop/int->str abs-value base)
           prefix (case (long base)
                    8  "0"
                    10 ""

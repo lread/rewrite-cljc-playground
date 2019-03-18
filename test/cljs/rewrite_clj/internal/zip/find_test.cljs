@@ -153,9 +153,7 @@
                  base/string))))
 
 (deftest find-last-by-pos-multiline
-  (let [sample "
-{:a 1
- :b 2}" ]
+  (let [sample "\n{:a 1\n :b 2}" ]
     (is (= ":a" (-> sample
                     base/of-string
                     (f/find-last-by-pos {:row 2 :col 2})

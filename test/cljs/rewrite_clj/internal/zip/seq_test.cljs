@@ -34,29 +34,18 @@
       (is (= [1 2 4] (base/sexpr v')))
       (is (= "[1 2 4]" (base/string v'))))))
 
-;;TODO: these were in cljs version... are a bit different from clj so leaving for study later
-(deftest check-predicates
+(deftest t-check-predicates
   (is (-> "[1 2 3]" base/of-string sq/vector?))
   (is (-> "{:a 1}" base/of-string sq/map?))
   (is (-> "#{1 2}" base/of-string sq/set?))
   (is (-> "(+ 2 3)" base/of-string sq/list?))
   (is (-> "[1 2]" base/of-string sq/seq?)))
 
-(deftest get-from-map
-  (is (= 1 (-> "{:a 1}" base/of-string (sq/get :a) z/node :value))))
-
-(deftest get-from-vector
-  (is (= 10 (-> "[5 10 15]" base/of-string (sq/get 1) z/node :value))))
-
-(deftest get-from-vector-index-out-of-bounds
+(deftest t-get-from-vector-index-out-of-bounds
   (is (thrown-with-msg? js/Error #"Index out of bounds"
                         (-> "[5 10 15]" base/of-string (sq/get 5) z/node :value))))
 
-(deftest map-on-vector
+(deftest t-map-on-vector
   (let [sexpr "[1\n2\n3]"
         expected "[5\n6\n7]"]
     (is (= expected (->> sexpr base/of-string (sq/map #(e/edit % + 4)) base/root-string)))))
-
-
-(deftest assoc-on-map
-  (is (contains? (-> "{:a 1}" base/of-string (sq/assoc :b 2) z/node n/sexpr) :b)))

@@ -61,7 +61,7 @@
   [{:keys [node] :as loc}]
   (if (branch? loc)
     (seq (node/children node))
-    (throw (js/Error. "called children on a leaf node"))))
+    (throw (ex-info "called children on a leaf node" {}))))
 
 (defn-switchable ^:no-doc make-node
   "Returns a new branch node, given an existing node and new
@@ -75,10 +75,9 @@
   (if (custom-zipper? loc)
     (:position loc)
     (throw
-      (js/Error.
-        (str
-          "to use the 'position' function, please construct your zipper with "
-           "':track-position?'  set to true.")))))
+     (ex-info
+      (str "to use the 'position' function, please construct your zipper with "
+           "':track-position?'  set to true.") {}))))
 
 (defn-switchable lefts
   "Returns a seq of the left siblings of this loc"
@@ -173,7 +172,7 @@
   [loc item]
   (let [{:keys [parent position left]} loc]
     (if-not parent
-      (throw (js/Error. "Insert at top"))
+      (throw (ex-info "cannot insert left at top" {}))
       (assoc loc
              :changed? true
              :left (conj left [item position])
@@ -185,7 +184,7 @@
   [loc item]
   (let [{:keys [parent right]} loc]
     (if-not parent
-      (throw (js/Error. "Insert at top"))
+      (throw (ex-info "cannot insert right at top" {}))
       (assoc loc
              :changed? true
              :right (cons item right)))))
@@ -251,7 +250,7 @@
   [loc]
   (let [{:keys [node parent left right]} loc]
     (if-not parent
-      (throw (js/Error. "Remove at top"))
+      (throw (ex-info "cannot remove at top" {}))
       (if (seq left)
         (loop [loc (let [[lnode lpos] (peek left)]
                      (assoc loc

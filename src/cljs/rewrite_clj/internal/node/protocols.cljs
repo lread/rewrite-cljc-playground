@@ -18,7 +18,6 @@
   (string [_]
     "Convert node to printable string."))
 
-
 (extend-protocol Node
   object
   (tag [_] :unknown)
@@ -62,11 +61,11 @@
   object
   (inner? [_] false)
   (children [_]
-    (throw (js/Error. "UnsupportedOperationException")))
+    (throw (ex-info "unsupported operation" {})))
   (replace-children [_ _]
-    (throw (js/Error. "UnsupportedOperationException")))
+    (throw (ex-info "unsupported operation" {})))
   (leader-length [_]
-    (throw (js/Error. "UnsupportedOperationException"))))
+    (throw (ex-info "unsupported operation" {}))))
 
 (defn child-sexprs
   "Get all child s-expressions for the given node."

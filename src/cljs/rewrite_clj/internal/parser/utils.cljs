@@ -1,11 +1,12 @@
 (ns ^:no-doc rewrite-clj.internal.parser.utils
-  (:require [clojure.tools.reader.reader-types :as r]))
+  (:require [clojure.tools.reader.reader-types :as r]
+            [rewrite-clj.internal.interop :as interop]))
 
 ;; TODO: this file is a bit odd, it repeats code from other places
 (defn whitespace?
   "Check if a given character is a whitespace."
   [c]
-  (and c (< -1 (.indexOf #js [\return \newline \tab \space ","] c))))
+  (interop/clojure-whitespace? c))
 
 (defn linebreak?
   "Check if a given character is a linebreak."
@@ -27,9 +28,8 @@
   [reader & msg]
   (let [c (r/get-column-number reader)
         l (r/get-line-number reader)]
-    (throw
-     (js/Error.
-      (str (apply str msg) " [at line " l ", column " c "]")))))
+    (throw (ex-info
+            (str (apply str msg) " [at line " l ", column " c "]") {}))))
 
 (defn read-eol
   [reader]

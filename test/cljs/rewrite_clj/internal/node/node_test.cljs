@@ -2,9 +2,9 @@
   (:require [clojure.test.check.properties :as prop :include-macros true]
             [clojure.test :refer [deftest is are testing run-tests]]
             [clojure.test.check :refer-macros [quick-check]]
+            [clojure.test.check.clojure-test :refer-macros [defspec]]
             [rewrite-clj.node :as node]
-            [rewrite-clj.internal.node.generators :as g]
-            [clojure.test.check.clojure-test :refer-macros [defspec]]))
+            [rewrite-clj.internal.node.generators :as g]))
 
 (defspec t-nodes-with-children-report-accurate-leader-lengths
   (prop/for-all [node (g/node g/container-node-types)]

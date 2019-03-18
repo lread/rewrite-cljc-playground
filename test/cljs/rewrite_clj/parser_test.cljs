@@ -2,7 +2,6 @@
       :author "Yannick Scherer"}
  rewrite-clj.parser-test
   (:require [clojure.test :refer [deftest is are testing run-tests]]
-            ;; TODO: added for cljs
             [clojure.tools.reader.edn :refer [read-string]]
             [rewrite-clj.node :as node]
             [rewrite-clj.parser :as p]))
@@ -106,8 +105,7 @@
     (is (= :uneval (node/tag uneval)))
     (is (= "#_    (+ 1 2)" (node/string uneval)))
     (is (node/printable-only? uneval))
-    ;;TODO: convert to cljs
-    #_(is (thrown? UnsupportedOperationException (node/sexpr uneval)))))
+    (is (thrown-with-msg? ExceptionInfo #"unsupported operation" (node/sexpr uneval)))))
 
 (deftest t-parsing-regular-expressions
   (are [?s ?p]
@@ -205,20 +203,31 @@
          (is (= ?t (node/tag n)))
          (is (= ?s (node/string n)))
          (is (= ?children (map node/tag (node/children n)))))
-    "#'a"                      :var             [:token]
-    "#=(+ 1 2)"                :eval            [:list]
-    "#macro 1"                 :reader-macro    [:token :whitespace :token]
-    "#macro (* 2 3)"           :reader-macro    [:token :whitespace :list]
-    "#?(:clj bar)"             :reader-macro    [:token :list]
-    "#? (:clj bar)"            :reader-macro    [:token :whitespace :list]
-    "#?@ (:clj bar)"           :reader-macro    [:token :whitespace :list]
-    "#?foo baz"                :reader-macro    [:token :whitespace :token]
-    "#_abc"                    :uneval          [:token]
-    "#_(+ 1 2)"                :uneval          [:list]
-    "#(+ % 1)"                 :fn              [:token :whitespace
-                                                 :token :whitespace
-                                                 :token]))
+    "#'a"             :var             [:token]
+    "#=(+ 1 2)"       :eval            [:list]
+    "#macro 1"        :reader-macro    [:token :whitespace :token]
+    "#macro (* 2 3)"  :reader-macro    [:token :whitespace :list]
+    "#?(:clj bar)"    :reader-macro    [:token :list]
+    "#? (:clj bar)"   :reader-macro    [:token :whitespace :list]
+    "#?@ (:clj bar)"  :reader-macro    [:token :whitespace :list]
+    "#?foo baz"       :reader-macro    [:token :whitespace :token]
+    "#_abc"           :uneval          [:token]
+    "#_(+ 1 2)"       :uneval          [:list]))
 
+(deftest t-parsing-anonymous-fn
+  (are [?s ?t ?sexpr-match ?children]
+      (let [n (p/parse-string ?s)]
+        (is (= ?t (node/tag n)))
+        (is (= ?s (node/string n)))
+        (is (re-matches ?sexpr-match (str (node/sexpr n))))
+        (is (= ?children (map node/tag (node/children n)))))
+    "#(+ % 1)"        :fn  #"\(fn\* \[p1_.*#\] \(\+ p1_.*# 1\)\)"                                 [:token :whitespace
+                                                                                                   :token :whitespace
+                                                                                                   :token]
+    "#(+ %& %2 %1)"   :fn  #"\(fn\* \[p1_.*# p2_.*# & rest_.*#\] \(\+ rest_.*# p2_.*# p1_.*#\)\)" [:token :whitespace
+                                                                                                   :token :whitespace
+                                                                                                   :token :whitespace
+                                                                                                   :token]))
 (deftest t-parsing-comments
   (are [?s]
        (let [n (p/parse-string ?s)]
@@ -275,7 +284,7 @@
 
 (deftest t-parsing-exceptions
   (are [?s ?p]
-       (is (thrown-with-msg? js/Error ?p (p/parse-string ?s)))
+      (is (thrown-with-msg? ExceptionInfo ?p (p/parse-string ?s)))
     "#"                     #".*Unexpected EOF.*"
     "#("                    #".*Unexpected EOF.*"
     "(def"                  #".*Unexpected EOF.*"

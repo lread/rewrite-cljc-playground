@@ -8,7 +8,7 @@
   (tag [_] :uneval)
   (printable-only? [_] true)
   (sexpr [_]
-    (throw (js/Error. "Unsupported operation for unevalnode")))
+    (throw (ex-info "unsupported operation for uneval-node" {})))
   (length [_]
     (+ 2 (node/sum-lengths children)))
   (string [_]

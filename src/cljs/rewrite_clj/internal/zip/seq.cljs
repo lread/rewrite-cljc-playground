@@ -106,5 +106,4 @@
           (i/append-child k)
           (i/append-child v))
       (throw
-        (js/Error.
-          (str "index out of bounds: " k))))))
+        (ex-info (str "index out of bounds: " k) {})))))

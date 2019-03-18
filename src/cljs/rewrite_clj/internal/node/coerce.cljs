@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [rewrite-clj.internal.node.comment :refer [CommentNode]]
             [rewrite-clj.internal.node.forms :refer [FormsNode]]
+            [rewrite-clj.internal.node.integer :refer [IntNode]]
             [rewrite-clj.internal.node.keyword :refer [KeywordNode]]
             [rewrite-clj.internal.node.quote :refer [QuoteNode]]
             [rewrite-clj.internal.node.string :refer [StringNode string-node]]
@@ -62,6 +63,7 @@
   (coerce [v]
     (token-node nil)))
 
+;; TODO: cljs only
 (extend-protocol NodeCoerceable
   number
   (coerce [n]
@@ -69,6 +71,7 @@
      (token-node n)
      n)))
 
+;; TODO: cljs only
 (extend-protocol NodeCoerceable
   string
   (coerce [n]
@@ -136,8 +139,7 @@
 (extend-protocol NodeCoerceable
   CommentNode     (coerce [v] v)
   FormsNode       (coerce [v] v)
-  FnNode          (coerce [v] v)
-  ;IntNode         (coerce [v] v)
+  IntNode         (coerce [v] v)
   KeywordNode     (coerce [v] v)
   MetaNode        (coerce [v] v)
   QuoteNode       (coerce [v] v)
