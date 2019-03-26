@@ -17,8 +17,8 @@
 
 * Todos
 ** DONE why are some namespaces renamed? findz editz removez seqz coercer… it almost seems like the author was trying to avoid namespace collisions.. but why the deviation? As these could be considered internal, I will lose the z.
-** TODO bring cljs up to parity with clj version
 ** DONE add all rewrite-clj tests we possibly can
+** TODO bring cljs up to parity with clj version
 ** TODO verify positional support
 ** TODO potemkin for macros... done in clj layer...
 ** TODO try to turn off deprecation warnings only for certain tests.
@@ -27,16 +27,17 @@
     - clojure.tools.reader.edn
     - clojure.reader
     - clojure/reader-string
+** TODO add coerce record support
+** TODO convert to cljc project
 ** Nodes
 *** DONE add print support
-*** TODO double check print support - I'm frankly not sure what it does
 *** DONE uneval
 *** DONE integer node
 *** DONE understand promise work in fn node - currently commented out in cljs version
 *** DONE why does cljs version have FnNode as coercable - don't know, removed to match clj version
+*** TODO double check print support - I'm frankly not sure what it does
 *** TODO look a differences between clj and cljs for regex
 *** TODO keyword & seq - namespace support for cljs
-** TODO add coerce record support
 ** Testing
 *** TODO what to do for dev - currently trying out fighweel main
 *** TODO what do do for ci - was using doo with karma and chrome headless
@@ -49,9 +50,13 @@
     - paredit_test.cljs - this is a cljs specific feature… will see if it fits into cli version as well
     - zip_tests.cljs
 ** Docs
-*** TODO understand how cljdocs works - generate docs locally
+*** DONE understand how cljdocs works - generate docs locally
+    CLOSED: [2019-03-26 Tue 12:35]
 *** TODO understand how potemkin affects docs
 *** TODO verify internal code is not documented externally
+*** TODO decide if internal namespace is a good idea or not. Are custom-zippper/core and node/protocols considered public?
+    Good some feedback.. impl is a more idiomatic namespace.  Also need to expose custom-zippper core and node protocols
+*** TODO adjust defn-switchable so that args are preserved for documentation
 *** TODO update README to be at least in line with rewrite-clj - ideally improve it.
 ** Interop
 *** DONE abstract a format maybe call it simple-format
@@ -92,7 +97,6 @@
 *** TODO only take clojurescript optimizations if the code is clear
 *** TODO are rundis' optimizations still valid today?
 *** TODO research what others are doing for benchmarking… would like to know if I am making things slower.
-** TODO convert to cljc project
 ** Deployment
 *** TODO min java version - 8
 *** TODO min clojure version - 1.9

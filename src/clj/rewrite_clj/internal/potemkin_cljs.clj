@@ -1,40 +1,33 @@
-(ns ^:no-doc rewrite-clj.internal.potemkin-cljs)
+(ns ^:no-doc rewrite-clj.internal.potemkin-cljs
+  (:require [clojure.string :as string]
+            [cljs.analyzer.api :as analyzer]))
 
-;; https://github.com/ztellman/potemkin/issues/31#issuecomment-110689951
-(defmacro import-def
-  "import a single fn or var
-   (import-def a b) => (def b a/b)
-  "
-  [from-ns def-name]
-  (let [from-sym# (symbol (str from-ns) (str def-name))
-        m# (meta (resolve from-sym#))]
-    `(def ~def-name ~from-sym#)))
+(defmacro import-vars [& imports]
+  `(do ~@(for [[from-ns# & defs#] imports
+               from-sym# defs#]
+           (let [r# (analyzer/ns-resolve from-ns# from-sym#)]
+             `(def ~(with-meta from-sym# (:meta r#)) ~(:name r#))))))
 
-(defmacro import-vars
-  "import multiple defs from multiple namespaces
-   works for vars and fns. not macros.
-   (same syntax as potemkin.namespaces/import-vars)
-   (import-vars
-     [m.n.ns1 a b]
-     [x.y.ns2 d e f]) =>
-   (def a m.n.ns1/a)
-   (def b m.n.ns1/b)
-    ...
-   (def d m.n.ns2/d)
-    ... etc
-  "
-  [& imports]
-  (let [expanded-imports (for [[from-ns & defs] imports
-                               d defs]
-                           `(import-def ~from-ns ~d))]
-    `(do ~@expanded-imports)))
+;; TODO: consider genaralizing import-vars to optionally take customization fns like these basedef ones
 
-;; To experiment with... can this bring macros into my api?
-;; http://side-effects-bang.blogspot.com/2015/06/importing-vars-in-clojurescript.html
-(defmacro import-vars2 [[_quote ns]]
-  `(do
-     ~@(->>
-        (cljs.analyzer.api/ns-interns ns)
-        (remove (comp :macro second))
-        (map (fn [[k# _]]
-               `(def ~(symbol k#) ~(symbol (name ns) (name k#))))))))
+(defn- basedef-sym-fn [orig-sym]
+  (symbol (str orig-sym "*")))
+
+(defn- basedef-sym-meta-fn [orig-sym resolved-target]
+  (update (:meta resolved-target)
+          :doc
+          (fn [orig-doc]
+            (-> "Call zipper '@@sym@@' function directly.\n\n@@doc@@"
+                (string/replace #"@@sym@@" (str orig-sym))
+                (string/replace #"@@doc@@" (or orig-doc ""))))))
+
+(defmacro import-vars-basedef [& imports]
+  (let [defs# (for [[from-ns# & sym-list#] imports
+                    from-sym# sym-list#]
+                (let [resolved-target# (analyzer/ns-resolve from-ns# from-sym#)]
+                  `(def
+                     ~(with-meta
+                        (basedef-sym-fn from-sym#)
+                        (basedef-sym-meta-fn from-sym# resolved-target#))
+                     ~(:name resolved-target#))))]
+    `(do ~@defs#)))

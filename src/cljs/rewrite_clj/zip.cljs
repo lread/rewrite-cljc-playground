@@ -3,7 +3,8 @@
   (:refer-clojure :exclude [next find replace remove
                             seq? map? vector? list? set?
                             print map get assoc])
-  (:require [rewrite-clj.internal.zip.base]
+  (:require [clojure.string :as string]
+            [rewrite-clj.internal.zip.base]
             [rewrite-clj.internal.zip.move]
             [rewrite-clj.internal.zip.find]
             [rewrite-clj.internal.zip.edit]
@@ -15,7 +16,7 @@
             [rewrite-clj.internal.zip.whitespace]
             [rewrite-clj.internal.custom-zipper.core :as z])
   (:require-macros rewrite-clj.zip
-                   [rewrite-clj.internal.potemkin-cljs :refer [import-vars]]))
+                   [rewrite-clj.internal.potemkin-cljs :refer [import-vars import-vars-basedef]]))
 
 (import-vars
  [rewrite-clj.internal.custom-zipper.core
@@ -30,8 +31,7 @@
   ;; TODO: not applicable for cljs: of-file
   of-string
   string root-string
-  print print-root
-  ]
+  print print-root]
 
  [rewrite-clj.internal.zip.edit
   replace edit splice
@@ -86,21 +86,14 @@
   prepend-space append-space
   prepend-newline append-newline])
 
-;; ## Base Operations
-;; TODO: figure out how to hook these up with defbase instead of def
-(def right* rewrite-clj.internal.custom-zipper.core/right)
-(def left* rewrite-clj.internal.custom-zipper.core/left)
-(def up* rewrite-clj.internal.custom-zipper.core/up)
-(def down* rewrite-clj.internal.custom-zipper.core/down)
-(def next* rewrite-clj.internal.custom-zipper.core/next)
-(def prev* rewrite-clj.internal.custom-zipper.core/prev)
-(def rightmost* rewrite-clj.internal.custom-zipper.core/rightmost)
-(def leftmost* rewrite-clj.internal.custom-zipper.core/leftmost)
-(def replace* rewrite-clj.internal.custom-zipper.core/replace)
-(def edit* rewrite-clj.internal.custom-zipper.core/edit)
-(def remove* rewrite-clj.internal.custom-zipper.core/remove)
-(def insert-left* rewrite-clj.internal.custom-zipper.core/insert-left)
-(def insert-right* rewrite-clj.internal.custom-zipper.core/insert-right)
+;; ## Base zipper operations
+(import-vars-basedef
+ [rewrite-clj.internal.custom-zipper.core
+  right left up down
+  next prev
+  rightmost leftmost
+  replace edit remove
+  insert-left insert-right])
 
 ;; ## DEPRECATED
 

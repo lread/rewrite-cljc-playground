@@ -17,7 +17,7 @@
             [rewrite-clj.internal.node.token]
             [rewrite-clj.internal.node.uneval]
             [rewrite-clj.internal.node.whitespace])
-  (:require-macros [rewrite-clj.internal.potemkin-cljs :refer [import-vars import-def]]))
+  (:require-macros [rewrite-clj.internal.potemkin-cljs :refer [import-vars]]))
 
 (import-vars
  [rewrite-clj.internal.node.protocols
