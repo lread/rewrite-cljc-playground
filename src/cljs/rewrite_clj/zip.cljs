@@ -4,25 +4,25 @@
                             seq? map? vector? list? set?
                             print map get assoc])
   (:require [clojure.string :as string]
-            [rewrite-clj.internal.zip.base]
-            [rewrite-clj.internal.zip.move]
-            [rewrite-clj.internal.zip.find]
-            [rewrite-clj.internal.zip.edit]
-            [rewrite-clj.internal.zip.insert]
-            [rewrite-clj.internal.zip.remove]
-            [rewrite-clj.internal.zip.seq]
-            [rewrite-clj.internal.zip.subedit :include-macros true]
-            [rewrite-clj.internal.zip.walk]
-            [rewrite-clj.internal.zip.whitespace]
-            [rewrite-clj.internal.custom-zipper.core :as z])
+            [rewrite-clj.impl.zip.base]
+            [rewrite-clj.impl.zip.move]
+            [rewrite-clj.impl.zip.find]
+            [rewrite-clj.impl.zip.edit]
+            [rewrite-clj.impl.zip.insert]
+            [rewrite-clj.impl.zip.remove]
+            [rewrite-clj.impl.zip.seq]
+            [rewrite-clj.impl.zip.subedit :include-macros true]
+            [rewrite-clj.impl.zip.walk]
+            [rewrite-clj.impl.zip.whitespace]
+            [rewrite-clj.impl.custom-zipper.core :as z])
   (:require-macros rewrite-clj.zip
-                   [rewrite-clj.internal.potemkin-cljs :refer [import-vars import-vars-basedef]]))
+                   [rewrite-clj.impl.potemkin-cljs :refer [import-vars import-vars-basedef]]))
 
 (import-vars
- [rewrite-clj.internal.custom-zipper.core
+ [rewrite-clj.impl.custom-zipper.core
   node position root]
 
- [rewrite-clj.internal.zip.base
+ [rewrite-clj.impl.zip.base
   child-sexprs
   edn* edn
   tag sexpr
@@ -33,11 +33,11 @@
   string root-string
   print print-root]
 
- [rewrite-clj.internal.zip.edit
+ [rewrite-clj.impl.zip.edit
   replace edit splice
   prefix suffix]
 
- [rewrite-clj.internal.zip.find
+ [rewrite-clj.impl.zip.find
   find find-next
   find-depth-first
   find-next-depth-first
@@ -48,35 +48,35 @@
   find-last-by-pos
   find-tag-by-pos]
 
- [rewrite-clj.internal.zip.insert
+ [rewrite-clj.impl.zip.insert
   insert-right insert-left
   insert-child append-child]
 
- [rewrite-clj.internal.zip.move
+ [rewrite-clj.impl.zip.move
   left right up down prev next
   leftmost rightmost
   leftmost? rightmost? end?]
 
- [rewrite-clj.internal.zip.remove
+ [rewrite-clj.impl.zip.remove
   remove
   ;; cljs extras
   remove-preserve-newline]
 
- [rewrite-clj.internal.zip.seq
+ [rewrite-clj.impl.zip.seq
   seq? list? vector? set? map?
   map map-keys map-vals
   get assoc]
 
- [rewrite-clj.internal.zip.subedit
+ [rewrite-clj.impl.zip.subedit
   edit-node
   subedit-node
   subzip]
 
- [rewrite-clj.internal.zip.walk
+ [rewrite-clj.impl.zip.walk
   prewalk
   postwalk]
 
- [rewrite-clj.internal.zip.whitespace
+ [rewrite-clj.impl.zip.whitespace
   whitespace? linebreak?
   whitespace-or-comment?
   skip skip-whitespace
@@ -88,7 +88,7 @@
 
 ;; ## Base zipper operations
 (import-vars-basedef
- [rewrite-clj.internal.custom-zipper.core
+ [rewrite-clj.impl.custom-zipper.core
   right left up down
   next prev
   rightmost leftmost

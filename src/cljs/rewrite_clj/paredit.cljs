@@ -4,10 +4,10 @@
   You might find inspirational examples here: http://pub.gajendra.net/src/paredit-refcard.pdf"
   (:require [rewrite-clj.zip :as z]
             [clojure.zip :as zz]
-            [rewrite-clj.internal.zip.whitespace :as ws]
-            [rewrite-clj.internal.zip.utils :as u]
+            [rewrite-clj.impl.zip.whitespace :as ws]
+            [rewrite-clj.impl.zip.utils :as u]
             [rewrite-clj.node :as nd]
-            [rewrite-clj.internal.node.string :as sn :refer [StringNode] ]
+            [rewrite-clj.impl.node.string :as sn :refer [StringNode] ]
             [clojure.string :as cstring]))
 
 

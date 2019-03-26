@@ -1,26 +1,26 @@
 (ns rewrite-clj.node
   "API to create and evaluate zipper tree nodes."
   (:refer-clojure :exclude [string coerce])
-  (:require [rewrite-clj.internal.node.coerce]
-            [rewrite-clj.internal.node.comment]
-            [rewrite-clj.internal.node.fn]
-            [rewrite-clj.internal.node.forms]
-            [rewrite-clj.internal.node.integer]
-            [rewrite-clj.internal.node.keyword]
-            [rewrite-clj.internal.node.meta]
-            [rewrite-clj.internal.node.protocols]
-            [rewrite-clj.internal.node.quote]
-            [rewrite-clj.internal.node.reader-macro]
-            [rewrite-clj.internal.node.regex]
-            [rewrite-clj.internal.node.seq]
-            [rewrite-clj.internal.node.string]
-            [rewrite-clj.internal.node.token]
-            [rewrite-clj.internal.node.uneval]
-            [rewrite-clj.internal.node.whitespace])
-  (:require-macros [rewrite-clj.internal.potemkin-cljs :refer [import-vars]]))
+  (:require [rewrite-clj.impl.node.coerce]
+            [rewrite-clj.impl.node.comment]
+            [rewrite-clj.impl.node.fn]
+            [rewrite-clj.impl.node.forms]
+            [rewrite-clj.impl.node.integer]
+            [rewrite-clj.impl.node.keyword]
+            [rewrite-clj.impl.node.meta]
+            [rewrite-clj.impl.node.protocols]
+            [rewrite-clj.impl.node.quote]
+            [rewrite-clj.impl.node.reader-macro]
+            [rewrite-clj.impl.node.regex]
+            [rewrite-clj.impl.node.seq]
+            [rewrite-clj.impl.node.string]
+            [rewrite-clj.impl.node.token]
+            [rewrite-clj.impl.node.uneval]
+            [rewrite-clj.impl.node.whitespace])
+  (:require-macros [rewrite-clj.impl.potemkin-cljs :refer [import-vars]]))
 
 (import-vars
- [rewrite-clj.internal.node.protocols
+ [rewrite-clj.impl.node.protocols
   coerce
   children
   child-sexprs
@@ -35,58 +35,58 @@
   string
   tag]
 
- [rewrite-clj.internal.node.comment
+ [rewrite-clj.impl.node.comment
   comment-node
   comment?]
 
- [rewrite-clj.internal.node.fn
+ [rewrite-clj.impl.node.fn
   fn-node]
 
- [rewrite-clj.internal.node.forms
+ [rewrite-clj.impl.node.forms
   forms-node]
 
- [rewrite-clj.internal.node.integer
+ [rewrite-clj.impl.node.integer
   integer-node]
 
- [rewrite-clj.internal.node.keyword
+ [rewrite-clj.impl.node.keyword
   keyword-node]
 
- [rewrite-clj.internal.node.meta
+ [rewrite-clj.impl.node.meta
   meta-node
   raw-meta-node]
 
- [rewrite-clj.internal.node.regex
+ [rewrite-clj.impl.node.regex
   regex-node]
 
- [rewrite-clj.internal.node.reader-macro
+ [rewrite-clj.impl.node.reader-macro
   deref-node
   eval-node
   reader-macro-node
   var-node]
 
- [rewrite-clj.internal.node.seq
+ [rewrite-clj.impl.node.seq
   list-node
   map-node
   namespaced-map-node
   set-node
   vector-node]
 
- [rewrite-clj.internal.node.string
+ [rewrite-clj.impl.node.string
   string-node]
 
- [rewrite-clj.internal.node.quote
+ [rewrite-clj.impl.node.quote
   quote-node
   syntax-quote-node
   unquote-node
   unquote-splicing-node]
 
- [rewrite-clj.internal.node.token
+ [rewrite-clj.impl.node.token
   token-node]
 
- [rewrite-clj.internal.node.uneval
+ [rewrite-clj.impl.node.uneval
   uneval-node]
 
- [rewrite-clj.internal.node.whitespace
+ [rewrite-clj.impl.node.whitespace
   comma-separated
   line-separated
   linebreak?

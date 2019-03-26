@@ -4,8 +4,8 @@
   (:require [clojure.tools.reader.edn :as edn]
             [cljs.tools.reader.reader-types :as r]
             [cljs.tools.reader.impl.commons :refer [parse-symbol]]
-            [rewrite-clj.internal.interop :as interop]
-            [rewrite-clj.internal.node.protocols :as nd])
+            [rewrite-clj.impl.interop :as interop]
+            [rewrite-clj.impl.node.protocols :as nd])
   (:import [goog.string StringBuffer]))
 
 (defn throw-reader
