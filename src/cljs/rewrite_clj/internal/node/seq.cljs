@@ -54,7 +54,7 @@
     (let [[nspace' m] (node/sexprs children)
           nspace (if (namespace nspace')
                    ;; TODO: what to do for cljs? asctually does this even make sense for clj?
-                   (-> (ns-aliases *ns*)
+                   (-> nil ;; (ns-aliases *ns*)
                        (get (symbol (name nspace')))
                        (ns-name)
                        (name))
