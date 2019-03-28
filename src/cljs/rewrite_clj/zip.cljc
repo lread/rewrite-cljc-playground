@@ -14,9 +14,10 @@
             [rewrite-clj.impl.zip.subedit :include-macros true]
             [rewrite-clj.impl.zip.walk]
             [rewrite-clj.impl.zip.whitespace]
-            [rewrite-clj.impl.custom-zipper.core :as z])
-  (:require-macros rewrite-clj.zip
-                   [rewrite-clj.impl.potemkin-cljs :refer [import-vars import-vars-basedef]]))
+            [rewrite-clj.impl.custom-zipper.core :as z]
+            #?(:clj [rewrite-clj.impl.potemkin :refer [import-vars]]))
+  #?(:cljs (:require-macros rewrite-clj.zip
+                            [rewrite-clj.impl.potemkin2-cljs :refer [import-vars]])))
 
 (import-vars
  [rewrite-clj.impl.custom-zipper.core
@@ -28,7 +29,7 @@
   tag sexpr
   length
   value
-  ;; TODO: not applicable for cljs: of-file
+  #?(:clj of-file)
   of-string
   string root-string
   print print-root]
@@ -84,10 +85,11 @@
   insert-space-left insert-space-right
   insert-newline-left insert-newline-right
   prepend-space append-space
-  prepend-newline append-newline])
+  prepend-newline append-newline]
 
-;; ## Base zipper operations
-(import-vars-basedef
+ {:sym-to-pattern "@@orig-sym@@*"
+  :doc-to-pattern "Call zipper `@@orig-sym@@` function directly.\n\n@@orig-doc@@"}
+
  [rewrite-clj.impl.custom-zipper.core
   right left up down
   next prev

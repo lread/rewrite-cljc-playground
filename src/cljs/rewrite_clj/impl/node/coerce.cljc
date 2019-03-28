@@ -20,8 +20,8 @@
 
 (defn node-with-meta
   [n value]
-  ;; TODO: clojure a bit different here
-  (if (satisfies? IWithMeta value)
+  (if #?(:clj (instance? clojure.lang.IMeta value)
+         :cljs (satisfies? IWithMeta value))
     (let [mta (meta value)]
       (if (empty? mta)
         n
@@ -42,17 +42,17 @@
 (defn- record-node
   [m]
   (reader-macro-node
-   ;; TODO: cljs conversion dance.
-   [(token-node (symbol (string/replace (pr-str (type m)) "/" ".")))
+   [(token-node #?(:clj (symbol (.getName ^Class (class m)))
+                   :cljs (symbol (string/replace (pr-str (type m)) "/" "."))))
     (map-node (map->children m))]))
 
 ;; ## Tokens
 
 (extend-protocol NodeCoerceable
-  object
+  #?(:clj Object :cljs object)
   (coerce [v]
     (node-with-meta
-     ;; TODO: cljs only
+     ;; TODO: might be misleading, should never be a record for clj
      (if (record? v)
        (record-node v)
        (token-node v))
@@ -63,23 +63,21 @@
   (coerce [v]
     (token-node nil)))
 
-;; TODO: cljs only
-(extend-protocol NodeCoerceable
-  number
-  (coerce [n]
-    (node-with-meta
-     (token-node n)
-     n)))
+;; TODO: cljs only - is this needed?
+#?(:cljs (extend-protocol NodeCoerceable
+           number
+           (coerce [n]
+             (node-with-meta
+              (token-node n)
+              n))))
 
-;; TODO: cljs only
-(extend-protocol NodeCoerceable
-  string
-  (coerce [n]
-    (node-with-meta
-     (string-node n)
-     n)))
-
-
+;; TODO: cljs only - is this needed?
+#?(:cljs (extend-protocol NodeCoerceable
+           string
+           (coerce [n]
+             (node-with-meta
+              (string-node n)
+              n))))
 
 ;; ## Seqs
 
@@ -93,29 +91,23 @@
     sq))
 
 (extend-protocol NodeCoerceable
-  PersistentVector
+  #?(:clj clojure.lang.IPersistentVector :cljs PersistentVector)
   (coerce [sq]
     (seq-node vector-node sq))
-  List
+  #?(:clj clojure.lang.IPersistentList :cljs List)
   (coerce [sq]
     (seq-node list-node sq))
-  PersistentHashSet
+  #?(:clj clojure.lang.IPersistentSet :cljs PersistentHashSet)
   (coerce [sq]
     (seq-node set-node sq)))
 
-
-
-
 ;; ## Maps
 
-
-
-;; TODO: a record is not a PersistentHashMap in cljs so this does not work
-;; review clj cljs interop for this one
 (extend-protocol NodeCoerceable
-  PersistentHashMap
+  #?(:clj clojure.lang.IPersistentMap :cljs PersistentHashMap)
   (coerce [m]
     (node-with-meta
+     ;; TODO: might be misleading, will never be a record here for cljs
      (if (record? m)
        (record-node m)
        (map-node (map->children m)))
@@ -124,8 +116,7 @@
 ;; ## Vars
 
 (extend-protocol NodeCoerceable
-  ;; TODO: was clojure.lang.var for clj
-  Var
+  #?(:clj clojure.lang.Var :cljs Var)
   (coerce [v]
     (-> (str v)
         (subs 2)

@@ -1,4 +1,4 @@
-;; TODO: probably belongs under internal
+;; TODO: probably belongs under impl
 (ns ^:no-doc rewrite-clj.reader
   (:refer-clojure :exclude [peek next])
   (:require [clojure.tools.reader.edn :as edn]
@@ -6,7 +6,7 @@
             [cljs.tools.reader.impl.commons :refer [parse-symbol]]
             [rewrite-clj.impl.interop :as interop]
             [rewrite-clj.impl.node.protocols :as nd])
-  (:import [goog.string StringBuffer]))
+  #?(:cljs (:import [goog.string StringBuffer])))
 
 (defn throw-reader
   "Throw reader exception, including line line/column."
@@ -167,11 +167,12 @@
   (r/indexing-push-back-reader
    (r/string-push-back-reader s)))
 
-#_(defn file-reader
-  "Create reader for files."
-  ^clojure.tools.reader.reader_types.IndexingPushbackReader
-  [f]
-  (-> (io/file f)
-      (io/reader)
-      (PushbackReader. 2)
-      (r/indexing-push-back-reader 2)))
+#?(:clj
+   (defn file-reader
+     "Create reader for files."
+     ^clojure.tools.reader.reader_types.IndexingPushbackReader
+     [f]
+     (-> (io/file f)
+         (io/reader)
+         (PushbackReader. 2)
+         (r/indexing-push-back-reader 2))))

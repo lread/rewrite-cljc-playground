@@ -19,7 +19,7 @@
     "Convert node to printable string."))
 
 (extend-protocol Node
-  object
+  #?(:clj Object :cljs object)
   (tag [_] :unknown)
   (printable-only? [_] false)
   (sexpr [this] this)
@@ -58,7 +58,7 @@
     "How many characters appear before children?"))
 
 (extend-protocol InnerNode
-  object
+  #?(:clj Object :cljs object)
   (inner? [_] false)
   (children [_]
     (throw (ex-info "unsupported operation" {})))
@@ -93,24 +93,21 @@
              (str " " n))]
     (interop/simple-format "<%s:%s>" (name (tag node)) n')))
 
+#?(:clj (defn ^:no-doc write-node
+          [^java.io.Writer writer node]
+          (pr (node->string node))
+          #_(.write writer (node->string node))))
 
-(defn ^:no-doc write-node
-  [^java.io.Writer writer node]
-  (pr (node->string node))
-  #_(.write writer (node->string node)))
-
-(defn make-printable! [obj]
-  (extend-protocol IPrintWithWriter
-    obj
-    (-pr-writer [o writer _opts]
-      (-write writer (node->string o)))))
-
-;; TODO: clj version
-#_(defmacro ^:no-doc make-printable!
-    [class]
-    `(defmethod print-method ~class
-       [node# w#]
-       (write-node w# node#)))
+#?(:clj (defmacro ^:no-doc make-printable!
+          [class]
+          `(defmethod print-method ~class
+             [node# w#]
+             (write-node w# node#)))
+   :cljs (defn make-printable! [obj]
+           (extend-protocol IPrintWithWriter
+             obj
+             (-pr-writer [o writer _opts]
+               (-write writer (node->string o))))))
 
 ;; ## Helpers
 

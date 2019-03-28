@@ -1,11 +1,13 @@
 (ns ^:no-doc rewrite-clj.impl.potemkin-cljs
   (:require [clojure.string :as string]
-            [cljs.analyzer.api :as analyzer]))
+            [cljs.analyzer.api :as analyzer]
+            [cljs.util :as util]))
 
 (defmacro import-vars [& imports]
   `(do ~@(for [[from-ns# & defs#] imports
                from-sym# defs#]
            (let [r# (analyzer/ns-resolve from-ns# from-sym#)]
+             ;;(util/debug-prn (pr-str r#))
              `(def ~(with-meta from-sym# (:meta r#)) ~(:name r#))))))
 
 ;; TODO: consider genaralizing import-vars to optionally take customization fns like these basedef ones

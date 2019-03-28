@@ -9,8 +9,10 @@
 
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.clojure/clojurescript "1.10.520"
+                  ;; TODO: still need to exclude?
                   :exclusions [org.apache.ant/ant]]
-                 [org.clojure/tools.reader "1.3.2"]]
+                 [org.clojure/tools.reader "1.3.2"]
+                 [net.cgrand/macrovich "0.2.1"]]
 
   :source-paths ["src/clj/" "src/cljc" "src/cljs/"]
 
@@ -39,6 +41,7 @@
                                        :main rewrite-clj.runner
                                        :source-map true
                                        :optimizations :none
+                                       :warnings {:fn-deprecated false}
                                        :pretty-print true}}]}}
 
              :doc {:plugins  [[funcool/codeina "0.1.0"
