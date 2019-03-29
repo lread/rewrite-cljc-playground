@@ -1,9 +1,5 @@
-(ns ^:no-doc rewrite-clj.impl.potemkin2-cljs
- (:require [clojure.string :as string]
-           [cljs.analyzer.api :as ana-api]
-           [cljs.util :as util]
-           [rewrite-clj.impl.potemkin-helper :as helper]))
-;; TODO: could not, for the life of me, figure out how to make this cljc. So we have cljs version and a cljc versin which are quite similar
+(ns ^:no-doc rewrite-clj.impl.potemkin2
+  (:require [rewrite-clj.impl.potemkin-helper :as helper]))
 
 ;; --- copied from ztellman/potemkin
 ;;
@@ -34,91 +30,91 @@
 (defn- pretty-str [o]
   (with-out-str (clojure.pprint/pprint o)))
 
-;; TODO: assuming link-vars is only possible for clj - not even sure we want/need this at all
+;; TODO: is link-vars overkill for this proj? mebbe I don't understand it really
 (defn link-vars
   "Makes sure that all changes to `src` are reflected in `dst`."
   [src dst]
-     #_(add-watch src dst
-                (fn [_ src old new]
-                  (alter-var-root dst (constantly @src))
-                  (alter-meta! dst merge (dissoc (meta src) :name)))))
-
-(defn resolved-meta [resolved-sym]
-  (assoc (:meta resolved-sym) :name (symbol (name (:name resolved-sym)))))
-
-(defn resolve-sym [fully-qualified-sym]
-  ;;(util/debug-prn "cljs resolving " fully-qualified-sym)
-  (let [vr (ana-api/ns-resolve (symbol (namespace fully-qualified-sym))
-                               (symbol (name fully-qualified-sym)))]
-      ;;(util/debug-prn "-vr-->" (pr-str vr))
-      ;;(util/debug-prn "-mt-->" (pr-str (resolved-meta vr)) "\n")
-      vr))
+  #_(add-watch src dst
+    (fn [_ src old new]
+      (alter-var-root dst (constantly @src))
+      (alter-meta! dst merge (dissoc (meta src) :name)))))
 
 (defmacro import-fn
   "Given a function in another namespace, defines a function with the
    same name in the current namespace.  Argument lists, doc-strings,
    and original line-numbers are preserved."
   ([sym]
-     `(import-fn ~sym {}))
+   `(import-fn ~sym {}))
   ([sym opts]
-   (util/debug-prn "import-fn cljs======>" sym)
-   (let [vr (resolve-sym sym)
-         m (resolved-meta vr)
+   (println "clj--import-fn FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" sym)
+   (let [vr (resolve sym)
+         m (meta vr)
          n (:name m)
+         protocol (:protocol m)
          m (helper/alter-meta m opts)
          n (helper/alter-sym n opts)]
      (when-not vr
-       (throw (ex-info (str "Don't recognize " sym) {})))
+       (throw (IllegalArgumentException. (str "Don't recognize " sym))))
      (when (:macro m)
-       (throw (ex-info (str "Calling import-fn on a macro: " sym) {})))
-     ;;(util/debug-prn "import-fn pre do... vr" (pretty-str vr) )
-     ;;(util/debug-prn "import-fn pre do... m" (pretty-str m) )
-     ;;(util/debug-prn "import-fn pre do... n" n )
-     ;;(util/debug-prn "import-fn pre do... (var n)" (var n))
-     `(do
-        (def ~(with-meta n (dissoc m :name)) ~(:name vr))))))
+       (throw (IllegalArgumentException.
+               (str "Calling import-fn on a macro: " sym))))
+     (println "clj--import-fn pre do... vr" (pretty-str vr) )
+     (println "clj--import-fn pre do... dvr" (pretty-str (deref vr)) )
+     (println "clj--import-fn pre do... m" (pretty-str m))
+     (println "clj--import-fn pre do... n" (pretty-str n))
+     (println "clj--import-fn pre do... o" (pretty-str opts))
 
-;; TODO: will this import cljc macros twice? if used?  am importing macros via clj version now.
+     `(do
+        (def ~(with-meta n {:protocol protocol}) (deref ~vr))
+        (alter-meta! (var ~n) merge (dissoc (meta ~vr) :name))
+        #_(def ~(with-meta n (dissoc m :name)) ~(symbol vr))
+        #_(alter-meta! (var ~n) merge (dissoc ~m :name))
+        ~vr))))
+
 (defmacro import-macro
   "Given a macro in another namespace, defines a macro with the same
    name in the current namespace.  Argument lists, doc-strings, and
    original line-numbers are preserved."
   ([sym]
-     `(import-macro ~sym {}))
+   `(import-macro ~sym {}))
   ([sym opts]
-   (util/debug-prn "import-macro cljs" sym)
-   (let [vr (resolve-sym sym)
-         m (resolved-meta vr)
+   (println "import-macro clj MMMMMMMMMMMMMMMMMMMMMMMMM" sym)
+   (let [vr (resolve sym)
+         m (meta vr)
          n (:name m)
          m (helper/alter-meta m opts)
          n (helper/alter-sym n opts)
          n (with-meta n {})]
      (when-not vr
-       (throw (ex-info (str "Don't recognize " sym) {})))
+       (throw (IllegalArgumentException. (str "Don't recognize " sym))))
      (when-not (:macro m)
-       (throw (ex-info (str "Calling import-macro on a non-macro: " sym) {})))
+       (throw (IllegalArgumentException.
+               (str "Calling import-macro on a non-macro: " sym))))
      `(do
-        (def ~n ~(resolve-sym sym))
-        (alter-meta! (var ~n) merge (dissoc ~m :name))
-        (.setMacro (var ~n))))))
+        #_(def ~(with-meta n (dissoc m :name))  ~vr)
+        (def ~n ~(resolve sym))
+        (alter-meta! (var ~n) merge (dissoc (meta ~vr) :name))
+        #_(alter-meta! (var ~n) merge (dissoc ~m :name))
+        (.setMacro (var ~n))
+        ~vr))))
 
-;; TODO: I don't expect our project will make use of this one...
+;; TODO: unused methinks for this project...
 ;; TODO: untested
 (defmacro import-def
   "Given a regular def'd var from another namespace, defined a new var with the
    same name in the current namespace."
   ([sym]
-     `(import-def ~sym {}))
+   `(import-def ~sym {}))
   ([sym opts]
-   (util/debug-prn "import-def" sym)
-   (let [vr (resolve-sym sym)
-         m (resolved-meta vr)
+   (println "import-def clj DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" sym)
+   (let [vr (resolve sym)
+         m (meta vr)
          n (:name m)
          m (helper/alter-meta m opts)
          n (helper/alter-sym n opts)
          n (with-meta n (if (:dynamic m) {:dynamic true} {}))]
      (when-not vr
-       (throw (ex-info (str "Don't recognize " sym) {})))
+       (throw (IllegalArgumentException. (str "Don't recognize " sym))))
      `(do
         (def ~n @~vr)
         (alter-meta! (var ~n) merge (dissoc ~m :name))))))
@@ -130,18 +126,21 @@
     `(do
        ~@(map
           (fn [[sym opts]]
-            (let [vr (resolve-sym sym)
-                  m (resolved-meta vr)]
+            (let [vr (resolve sym)
+                  m (meta vr)]
               (cond
-               (:macro m) `(import-macro ~sym ~opts)
-               (:arglists m) `(import-fn ~sym ~opts)
-               :else `(import-def ~sym ~opts))))
+                (:macro m) `(import-macro ~sym ~opts)
+                (:arglists m) `(import-fn ~sym ~opts)
+                :else `(import-def ~sym ~opts))))
           syms))))
 
 ;; --- potemkin.types
 
-;; TODO: assuming this has no value for cljs
 (defmacro defprotocol+
   "A simpler version of 'potemkin.types/defprotocol+'."
   [name & body]
-  `(defprotocol ~name ~@body))
+  (let [prev-body (-> name resolve meta :potemkin/body)]
+    (when-not (= prev-body body)
+      `(let [p# (defprotocol ~name ~@body)]
+         (alter-meta! (resolve p#) assoc :potemkin/body '~body)
+         p#))))

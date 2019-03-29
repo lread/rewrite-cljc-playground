@@ -2,7 +2,8 @@
   (:require [clojure.test :refer [deftest is are testing run-tests]]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip :as z]
-            [rewrite-clj.impl.custom-zipper.core :as fz]))
+            [rewrite-clj.impl.custom-zipper.core :as fz])
+  #?(:clj (:import clojure.lang.ExceptionInfo)))
 
 ;; ## Regression Tests for 0.3.x -> 0.4.x
 
@@ -188,7 +189,7 @@
     (is (= [:token 2] (-> root (z/get 1) ->vec)))
     (is (= [:token 3] (-> root (z/get 2) ->vec)))
     (is (= [1 2 5] (-> root (z/assoc 2 5) z/sexpr)))
-    (is (thrown? js/Error (-> root (z/assoc 5 8) z/sexpr)))
+    (is (thrown? ExceptionInfo (-> root (z/assoc 5 8) z/sexpr)))
     (is (= [2 3 4] (->> root (z/map #(z/edit % inc)) z/sexpr))))
   (let [root (z/of-string "(1 2 3)")]
     (is (z/seq? root))
@@ -198,7 +199,7 @@
     (is (= [:token 2] (-> root (z/get 1) ->vec)))
     (is (= [:token 3] (-> root (z/get 2) ->vec)))
     (is (= '(1 2 5) (-> root (z/assoc 2 5) z/sexpr)))
-    (is (thrown? js/Error (-> root (z/assoc 5 8) z/sexpr)))
+    (is (thrown? ExceptionInfo (-> root (z/assoc 5 8) z/sexpr)))
     (is (= '(2 3 4) (->> root (z/map #(z/edit % inc)) z/sexpr))))
   (let [root (z/of-string "#{1 2 3}")]
     (is (z/seq? root))
@@ -208,7 +209,7 @@
     (is (= [:token 2] (-> root (z/get 1) ->vec)))
     (is (= [:token 3] (-> root (z/get 2) ->vec)))
     (is (= #{1 2 5} (-> root (z/assoc 2 5) z/sexpr)))
-    (is (thrown? js/Error (-> root (z/assoc 5 8) z/sexpr)))
+    (is (thrown? ExceptionInfo (-> root (z/assoc 5 8) z/sexpr)))
     (is (= #{2 3 4} (->> root (z/map #(z/edit % inc)) z/sexpr))))
   (let [root (z/of-string "{:a 1 :b 2}")]
     (is (z/seq? root))
@@ -264,12 +265,12 @@
         (is (= "4" (z/->string r0)))
         (is (= "0" (z/->string r1)))))))
 
-;; TODO clj only
-#_(deftest t-creating-zippers-from-files
-  (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
-            (.deleteOnExit))]
-    (spit f data-string)
-    (is (= data-string (slurp f)))
-    (let [loc (z/of-file f)]
-      (is (= :list (first (->vec root))))
-      (is (= :forms (node/tag (z/root root)))))))
+#?(:clj
+   (deftest t-creating-zippers-from-files
+     (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
+               (.deleteOnExit))]
+       (spit f data-string)
+       (is (= data-string (slurp f)))
+       (let [loc (z/of-file f)]
+         (is (= :list (first (->vec root))))
+         (is (= :forms (node/tag (z/root root))))))))

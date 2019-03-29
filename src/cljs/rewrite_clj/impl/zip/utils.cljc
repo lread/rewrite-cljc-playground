@@ -82,7 +82,7 @@
 (defn remove-and-move-up [loc]
   (let [[node {l :l, ppath :ppath, pnodes :pnodes, rs :r, :as path}] loc]
     (if (nil? path)
-      (throw (js/Error. "Remove at top"))
+      (throw (ex-info "cannot remove at top" {}))
       (if (pos? (count l))
         (z/up (with-meta [(peek l)
                     (assoc path :l (pop l) :changed? true)]

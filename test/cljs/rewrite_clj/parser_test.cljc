@@ -1,10 +1,12 @@
 (ns ^{:doc "Tests for EDN parser."
       :author "Yannick Scherer"}
- rewrite-clj.parser-test
+    rewrite-clj.parser-test
+  (:refer-clojure :exclude [read-string])
   (:require [clojure.test :refer [deftest is are testing run-tests]]
             [clojure.tools.reader.edn :refer [read-string]]
             [rewrite-clj.node :as node]
-            [rewrite-clj.parser :as p]))
+            [rewrite-clj.parser :as p])
+  #?(:clj (:import clojure.lang.ExceptionInfo)))
 
 (deftest t-parsing-the-first-few-whitespaces
   (are [?ws ?parsed]
@@ -253,34 +255,18 @@
      "#:abc{:x 1, :y 1}"
      "#:abc   {:x 1, :y 1}"))
 
-;; clj version
-#_(deftest t-parsing-namespaced-maps-with-namespace-alias
-  (are [?s]
-      (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
-        (let [n (p/parse-string ?s)]
-          (is (= :namespaced-map (node/tag n)))
-          (is (= (count ?s) (node/length n)))
-          (is (= ?s (node/string n)))
-          (is (= {::node/x 1, ::node/y 1} (node/sexpr n)))))
-    "#::node{:x 1, :y 1}"
-    "#::node   {:x 1, :y 1}"))
-
-;; TODO: come back to this later,
-;; from clj
-;; user=> (require '[clojure.string :as s])
-;; nil
-;; user=> #::s{:kw 1, :n/kw 2, :_/bare 3, 0 4}
-;; {:clojure.string/kw 1, :n/kw 2, :bare 3, 0 4}
-;; for cljs.. I think we'll need to parse ns to get aliases
-#_(deftest t-parsing-namespaced-maps-with-namespace-alias
-  (are [?s]
-      (let [n (p/parse-string ?s)]
-        (is (= :namespaced-map (node/tag n)))
-        (is (= (count ?s) (node/length n)))
-        (is (= ?s (node/string n)))
-        (is (= {::node/x 1, ::node/y 1} (node/sexpr n))))
-    "#::node{:x 1, :y 1}"
-    "#::node   {:x 1, :y 1}"))
+;; TODO: need a version that also works in cljs
+#?(:clj
+   (deftest t-parsing-namespaced-maps-with-namespace-alias
+     (are [?s]
+         (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
+           (let [n (p/parse-string ?s)]
+             (is (= :namespaced-map (node/tag n)))
+             (is (= (count ?s) (node/length n)))
+             (is (= ?s (node/string n)))
+             (is (= {::node/x 1, ::node/y 1} (node/sexpr n)))))
+       "#::node{:x 1, :y 1}"
+       "#::node   {:x 1, :y 1}")))
 
 (deftest t-parsing-exceptions
   (are [?s ?p]
@@ -322,22 +308,22 @@
     (is (= [:comment :list] (map node/tag children)))
     (node/string (first children))))
 
-;; TODO: not applicable for cljs
-#_(deftest t-parsing-files
-  (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
-            (.deleteOnExit))
-        s "âbcdé"
-        c ";; Hi"
-        o (str c "\n\n" (pr-str s))]
-    (spit f o)
-    (is (= o (slurp f)))
-    (let [n (p/parse-file-all f)
-          children (node/children n)]
-      (is (= :forms (node/tag n)))
-      (is (= o (node/string n)))
-      (is (= s (node/sexpr n)))
-      (is (= [:comment :newline :token] (map node/tag children)))
-      (is (= [";; Hi\n" "\n" (pr-str s)] (map node/string children))))))
+#?(:clj
+   (deftest t-parsing-files
+     (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
+               (.deleteOnExit))
+           s "âbcdé"
+           c ";; Hi"
+           o (str c "\n\n" (pr-str s))]
+       (spit f o)
+       (is (= o (slurp f)))
+       (let [n (p/parse-file-all f)
+             children (node/children n)]
+         (is (= :forms (node/tag n)))
+         (is (= o (node/string n)))
+         (is (= s (node/sexpr n)))
+         (is (= [:comment :newline :token] (map node/tag children)))
+         (is (= [";; Hi\n" "\n" (pr-str s)] (map node/string children)))))))
 
 (defn- nodes-with-meta
   "Create map associating row/column number pairs with the node at that position."

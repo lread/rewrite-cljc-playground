@@ -1,4 +1,4 @@
-(ns ^:no-doc rewrite-clj.impl.potemkin2
+(ns ^:no-doc rewrite-clj.impl.potemkin2-cljc
   #?(:clj
      (:require [net.cgrand.macrovich :as macros]
                [cljs.util :as ut])

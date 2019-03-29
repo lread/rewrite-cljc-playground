@@ -4,7 +4,8 @@
             [rewrite-clj.impl.zip.base :as base]
             [rewrite-clj.impl.zip.edit :as e]
             [rewrite-clj.impl.zip.seq :as sq]
-            [rewrite-clj.impl.custom-zipper.core :as z]))
+            [rewrite-clj.impl.custom-zipper.core :as z])
+  #?(:clj (:import clojure.lang.ExceptionInfo)))
 
 (let [v (base/of-string "[1 2 3]")
       m (base/of-string "{:a 0, :b 1}")
@@ -41,7 +42,7 @@
   (is (-> "[1 2]" base/of-string sq/seq?)))
 
 (deftest t-get-from-vector-index-out-of-bounds
-  (is (thrown-with-msg? js/Error #"Index out of bounds"
+  (is (thrown-with-msg? ExceptionInfo #"Index out of bounds"
                         (-> "[5 10 15]" base/of-string (sq/get 5) z/node :value))))
 
 (deftest t-map-on-vector

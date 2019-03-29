@@ -98,16 +98,19 @@
           (pr (node->string node))
           #_(.write writer (node->string node))))
 
-#?(:clj (defmacro ^:no-doc make-printable!
-          [class]
-          `(defmethod print-method ~class
-             [node# w#]
-             (write-node w# node#)))
-   :cljs (defn make-printable! [obj]
-           (extend-protocol IPrintWithWriter
-             obj
-             (-pr-writer [o writer _opts]
-               (-write writer (node->string o))))))
+;; TODO: not sure how to to a clj only macro
+#_(defmacro ^:no-doc make-printable!
+    [class]
+    `(defmethod print-method ~class
+       [node# w#]
+       (write-node w# node#)))
+
+(defn make-printable! [obj]
+  #?(:cljs
+     (extend-protocol IPrintWithWriter
+       obj
+       (-pr-writer [o writer _opts]
+         (-write writer (node->string o))))))
 
 ;; ## Helpers
 

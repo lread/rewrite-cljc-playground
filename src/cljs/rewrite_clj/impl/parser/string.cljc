@@ -4,17 +4,17 @@
             [clojure.string :as string]
             [rewrite-clj.node :as node]
             [rewrite-clj.impl.parser.utils :as u])
-  (:import [goog.string StringBuffer]))
+  #?(:cljs (:import [goog.string StringBuffer])))
 
 (defn- flush-into
   "Flush buffer and add string to the given vector."
   [lines buf]
   (let [s (.toString buf)]
-    (.clear buf)
+    #?(:clj (.setLength buf 0) :cljs (.clear buf))
     (conj lines s)))
 
 (defn- read-string-data
-  [^not-native reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (u/ignore reader)
   (let [buf (StringBuffer.)]
     (loop [escape? false
@@ -33,10 +33,10 @@
         (u/throw-reader reader "Unexpected EOF while reading string.")))))
 
 (defn parse-string
-  [^not-native reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (node/string-node (read-string-data reader)))
 
 (defn parse-regex
-  [reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (let [h (read-string-data reader)]
     (string/join "\n" h)))

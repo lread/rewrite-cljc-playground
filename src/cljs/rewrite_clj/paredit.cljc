@@ -7,7 +7,7 @@
             [rewrite-clj.impl.zip.whitespace :as ws]
             [rewrite-clj.impl.zip.utils :as u]
             [rewrite-clj.node :as nd]
-            [rewrite-clj.impl.node.string :as sn :refer [StringNode] ]
+            [rewrite-clj.impl.node.string :as sn]
             [clojure.string :as cstring]))
 
 
@@ -72,7 +72,7 @@
     :vector (nd/vector-node v)
     :map (nd/map-node v)
     :set (nd/set-node v)
-    (throw (js/Error. (str "Unsupported wrap type: " t)))))
+    (throw (ex-info (str "usupported wrap type: " t) {}))))
 
 (defn- ^{:no-doc true} string-node? [zloc]
   (= (some-> zloc z/node type) (type (nd/string-node " "))))

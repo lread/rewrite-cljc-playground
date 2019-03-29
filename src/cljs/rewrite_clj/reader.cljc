@@ -2,15 +2,17 @@
 (ns ^:no-doc rewrite-clj.reader
   (:refer-clojure :exclude [peek next])
   (:require [clojure.tools.reader.edn :as edn]
-            [cljs.tools.reader.reader-types :as r]
-            [cljs.tools.reader.impl.commons :refer [parse-symbol]]
+            [clojure.tools.reader.reader-types :as r]
+            [clojure.tools.reader.impl.commons :refer [parse-symbol]]
             [rewrite-clj.impl.interop :as interop]
-            [rewrite-clj.impl.node.protocols :as nd])
-  #?(:cljs (:import [goog.string StringBuffer])))
+            [rewrite-clj.impl.node.protocols :as nd]
+            #?@(:clj [[clojure.java.io :as io]]))
+  #?(:cljs (:import [goog.string StringBuffer])
+     :clj (:import [java.io PushbackReader])))
 
 (defn throw-reader
   "Throw reader exception, including line line/column."
-  [^not-native reader fmt & data]
+  [#?(:cljs ^:not-native reader :clj reader) fmt & data]
   (let [c (r/get-column-number reader)
         l (r/get-line-number reader)]
     (throw
@@ -30,7 +32,7 @@
   [c]
   (identical? \, c))
 
-(defn ^boolean whitespace?
+(defn ^Boolean whitespace?
   "Checks whether a given character is whitespace"
   [c]
   (interop/clojure-whitespace? c))
@@ -47,7 +49,7 @@
        (interop/clojure-whitespace? c)
        (not (contains? #{\newline \return \,} c))))
 
-(defn ^boolean whitespace-or-boundary?
+(defn ^Boolean whitespace-or-boundary?
   [c]
   (or (whitespace? c) (boundary? c)))
 
@@ -56,10 +58,10 @@
 (defn read-while
   "Read while the chars fulfill the given condition. Ignores
     the unmatching char."
-  ([^not-native reader p?]
+  ([#?(:cljs ^not-native reader :clj reader) p?]
    (read-while reader p? (not (p? nil))))
 
-  ([^not-native reader p? eof?]
+  ([reader p? eof?]
    (let [buf (StringBuffer.)]
      (loop []
        (if-let [c (r/read-char reader)]
@@ -77,7 +79,7 @@
 (defn read-until
   "Read until a char fulfills the given condition. Ignores the
    matching char."
-  [^not-native reader p?]
+  [#?(:cljs ^not-native reader :clj reader) p?]
   (read-while
     reader
     (complement p?)
@@ -85,7 +87,7 @@
 
 (defn read-include-linebreak
   "Read until linebreak and include it."
-  [^not-native reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (str
     (read-until
       reader
@@ -99,34 +101,34 @@
 
 (defn ignore
   "Ignore the next character."
-  [^not-native reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (r/read-char reader)
   nil)
 
 (defn next
   "Read next char."
-  [^not-native reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (r/read-char reader))
 
 (defn unread
   "Unreads a char. Puts the char back on the reader."
-  [reader ch]
+  [#?(:cljs ^not-native reader :clj reader) ch]
   (r/unread reader ch))
 
 (defn peek
   "Peek next char."
-  [^not-native reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (r/peek-char reader))
 
 (defn position
   "Create map of `row-k` and `col-k` representing the current reader position."
-  [reader row-k col-k]
+  [#?(:cljs ^not-native reader :clj reader) row-k col-k]
   {row-k (r/get-line-number reader)
    col-k (r/get-column-number reader)})
 
 (defn read-with-meta
   "Use the given function to read value, then attach row/col metadata."
-  [^not-native reader read-fn]
+  [#?(:cljs ^not-native reader :clj reader) read-fn]
   (let [start-position (position reader :row :col)]
     (if-let [entry (read-fn reader)]
       (->> (position reader :end-row :end-col)
@@ -136,7 +138,7 @@
 (defn read-repeatedly
   "Call the given function on the given reader until it returns
    a non-truthy value."
-  [^not-native reader read-fn]
+  [#?(:cljs ^not-native reader :clj reader) read-fn]
   (->> (repeatedly #(read-fn reader))
        (take-while identity)
        (doall)))
@@ -144,7 +146,7 @@
 (defn read-n
   "Call the given function on the given reader until `n` values matching `p?` have been
    collected."
-  [^not-native reader node-tag read-fn p? n]
+  [#?(:cljs ^not-native reader :clj reader) node-tag read-fn p? n]
   {:pre [(pos? n)]}
   (loop [c 0
          vs []]

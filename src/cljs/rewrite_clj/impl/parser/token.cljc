@@ -1,13 +1,13 @@
 (ns ^:no-doc rewrite-clj.impl.parser.token
   (:require [rewrite-clj.node :as node]
             [rewrite-clj.reader :as r])
-  (:import [goog.string StringBuffer]))
+  #?(:cljs (:import [goog.string StringBuffer])))
 
 ;; TODO: these are cljs optimizations
 ;; the code is less readable, but should work for clj as well.
 
 (defn- join-2 [a b]
-  (-> a StringBuffer. (.append b) .toString))
+  (-> (StringBuffer.) (.append a) (.append b) .toString))
 
 (defn- ^boolean allowed-default? [c]
   false)
@@ -19,7 +19,7 @@
 
 
 (defn- read-to-boundary
-  [^not-native reader allowed?]
+  [#?(:cljs ^not-native reader :clj reader) allowed?]
   (r/read-until
    reader
    #(and (not (allowed? %))
@@ -29,7 +29,7 @@
 
 
 (defn- read-to-char-boundary
-  [^not-native reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (let [c (r/next reader)]
     (join-2 c (if (not (identical? c \\))
                 (read-to-boundary reader allowed-default?)
@@ -40,7 +40,7 @@
 (defn- symbol-node
   "Symbols allow for certain boundary characters that have
    to be handled explicitly."
-  [^not-native reader value value-string]
+  [#?(:cljs ^not-native reader :clj reader) value value-string]
   (let [suffix (read-to-boundary
                  reader
                  allowed-suffix?)]
@@ -56,7 +56,7 @@
 
 (defn parse-token
   "Parse a single token."
-  [^not-native reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (let [first-char (r/next reader)
         s (join-2 first-char (if (identical? first-char \\)
                                (read-to-char-boundary reader)

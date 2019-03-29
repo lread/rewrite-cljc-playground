@@ -16,7 +16,7 @@
   (:refer-clojure :exclude (replace remove next))
   (:require [rewrite-clj.impl.node.protocols :as node]
             [clojure.zip :as clj-zip])
-  (:require-macros [rewrite-clj.impl.custom-zipper.core :refer [defn-switchable]]))
+  #?(:cljs (:require-macros [rewrite-clj.impl.custom-zipper.core :refer [defn-switchable]])))
 
 ;; ## Switch
 ;;
@@ -45,7 +45,20 @@
   (::custom? value))
 
 ;; ## Implementation
-
+#?(:clj
+   (defmacro defn-switchable
+     [sym docstring params & body]
+     (let [placeholders (repeatedly (count params) gensym)]
+       `(do
+          (defn ~sym
+            ~docstring
+            [~@placeholders]
+            (if (custom-zipper? ~(first placeholders))
+              (let [~@(interleave params placeholders)]
+                ~@body)
+              (~(symbol "clojure.zip" (name sym)) ~@placeholders)))
+          (alter-meta! (var ~sym) assoc :arglists '(~params)))))
+)
 (defn-switchable node
   "Returns the node at loc"
   [{:keys [node]}]

@@ -18,7 +18,7 @@
     3.14M
     3e14
     ;;TODO: ratios are not valid in cljs, but cljs should be able to parse them, then again this is a coerce test.
-    ;; 3/4
+    #?(:clj 3/4)
 
   ;; symbol/keyword/string/...
     'symbol

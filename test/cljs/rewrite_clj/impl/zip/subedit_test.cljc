@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest is testing run-tests]]
             [rewrite-clj.impl.zip.base :as base]
             [rewrite-clj.impl.zip.move :as m]
-            [rewrite-clj.impl.zip.subedit :refer-macros [subedit-> edit->]]
+            [rewrite-clj.impl.zip.subedit :refer [subedit-> edit->]]
             [rewrite-clj.impl.custom-zipper.core :as z]))
 
 (let [root (base/of-string "[1 #{2 [3 4] 5} 6]")]

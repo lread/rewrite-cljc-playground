@@ -20,6 +20,14 @@
   #?(:clj (.toString (biginteger n) base)
      :cljs (.toString n base)))
 
+(defn min-int[]
+  #?(:clj  Long/MIN_VALUE
+     :cljs Number.MIN_SAFE_INTEGER))
+
+(defn max-int[]
+  #?(:clj Long/MAX_VALUE
+     :cljs Number.MAX_SAFE_INTEGER))
+
 (defn clojure-whitespace?
   [c]
   #?(:clj (and c (or (= c \,) (Character/isWhitespace c)))

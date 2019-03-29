@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.impl.node.meta
-  (:require [rewrite-clj.impl.node.protocols :as node]
-            [rewrite-clj.impl.node.whitespace :as ws]
+  (:require [rewrite-clj.impl.node.whitespace :as ws]
+            [rewrite-clj.impl.node.protocols :as node]
             [rewrite-clj.impl.interop :as interop]))
 
 ;; ## Node

@@ -20,19 +20,19 @@
 
 (defn ignore
   "Ignore next character of Reader."
-  [reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (r/read-char reader)
   nil)
 
 (defn throw-reader
-  [reader & msg]
+  [#?(:cljs ^not-native reader :clj reader) & msg]
   (let [c (r/get-column-number reader)
         l (r/get-line-number reader)]
     (throw (ex-info
             (str (apply str msg) " [at line " l ", column " c "]") {}))))
 
 (defn read-eol
-  [reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (loop [char-seq []]
     (if-let [c (r/read-char reader)]
       (if (linebreak? c)

@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.whitespace-test
+(ns rewrite-clj.impl.zip.whitespace-test
   (:require [clojure.test :refer [deftest is are testing run-tests]]
             [rewrite-clj.impl.zip.base :as base]
             [rewrite-clj.impl.custom-zipper.core :as z]

@@ -1,20 +1,43 @@
 (ns ^:no-doc rewrite-clj.impl.node.coerce
-  (:require [clojure.string :as string]
-            [rewrite-clj.impl.node.comment :refer [CommentNode]]
-            [rewrite-clj.impl.node.forms :refer [FormsNode]]
-            [rewrite-clj.impl.node.integer :refer [IntNode]]
-            [rewrite-clj.impl.node.keyword :refer [KeywordNode]]
-            [rewrite-clj.impl.node.quote :refer [QuoteNode]]
-            [rewrite-clj.impl.node.string :refer [StringNode string-node]]
-            [rewrite-clj.impl.node.uneval :refer [UnevalNode]]
-            [rewrite-clj.impl.node.meta :refer [MetaNode meta-node]]
-            [rewrite-clj.impl.node.fn :refer [FnNode]]
-            [rewrite-clj.impl.node.protocols :refer [NodeCoerceable coerce]]
-            [rewrite-clj.impl.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
-            [rewrite-clj.impl.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
-            [rewrite-clj.impl.node.token :refer [TokenNode token-node]]
-            [rewrite-clj.impl.node.whitespace :refer [WhitespaceNode NewlineNode whitespace-node]]
-            [rewrite-clj.impl.node.whitespace :as ws]))
+  (:require
+   #?@(:clj
+       [[rewrite-clj.impl.node
+         comment forms integer keyword quote string uneval
+         [meta :refer [meta-node]]
+         [protocols :as node :refer [NodeCoerceable coerce]]
+         [reader-macro :refer [reader-macro-node var-node]]
+         [seq :refer [vector-node list-node set-node map-node]]
+         [token :refer [token-node]]
+         [whitespace :as ws]]]
+       :cljs
+       [[clojure.string :as string]
+        [rewrite-clj.impl.node.comment :refer [CommentNode]]
+        [rewrite-clj.impl.node.forms :refer [FormsNode]]
+        [rewrite-clj.impl.node.integer :refer [IntNode]]
+        [rewrite-clj.impl.node.keyword :refer [KeywordNode]]
+        [rewrite-clj.impl.node.quote :refer [QuoteNode]]
+        [rewrite-clj.impl.node.string :refer [StringNode string-node]]
+        [rewrite-clj.impl.node.uneval :refer [UnevalNode]]
+        [rewrite-clj.impl.node.meta :refer [MetaNode meta-node]]
+        [rewrite-clj.impl.node.fn :refer [FnNode]]
+        [rewrite-clj.impl.node.protocols :refer [NodeCoerceable coerce]]
+        [rewrite-clj.impl.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
+        [rewrite-clj.impl.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
+        [rewrite-clj.impl.node.token :refer [TokenNode token-node]]
+        [rewrite-clj.impl.node.whitespace :refer [WhitespaceNode NewlineNode whitespace-node] :as ws]]))
+   #?(:clj
+      (:import [rewrite_clj.impl.node.comment CommentNode]
+               [rewrite_clj.impl.node.forms FormsNode]
+               [rewrite_clj.impl.node.integer IntNode]
+               [rewrite_clj.impl.node.keyword KeywordNode]
+               [rewrite_clj.impl.node.meta MetaNode]
+               [rewrite_clj.impl.node.quote QuoteNode]
+               [rewrite_clj.impl.node.reader_macro ReaderNode ReaderMacroNode DerefNode]
+               [rewrite_clj.impl.node.seq SeqNode]
+               [rewrite_clj.impl.node.string StringNode]
+               [rewrite_clj.impl.node.token TokenNode]
+               [rewrite_clj.impl.node.uneval UnevalNode]
+               [rewrite_clj.impl.node.whitespace WhitespaceNode NewlineNode])))
 
 ;; ## Helpers
 

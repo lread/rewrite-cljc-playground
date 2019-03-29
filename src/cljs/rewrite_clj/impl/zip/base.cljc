@@ -69,11 +69,12 @@
    (some-> s p/parse-string-all (edn options))))
 
 ;; TODO: clj only
-#_(defn of-file
-    "Create zipper from File."
-    ([f] (of-file f {}))
-    ([f options]
-     (some-> f p/parse-file-all (edn options))))
+#?(:clj
+   (defn of-file
+     "Create zipper from File."
+     ([f] (of-file f {}))
+     ([f options]
+      (some-> f p/parse-file-all (edn options)))))
 
 ;; ## Write
 
@@ -92,10 +93,9 @@
   ;; TODO: cljs has no print? using pr for now
   (pr s)
   (if writer
-    ;; TODO: clj only
-    #_(.write ^java.io.Writer writer s)
-    ;; TODO: is that right? maybe should just ignore writer for cljs
-    (-write *out* s)
+    #?(:clj (.write ^java.io.Writer writer s)
+       ;; TODO: is that right? maybe should just ignore writer for cljs
+       :cljs (-write *out* s))
     (recur s *out*)))
 
 (defn print

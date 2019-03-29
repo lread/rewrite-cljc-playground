@@ -8,12 +8,12 @@
 
 (defn ^:no-doc parse
   "Parse next form from the given reader."
-  [^not-native reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (p/parse-next reader))
 
 (defn ^:no-doc parse-all
   "Parse all forms from the given reader."
-  [^not-native reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (let [nodes (->> (repeatedly #(parse reader))
                    (take-while identity)
                    (doall))]

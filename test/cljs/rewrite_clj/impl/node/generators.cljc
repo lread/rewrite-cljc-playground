@@ -1,7 +1,8 @@
 (ns rewrite-clj.impl.node.generators
   (:require [clojure.set :as set]
             [clojure.test.check.generators :as gen]
-            [rewrite-clj.node :as node]))
+            [rewrite-clj.node :as node]
+            [rewrite-clj.impl.interop :as interop]))
 
 ;; Leaf nodes
 
@@ -20,9 +21,7 @@
    (fn [[n base]]
      (node/integer-node n base))
    (gen/tuple
-    (gen/choose Number.MIN_SAFE_INTEGER Number.MAX_SAFE_INTEGER)
-    ;; TODO: clj version
-    #_(gen/choose Long/MIN_VALUE Long/MAX_VALUE)
+    (gen/choose (interop/min-int) (interop/max-int))
     (gen/choose 2 36))))
 
 (def keyword-node
@@ -122,7 +121,7 @@
     (gen/tuple
      (gen/vector child-generator min max)
      (gen/vector printable-only-generator 0 (inc max))
-     (gen/vector (gen/choose 0 Number.MAX_SAFE_INTEGER) (+ max (inc max)))))))
+     (gen/vector (gen/choose 0 (interop/max-int)) (+ max (inc max)))))))
 
 (defn node
   "Generate parse nodes at random.

@@ -1,11 +1,11 @@
 (ns ^:no-doc rewrite-clj.impl.parser.keyword
   (:require [rewrite-clj.node :as node]
             [rewrite-clj.impl.parser.utils :as u]
-            [cljs.tools.reader.reader-types :as r]
+            [clojure.tools.reader.reader-types :as r]
             [clojure.tools.reader :as edn]))
 
 (defn parse-keyword
-  [reader]
+  [#?(:cljs ^not-native reader :clj reader)]
   (u/ignore reader)
   (if-let [c (r/peek-char reader)]
     (if (= c \:)
