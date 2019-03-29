@@ -2,20 +2,19 @@
   (:require [clojure.tools.reader.reader-types :as r]
             [rewrite-clj.impl.interop :as interop]))
 
-;; TODO: this file is a bit odd, it repeats code from other places
 (defn whitespace?
   "Check if a given character is a whitespace."
-  [c]
+  [^java.lang.Character c]
   (interop/clojure-whitespace? c))
 
 (defn linebreak?
   "Check if a given character is a linebreak."
-  [c]
+  [^java.lang.Character c]
   (and c (or (= c \newline) (= c \return))))
 
 (defn space?
   "Check if a given character is a non-linebreak whitespace."
-  [c]
+  [^java.lang.Character c]
   (and (not (linebreak? c)) (whitespace? c)))
 
 (defn ignore

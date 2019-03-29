@@ -8,7 +8,7 @@
 
 (defn- flush-into
   "Flush buffer and add string to the given vector."
-  [lines buf]
+  [lines ^StringBuffer buf]
   (let [s (.toString buf)]
     #?(:clj (.setLength buf 0) :cljs (.clear buf))
     (conj lines s)))

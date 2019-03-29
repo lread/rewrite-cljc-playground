@@ -38,8 +38,6 @@
     (assert (not (nil? zloc')) "function applied in 'edit-node' returned nil.")
     (move-to zloc' (path zloc))))
 
-;; ## Sub-Zipper
-
 #?(:clj
    (defmacro edit->
      "Like `->`, applying the given function to the current zipper location.
@@ -58,19 +56,7 @@
      [zloc & body]
      `(edit-node ~zloc #(->> % ~@body))))
 
-#?(:clj
-   (defmacro subedit->
-     "Like `->`, applying modifications to the current sub-tree, zipping
-   up to the current location afterwards."
-     [zloc & body]
-     `(subedit-node ~zloc #(-> % ~@body))))
-
-#?(:clj
-   (defmacro subedit->>
-     "Like `->>`, applying modifications to the current sub-tree, zipping
-   up to the current location afterwards."
-     [zloc & body]
-     `(subedit-node ~zloc #(->> % ~@body))))
+;; ## Sub-Zipper
 
 (defn subzip
   "Create zipper whose root is the current node."
@@ -86,3 +72,17 @@
   (let [zloc' (f (subzip zloc))]
     (assert (not (nil? zloc')) "function applied in 'subedit-node' returned nil.")
     (z/replace zloc (z/root zloc'))))
+
+#?(:clj
+   (defmacro subedit->
+     "Like `->`, applying modifications to the current sub-tree, zipping
+   up to the current location afterwards."
+     [zloc & body]
+     `(subedit-node ~zloc #(-> % ~@body))))
+
+#?(:clj
+   (defmacro subedit->>
+     "Like `->>`, applying modifications to the current sub-tree, zipping
+   up to the current location afterwards."
+     [zloc & body]
+     `(subedit-node ~zloc #(->> % ~@body))))

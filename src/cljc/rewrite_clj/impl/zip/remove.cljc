@@ -5,16 +5,25 @@
             [rewrite-clj.impl.zip.whitespace :as ws]
             [rewrite-clj.impl.custom-zipper.core :as z]))
 
-
-(defn- remove-trailing-space
+(defn- remove-trailing-while
   "Remove all whitespace following a given node."
   [zloc p?]
   (u/remove-right-while zloc p?))
 
-(defn- remove-preceding-space
+(defn- remove-preceding-while
   "Remove all whitespace preceding a given node."
   [zloc p?]
   (u/remove-left-while zloc p?))
+
+(defn- remove-p
+  [zloc p?]
+  (->> (-> (if (or (m/rightmost? zloc)
+                   (m/leftmost? zloc))
+             (remove-preceding-while zloc p?)
+             zloc)
+           (remove-trailing-while p?)
+           z/remove)
+       (ws/skip-whitespace z/prev)))
 
 (defn remove
   "Remove value at the given zipper location. Returns the first non-whitespace
@@ -37,26 +46,12 @@
   [zloc]
   {:pre [zloc]
    :post [%]}
-  (->> (-> (if (or (m/rightmost? zloc)
-                   (m/leftmost? zloc))
-             (remove-preceding-space zloc ws/whitespace?)
-             zloc)
-           (remove-trailing-space ws/whitespace?)
-           z/remove)
-       (ws/skip-whitespace z/prev)))
+  (remove-p zloc ws/whitespace?))
 
-;; TODO: this was in cljs version only... if we want to keep it we could DRY these two funcs
+;; TODO: this was in cljs version only...
 (defn remove-preserve-newline
   "Same as remove but preserves newlines"
   [zloc]
   {:pre [zloc]
    :post [%]}
-  (->> (-> (if (or (m/rightmost? zloc)
-                   (m/leftmost? zloc))
-             (remove-preceding-space zloc #(and (ws/whitespace? %)
-                                                (not (ws/linebreak? %))))
-             zloc)
-           (remove-trailing-space #(and (ws/whitespace? %)
-                                                (not (ws/linebreak? %))))
-           z/remove)
-       (ws/skip-whitespace z/prev)))
+  (remove-p zloc #(and (ws/whitespace? %) (not (ws/linebreak? %)))))

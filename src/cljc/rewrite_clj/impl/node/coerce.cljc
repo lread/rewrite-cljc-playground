@@ -104,7 +104,7 @@
 
 ;; ## Seqs
 
-(defn seq-node
+(defn- seq-node
   [f sq]
   (node-with-meta
     (->> (map coerce sq)

@@ -9,6 +9,8 @@
   #?(:cljs (:import [goog.string StringBuffer])
      :clj (:import [java.io PushbackReader])))
 
+;; ## Exception
+
 (defn throw-reader
   "Throw reader exception, including line line/column."
   [#?(:cljs ^:not-native reader :clj reader) fmt & data]
@@ -19,8 +21,10 @@
       (str (apply interop/simple-format fmt data)
            " [at line " l ", column " c "]") {}))))
 
+;; ## Decisions
+
 (defn boundary?
-  [c]
+  [^java.lang.Character c]
   "Check whether a given char is a token boundary."
   (contains?
    #{\" \: \; \' \@ \^ \` \~
@@ -28,28 +32,28 @@
    c))
 
 (defn comma?
-  [c]
+  [^java.lang.Character c]
   (identical? \, c))
 
 (defn ^Boolean whitespace?
   "Checks whether a given character is whitespace"
-  [c]
+  [^java.lang.Character c]
   (interop/clojure-whitespace? c))
 
 (defn linebreak?
   "Checks whether the character is a newline"
-  [c]
+  [^java.lang.Character c]
   (contains? #{\newline \return} c))
 
 (defn space?
   "Checks whether the character is a space"
-  [c]
+  [^java.lang.Character c]
   (and c
        (interop/clojure-whitespace? c)
        (not (contains? #{\newline \return \,} c))))
 
 (defn ^Boolean whitespace-or-boundary?
-  [c]
+  [^java.lang.Character c]
   (or (whitespace? c) (boundary? c)))
 
 ;; ## Helpers
@@ -60,7 +64,7 @@
   ([#?(:cljs ^not-native reader :clj reader) p?]
    (read-while reader p? (not (p? nil))))
 
-  ([reader p? eof?]
+  ([#?(:cljs ^not-native reader :clj reader) p? eof?]
    (let [buf (StringBuffer.)]
      (loop []
        (if-let [c (r/read-char reader)]
@@ -95,7 +99,7 @@
 
 (defn string->edn
   "Convert string to EDN value."
-  [s]
+  [^String s]
   (edn/read-string s))
 
 (defn ignore
@@ -161,6 +165,8 @@
           n
           (if (= n 1) "" "s")))
       vs)))
+
+;; ## Reader Types
 
 (defn string-reader
   "Create reader for strings."

@@ -7,8 +7,6 @@
             [rewrite-clj.impl.parser.whitespace :refer [parse-whitespace]]
             [clojure.tools.reader.reader-types :refer [peek-char]]))
 
-;; TODO: I might have undone important performance optimizations by matching this code up to clj http://rundis.github.io/blog/2015/clojurescript_performance_tuning.html. Multi methods, in 2015 at least, were a performance concern. rundis used a cond or case instead.
-
 ;; ## Base Parser
 
 (def ^:dynamic ^:private *delimiter*

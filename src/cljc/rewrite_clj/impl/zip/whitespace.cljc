@@ -40,7 +40,7 @@
        (drop-while p?)
        (first)))
 
-(defn ^:no-doc skip-whitespace
+(defn skip-whitespace
   "Perform the given movement (default: `z/right`) until a non-whitespace/
    non-comment node is encountered."
   ([zloc] (skip-whitespace z/right zloc))

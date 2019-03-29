@@ -4,9 +4,9 @@
             [rewrite-clj.impl.zip.base :as base]
             [rewrite-clj.impl.custom-zipper.core :as z]
             [rewrite-clj.impl.custom-zipper.utils :refer [remove-right
-                                                              remove-left
-                                                              remove-and-move-right
-                                                              remove-and-move-left]]))
+                                                          remove-left
+                                                          remove-and-move-right
+                                                          remove-and-move-left]]))
 
 (let [a (node/token-node 'a)
       b (node/token-node 'b)

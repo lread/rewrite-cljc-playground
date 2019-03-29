@@ -58,7 +58,7 @@
   "DEPRECATED. Return a tag/s-expression pair for inner nodes, or
    the s-expression itself for leaves."
   [zloc]
-  ;; ignore deprecated warning - calling deprecated from deprecated
+  ;; please ignore deprecated warning - calling deprecated from deprecated
   (some-> zloc z/node node/value))
 
 ;; ## Read
@@ -89,10 +89,11 @@
 
 (defn- print!
   [^String s writer]
-  (if writer
-    #?(:clj (.write ^java.io.Writer writer s)
-       :cljs (-write writer s))
-    (recur s *out*)))
+  #?(:clj
+     (if writer
+       (.write ^java.io.Writer writer s)
+       (recur s *out*))
+     :cljs (string-print s)))
 
 (defn print
   "Print current zipper location."

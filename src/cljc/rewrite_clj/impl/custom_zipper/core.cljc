@@ -23,7 +23,7 @@
 ;; To not force users into using this custom zipper, the following flag
 ;; is used to dispatch to `clojure.zip` when set to `false`.
 
-(defn custom-zipper
+(defn ^:no-doc custom-zipper
   [root]
   {::custom? true
    :node     root
@@ -46,7 +46,7 @@
 
 ;; ## Implementation
 #?(:clj
-   (defmacro defn-switchable
+   (defmacro ^:private defn-switchable
      [sym docstring params & body]
      (let [placeholders (repeatedly (count params) gensym)]
        `(do

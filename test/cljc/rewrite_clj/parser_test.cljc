@@ -18,18 +18,25 @@
 
 (deftest t-parsing-whitespace-strings
   (are [?ws ?children]
-       (let [n (p/parse-string-all ?ws)]
-         (is (= :forms (node/tag n)))
-         (is (= (.replace ?ws "\r\n" "\n") (node/string n)))
-         (is (= ?children (map (juxt node/tag node/string) (node/children n)))))
+      (let [n (p/parse-string-all ?ws)]
+        (is (= :forms (node/tag n)))
+        (is (= (.replace ?ws "\r\n" "\n") (node/string n)))
+        (is (= ?children (map (juxt node/tag node/string) (node/children n)))))
     "   \n   "     [[:whitespace "   "]
                     [:newline "\n"]
                     [:whitespace "   "]]
-    ;; TODO: Technically correct and shows clj behaviour but we won't bother with this on cljs version
-    ;; "\u2028"       [[:whitespace "\u2028"]]
     " \t \r\n \t " [[:whitespace " \t "]
                     [:newline "\n"]
                     [:whitespace " \t "]]))
+
+#?(:clj
+   (deftest t-parsing-unicode-whitespace-strings
+     (are [?ws ?children]
+         (let [n (p/parse-string-all ?ws)]
+           (is (= :forms (node/tag n)))
+           (is (= (.replace ?ws "\r\n" "\n") (node/string n)))
+           (is (= ?children (map (juxt node/tag node/string) (node/children n)))))
+       "\u2028"       [[:whitespace "\u2028"]])))
 
 (deftest t-parsing-simple-data
   (are [?s ?r]
