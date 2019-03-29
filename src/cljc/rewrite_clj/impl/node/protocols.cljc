@@ -1,10 +1,12 @@
 (ns ^:no-doc ^{:added "0.4.0"} rewrite-clj.impl.node.protocols
   (:require [clojure.string :as string]
-            [rewrite-clj.impl.interop :as interop]))
+            [rewrite-clj.impl.interop :as interop]
+            #?(:clj [rewrite-clj.impl.potemkin-clj :refer [defprotocol+]]))
+  #?(:cljs (:require-macros [rewrite-clj.impl.potemkin-cljs :refer [defprotocol+]])))
 
 ;; ## Node
 
-(defprotocol Node
+(defprotocol+ Node
   "Protocol for EDN/Clojure nodes."
   (tag [_]
     "Keyword representing the type of the node.")
@@ -46,7 +48,7 @@
 
 ;; ## Inner Node
 
-(defprotocol InnerNode
+(defprotocol+ InnerNode
   "Protocol for non-leaf EDN/Clojure nodes."
   (inner? [_]
     "Check whether the node can contain children.")
@@ -75,7 +77,7 @@
 
 ;; ## Coerceable
 
-(defprotocol NodeCoerceable
+(defprotocol+ NodeCoerceable
   "Protocol for values that can be coerced to nodes."
   (coerce [_]))
 
