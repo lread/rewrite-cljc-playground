@@ -1,4 +1,4 @@
-(ns ^:no-doc rewrite-clj.impl.potemkin2
+(ns ^:no-doc rewrite-clj.impl.potemkin-clj
   (:require [rewrite-clj.impl.potemkin-helper :as helper]
             [clojure.pprint :as pprint]))
 

@@ -1,4 +1,4 @@
-(ns ^:no-doc rewrite-clj.impl.potemkin2-cljs
+(ns ^:no-doc rewrite-clj.impl.potemkin-cljs
  (:require [clojure.string :as string]
            [cljs.analyzer.api :as ana-api]
            [cljs.util :as util]

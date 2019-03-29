@@ -20,6 +20,8 @@
 ** DONE add all rewrite-clj tests we possibly can
 ** DONE potemkin for macros... done in clj layer...
    CLOSED: [2019-03-26 Tue 17:48]
+** DONE convert to cljc project
+   CLOSED: [2019-03-29 Fri 14:19]
 ** TODO bring cljs up to parity with clj version
 ** TODO bring cljc version up to date with clj pull requests
 ** TODO verify positional support
@@ -31,7 +33,6 @@
     - clojure.reader
     - clojure/reader-string
 ** TODO cleanup coerce record support
-** TODO convert to cljc project
 ** Nodes
 *** DONE add print support
 *** DONE uneval
