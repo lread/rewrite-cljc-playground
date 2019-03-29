@@ -79,8 +79,6 @@
   "Protocol for values that can be coerced to nodes."
   (coerce [_]))
 
-;; ## Print Helper
-
 (defn- ^:no-doc node->string
   ^String
   [node]
@@ -93,24 +91,28 @@
              (str " " n))]
     (interop/simple-format "<%s:%s>" (name (tag node)) n')))
 
-#?(:clj (defn ^:no-doc write-node
-          [^java.io.Writer writer node]
-          (pr (node->string node))
-          #_(.write writer (node->string node))))
+#?(:clj
+   (defn ^:no-doc write-node
+     [^java.io.Writer writer node]
+     (.write writer (node->string node))))
 
-;; TODO: not sure how to to a clj only macro
-#_(defmacro ^:no-doc make-printable!
-    [class]
-    `(defmethod print-method ~class
-       [node# w#]
-       (write-node w# node#)))
-
-(defn make-printable! [obj]
-  #?(:cljs
+#?(:clj
+   (defmacro ^:no-doc make-printable-clj!
+     [class]
+     `(defmethod print-method ~class
+        [node# w#]
+        (write-node w# node#)))
+   :cljs
+   (defn ^:no-doc make-printable-cljs!
+     [obj]
      (extend-protocol IPrintWithWriter
        obj
        (-pr-writer [o writer _opts]
          (-write writer (node->string o))))))
+
+(defn make-printable! [obj]
+  #?(:clj (make-printable-clj! obj)
+     :cljs (make-printable-cljs! obj)))
 
 ;; ## Helpers
 

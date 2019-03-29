@@ -57,8 +57,7 @@
 (deftest t-vars
   (let [n (coerce #'identity)]
     (is (satisfies? node/Node n))
-    ;; TODO: will be clojure.core for clj
-    (is (= '(var cljs.core/identity) (node/sexpr n)))))
+    (is (= '(var #?(:clj clojure.core/identity :cljs cljs.core/identity)) (node/sexpr n)))))
 
 (deftest t-nil
   (let [n (coerce nil)]

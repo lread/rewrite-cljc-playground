@@ -61,7 +61,7 @@
   ([sym]
      `(import-fn ~sym {}))
   ([sym opts]
-   (util/debug-prn "import-fn cljs======>" sym)
+   ;;(util/debug-prn "import-fn cljs======>" sym)
    (let [vr (resolve-sym sym)
          m (resolved-meta vr)
          n (:name m)
@@ -86,7 +86,7 @@
   ([sym]
      `(import-macro ~sym {}))
   ([sym opts]
-   (util/debug-prn "import-macro cljs" sym)
+   ;;(util/debug-prn "import-macro cljs" sym)
    (let [vr (resolve-sym sym)
          m (resolved-meta vr)
          n (:name m)
@@ -110,7 +110,7 @@
   ([sym]
      `(import-def ~sym {}))
   ([sym opts]
-   (util/debug-prn "import-def" sym)
+   ;;(util/debug-prn "import-def" sym)
    (let [vr (resolve-sym sym)
          m (resolved-meta vr)
          n (:name m)

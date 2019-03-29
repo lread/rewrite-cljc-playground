@@ -42,8 +42,8 @@
   (is (-> "[1 2]" base/of-string sq/seq?)))
 
 (deftest t-get-from-vector-index-out-of-bounds
-  (is (thrown-with-msg? ExceptionInfo #"Index out of bounds"
-                        (-> "[5 10 15]" base/of-string (sq/get 5) z/node :value))))
+  (is (thrown? #?(:clj IndexOutOfBoundsException :cljs js/Error)
+               (-> "[5 10 15]" base/of-string (sq/get 5) z/node :value))))
 
 (deftest t-map-on-vector
   (let [sexpr "[1\n2\n3]"

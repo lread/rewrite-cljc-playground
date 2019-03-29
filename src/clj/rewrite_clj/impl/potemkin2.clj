@@ -1,5 +1,6 @@
 (ns ^:no-doc rewrite-clj.impl.potemkin2
-  (:require [rewrite-clj.impl.potemkin-helper :as helper]))
+  (:require [rewrite-clj.impl.potemkin-helper :as helper]
+            [clojure.pprint :as pprint]))
 
 ;; --- copied from ztellman/potemkin
 ;;
@@ -28,7 +29,7 @@
 ;; --- potemkin.namespaces
 
 (defn- pretty-str [o]
-  (with-out-str (clojure.pprint/pprint o)))
+  (with-out-str (pprint/pprint o)))
 
 ;; TODO: is link-vars overkill for this proj? mebbe I don't understand it really
 (defn link-vars
@@ -46,7 +47,7 @@
   ([sym]
    `(import-fn ~sym {}))
   ([sym opts]
-   (println "clj--import-fn FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" sym)
+   ;;(println "clj--import-fn FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" sym)
    (let [vr (resolve sym)
          m (meta vr)
          n (:name m)
@@ -58,11 +59,11 @@
      (when (:macro m)
        (throw (IllegalArgumentException.
                (str "Calling import-fn on a macro: " sym))))
-     (println "clj--import-fn pre do... vr" (pretty-str vr) )
-     (println "clj--import-fn pre do... dvr" (pretty-str (deref vr)) )
-     (println "clj--import-fn pre do... m" (pretty-str m))
-     (println "clj--import-fn pre do... n" (pretty-str n))
-     (println "clj--import-fn pre do... o" (pretty-str opts))
+     ;;(println "clj--import-fn pre do... vr" (pretty-str vr) )
+     ;;(println "clj--import-fn pre do... dvr" (pretty-str (deref vr)) )
+     ;;(println "clj--import-fn pre do... m" (pretty-str m))
+     ;;(println "clj--import-fn pre do... n" (pretty-str n))
+     ;;(println "clj--import-fn pre do... o" (pretty-str opts))
 
      `(do
         (def ~(with-meta n {:protocol protocol}) (deref ~vr))
@@ -78,7 +79,7 @@
   ([sym]
    `(import-macro ~sym {}))
   ([sym opts]
-   (println "import-macro clj MMMMMMMMMMMMMMMMMMMMMMMMM" sym)
+   ;;(println "import-macro clj MMMMMMMMMMMMMMMMMMMMMMMMM" sym)
    (let [vr (resolve sym)
          m (meta vr)
          n (:name m)
@@ -106,7 +107,7 @@
   ([sym]
    `(import-def ~sym {}))
   ([sym opts]
-   (println "import-def clj DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" sym)
+   ;;(println "import-def clj DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" sym)
    (let [vr (resolve sym)
          m (meta vr)
          n (:name m)

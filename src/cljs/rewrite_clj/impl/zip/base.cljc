@@ -90,12 +90,9 @@
 
 (defn- print!
   [^String s writer]
-  ;; TODO: cljs has no print? using pr for now
-  (pr s)
   (if writer
     #?(:clj (.write ^java.io.Writer writer s)
-       ;; TODO: is that right? maybe should just ignore writer for cljs
-       :cljs (-write *out* s))
+       :cljs (-write writer s))
     (recur s *out*)))
 
 (defn print

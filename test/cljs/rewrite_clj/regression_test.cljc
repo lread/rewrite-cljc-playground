@@ -2,8 +2,7 @@
   (:require [clojure.test :refer [deftest is are testing run-tests]]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip :as z]
-            [rewrite-clj.impl.custom-zipper.core :as fz])
-  #?(:clj (:import clojure.lang.ExceptionInfo)))
+            [rewrite-clj.impl.custom-zipper.core :as fz]))
 
 ;; ## Regression Tests for 0.3.x -> 0.4.x
 
@@ -189,7 +188,7 @@
     (is (= [:token 2] (-> root (z/get 1) ->vec)))
     (is (= [:token 3] (-> root (z/get 2) ->vec)))
     (is (= [1 2 5] (-> root (z/assoc 2 5) z/sexpr)))
-    (is (thrown? ExceptionInfo (-> root (z/assoc 5 8) z/sexpr)))
+    (is (thrown? #?(:clj IndexOutOfBoundsException :cljs js/Error) (-> root (z/assoc 5 8) z/sexpr)))
     (is (= [2 3 4] (->> root (z/map #(z/edit % inc)) z/sexpr))))
   (let [root (z/of-string "(1 2 3)")]
     (is (z/seq? root))
@@ -199,7 +198,7 @@
     (is (= [:token 2] (-> root (z/get 1) ->vec)))
     (is (= [:token 3] (-> root (z/get 2) ->vec)))
     (is (= '(1 2 5) (-> root (z/assoc 2 5) z/sexpr)))
-    (is (thrown? ExceptionInfo (-> root (z/assoc 5 8) z/sexpr)))
+    (is (thrown? #?(:clj IndexOutOfBoundsException :cljs js/Error) (-> root (z/assoc 5 8) z/sexpr)))
     (is (= '(2 3 4) (->> root (z/map #(z/edit % inc)) z/sexpr))))
   (let [root (z/of-string "#{1 2 3}")]
     (is (z/seq? root))
@@ -209,7 +208,7 @@
     (is (= [:token 2] (-> root (z/get 1) ->vec)))
     (is (= [:token 3] (-> root (z/get 2) ->vec)))
     (is (= #{1 2 5} (-> root (z/assoc 2 5) z/sexpr)))
-    (is (thrown? ExceptionInfo (-> root (z/assoc 5 8) z/sexpr)))
+    (is (thrown? #?(:clj IndexOutOfBoundsException :cljs js/Error) (-> root (z/assoc 5 8) z/sexpr)))
     (is (= #{2 3 4} (->> root (z/map #(z/edit % inc)) z/sexpr))))
   (let [root (z/of-string "{:a 1 :b 2}")]
     (is (z/seq? root))
