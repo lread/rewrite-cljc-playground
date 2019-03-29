@@ -14,7 +14,7 @@
                  [org.clojure/tools.reader "1.3.2"]
                  [net.cgrand/macrovich "0.2.1"]]
 
-  :source-paths ["src/clj/" "src/cljc" "src/cljs/"]
+  :source-paths ["src/clj/" "src/cljc/" "src/cljs/"]
 
   :clean-targets ^{:protect false} [:target-path :compile-path "out"]
 
@@ -27,7 +27,7 @@
              {:dependencies [[org.clojure/test.check "0.9.0"]
                              [com.bhauman/figwheel-main "0.2.1-SNAPSHOT"]]
 
-              :source-paths ["test/cljs" "test/cljc"]
+              :source-paths ["test/cljs/" "test/cljc/"]
               :resource-paths ["target"]
 
               :plugins [[lein-cljsbuild "1.1.7"]
@@ -43,13 +43,7 @@
                                        :optimizations :none
                                        :warnings {:fn-deprecated false}
                                        :pretty-print true}}]}}
-
-             :doc {:plugins  [[funcool/codeina "0.1.0"
-                               :exclusions [org.clojure/clojure]]]
-                   :codeina {:sources ["src"]
-                             :language :clojurescript
-                             :src-dir-uri "https://github.com/rundis/rewrite-cljs/blob/master/"
-                             :src-linenum-anchor-prefix "L"}}}
+              }
 
   :aliases {"auto-test" ["with-profile" "dev" "do" "clean," "cljsbuild" "auto" "test"]
             "fig" ["trampoline" "run" "-m" "figwheel.main"]})
