@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.impl.parser.core
   (:require [rewrite-clj.node :as node]
-            [rewrite-clj.reader :as reader]
+            [rewrite-clj.impl.reader :as reader]
             [rewrite-clj.impl.parser.keyword :refer [parse-keyword]]
             [rewrite-clj.impl.parser.string :refer [parse-string parse-regex]]
             [rewrite-clj.impl.parser.token :refer [parse-token]]

@@ -68,7 +68,6 @@
   ([s options]
    (some-> s p/parse-string-all (edn options))))
 
-;; TODO: clj only
 #?(:clj
    (defn of-file
      "Create zipper from File."

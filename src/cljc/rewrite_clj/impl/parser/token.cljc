@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.impl.parser.token
   (:require [rewrite-clj.node :as node]
-            [rewrite-clj.reader :as r])
+            [rewrite-clj.impl.reader :as r])
   #?(:cljs (:import [goog.string StringBuffer])))
 
 ;; TODO: these are cljs optimizations

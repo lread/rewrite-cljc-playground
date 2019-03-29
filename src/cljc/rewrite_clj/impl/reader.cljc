@@ -1,5 +1,4 @@
-;; TODO: probably belongs under impl
-(ns ^:no-doc rewrite-clj.reader
+(ns ^:no-doc rewrite-clj.impl.reader
   (:refer-clojure :exclude [peek next])
   (:require [clojure.tools.reader.edn :as edn]
             [clojure.tools.reader.reader-types :as r]

@@ -2,7 +2,7 @@
   "API to injest Clojure/ClojureScript source code for zipping."
   (:require [rewrite-clj.impl.parser.core :as p]
             [rewrite-clj.node :as node]
-            [rewrite-clj.reader :as reader]))
+            [rewrite-clj.impl.reader :as reader]))
 
 ;; ## Parser Core
 

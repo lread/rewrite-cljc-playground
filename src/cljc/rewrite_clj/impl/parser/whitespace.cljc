@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.impl.parser.whitespace
   (:require [rewrite-clj.node :as node]
-            [rewrite-clj.reader :as reader]))
+            [rewrite-clj.impl.reader :as reader]))
 
 (defn parse-whitespace
   "Parse as much whitespace as possible. The created node can either contain

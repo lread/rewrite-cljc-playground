@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.impl.node.whitespace
   (:require [rewrite-clj.impl.node.protocols :as node]
-            [rewrite-clj.reader :as r])
+            [rewrite-clj.impl.reader :as r])
   #?(:cljs (:require-macros rewrite-clj.impl.node.whitespace)))
 
 ;; ## Newline Modifiers
