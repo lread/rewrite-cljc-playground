@@ -3,7 +3,7 @@
             [rewrite-clj.zip :as z]
             [rewrite-clj.node :as n]))
 
-
+;; TODO: this was only in rewrite-cljs
 (deftest of-string-simple-sexpr
   (let [sexpr "(+ 1 2)"]
    (is (= sexpr (-> sexpr z/of-string z/root-string)))))
@@ -19,15 +19,14 @@
  ^{:dynamic true} (+ 1 1
    (+ 2 2)
    (reduce + [6 7 [1 2]]))"]
-    (is (= expected (-> sexpr
-                        z/of-string
+    (is (= expected (-> (z/of-string sexpr {:track-position? true})
+                        ;; TODO: update to [4 9]
                         (z/find-tag-by-pos {:row 4 :col 19} :vector)
                         (z/replace [5 6 7])
                         (z/append-child [1 2])
                         z/down
                         z/remove
                         z/root-string)))))
-
 
 (deftest namespaced-keywords
   (is (= ":dill" (-> ":dill" z/of-string z/root-string)))

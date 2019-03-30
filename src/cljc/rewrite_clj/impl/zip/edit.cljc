@@ -3,10 +3,10 @@
   (:require [rewrite-clj.impl.zip.base :as base]
             [rewrite-clj.impl.zip.move :as m]
             [rewrite-clj.impl.zip.remove :as r]
-            [rewrite-clj.impl.zip.utils :as u]
             [rewrite-clj.impl.zip.whitespace :as ws]
             [rewrite-clj.node :as node]
-            [rewrite-clj.impl.custom-zipper.core :as z]))
+            [rewrite-clj.impl.custom-zipper.core :as z]
+            [rewrite-clj.impl.custom-zipper.utils :as u]))
 
 ;; ## In-Place Modification
 

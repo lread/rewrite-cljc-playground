@@ -3,6 +3,7 @@
             [rewrite-clj.node :as n]
             [rewrite-clj.parser :as p]))
 
+;; TODO this was only in rewrite-cljs
 
 (deftest namespaced-keyword
   (is (= ":dill/dall"

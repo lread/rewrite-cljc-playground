@@ -3,9 +3,8 @@
 
   You might find inspirational examples here: http://pub.gajendra.net/src/paredit-refcard.pdf"
   (:require [rewrite-clj.zip :as z]
-            [clojure.zip :as zz]
             [rewrite-clj.impl.zip.whitespace :as ws]
-            [rewrite-clj.impl.zip.utils :as u]
+            [rewrite-clj.impl.custom-zipper.utils :as u]
             [rewrite-clj.node :as nd]
             [rewrite-clj.impl.node.string :as sn]
             [clojure.string :as cstring]))
@@ -38,7 +37,7 @@
   [zloc n]
   (-> zloc
       top
-      (z/find zz/next #(= (meta (z/node %)) (meta n)))))
+      (z/find z/next* #(= (meta (z/node %)) (meta n)))))
 
 
 
@@ -61,7 +60,7 @@
 (defn- ^{:no-doc true} remove-ws-or-comment [zloc]
   (if-not (ws/whitespace-or-comment? zloc)
     zloc
-    (recur (zz/remove zloc))))
+    (recur (z/remove* zloc))))
 
 
 (defn- ^{:no-doc true} create-seq-node
@@ -89,10 +88,10 @@
 
   - [1 2| 3 4] => [1 2|]"
   [zloc]
-  (let [left (zz/left zloc)]
+  (let [left (z/left* zloc)]
      (-> zloc
          (u/remove-right-while (constantly true))
-         zz/remove
+         z/remove*
          (#(if left
             (global-find-by-node % (z/node left))
             %)))))
@@ -123,8 +122,8 @@
                          :s
                          (.substring 0 (- (:col pos) col-bounds 1))
                          nd/comment-node))
-          (#(if (zz/right %)
-              (zz/insert-right % (nd/newlines 1))
+          (#(if (z/right* %)
+              (z/insert-right* % (nd/newlines 1))
               %))))))
 
 
@@ -207,10 +206,10 @@
   - ` ; |hello world => ;  |world`"
   [zloc pos]
   (if-let [candidate (->> (z/find-last-by-pos zloc pos)
-                          (ws/skip zz/right ws/whitespace?))]
-    (let [bounds (-> candidate z/node meta)
-          kill-in-node? (not (and (= (:row pos) (:row bounds))
-                                  (<= (:col pos) (:col bounds))))]
+                          (ws/skip z/right* ws/whitespace?))]
+    (let [[bounds-row bounds-col] (z/position candidate)
+          kill-in-node? (not (and (= (:row pos) bounds-row)
+                                  (<= (:col pos) bounds-col)))]
       (cond
        (and kill-in-node? (string-node? candidate)) (kill-word-in-string-node candidate pos)
        (and kill-in-node? (ws/comment? candidate)) (kill-word-in-comment-node candidate pos)
@@ -248,8 +247,8 @@
       zloc
       (let [slurper-loc (move-n zloc z/up n-ups)
             preserves (->> (-> slurper-loc
-                               zz/right
-                               (nodes-by-dir zz/right #(not (= (z/node slurpee-loc) (z/node %)))))
+                               z/right*
+                               (nodes-by-dir z/right* #(not (= (z/node slurpee-loc) (z/node %)))))
                            (filter #(or (nd/linebreak? %) (nd/comment? %))))]
         (-> slurper-loc
             (u/remove-right-while ws/whitespace-or-comment?)
@@ -283,17 +282,17 @@
   [zloc]
   (if-let [[slurpee-loc _] (find-slurpee zloc z/left)]
     (let [preserves (->> (-> slurpee-loc
-                             zz/right
-                             (nodes-by-dir zz/right ws/whitespace-or-comment?))
+                             z/right*
+                             (nodes-by-dir z/right* ws/whitespace-or-comment?))
                          (filter #(or (nd/linebreak? %) (nd/comment? %))))]
       (-> slurpee-loc
           (u/remove-left-while ws/whitespace-not-linebreak?)
           (#(if (and (z/left slurpee-loc)
-                     (not (ws/linebreak? (zz/left %))))
+                     (not (ws/linebreak? (z/left* %))))
               (ws/insert-space-left %)
               %))
           (u/remove-right-while ws/whitespace-or-comment?)
-          zz/remove
+          z/remove*
           z/next
           ((partial reduce z/insert-child) preserves)
           (z/insert-child (z/node slurpee-loc))
@@ -327,8 +326,8 @@
     (if-not (z/up zloc)
       zloc
       (let [preserves (->> (-> barfee-loc
-                               zz/left
-                               (nodes-by-dir zz/left ws/whitespace-or-comment?))
+                               z/left*
+                               (nodes-by-dir z/left* ws/whitespace-or-comment?))
                            (filter #(or (nd/linebreak? %) (nd/comment? %)))
                            reverse)]
         (-> barfee-loc
@@ -350,13 +349,13 @@
     (if-not (z/up zloc)
       zloc
       (let [preserves (->> (-> barfee-loc
-                               zz/right
-                               (nodes-by-dir zz/right ws/whitespace-or-comment?))
+                               z/right*
+                               (nodes-by-dir z/right* ws/whitespace-or-comment?))
                            (filter #(or (nd/linebreak? %) (nd/comment? %))))]
         (-> barfee-loc
             (u/remove-left-while ws/whitespace?)
             (u/remove-right-while ws/whitespace-or-comment?) ;; probably insert space when on same line !
-            zz/remove
+            z/remove*
             (z/insert-left (z/node barfee-loc))
             ((partial reduce z/insert-left) preserves)
             (#(or (global-find-by-node % (z/node zloc))
@@ -374,7 +373,7 @@
       z/left
       (u/remove-right-while ws/whitespace?)
       u/remove-right
-      (zz/append-child (z/node zloc))
+      (z/append-child* (z/node zloc))
       z/down))
 
 (defn wrap-fully-forward-slurp
@@ -430,8 +429,8 @@
     (if-not parent-loc
       zloc
       (let [t (z/tag parent-loc)
-            lefts (reverse (remove-first-if-ws (rest (nodes-by-dir (z/right zloc) zz/left))))
-            rights (remove-first-if-ws (nodes-by-dir (z/right zloc) zz/right))]
+            lefts (reverse (remove-first-if-ws (rest (nodes-by-dir (z/right zloc) z/left*))))
+            rights (remove-first-if-ws (nodes-by-dir (z/right zloc) z/right*))]
 
         (if-not (and (seq lefts) (seq rights))
           zloc
@@ -479,11 +478,11 @@
 
 (defn- ^{:no-doc true} join-seqs [left right]
   (let [lefts (-> left z/node nd/children)
-            ws-nodes (-> (zz/right left) (nodes-by-dir zz/right ws/whitespace-or-comment?))
+            ws-nodes (-> (z/right* left) (nodes-by-dir z/right* ws/whitespace-or-comment?))
             rights (-> right z/node nd/children)]
 
         (-> right
-            zz/remove
+            z/remove*
             remove-ws-or-comment
             z/up
             (z/insert-left (create-seq-node :vector
@@ -496,7 +495,7 @@
 
 (defn- ^{:no-doc true} join-strings [left right]
   (-> right
-      zz/remove
+      z/remove*
       remove-ws-or-comment
       (z/replace (nd/string-node (str (-> left z/node nd/sexpr)
                                       (-> right z/node nd/sexpr))))))

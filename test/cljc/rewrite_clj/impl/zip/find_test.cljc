@@ -142,35 +142,35 @@
 ;; there is pos support in clj proj now...
 (deftest find-last-by-pos
   (is (= "2" (-> "[1 2 3]"
-                 base/of-string
+                 (base/of-string {:track-position? true})
                  (f/find-last-by-pos {:row 1 :col 4} (constantly true))
                  base/string))))
 
 (deftest find-last-by-pos-when-whitespace
   (is (= " " (-> "[1 2 3]"
-                 base/of-string
+                 (base/of-string {:track-position? true})
                  (f/find-last-by-pos {:row 1 :col 3} (constantly true))
                  base/string))))
 
 (deftest find-last-by-pos-multiline
   (let [sample "\n{:a 1\n :b 2}" ]
     (is (= ":a" (-> sample
-                    base/of-string
+                    (base/of-string {:track-position? true})
                     (f/find-last-by-pos {:row 2 :col 2})
                     base/string)))
     (is (= "1"  (-> sample
-                    base/of-string
+                    (base/of-string {:track-position? true})
                     (f/find-last-by-pos {:row 2 :col 5})
                     base/string)))))
 
 (deftest find-tag-by-pos
   (is (= "[4 5 6]" (-> "[1 2 3 [4 5 6]]"
-                       base/of-string
+                       (base/of-string {:track-position? true})
                        (f/find-tag-by-pos {:row 1 :col 8} :vector)
                        base/string))))
 
 (deftest find-tag-by-pos-set
   (is (= "#{4 5 6}" (-> "[1 2 3 #{4 5 6}]"
-                       base/of-string
-                       (f/find-tag-by-pos {:row 1 :col 10} :set)
-                       base/string))))
+                        (base/of-string {:track-position? true})
+                        (f/find-tag-by-pos {:row 1 :col 10} :set)
+                        base/string))))

@@ -10,7 +10,8 @@
 ;see Huet
 
 (ns ^:no-doc ^{:doc "Functional hierarchical zipper, with navigation, editing,
-  and enumeration.  See Huet"
+  and enumeration.  See Huet.
+  Modified to optionally support row col position tracking."
        :author "Rich Hickey"}
   rewrite-clj.impl.custom-zipper.core
   (:refer-clojure :exclude (replace remove next))

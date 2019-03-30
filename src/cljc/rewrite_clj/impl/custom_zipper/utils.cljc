@@ -99,3 +99,21 @@
                          (update-in [:r] next)
                          (assoc :changed? true))]
           (meta loc))))))
+
+;; TODO: this was in cljs only..
+(defn remove-and-move-up
+  "Remove the current node and move up."
+  [loc]
+  (if (z/custom-zipper? loc)
+    ;; TODO: implement the custom zipper part...
+    (throw (ex-info "hmmmm"))
+    (let [[node {l :l, ppath :ppath, pnodes :pnodes, rs :r, :as path}] loc]
+      (if (nil? path)
+        (throw (ex-info "cannot remove at top" {}))
+        (if (pos? (count l))
+          (z/up (with-meta [(peek l)
+                            (assoc path :l (pop l) :changed? true)]
+                  (meta loc)))
+          (with-meta [(z/make-node loc (peek pnodes) rs)
+                      (and ppath (assoc ppath :changed? true))]
+            (meta loc)))))))

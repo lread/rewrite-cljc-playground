@@ -102,7 +102,8 @@
   next prev
   rightmost leftmost
   replace edit remove
-  insert-left insert-right])
+  insert-left insert-right
+  append-child])
 
 ;; ## DEPRECATED
 

@@ -1,8 +1,8 @@
 (ns ^:no-doc rewrite-clj.impl.zip.find
   (:refer-clojure :exclude [find])
-  (:require [rewrite-clj.impl.zip.base :as base]
+  (:require [rewrite-clj.impl.node.protocols :as node]
+            [rewrite-clj.impl.zip.base :as base]
             [rewrite-clj.impl.zip.move :as m]
-            [rewrite-clj.node :as node]
             [rewrite-clj.impl.zip.whitespace :as ws]
             [rewrite-clj.impl.custom-zipper.core :as z]))
 
@@ -17,11 +17,18 @@
     #(= (base/tag %) t)))
 
 ;; TODO: this was in cljs version only
-(defn in-range? [{:keys [row col end-row end-col]} {r :row c :col}]
-  (and (>= r row)
-       (<= r end-row)
-       (if (= r row) (>= c col) true)
-       (if (= r end-row) (<= c end-col) true)))
+;; TODO: note that this is adapted to clj position implementation
+(defn- position-in-range? [zloc pos]
+  (let [n (base/string zloc)
+        [r c] (if (map? pos) [(:row pos) (:col pos)] pos)
+        zpos (z/position zloc)
+        [row col] zpos
+        ;; TODO after verifying this works, consider making and end-pos available from custom-zipper
+        [end-row end-col] (node/+extent zpos (node/extent (z/node zloc)))]
+    (and (>= r row)
+         (<= r end-row)
+         (if (= r row) (>= c col) true)
+         (if (= r end-row) (<= c end-col) true))))
 
 
 ;; ## Find Operations
@@ -40,10 +47,9 @@
         (drop-while (complement p?))
         (first))))
 
-
 ;; TODO: this was in cljs version only
 (defn find-last-by-pos
-  "Find last node (if more than one node) that is in range of pos and
+  "Find last node (if more than one node) that is in range of `pos` and
   satisfying the given predicate depth first from initial zipper
   location."
   ([zloc pos] (find-last-by-pos zloc pos (constantly true)))
@@ -53,7 +59,7 @@
         (take-while identity)
         (take-while (complement m/end?))
         (filter #(and (p? %)
-                      (in-range? (-> % z/node meta) pos)))
+                      (position-in-range? % pos)))
         last)))
 
 

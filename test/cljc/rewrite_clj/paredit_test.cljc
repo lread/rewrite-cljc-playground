@@ -62,7 +62,7 @@
 
 (deftest kill-at-pos-when-in-empty-seq
   (let [res (-> "[] 5"
-                z/of-string
+                (z/of-string {:track-position? true})
                 (pe/kill-at-pos {:row 1 :col 2}))]
     (is (= "5" (-> res z/root-string)))
     (is (= "5" (-> res z/string)))))
@@ -70,13 +70,13 @@
 
 (deftest kill-inside-comment
   (is (= "; dill" (-> "; dilldall"
-                      z/of-string
+                      (z/of-string {:track-position? true})
                       (pe/kill-at-pos {:row 1 :col 7})
                       z/root-string))))
 
 (deftest kill-at-pos-when-string
   (let [res (-> "(str \"Hello \" \"World!\")"
-                z/of-string
+                (z/of-string {:track-position? true})
                 z/down
                 (pe/kill-at-pos {:row 1 :col 9}))]
     (is (= "(str \"He\" \"World!\")" (-> res z/root-string)))))
@@ -92,12 +92,10 @@ First line
 First line
   Second\")"
 
-        res (-> sample
-                z/of-string
+        res (-> (z/of-string sample {:track-position? true})
                 z/down
                 (pe/kill-at-pos {:row 3 :col 9}))]
     (is (= expected (-> res z/root-string)))))
-
 
 
 
@@ -106,42 +104,42 @@ First line
 (println \"Hello
          There
          World\")"]
-    (is (= "\n(println \"Hello\")" (-> sample
-                                      z/of-string
-                                      (pe/kill-at-pos {:row 2 :col 16})
-                                      (z/root-string))))))
+    (is (= "\n(println \"Hello\")" (-> (z/of-string sample {:track-position? true})
+                                       (pe/kill-at-pos {:row 2 :col 16})
+                                       (z/root-string))))))
 
 
 
 (deftest kill-at-pos-when-empty-string
-  (is (= "" (-> (z/of-string "\"\"") (pe/kill-at-pos {:row 1 :col 1}) z/root-string))))
+  (is (= "" (-> (z/of-string "\"\"" {:track-position? true})
+                (pe/kill-at-pos {:row 1 :col 1}) z/root-string))))
 
 
 
 (deftest kill-one-at-pos
-  (let [sample "[10 20 30]"]
+  (let [sample "[10 20 30]" ]
     (is (= "[10 30]"
-           (-> (z/of-string sample)
+           (-> (z/of-string sample {:track-position? true})
                (pe/kill-one-at-pos {:row 1 :col 4}) ; at whitespace
                z/root-string)))
     (is (= "[10 30]"
-           (-> (z/of-string sample)
+           (-> (z/of-string sample {:track-position? true})
                (pe/kill-one-at-pos {:row 1 :col 5})
                z/root-string)))))
 
 (deftest kill-one-at-pos-new-zloc-is-left-node
   (let [sample "[[10] 20 30]"]
     (is (= "[10]"
-           (-> (z/of-string sample)
+           (-> (z/of-string sample {:track-position? true})
                (pe/kill-one-at-pos {:row 1 :col 6})
                z/string)))
     (is (= "[10]"
-           (-> (z/of-string sample)
+           (-> (z/of-string sample {:track-position? true})
                (pe/kill-one-at-pos {:row 1 :col 7})
                z/string)))))
 
 (deftest kill-one-at-pos-keep-linebreaks
-  (let [sample (z/of-string "[10\n 20\n 30]")]
+  (let [sample (z/of-string "[10\n 20\n 30]" {:track-position? true})]
     (is (= "[20\n 30]"
            (-> sample (pe/kill-one-at-pos {:row 1 :col 2}) z/root-string)))
     (is (= "[10\n 30]"
@@ -150,7 +148,7 @@ First line
            (-> sample (pe/kill-one-at-pos {:row 3 :col 1}) z/root-string)))))
 
 (deftest kill-one-at-pos-in-comment
-  (let [sample (z/of-string "; hello world")]
+  (let [sample (z/of-string "; hello world" {:track-position? true})]
     (is (= "; hello "
            (-> (pe/kill-one-at-pos sample {:row 1 :col 8}) z/root-string)))
     (is (= "; hello "
@@ -161,7 +159,7 @@ First line
            (-> (pe/kill-one-at-pos sample {:row 1 :col 2}) z/root-string)))))
 
 (deftest kill-one-at-pos-in-string
-  (let [sample (z/of-string "\"hello world\"")]
+  (let [sample (z/of-string "\"hello world\"" {:track-position? true})]
     (is (= "\"hello \""
            (-> (pe/kill-one-at-pos sample {:row 1 :col 7}) z/root-string)))
     (is (= "\"hello \""
@@ -173,7 +171,7 @@ First line
 
 
 (deftest kill-one-at-pos-in-multiline-string
-  (let [sample (z/of-string "\"foo bar do\n lorem\"")]
+  (let [sample (z/of-string "\"foo bar do\n lorem\"" {:track-position? true})]
     (is (= "\" bar do\n lorem\""
            (-> (pe/kill-one-at-pos sample {:row 1 :col 2}) z/root-string)))
     (is (= "\"foo bar do\n \""
@@ -399,8 +397,8 @@ First line
 (deftest wrap-around-fn
   (is (= "(-> (#(+ 1 1)))" (-> (z/of-string "(-> #(+ 1 1))")
                                z/down z/right
-                                (pe/wrap-around :list)
-                                z/root-string))))
+                               (pe/wrap-around :list)
+                               z/root-string))))
 
 
 (deftest wrap-fully-forward-slurp
@@ -491,9 +489,10 @@ First line
 
 
 (deftest split-at-pos-when-string
-  (is (= "(\"Hello \" \"World\")" (-> (z/of-string "(\"Hello World\")")
-                                      (pe/split-at-pos {:row 1 :col 9})
-                                      z/root-string))))
+  (is (= "(\"Hello \" \"World\")"
+         (-> (z/of-string "(\"Hello World\")" {:track-position? true})
+             (pe/split-at-pos {:row 1 :col 9})
+             z/root-string))))
 
 
 (deftest join-simple
