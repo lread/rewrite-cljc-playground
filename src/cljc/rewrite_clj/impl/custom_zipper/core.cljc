@@ -58,8 +58,8 @@
               (let [~@(interleave params placeholders)]
                 ~@body)
               (~(symbol "clojure.zip" (name sym)) ~@placeholders)))
-          (alter-meta! (var ~sym) assoc :arglists '(~params)))))
-)
+          (alter-meta! (var ~sym) assoc :arglists '(~params))))))
+
 (defn-switchable node
   "Returns the node at loc"
   [{:keys [node]}]

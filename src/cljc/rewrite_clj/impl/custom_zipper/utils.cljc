@@ -100,15 +100,19 @@
                          (assoc :changed? true))]
           (meta loc))))))
 
-;; TODO: this was in cljs only..
+;; TODO: this was in cljs only.. added custom zipper portion
 (defn remove-and-move-up
-  "Remove the current node and move up."
+  "Remove the current node and move up.
+    `[a [b |c d]] -> [a |[b d]]`
+    `[a [|b c d]] -> [a |[c d]]`"
   [loc]
   (if (z/custom-zipper? loc)
-    ;; TODO: implement the custom zipper part...
-    (throw (ex-info "hmmmm"))
+    (let [{:keys [left]} loc]
+      (if (seq left)
+        (-> loc z/remove z/up)
+        (z/remove loc)))
     (let [[node {l :l, ppath :ppath, pnodes :pnodes, rs :r, :as path}] loc]
-      (if (nil? path)
+      (if (nil? ppath)
         (throw (ex-info "cannot remove at top" {}))
         (if (pos? (count l))
           (z/up (with-meta [(peek l)
