@@ -33,11 +33,13 @@
     So... this custom zipper.  It has core and util.. its basic functions are exposed via fun* on the zip api...
     But are these (core and util) intended to also be used directly? Should they come out from under impl?
     And if we use the positional reader... how do we not skip whitespace and comments?  Oh... that's maybe what the fn* are for??!?
-** TODO bring cljc version up to date with clj pull requests
-** TODO try to turn off deprecation warnings only for certain tests.
-** TODO cljs added remove-and-move-up to zipper utils
+** DONE cljs added remove-and-move-up to zipper utils
+   CLOSED: [2019-03-31 Sun 11:35]
    Would love to turf this if I can but it seems to be used by paredit
    If I need to keep it, I need to add cut custom zipper portion and need to add to tests.
+** DONE bring cljc version up to date with clj pull requests
+   CLOSED: [2019-03-31 Sun 21:32]
+** TODO try to turn off deprecation warnings only for certain tests.
 ** TODO make sure I am using the right reader
     - clojure.tools.reader
     - clojure.tools.reader.edn <- this one seems safest to me.
@@ -53,15 +55,17 @@
 *** DONE double check print support - I'm frankly not sure what it does
     CLOSED: [2019-03-29 Fri 18:03]
     Well, it supports a nice print out when an obj is evaled
-*** TODO look a differences between clj and cljs for regex
-*** TODO keyword & seq - namespace support for cljs
+*** DONE keyword & seq - namespace support for cljs
+    CLOSED: [2019-03-31 Sun 21:34]
+*** TODO move namepsaced made node to its own file
+*** TODO DRY cljs style namespaced map test
 ** Testing
 *** TODO what to do for dev - currently trying out fighweel main
 *** TODO what do do for ci - was using doo with karma and chrome headless
 *** TODO need also to test for Clojure - can kaocha be used here?
 *** TODO figure out what targets to test under for ClojureScript chrome-headless, node... ???
 *** TODO can I verify that I have not broken the api?
-*** TODO code coverage?
+*** TODO code coverage? Would be very good to know if coverage is weak in areas I have touched.
 *** TODO review cljs specific tests
     - node_test.cljs
     - paredit_test.cljs - this is a cljs specific feature… will see if it fits into cli version as well
@@ -98,12 +102,14 @@
 **** weavejester had some generic support?
 *** TODO Object vs object String vs string
 ** Language differences from library perspective
+*** DONE namespaced keywords and map - does it make sense for Clojure? How to work for ClojureScript
+    CLOSED: [2019-03-31 Sun 21:36]
 *** TODO what happens when we try to parse a ratio from ClojureScript
 *** TODO test handling a very large int in cljs
 *** TODO experiment with sexprs across lang differences
 *** TODO experiment with coerce across lang differences
 *** TODO consider not using sepxr internally - I expect it will be an interop problemo
-*** TODO namespaced keywords and map - does it make sense for Clojure? How to work for ClojureScript
+*** TODO regex - any issues?
 ** Performance
 *** DONE try to preserve hints - how do I know when they help - reflection warnings?
     kept not-native for cljs and preserved hints for clj

@@ -62,13 +62,11 @@
      `(import-fn ~sym {}))
   ([sym opts]
    ;;(util/debug-prn "import-fn cljs======>" sym)
-   (let [vr (resolve-sym sym)
+   (let [vr (or (resolve-sym sym) (throw (ex-info (str "Don't recognize " sym) {})))
          m (resolved-meta vr)
          n (:name m)
          m (helper/alter-meta m opts)
          n (helper/alter-sym n opts)]
-     (when-not vr
-       (throw (ex-info (str "Don't recognize " sym) {})))
      (when (:macro m)
        (throw (ex-info (str "Calling import-fn on a macro: " sym) {})))
      ;;(util/debug-prn "import-fn pre do... vr" (pretty-str vr) )
@@ -87,14 +85,12 @@
      `(import-macro ~sym {}))
   ([sym opts]
    ;;(util/debug-prn "import-macro cljs" sym)
-   (let [vr (resolve-sym sym)
+   (let [vr (or (resolve-sym sym) (throw (ex-info (str "Don't recognize " sym) {})))
          m (resolved-meta vr)
          n (:name m)
          m (helper/alter-meta m opts)
          n (helper/alter-sym n opts)
          n (with-meta n {})]
-     (when-not vr
-       (throw (ex-info (str "Don't recognize " sym) {})))
      (when-not (:macro m)
        (throw (ex-info (str "Calling import-macro on a non-macro: " sym) {})))
      `(do
@@ -111,14 +107,12 @@
      `(import-def ~sym {}))
   ([sym opts]
    ;;(util/debug-prn "import-def" sym)
-   (let [vr (resolve-sym sym)
+   (let [vr (or (resolve-sym sym) (throw (ex-info (str "Don't recognize " sym) {})))
          m (resolved-meta vr)
          n (:name m)
          m (helper/alter-meta m opts)
          n (helper/alter-sym n opts)
          n (with-meta n (if (:dynamic m) {:dynamic true} {}))]
-     (when-not vr
-       (throw (ex-info (str "Don't recognize " sym) {})))
      `(do
         (def ~n @~vr)
         (alter-meta! (var ~n) merge (dissoc ~m :name))))))

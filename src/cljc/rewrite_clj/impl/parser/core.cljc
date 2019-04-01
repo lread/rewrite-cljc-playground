@@ -4,6 +4,7 @@
             [rewrite-clj.impl.parser.keyword :refer [parse-keyword]]
             [rewrite-clj.impl.parser.string :refer [parse-string parse-regex]]
             [rewrite-clj.impl.parser.token :refer [parse-token]]
+            [rewrite-clj.impl.parser.namespaced-map :refer [parse-namespaced-map]]
             [rewrite-clj.impl.parser.whitespace :refer [parse-whitespace]]
             [clojure.tools.reader.reader-types :refer [peek-char]]))
 
@@ -119,7 +120,7 @@
     \' (node/var-node (parse-printables reader :var 1 true))
     \= (node/eval-node (parse-printables reader :eval 1 true))
     \_ (node/uneval-node (parse-printables reader :uneval 1 true))
-    \: (node/namespaced-map-node (parse-printables reader :keyword 2))
+    \: (parse-namespaced-map reader parse-next)
     \? (do
          ;; we need to examine the next character, so consume one (known \?)
          (reader/next reader)

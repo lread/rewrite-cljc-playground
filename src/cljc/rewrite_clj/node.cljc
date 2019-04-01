@@ -8,6 +8,7 @@
             [rewrite-clj.impl.node.integer]
             [rewrite-clj.impl.node.keyword]
             [rewrite-clj.impl.node.meta]
+            [rewrite-clj.impl.node.namespaced-map]
             [rewrite-clj.impl.node.protocols]
             [rewrite-clj.impl.node.quote]
             [rewrite-clj.impl.node.reader-macro]
@@ -56,6 +57,9 @@
   meta-node
   raw-meta-node]
 
+ [rewrite-clj.impl.node.namespaced-map
+  namespaced-map-node]
+
  [rewrite-clj.impl.node.regex
   regex-node]
 
@@ -68,7 +72,6 @@
  [rewrite-clj.impl.node.seq
   list-node
   map-node
-  namespaced-map-node
   set-node
   vector-node]
 

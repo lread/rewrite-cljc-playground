@@ -48,14 +48,12 @@
    `(import-fn ~sym {}))
   ([sym opts]
    ;;(println "clj--import-fn FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" sym)
-   (let [vr (resolve sym)
+   (let [vr (or (resolve sym) (throw (IllegalArgumentException. (str "Don't recognize " sym))))
          m (meta vr)
          n (:name m)
          protocol (:protocol m)
          m (helper/alter-meta m opts)
          n (helper/alter-sym n opts)]
-     (when-not vr
-       (throw (IllegalArgumentException. (str "Don't recognize " sym))))
      (when (:macro m)
        (throw (IllegalArgumentException.
                (str "Calling import-fn on a macro: " sym))))
@@ -80,14 +78,12 @@
    `(import-macro ~sym {}))
   ([sym opts]
    ;;(println "import-macro clj MMMMMMMMMMMMMMMMMMMMMMMMM" sym)
-   (let [vr (resolve sym)
+   (let [vr (or (resolve sym) (throw (IllegalArgumentException. (str "Don't recognize " sym))))
          m (meta vr)
          n (:name m)
          m (helper/alter-meta m opts)
          n (helper/alter-sym n opts)
          n (with-meta n {})]
-     (when-not vr
-       (throw (IllegalArgumentException. (str "Don't recognize " sym))))
      (when-not (:macro m)
        (throw (IllegalArgumentException.
                (str "Calling import-macro on a non-macro: " sym))))
@@ -108,14 +104,12 @@
    `(import-def ~sym {}))
   ([sym opts]
    ;;(println "import-def clj DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" sym)
-   (let [vr (resolve sym)
+   (let [vr (or (resolve sym) (throw (IllegalArgumentException. (str "Don't recognize " sym))))
          m (meta vr)
          n (:name m)
          m (helper/alter-meta m opts)
          n (helper/alter-sym n opts)
          n (with-meta n (if (:dynamic m) {:dynamic true} {}))]
-     (when-not vr
-       (throw (IllegalArgumentException. (str "Don't recognize " sym))))
      `(do
         (def ~n @~vr)
         (alter-meta! (var ~n) merge (dissoc ~m :name))))))
