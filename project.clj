@@ -8,11 +8,8 @@
             :key "mit"}
 
   :dependencies [[org.clojure/clojure "1.10.0"]
-                 [org.clojure/clojurescript "1.10.520"
-                  ;; TODO: still need to exclude?
-                  :exclusions [org.apache.ant/ant]]
-                 [org.clojure/tools.reader "1.3.2"]
-                 [net.cgrand/macrovich "0.2.1"]]
+                 [org.clojure/clojurescript "1.10.520"]
+                 [org.clojure/tools.reader "1.3.2"]]
 
   :source-paths ["src/clj/" "src/cljc/" "src/cljs/"]
 
