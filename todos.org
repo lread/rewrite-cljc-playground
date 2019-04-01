@@ -40,6 +40,7 @@
 ** DONE bring cljc version up to date with clj pull requests
    CLOSED: [2019-03-31 Sun 21:32]
 ** TODO try to turn off deprecation warnings only for certain tests.
+   See https://github.com/emezeske/lein-cljsbuild custom warning handlers
 ** TODO make sure I am using the right reader
     - clojure.tools.reader
     - clojure.tools.reader.edn <- this one seems safest to me.

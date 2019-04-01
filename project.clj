@@ -31,7 +31,7 @@
                         [lein-doo "0.1.11"]]
 
               :cljsbuild {:builds
-                          [{:id "test"
+                          [{:id "test-fig"
                             :source-paths ["test/cljs" "test/cljc"]
                             :compiler {:output-dir "target/cljsbuild/test/out"
                                        :output-to "target/cljsbuild/test/main.js"
@@ -43,4 +43,5 @@
               }
 
   :aliases {"auto-test" ["with-profile" "dev" "do" "clean," "cljsbuild" "auto" "test"]
+            ;; TODO incorrect, I think
             "fig" ["trampoline" "run" "-m" "figwheel.main"]})
