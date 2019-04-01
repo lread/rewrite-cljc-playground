@@ -29,7 +29,7 @@
      :cljs Number.MAX_SAFE_INTEGER))
 
 (defn clojure-whitespace?
-  [c]
+  [^java.lang.Character c]
   #?(:clj (and c (or (= c \,) (Character/isWhitespace c)))
      :cljs (and c (< -1 (.indexOf #js [\return \newline \tab \space ","] c)))))
 

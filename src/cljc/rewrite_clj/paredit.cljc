@@ -109,7 +109,7 @@
 
       (-> (take (inc row-idx) (-> zloc z/node :lines))
           vec
-          (update-in [row-idx] #(.substring % 0 sub-length))
+          (update-in [row-idx] #(subs % 0 sub-length))
           (#(z/replace zloc (nd/string-node %)))))))
 
 (defn- ^{:no-doc true} kill-in-comment-node [zloc pos]
@@ -120,7 +120,7 @@
           (z/replace (-> zloc
                          z/node
                          :s
-                         (.substring 0 (- (:col pos) col-bounds 1))
+                         (subs 0 (- (:col pos) col-bounds 1))
                          nd/comment-node))
           (#(if (z/right* %)
               (z/insert-right* % (nd/newlines 1))
@@ -167,8 +167,8 @@
 (defn-  ^{:no-doc true} remove-word-at
   [v col]
   (when-let [[start end] (find-word-bounds v col)]
-    (str (.substring v 0 start)
-         (.substring v end))))
+    (str (subs v 0 start)
+         (subs v end))))
 
 
 
@@ -453,11 +453,11 @@
         (z/replace (nd/string-node
                     (-> (take (inc row-idx) lines)
                         vec
-                        (update-in [row-idx] #(.substring % 0 split-col)))))
+                        (update-in [row-idx] #(subs % 0 split-col)))))
         (z/insert-right (nd/string-node
                          (-> (drop row-idx lines)
                                vec
-                             (update-in [0] #(.substring % split-col))))))))
+                             (update-in [0] #(subs % split-col))))))))
 
 
 (defn split-at-pos

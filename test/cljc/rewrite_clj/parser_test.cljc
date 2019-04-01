@@ -259,17 +259,6 @@
     ";\n"
     ";;\n"))
 
-#_(deftest t-parsing-auto-resolve-alias-namespaced-maps-via-alias-map
-  (are [?s]
-      (binding [*alias-map* '{node rewrite-clj.node}]
-        (let [n (p/parse-string ?s)]
-          (is (= :namespaced-map (node/tag n)))
-          (is (= (count ?s) (node/length n)))
-          (is (= ?s (node/string n)))
-          (is (= {::node/x 1, ::node/y 1} (node/sexpr n)))))
-    "#::node{:x 1, :y 1}"
-    "#::node   {:x 1, :y 1}"))
-
 (deftest t-parsing-prefix-namespaced-maps
   (are [?s ?children ?sexpr]
       (let [n (p/parse-string ?s)]

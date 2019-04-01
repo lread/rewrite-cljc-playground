@@ -34,7 +34,7 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "project.clj" }}
 
-      - run: lein doo chrome-headless test once
+      - run: lein test-all
 
       - store_test_results:
           path: target/out/test-results

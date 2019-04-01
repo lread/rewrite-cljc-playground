@@ -7,8 +7,6 @@
     orig-sym))
 
 (defn alter-meta [orig-meta opts]
-  ;;(util/debug-prn "alter-meta... orig-meta" (pretty-str orig-meta) )
-  ;;(util/debug-prn "alter-meta... opts" (pretty-str opts) )
   (if-let [doc-pattern (:doc-to-pattern opts)]
     (update orig-meta
             :doc

@@ -47,6 +47,7 @@
     - clojure.reader
     - clojure/reader-string
 ** TODO cleanup coerce record support
+** TODO have a try with https://github.com/xsc/rewrite-clj/issues/76
 ** Nodes
 *** DONE add print support
 *** DONE uneval
