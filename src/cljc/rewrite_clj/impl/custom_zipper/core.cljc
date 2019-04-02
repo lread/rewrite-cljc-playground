@@ -46,19 +46,21 @@
   (::custom? value))
 
 ;; ## Implementation
+
 #?(:clj
    (defmacro ^:private defn-switchable
      [sym docstring params & body]
-     (let [placeholders (repeatedly (count params) gensym)]
-       `(do
-          (defn ~sym
+     (let [placeholders (repeatedly (count params) gensym)
+           arglists (list params)]
+       `(defn ~sym
             ~docstring
-            [~@placeholders]
-            (if (custom-zipper? ~(first placeholders))
-              (let [~@(interleave params placeholders)]
-                ~@body)
-              (~(symbol "clojure.zip" (name sym)) ~@placeholders)))
-          (alter-meta! (var ~sym) assoc :arglists '(~params))))))
+          {:arglists '~arglists}
+          [~@placeholders]
+          (if (custom-zipper? ~(first placeholders))
+            (let [~@(interleave params placeholders)]
+              ~@body)
+            (~(symbol "clojure.zip" (name sym)) ~@placeholders))))))
+
 
 (defn-switchable node
   "Returns the node at loc"
