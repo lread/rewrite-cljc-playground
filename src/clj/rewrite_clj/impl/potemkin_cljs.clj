@@ -1,6 +1,7 @@
 (ns ^:no-doc rewrite-clj.impl.potemkin-cljs
  (:require [clojure.string :as string]
            [cljs.analyzer.api :as ana-api]
+           [cljs.env :as env]
            [cljs.util :as util]
            [rewrite-clj.impl.potemkin-helper :as helper]))
 ;; TODO: could not, for the life of me, figure out how to make this cljc. So we have cljs version and a cljc versin which are quite similar
@@ -47,12 +48,7 @@
   (assoc (:meta resolved-sym) :name (symbol (name (:name resolved-sym)))))
 
 (defn resolve-sym [fully-qualified-sym]
-  ;;(util/debug-prn "cljs resolving " fully-qualified-sym)
-  (let [vr (ana-api/ns-resolve (symbol (namespace fully-qualified-sym))
-                               (symbol (name fully-qualified-sym)))]
-      ;;(util/debug-prn "-vr-->" (pr-str vr))
-      ;;(util/debug-prn "-mt-->" (pr-str (resolved-meta vr)) "\n")
-      vr))
+  (ana-api/resolve (ana-api/empty-env) fully-qualified-sym))
 
 (defmacro import-fn
   "Given a function in another namespace, defines a function with the
@@ -69,12 +65,14 @@
          n (helper/alter-sym n opts)]
      (when (:macro m)
        (throw (ex-info (str "Calling import-fn on a macro: " sym) {})))
-     ;;(util/debug-prn "import-fn pre do... vr" (pretty-str vr) )
-     ;;(util/debug-prn "import-fn pre do... m" (pretty-str m) )
-     ;;(util/debug-prn "import-fn pre do... n" n )
+     #_(util/debug-prn "import-fn pre do... vr" (pretty-str vr) )
+     (util/debug-prn "import-fn pre do... m" (pretty-str m) )
+     #_(util/debug-prn "import-fn pre do... n" n )
      ;;(util/debug-prn "import-fn pre do... (var n)" (var n))
      `(do
-        (def ~(with-meta n (dissoc m :name)) ~(:name vr))))))
+        (def ~(with-meta n (dissoc m :name)) ~(:name vr))
+        ;; TODO: pretty sure this alter-meta is a noop on cljs
+        (alter-meta! (var ~n) merge (dissoc '~m :name))))))
 
 ;; TODO: will this import cljc macros twice? if used?  am importing macros via clj version now.
 (defmacro import-macro

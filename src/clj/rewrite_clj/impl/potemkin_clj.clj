@@ -60,14 +60,13 @@
      ;;(println "clj--import-fn pre do... vr" (pretty-str vr) )
      ;;(println "clj--import-fn pre do... dvr" (pretty-str (deref vr)) )
      ;;(println "clj--import-fn pre do... m" (pretty-str m))
+     ;;(println "clj--import-fn pre do .. mvr" (pretty-str (meta vr)))
      ;;(println "clj--import-fn pre do... n" (pretty-str n))
      ;;(println "clj--import-fn pre do... o" (pretty-str opts))
 
      `(do
         (def ~(with-meta n {:protocol protocol}) (deref ~vr))
-        (alter-meta! (var ~n) merge (dissoc (meta ~vr) :name))
-        #_(def ~(with-meta n (dissoc m :name)) ~(symbol vr))
-        #_(alter-meta! (var ~n) merge (dissoc ~m :name))
+        (alter-meta! (var ~n) merge (dissoc '~m :name))
         ~vr))))
 
 (defmacro import-macro
@@ -90,8 +89,7 @@
      `(do
         #_(def ~(with-meta n (dissoc m :name))  ~vr)
         (def ~n ~(resolve sym))
-        (alter-meta! (var ~n) merge (dissoc (meta ~vr) :name))
-        #_(alter-meta! (var ~n) merge (dissoc ~m :name))
+        (alter-meta! (var ~n) merge (dissoc '~m :name))
         (.setMacro (var ~n))
         ~vr))))
 
@@ -112,7 +110,8 @@
          n (with-meta n (if (:dynamic m) {:dynamic true} {}))]
      `(do
         (def ~n @~vr)
-        (alter-meta! (var ~n) merge (dissoc ~m :name))))))
+        (alter-meta! (var ~n) merge (dissoc '~m :name))
+        ~vr))))
 
 (defmacro import-vars
   "Imports a list of vars from other namespaces."

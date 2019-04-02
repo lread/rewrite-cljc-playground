@@ -25,9 +25,9 @@
                    :eftest {:report-to-file "target/out/test-results/clj-v1.9-junit.xml"}}
              :fig-test {:dependencies [[com.bhauman/figwheel-main "0.2.1-SNAPSHOT"]]
                         :resource-paths ["target"]}
-             :doo-test {:dependencies [[doo "0.1.11"]]
-                        :plugins [[lein-doo "0.1.11"]]}
-             :dev {:dependencies [[org.clojure/test.check "0.9.0"]]
+             :doo-test {:plugins [[lein-doo "0.1.11"]]}
+             :dev {:dependencies [[org.clojure/test.check "0.9.0"]
+                                  [doo "0.1.11"]]
                    :exclusions [org.clojure/clojure]
                    :plugins [[lein-cljsbuild "1.1.7"]
                              [lein-eftest "0.5.7"]]
@@ -65,9 +65,9 @@
             "chrome-headless" ["with-profile" "doo-test,dev" "doo" "chrome-headless"]
             "node" ["with-profile" "doo-test,dev" "doo" "node"]
 
-            "chrome-headless-test" ["chrome-headless" "test" "once"]
-            "node-test" ["node" "node-test" "once"]
-            "test-all-cljs" ["do" "chrome-headless-test," "node-test"]
+            "test-chrome-headless" ["chrome-headless" "test" "once"]
+            "test-node" ["node" "node-test" "once"]
+            "test-all-cljs" ["do" "test-chrome-headless," "test-node"]
 
             "test-all" ["do" "clean," "test-all-clj-junit," "test-all-cljs"]
 

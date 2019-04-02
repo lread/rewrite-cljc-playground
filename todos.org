@@ -72,6 +72,7 @@
     - node_test.cljs
     - paredit_test.cljs - this is a cljs specific feature… will see if it fits into cli version as well
     - zip_tests.cljs
+    Ran cloverage and it generated a good report but also failed many tests.  Not sure why.
 ** Docs & API
 *** DONE understand how cljdocs works - generate docs locally
     CLOSED: [2019-03-26 Tue 12:35]

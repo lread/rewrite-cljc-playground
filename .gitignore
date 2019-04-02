@@ -21,3 +21,4 @@ nashorn_code_cache
 .nrepl-port
 .idea/
 *.iml
+.dir-locals.el
