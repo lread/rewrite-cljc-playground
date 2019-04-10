@@ -1,20 +1,17 @@
-(ns ^:no-doc rewrite-clj.impl.potemkin-helper
+(ns ^:no-doc rewrite-clj.impl.potemkin.helper
   (:require [clojure.string :as string]))
 
-(defn alter-sym [orig-sym opts]
+(defn new-name [orig-name opts]
   (if-let [sym-pattern (:sym-to-pattern opts)]
-    (symbol (string/replace sym-pattern #"@@orig-sym@@" (str orig-sym)))
-    orig-sym))
+    (symbol (string/replace sym-pattern #"@@orig-name@@" (str orig-name)))
+    orig-name))
 
-(defn alter-meta [orig-meta opts]
-  (if-let [doc-pattern (:doc-to-pattern opts)]
-    (update orig-meta
-            :doc
-            (fn [orig-doc]
-              (-> doc-pattern
-                  (string/replace #"@@orig-sym@@" (str (:name orig-meta)))
-                  (string/replace #"@@orig-doc@@" (or orig-doc "")))))
-    orig-meta))
+(defn new-meta [orig-meta opts]
+  (when-let [doc-pattern (:doc-to-pattern opts)]
+    {:doc (-> doc-pattern
+              (string/replace #"@@orig-name@@" (str (:name orig-meta)))
+              (string/replace #"@@orig-doc@@" (:doc orig-meta "")))}))
+
 
 (defn unravel-syms [x]
   (loop [acc []

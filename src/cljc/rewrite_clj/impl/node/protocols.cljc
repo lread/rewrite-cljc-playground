@@ -1,8 +1,8 @@
 (ns ^:no-doc ^{:added "0.4.0"} rewrite-clj.impl.node.protocols
   (:require [clojure.string :as string]
             [rewrite-clj.impl.interop :as interop]
-            #?(:clj [rewrite-clj.impl.potemkin-clj :refer [defprotocol+]]))
-  #?(:cljs (:require-macros [rewrite-clj.impl.potemkin-cljs :refer [defprotocol+]])))
+            #?(:clj [rewrite-clj.impl.potemkin.clojure :refer [defprotocol+]]))
+  #?(:cljs (:require-macros [rewrite-clj.impl.potemkin.clojurescript :refer [defprotocol+]])))
 
 ;; ## Node
 

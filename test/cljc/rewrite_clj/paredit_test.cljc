@@ -4,8 +4,6 @@
             [clojure.zip :as zz]
             [rewrite-clj.paredit :as pe]))
 
-
-
 ;; helper
 (defn move-n [loc f n]
   (->> loc (iterate f) (take n) last))

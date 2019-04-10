@@ -15,9 +15,9 @@
             [rewrite-clj.impl.zip.walk]
             [rewrite-clj.impl.zip.whitespace]
             [rewrite-clj.impl.custom-zipper.core :as z]
-            #?(:clj [rewrite-clj.impl.potemkin-clj :refer [import-vars]]))
+            #?(:clj [rewrite-clj.impl.potemkin.clojure :refer [import-vars]]))
   #?(:cljs (:require-macros [rewrite-clj.zip]
-                            [rewrite-clj.impl.potemkin-cljs :refer [import-vars]])))
+                            [rewrite-clj.impl.potemkin.clojurescript :refer [import-vars]])))
 
 ;; import macros for both clj and cljs
 #?(:clj
@@ -94,8 +94,8 @@
   prepend-space append-space
   prepend-newline append-newline]
 
- {:sym-to-pattern "@@orig-sym@@*"
-  :doc-to-pattern "Call zipper `@@orig-sym@@` function directly.\n\n@@orig-doc@@"}
+ {:sym-to-pattern "@@orig-name@@*"
+  :doc-to-pattern "Call zipper `@@orig-name@@` function directly.\n\n@@orig-doc@@"}
 
  [rewrite-clj.impl.custom-zipper.core
   right left up down

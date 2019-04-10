@@ -86,6 +86,7 @@
     CLOSED: [2019-03-29 Fri 18:21]
     have chosen to leave them under impl but expose docs for now
 *** TODO see if we can get import-vars etc source to point to real source
+*** TODO potemkin - name is a better var name than sym
 *** TODO update README to be at least in line with rewrite-clj - ideally improve it.
 ** Interop
 *** DONE abstract a format maybe call it simple-format
