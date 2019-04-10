@@ -19,10 +19,15 @@
                          "reporters" ["progress" "junit"]
                          "junitReporter" {"outputDir" "target/out/test-results"}}}}
 
-  :profiles {:1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]
-                   :eftest {:report-to-file "target/out/test-results/clj-v1.8-junit.xml"}}
-             :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]
-                   :eftest {:report-to-file "target/out/test-results/clj-v1.9-junit.xml"}}
+  ;; TODO: is there a better way
+  :profiles {:1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}
+             :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
+             :1.8-junit {:eftest {:report-to-file "target/out/test-results/clj-v1.8-junit.xml"
+                                  :report eftest.report.junit/report}}
+             :1.9-junit {:eftest {:report-to-file "target/out/test-results/clj-v1.9-junit.xml"
+                                  :report eftest.report.junit/report}}
+             :1.10-junit {:eftest {:report-to-file "target/out/test-results/clj-v1.10-junit.xml"
+                                   :report eftest.report.junit/report}}
              :fig-test {:dependencies [[com.bhauman/figwheel-main "0.2.1-SNAPSHOT"]]
                         :resource-paths ["target"]}
              :doo-test {:plugins [[lein-doo "0.1.11"]]}
@@ -31,10 +36,9 @@
                    :exclusions [org.clojure/clojure]
                    :plugins [[lein-cljsbuild "1.1.7"]
                              [lein-eftest "0.5.7"]]
-                   :source-paths ["test/cljs/" "test/cljc/"]
+                   :source-paths ["test/clj" "test/cljs/" "test/cljc/"]
                    :eftest {:multithread? false
-                            :report eftest.report.junit/report
-                            :report-to-file "target/out/test-results/clj-v1.10-junit.xml"}
+                            :report eftest.report.pretty/report}
                    :cljsbuild {:builds
                                [{:id "test"
                                  :source-paths ["test/cljs/" "test/cljc/"]
@@ -59,8 +63,9 @@
                                             :optimizations :advanced}}]}}}
 
   :aliases {"all-clj" ["with-profile" "dev,1.8:dev,1.9:dev"]
-            "test-all-clj" ["all-clj" "test"]
-            "test-all-clj-junit" ["all-clj" "eftest"]
+            "all-clj-junit" ["with-profile" "dev,1.8,1.8-junit:dev,1.9,1.9-junit:dev,1.10-junit"]
+            "test-all-clj" ["all-clj" "eftest"]
+            "test-all-clj-junit" ["all-clj-junit" "eftest"]
 
             "chrome-headless" ["with-profile" "doo-test,dev" "doo" "chrome-headless"]
             "node" ["with-profile" "doo-test,dev" "doo" "node"]
@@ -71,5 +76,6 @@
 
             "test-all" ["do" "clean," "test-all-clj-junit," "test-all-cljs"]
 
+            "clj-test" ["with-profile" "dev,eftest-pretty" "eftest"]
             "chrome-auto-test" ["with-profile" "dev,doo-test" "doo" "chrome" "test" "auto"]
             "fig-test" ["trampoline" "with-profile" "dev,fig-test" "run" "-m" "figwheel.main" "--" "-b" "fig" "-r"]})
