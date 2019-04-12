@@ -20,25 +20,17 @@
                          "junitReporter" {"outputDir" "target/out/test-results"}}}}
 
   ;; TODO: is there a better way
-  :profiles {:1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}
-             :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
-             :1.8-junit {:eftest {:report-to-file "target/out/test-results/clj-v1.8-junit.xml"
-                                  :report eftest.report.junit/report}}
-             :1.9-junit {:eftest {:report-to-file "target/out/test-results/clj-v1.9-junit.xml"
-                                  :report eftest.report.junit/report}}
-             :1.10-junit {:eftest {:report-to-file "target/out/test-results/clj-v1.10-junit.xml"
-                                   :report eftest.report.junit/report}}
+  :profiles {:1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
+             :kaocha {:dependencies [[lambdaisland/kaocha "0.0-418"]
+                                     [lambdaisland/kaocha-junit-xml "0.0-70"]]}
              :fig-test {:dependencies [[com.bhauman/figwheel-main "0.2.1-SNAPSHOT"]]
                         :resource-paths ["target"]}
              :doo-test {:plugins [[lein-doo "0.1.11"]]}
              :dev {:dependencies [[org.clojure/test.check "0.9.0"]
                                   [doo "0.1.11"]]
                    :exclusions [org.clojure/clojure]
-                   :plugins [[lein-cljsbuild "1.1.7"]
-                             [lein-eftest "0.5.7"]]
+                   :plugins [[lein-cljsbuild "1.1.7"]]
                    :source-paths ["test/clj" "test/cljs/" "test/cljc/"]
-                   :eftest {:multithread? false
-                            :report eftest.report.pretty/report}
                    :cljsbuild {:builds
                                [{:id "test"
                                  :source-paths ["test/cljs/" "test/cljc/"]
@@ -62,20 +54,66 @@
                                             :output-to "target/cljsbuild/prod/prod.js"
                                             :optimizations :advanced}}]}}}
 
-  :aliases {"all-clj" ["with-profile" "dev,1.8:dev,1.9:dev"]
-            "all-clj-junit" ["with-profile" "dev,1.8,1.8-junit:dev,1.9,1.9-junit:dev,1.10-junit"]
-            "test-all-clj" ["all-clj" "eftest"]
-            "test-all-clj-junit" ["all-clj-junit" "eftest"]
+  :aliases {"kaocha"
+            ^{:doc "base kaocha - use to run all clj tests once"}
+            ["with-profile" "+kaocha" "run" "-m" "kaocha.runner"]
 
-            "chrome-headless" ["with-profile" "doo-test,dev" "doo" "chrome-headless"]
-            "node" ["with-profile" "doo-test,dev" "doo" "node"]
+            "kaocha-junit"
+            ^{:doc "internal base to configure for kaocha junit"}
+            ["kaocha" "--reporter" "documentation" "--plugin" "kaocha.plugin/junit-xml"]
 
-            "test-chrome-headless" ["chrome-headless" "test" "once"]
-            "test-node" ["node" "node-test" "once"]
-            "test-all-cljs" ["do" "test-chrome-headless," "test-node"]
+            "clj-junit-1.9"
+            ^{:doc "run all clj tests under clojure 1.9 - output to junit. For ci server."}
+            ["with-profile" "dev,1.9" "kaocha-junit" "--junit-xml-file" "target/out/test-results/clj-v1.9-junit.xml"]
 
-            "test-all" ["do" "clean," "test-all-clj-junit," "test-all-cljs"]
+            "clj-junit-1.10"
+            ^{:doc "run all clj tests under clojure 1.10 - output to junit. For ci server."}
+            ["with-profile" "dev" "kaocha-junit" "--junit-xml-file" "target/out/test-results/clj-v1.10-junit.xml"]
 
-            "clj-test" ["with-profile" "dev,eftest-pretty" "eftest"]
-            "chrome-auto-test" ["with-profile" "dev,doo-test" "doo" "chrome" "test" "auto"]
-            "fig-test" ["trampoline" "with-profile" "dev,fig-test" "run" "-m" "figwheel.main" "--" "-b" "fig" "-r"]})
+            "clj-all"
+            ^{:doc "internal base to select all clojure versions"}
+            ["with-profile" "dev,1.9:dev"]
+
+            "clj-test-envs-junit"
+            ^{:doc "run all clj tests under all supported versions of clojure -output to junit. For ci server."}
+            ["do" "clj-junit-1.9," "clj-junit-1.10"]
+
+            "clj-test-envs"
+            ^{:doc "run all clj tests under all supported versions of clojure - for dev sanity test."}
+            ["clj-all" "kaocha"]
+
+            "cljs-chrome-headless"
+            ^{:doc "internal base to setup for chrome headless"}
+            ["with-profile" "doo-test,dev" "doo" "chrome-headless"]
+
+            "cljs-node"
+            ^{:doc "internal base to setup for nodejs"}
+            ["with-profile" "doo-test,dev" "doo" "node"]
+
+            "cljs-test-chrome-headless"
+            ^{:doc "run all cljs tests under chrome headless"}
+            ["cljs-chrome-headless" "test" "once"]
+
+            "cljs-test-node"
+            ^{:doc "run all cljs tests under nodejs"}
+            ["cljs-node" "node-test" "once"]
+
+            "cljs-test-envs"
+            ^{:doc "run all cljs tests for all supported environments"}
+            ["do" "cljs-test-chrome-headless," "cljs-test-node"]
+
+            "test-all"
+            ^{:doc "run all clj and cljs tests for all supported environments"}
+            ["do" "clean," "clj-test-envs-junit," "cljs-test-envs"]
+
+            "clj-auto-test"
+            ^{:doc "run all clj tests, watch and rerun automatically"}
+            ["with-profile" "kaocha" "--watch"]
+
+            "chrome-auto-test"
+            ^{:doc "run all cljs tests under chrome, watch and rerun automatically"}
+            ["with-profile" "dev,doo-test" "doo" "chrome" "test" "auto"]
+
+            "fig-test"
+            ^{:doc "run figwheel main, find your tests at http://localhost:9500/figwheel-extra-main/auto-testing"}
+            ["trampoline" "with-profile" "dev,fig-test" "run" "-m" "figwheel.main" "--" "-b" "fig" "-r"]})
