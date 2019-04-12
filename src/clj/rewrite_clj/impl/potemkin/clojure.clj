@@ -1,6 +1,5 @@
 (ns ^:no-doc rewrite-clj.impl.potemkin.clojure
-  (:require [rewrite-clj.impl.potemkin.helper :as helper]
-            [clojure.pprint :as pprint]))
+  (:require [rewrite-clj.impl.potemkin.helper :as helper]))
 
 ;; Strongly based on code from:
 ;;
@@ -29,9 +28,6 @@
 ;; ---
 
 ;; --- potemkin.namespaces
-
-(defn- pretty-str [o]
-  (with-out-str (pprint/pprint o)))
 
 (defn resolve-sym [sym]
   (or (resolve sym)
@@ -66,7 +62,6 @@
    name in the current namespace.  Argument lists, doc-strings, and
    original line-numbers are preserved."
   [src-sym target-name target-meta-changes]
-   ;;(println "import-macro clj MMMMMMMMMMMMMMMMMMMMMMMMM" sym)
   (let [vr (resolve-sym src-sym)
          m (meta vr)
          new-meta (-> m (merge target-meta-changes) (dissoc :name))]
@@ -78,13 +73,10 @@
         (.setMacro (var ~target-name))
         ~vr)))
 
-;; TODO: unused methinks for this project...
-;; TODO: untested
 (defmacro import-def
   "Given a regular def'd var from another namespace, defined a new var with the
    same name in the current namespace."
   [src-sym target-name target-meta-changes]
-  ;;(println "import-def clj DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" sym)
   (let [vr (resolve-sym src-sym)
         m (meta vr)
         new-meta (-> m (merge target-meta-changes) (dissoc :name))
