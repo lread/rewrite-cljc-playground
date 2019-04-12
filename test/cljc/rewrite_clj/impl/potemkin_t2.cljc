@@ -1,13 +1,16 @@
-(ns rewrite-clj.impl.potemkin-t2)
+(ns rewrite-clj.impl.potemkin-t2
+  #?(:cljs (:require-macros [rewrite-clj.impl.potemkin-t2])))
 
-(def d 42)
+(def t-def 242)
 
-(def dd "def with doc" 77)
+(def t-def-doc "def with doc" 277)
 
-(defn f [arg] arg)
+(defn t-fn [arg] (+ 200 arg))
 
-(defn fd "function with doc" [arg] arg)
+(defn t-fn-doc "function with doc" [arg] (+ 200 arg))
 
-(defmacro m [a] a)
+#?(:clj
+   (defmacro t-macro [a] `(str "2" ~a)))
 
-(defmacro md "macro with doc" [a b c d] '(str a b c d))
+#?(:clj
+   (defmacro t-macro-doc "macro with doc" [a b c d] `(str "2" ~a ~b ~c ~d)))

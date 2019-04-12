@@ -72,9 +72,9 @@
     ;; (util/debug-prn "  !target      :line" (get-in @env/*compiler* [::ana/namespaces target-ns :defs target-name :line]))
     ;; (util/debug-prn "  !target meta :line" (get-in @env/*compiler* [::ana/namespaces target-ns :defs target-name :meta :line]))
     (and (or (get-in @env/*compiler* [::ana/namespaces src-ns :defs src-name])
-             (throw (ex-info (str "adjust-var-meta! did not find source " src-ns src-name) {})))
+             (throw (ex-info "adjust-var-meta! did not find source" {:ns src-ns :name src-name})))
          (or (get-in @env/*compiler* [::ana/namespaces target-ns :defs target-name])
-             (throw (ex-info (str "adjust-var-meta! did not find target " target-ns target-name) {})))
+             (throw (ex-info "adjust-var-meta! did not find target" {:ns target-ns :name target-name})))
          (do
            (swap! env/*compiler*
                   update-in [::ana/namespaces target-ns :defs target-name]
@@ -124,7 +124,9 @@
    name in the current namespace.  Argument lists, doc-strings, and
    original line-numbers are preserved."
   [src-sym target-name target-meta-changes]
-  (let [vr (resolve src-sym)
+  (util/debug-prn "import-macro cljs======>" src-sym)
+  (let [vr (resolve-sym src-sym)
+        _ (util/debug-prn (pretty-str vr))
         m (resolved-meta vr)
         new-meta (-> m (merge target-meta-changes) (dissoc :name))]
     (when-not (:macro m)
