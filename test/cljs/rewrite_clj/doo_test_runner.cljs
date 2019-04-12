@@ -7,6 +7,7 @@
             [rewrite-clj.impl.node.generators]
             [rewrite-clj.impl.node.integer-test]
             [rewrite-clj.impl.node.node-test]
+            [rewrite-clj.impl.potemkin-test]
             [rewrite-clj.impl.zip.base-test]
             [rewrite-clj.impl.zip.edit-test]
             [rewrite-clj.impl.zip.find-test]

@@ -25,7 +25,6 @@
 (defn- get-meta
   "The ns is not copied over for cljs. I *think* that is ok and probably good? Perhaps I should dupe behaviour for clj."
   [test-sym]
-  (println "get-meta--->" test-sym)
   (let [md #?(:cljs (dissoc (meta test-sym) :ns)
               :clj (meta test-sym))]
     (is (not (empty? md)) "no metadata, test malconfigured?")
