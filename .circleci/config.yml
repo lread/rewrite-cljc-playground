@@ -25,16 +25,26 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: sudo npm install karma-cli -g
-      - run: npm install
-      - run: lein deps
+      - run:
+          name: Install karma command line
+          command: sudo npm install karma-cli -g
+
+      - run:
+          name: Download node dependencies
+          command: npm install
+
+      - run:
+          name: Download clojure dependencies
+          command: lein deps
 
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "project.clj" }}
 
-      - run: lein test-all
+      - run:
+          name: Run tests
+          command: lein test-all
 
       - store_test_results:
           path: target/out/test-results
