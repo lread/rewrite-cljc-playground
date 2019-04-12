@@ -19,7 +19,7 @@
             [rewrite-clj.impl.node.uneval]
             [rewrite-clj.impl.node.whitespace]
             #?(:clj [rewrite-clj.impl.potemkin.clojure :refer [import-vars]]))
-  #?(:cljs (:require-macros [rewrite-clj.impl.potemkin.clojurescript :refer [import-vars]])))
+  #?(:cljs (:require-macros [rewrite-clj.impl.potemkin.cljs :refer [import-vars]])))
 
 (import-vars
  [rewrite-clj.impl.node.protocols

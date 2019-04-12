@@ -3,7 +3,7 @@
             [rewrite-clj.impl.potemkin-t1]
             [rewrite-clj.impl.potemkin-t2] )
   #?(:clj (:require [rewrite-clj.impl.potemkin.clojure :refer [import-vars]])
-     :cljs (:require-macros [rewrite-clj.impl.potemkin.clojurescript :refer [import-vars]])))
+     :cljs (:require-macros [rewrite-clj.impl.potemkin.cljs :refer [import-vars]])))
 
 (import-vars
  [rewrite-clj.impl.potemkin-t1 d dd f fd]
@@ -12,10 +12,11 @@
  [rewrite-clj.impl.potemkin-t2 d dd f fd])
 
 (defn get-meta
-  "The ns is not copied over for cljs. I *think* that is ok and probably good?"
-  [sym]
-  (let [md #?(:cljs (dissoc (meta sym) :ns)
-              :clj (meta sym))]
+  "The ns is not copied over for cljs. I *think* that is ok and probably good? Perhaps I should dupe behaviour for clj."
+  [test-sym]
+  (println "get-meta--->" test-sym)
+  (let [md #?(:cljs (dissoc (meta test-sym) :ns)
+              :clj (meta test-sym))]
     (is (not (empty? md)) "no metadata, test malconfigured?")
     md))
 

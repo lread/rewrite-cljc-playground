@@ -17,7 +17,7 @@
             [rewrite-clj.impl.custom-zipper.core :as z]
             #?(:clj [rewrite-clj.impl.potemkin.clojure :refer [import-vars]]))
   #?(:cljs (:require-macros [rewrite-clj.zip]
-                            [rewrite-clj.impl.potemkin.clojurescript :refer [import-vars]])))
+                            [rewrite-clj.impl.potemkin.cljs :refer [import-vars]])))
 
 ;; import macros for both clj and cljs
 #?(:clj

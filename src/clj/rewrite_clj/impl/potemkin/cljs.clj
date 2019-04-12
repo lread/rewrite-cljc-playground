@@ -1,12 +1,13 @@
-(ns ^:no-doc rewrite-clj.impl.potemkin.clojurescript
+(ns ^:no-doc rewrite-clj.impl.potemkin.cljs
  (:require [clojure.string :as string]
            [cljs.analyzer.api :as ana-api]
            [cljs.env :as env]
            [cljs.analyzer :as ana]
            [cljs.util :as util]
            [rewrite-clj.impl.potemkin.helper :as helper]))
-;; TODO: could not, for the life of me, figure out how to make this cljc. So we have cljs version and a cljc versin which are quite similar
 
+;; Strongly based on code from:
+;;
 ;; --- copied from ztellman/potemkin
 ;;
 ;; Copyright (c) 2013 Zachary Tellman
@@ -46,7 +47,8 @@
          :doc (get-in sym-analysis [:meta :doc] (:doc sym-analysis))))
 
 (defn resolve-sym [sym]
-  (ana-api/resolve @env/*compiler* sym))
+  (or (ana-api/resolve @env/*compiler* sym)
+      (throw (ex-info "potemkin cljs does not recognize symbol" {:symbol 'sym}))))
 
 (defn adjust-var-meta! [target-ns target-name src-sym]
   ;; (util/debug-prn "!!altering" target-ns target-name "from" src-sym)
@@ -98,30 +100,36 @@
      (adjust-var-meta! target-ns target-name src-sym)))
   nil)
 
-;; TODO: del test code
-(def first-time (atom true))
 (defmacro import-fn
   "Given a function in another namespace, defines a function with the
    same name in the current namespace.  Argument lists, doc-strings,
    and original line-numbers are preserved."
   [src-sym target-name target-meta-changes]
-  #_(util/debug-prn "import-fn cljs======>" sym)
-  (let [vr (or (resolve-sym src-sym) (throw (ex-info (str "Don't recognize " src-sym) {})))
+  (util/debug-prn "import-fn cljs======>" src-sym)
+  (let [vr (resolve-sym src-sym)
         m (resolved-meta vr)
         new-meta (-> m (merge target-meta-changes) (dissoc :name))]
     (when (:macro m)
-      (throw (ex-info (str "Calling import-fn on a macro: " src-sym) {})))
+      (throw (ex-info "potemkin cljs cannot import-fn on a macro" {:symbol src-sym})))
     #_(util/debug-prn "import-fn pre do... vr" (pretty-str vr) )
     #_(util/debug-prn "import-fn pre do... m" (pretty-str m) )
     #_(util/debug-prn "import-fn pre do... n" n )
     ;;(util/debug-prn "import-fn pre do... (var n)" (var n))
     ;; altering before existence I think
     ;;(assoc-in @env/*compiler* [::ana/namespaces (:ns m) :defs n :file] "testing/123.clj")
-    #_(when @first-time
-        (reset! first-time false)
-        (util/debug-prn (pr-str @env/*compiler*)))
-    `(do
-        (def ~(with-meta target-name new-meta) ~(:name vr)))))
+    `(def ~(with-meta target-name new-meta) ~(:name vr))))
+
+(defmacro import-macro
+  "Given a macro in another namespace, defines a macro with the same
+   name in the current namespace.  Argument lists, doc-strings, and
+   original line-numbers are preserved."
+  [src-sym target-name target-meta-changes]
+  (let [vr (resolve src-sym)
+        m (resolved-meta vr)
+        new-meta (-> m (merge target-meta-changes) (dissoc :name))]
+    (when-not (:macro m)
+      (throw (ex-info "potemkin cljs can only import-macro on macro" {:symbol src-sym})))
+    `(def ~(with-meta target-name new-meta) ~(:name vr))))
 
 ;; TODO: I don't expect our project will make use of this one...
 ;; TODO: untested
@@ -129,8 +137,8 @@
   "Given a regular def'd var from another namespace, defined a new var with the
    same name in the current namespace."
   [src-sym target-name target-meta-changes]
-  #_(util/debug-prn "cljs import-def---ddd-->" sym)
-  (let [vr (or (resolve-sym src-sym) (throw (ex-info (str "Don't recognize " src-sym) {})))
+  (util/debug-prn "cljs import-def---ddd-->" src-sym)
+  (let [vr (resolve-sym src-sym)
         m (resolved-meta vr)
         new-meta (-> m (merge target-meta-changes) (dissoc :name))
         ;; TODO: verify dynamic, this is not correct
@@ -138,9 +146,7 @@
         ]
     #_(util/debug-prn "import-def pre do...vr\n" (pretty-str vr))
     #_(util/debug-prn "import-def pre do... m\n" (pretty-str m))
-    `(do
-       (def ~(with-meta target-name new-meta) ~(:name vr)))))
-
+    `(def ~(with-meta target-name new-meta) ~(:name vr))))
 
 
 (defmacro import-vars
@@ -149,36 +155,31 @@
   (let [syms (helper/unravel-syms raw-syms)
         import-data (map
                      (fn [[sym opts]]
-                       (let [vr (or (resolve-sym sym) (throw (ex-info (str "Don't recognize " sym) {})))
+                       (let [vr (resolve-sym sym)
                              m (resolved-meta vr)
                              n (:name m)]
+                         (util/debug-prn "??" sym m n)
                          [sym (helper/new-name n opts) (helper/new-meta m opts)]))
                      syms)
+        _ (util/debug-prn "import-data: " import-data)
         import-cmds (map
                      (fn [[sym new-name new-meta]]
                        (let [vr (resolve-sym sym)
                              m (resolved-meta vr)]
                          (cond
-                           (:macro m)     (throw (ex-info (str "please handle macro imports in clj: " sym) {}))
+                           (:macro m)    `(import-macro ~sym ~new-name ~new-meta)
                            (:arglists m) `(import-fn ~sym ~new-name ~new-meta)
                            :else         `(import-def ~sym ~new-name ~new-meta))))
                      import-data)
         cmds (concat import-cmds [`(fixup-vars ~*ns* ~@import-data)])]
     `(do ~@cmds)))
 
-;; TODO delete all tests junk
-(defmacro erp2[& args]
-  (println "erp2" args))
 
-(defmacro erp[& args]
-  (let [cmds (map (fn[x] `(println ~x)) args)
-        cmds (concat cmds [`(erp2 ~@args)])]
-    `(do ~@cmds)))
 ;; --- potemkin.types
 
 ;; TODO: assuming this has no value for cljs??
 (defmacro defprotocol+
-  "A simpler version of 'potemkin.types/defprotocol+'."
+  "A simpler version of 'potemkin.types/defprotocol+'. Currently a no-op for cljs."
   [name & body]
   `(defprotocol ~name ~@body))
 

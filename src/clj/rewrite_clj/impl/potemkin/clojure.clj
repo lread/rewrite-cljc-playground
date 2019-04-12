@@ -2,6 +2,8 @@
   (:require [rewrite-clj.impl.potemkin.helper :as helper]
             [clojure.pprint :as pprint]))
 
+;; Strongly based on code from:
+;;
 ;; --- copied from ztellman/potemkin
 ;;
 ;; Copyright (c) 2013 Zachary Tellman
@@ -31,6 +33,10 @@
 (defn- pretty-str [o]
   (with-out-str (pprint/pprint o)))
 
+(defn resolve-sym [sym]
+  (or (resolve sym)
+      (throw (ex-info "potemkin clj does not recognize symbol" {:symbol sym}))))
+
 (defn resolve-fn-location[var-meta]
   (if-let [p (:protocol var-meta)]
     (-> (meta p)
@@ -43,25 +49,13 @@
    same name in the current namespace.  Argument lists, doc-strings,
    and original line-numbers are preserved."
   [src-sym target-name target-meta-changes]
-  ;;(println "clj--import-fn FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" src-sym)
-  (let [vr (or (resolve src-sym) (throw (IllegalArgumentException. (str "Don't recognize " src-sym))))
+  (let [vr (resolve-sym src-sym)
         m (meta vr)
         m (resolve-fn-location m)
         new-meta (-> m (merge target-meta-changes) (dissoc :name))
         protocol (:protocol m)]
     (when (:macro m)
-      (throw (IllegalArgumentException.
-              (str "Calling import-fn on a macro: " src-sym))))
-
-    ;;(println "clj--import-fn pre do... vr" (pretty-str vr) )
-    ;;(println "clj--import-fn pre do... dvr" (pretty-str (deref vr)) )
-    ;;(println "clj--import-fn pre do... m" (pretty-str m))
-    ;;(println "clj--import-fn pre do .. mvr" (pretty-str (meta vr)))
-    ;;(println "clj--import-fn pre do... n" (pretty-str n))
-    ;;(println "clj--import-fn pre do...  o" (pretty-str opts))
-
-    ;;(println "  src meta:" (pretty-str m))
-    ;;(println "  tgt meta:" (pretty-str new-meta))
+      (throw (ex-info "potemkin clj cannot import-fn on a macro" {:symbol src-sym})))
     `(do
        (def ~(with-meta target-name (if protocol {:protocol protocol} {})) (deref ~vr))
        (alter-meta! (var ~target-name) merge '~new-meta)
@@ -73,12 +67,11 @@
    original line-numbers are preserved."
   [src-sym target-name target-meta-changes]
    ;;(println "import-macro clj MMMMMMMMMMMMMMMMMMMMMMMMM" sym)
-   (let [vr (or (resolve src-sym) (throw (IllegalArgumentException. (str "Don't recognize " src-sym))))
+  (let [vr (resolve-sym src-sym)
          m (meta vr)
          new-meta (-> m (merge target-meta-changes) (dissoc :name))]
      (when-not (:macro m)
-       (throw (IllegalArgumentException.
-               (str "Calling import-macro on a non-macro: " src-sym))))
+       (throw (ex-info "potemkin clj can only import-macro on macro" {:symbol src-sym})))
      `(do
         (def ~target-name ~(resolve src-sym))
         (alter-meta! (var ~target-name) merge '~new-meta)
@@ -92,7 +85,7 @@
    same name in the current namespace."
   [src-sym target-name target-meta-changes]
   ;;(println "import-def clj DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" sym)
-  (let [vr (or (resolve src-sym) (throw (IllegalArgumentException. (str "Don't recognize " src-sym))))
+  (let [vr (resolve-sym src-sym)
         m (meta vr)
         new-meta (-> m (merge target-meta-changes) (dissoc :name))
         target-name (with-meta target-name (if (:dynamic m) {:dynamic true} {}))]
@@ -107,7 +100,7 @@
   (let [syms (helper/unravel-syms raw-syms)
         import-data (map
                      (fn [[sym opts]]
-                       (let [vr (or (resolve sym) (throw (ex-info (str "Don't recognize " sym) {})))
+                       (let [vr (resolve-sym sym)
                              m (meta vr)
                              n (:name m)]
                          [sym (helper/new-name n opts) (helper/new-meta m opts)]))

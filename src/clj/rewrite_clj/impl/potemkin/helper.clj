@@ -10,7 +10,7 @@
   (when-let [doc-pattern (:doc-to-pattern opts)]
     {:doc (-> doc-pattern
               (string/replace #"@@orig-name@@" (str (:name orig-meta)))
-              (string/replace #"@@orig-doc@@" (:doc orig-meta "")))}))
+              (string/replace #"@@orig-doc@@" (or (:doc orig-meta) "")))}))
 
 
 (defn unravel-syms [x]

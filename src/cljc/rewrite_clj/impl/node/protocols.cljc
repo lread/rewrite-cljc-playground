@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [rewrite-clj.impl.interop :as interop]
             #?(:clj [rewrite-clj.impl.potemkin.clojure :refer [defprotocol+]]))
-  #?(:cljs (:require-macros [rewrite-clj.impl.potemkin.clojurescript :refer [defprotocol+]])))
+  #?(:cljs (:require-macros [rewrite-clj.impl.potemkin.cljs :refer [defprotocol+]])))
 
 ;; ## Node
 
