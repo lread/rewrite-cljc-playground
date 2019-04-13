@@ -1,5 +1,9 @@
 ## rewrite-cljs
 
+>
+> Just a spike/test of rewrite-cljs in cljc
+>
+
 This library is a ClojureScript port of [rewrite-clj](https://github.com/xsc/rewrite-clj).
 It provides features to traverse and rewrite Clojure/ClojureScript/EDN documents in a whitespace and comment-aware manner replicating
 the behavior of its Clojure counterpart as closely as possible.
