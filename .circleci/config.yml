@@ -5,6 +5,10 @@
 version: 2
 jobs:
   build:
+    branches:
+      only:
+        - /cljc-spike.*/
+
     docker:
       - image: circleci/clojure:lein-2.9.1-node-browsers
 
