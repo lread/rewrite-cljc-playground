@@ -17,7 +17,7 @@
   :doo {:build "test"
         :karma {:config {"plugins" ["karma-junit-reporter"]
                          "reporters" ["progress" "junit"]
-                         "junitReporter" {"outputDir" "target/out/test-results"}}}}
+                         "junitReporter" {"outputDir" "target/out/test-results/cljs"}}}}
 
   ;; TODO: is there a better way
   :profiles {:1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
@@ -64,11 +64,11 @@
 
             "clj-junit-1.9"
             ^{:doc "run all clj tests under clojure 1.9 - output to junit. For ci server."}
-            ["with-profile" "dev,1.9" "kaocha-junit" "--junit-xml-file" "target/out/test-results/clj-v1.9-junit.xml"]
+            ["with-profile" "dev,1.9" "kaocha-junit" "--junit-xml-file" "target/out/test-results/clj-v1.9/results.xml"]
 
             "clj-junit-1.10"
             ^{:doc "run all clj tests under clojure 1.10 - output to junit. For ci server."}
-            ["with-profile" "dev" "kaocha-junit" "--junit-xml-file" "target/out/test-results/clj-v1.10-junit.xml"]
+            ["with-profile" "dev" "kaocha-junit" "--junit-xml-file" "target/out/test-results/clj-v1.10/results.xml"]
 
             "clj-all"
             ^{:doc "internal base to select all clojure versions"}
