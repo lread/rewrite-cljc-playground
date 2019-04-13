@@ -1,7 +1,9 @@
-* rewrite-cljs notes
+#+TITLE: rewrite-cljs spike notes
 
 * Changes
 ** Breaking
+*** min clojure version 1.9, min java version 8
+*** min clojurescript version 10, testing with latest
 *** moved internal code into impl namespace
 *** positional support for ClojureScript version - migrated to Clojure implementation
 *** performance for ClojureScript version - generally favoured Clojure implementation
@@ -17,28 +19,6 @@
 ** No file support for ClojureScript version
 
 * Todos
-** DONE why are some namespaces renamed? findz editz removez seqz coercer… it almost seems like the author was trying to avoid namespace collisions.. but why the deviation? As these could be considered internal, I will lose the z.
-** DONE add all rewrite-clj tests we possibly can
-** DONE potemkin for macros... done in clj layer...
-   CLOSED: [2019-03-26 Tue 17:48]
-** DONE convert to cljc project
-   CLOSED: [2019-03-29 Fri 14:19]
-** DONE bring cljs up to parity with clj version
-   CLOSED: [2019-03-29 Fri 18:23]
-** DONE verify positional support
-   CLOSED: [2019-03-30 Sat 18:33]
-    Weird that cljs specific positional tests pass... I don't think they invoke the positional clj custom zipper?
-    Ok. The cljs made use of metadata provided by the clojure reader whereas the clj version implements full tracking via a custom
-    reader.
-    So... this custom zipper.  It has core and util.. its basic functions are exposed via fun* on the zip api...
-    But are these (core and util) intended to also be used directly? Should they come out from under impl?
-    And if we use the positional reader... how do we not skip whitespace and comments?  Oh... that's maybe what the fn* are for??!?
-** DONE cljs added remove-and-move-up to zipper utils
-   CLOSED: [2019-03-31 Sun 11:35]
-   Would love to turf this if I can but it seems to be used by paredit
-   If I need to keep it, I need to add cut custom zipper portion and need to add to tests.
-** DONE bring cljc version up to date with clj pull requests
-   CLOSED: [2019-03-31 Sun 21:32]
 ** TODO try to turn off deprecation warnings only for certain tests.
    See https://github.com/emezeske/lein-cljsbuild custom warning handlers
 ** TODO make sure I am using the right reader
@@ -48,24 +28,7 @@
     - clojure/reader-string
 ** TODO cleanup coerce record support
 ** TODO have a try with https://github.com/xsc/rewrite-clj/issues/76
-** Nodes
-*** DONE add print support
-*** DONE uneval
-*** DONE integer node
-*** DONE understand promise work in fn node - currently commented out in cljs version
-*** DONE why does cljs version have FnNode as coercable - don't know, removed to match clj version
-*** DONE double check print support - I'm frankly not sure what it does
-    CLOSED: [2019-03-29 Fri 18:03]
-    Well, it supports a nice print out when an obj is evaled
-*** DONE keyword & seq - namespace support for cljs
-    CLOSED: [2019-03-31 Sun 21:34]
-*** TODO move namepsaced made node to its own file
-*** TODO DRY cljs style namespaced map test
 ** Testing
-*** TODO what to do for dev - currently trying out fighweel main
-*** TODO what do do for ci - was using doo with karma and chrome headless
-*** TODO need also to test for Clojure - can kaocha be used here?
-*** TODO figure out what targets to test under for ClojureScript chrome-headless, node... ???
 *** TODO can I verify that I have not broken the api?
 *** TODO code coverage? Would be very good to know if coverage is weak in areas I have touched.
 *** TODO review cljs specific tests
@@ -74,40 +37,10 @@
     - zip_tests.cljs
     Ran cloverage and it generated a good report but also failed many tests.  Not sure why.
 ** Docs & API
-*** DONE understand how cljdocs works - generate docs locally
-    CLOSED: [2019-03-26 Tue 12:35]
-*** DONE adjust defn-switchable so that args are preserved for documentation
-    CLOSED: [2019-03-26 Tue 16:51]
-*** DONE add impl namespace for internal code
-    CLOSED: [2019-03-26 Tue 17:43]
-    Good some feedback.. impl is a more idiomatic namespace than internal.
-*** DONE verify internal code is not documented externally
-*** DONE what to do about impl/custom-zipper/core and impl/node/procotols - should they be moved up out of impl?
-    CLOSED: [2019-03-29 Fri 18:21]
-    have chosen to leave them under impl but expose docs for now
-*** TODO see if we can get import-vars etc source to point to real source
-*** TODO potemkin - name is a better var name than sym
 *** TODO update README to be at least in line with rewrite-clj - ideally improve it.
 ** Interop
-*** DONE abstract a format maybe call it simple-format
-*** DONE deal with potemkin macros: import-vars defprotocol+
-    CLOSED: [2019-03-29 Fri 18:18]
-*** DONE deal with defbase
-    CLOSED: [2019-03-29 Fri 18:19]
-    Have something for cljs... will have to repeat for clj?
-*** DONE make-printable is macro for clj and function for cljs might be easiest to do reader conditional directly in protocols
-    CLOSED: [2019-03-29 Fri 18:19]
-*** DONE consider abstracting throws for interop
-    CLOSED: [2019-03-29 Fri 18:20]
-    opted to use ex-info
-**** maybe switching to ex-info and ex-data would be sufficient?  This would likely mean extra support needed in tests but we could do that.
-**** IndexOutOfBoundsException -> RangeError
-**** consider abstracting catches for interop
-**** weavejester had some generic support?
 *** TODO Object vs object String vs string
 ** Language differences from library perspective
-*** DONE namespaced keywords and map - does it make sense for Clojure? How to work for ClojureScript
-    CLOSED: [2019-03-31 Sun 21:36]
 *** TODO what happens when we try to parse a ratio from ClojureScript
 *** TODO test handling a very large int in cljs
 *** TODO experiment with sexprs across lang differences
@@ -115,32 +48,9 @@
 *** TODO consider not using sepxr internally - I expect it will be an interop problemo
 *** TODO regex - any issues?
 ** Performance
-*** DONE try to preserve hints - how do I know when they help - reflection warnings?
-    kept not-native for cljs and preserved hints for clj
-    CLOSED: [2019-03-29 Fri 18:21]
-*** DONE is StringBuffer joining 2 strings really much faster than (str a b)? (ex. in parser.token)
-    CLOSED: [2019-03-29 Fri 18:22]
-    turfed it
-*** TODO is #js indexOf that much faster than contains?
-(defn boundary?
-  [c]
-  "Check whether a given char is a token boundary."
-  (contains?
-    #{\" \: \; \' \@ \^ \` \~
-      \( \) \[ \] \{ \} \\ nil}
-    c))
-
-(defn boundary?
-  "Check whether a given char is a token boundary."
-  [c]
-  (< -1 (.indexOf #js [\" \: \; \' \@ \^ \` \~
-                       \( \) \[ \] \{ \} \\ nil] c)))
-*** TODO only take clojurescript optimizations if the code is clear
 *** TODO are rundis' optimizations still valid today?
 *** TODO research what others are doing for benchmarking… would like to know if I am making things slower.
 ** Deployment
-*** TODO min java version - 8
-*** TODO min clojure version - 1.9
 *** TODO min clojurescript version - latest
 *** TODO continuity on clojars for rundis deploys?
 *** TODO make sure I understand deploy requirements for cljs - what goes into the jar?
@@ -157,6 +67,7 @@
 
 * From rundis
 - http://rundis.github.io/blog/2015/clojurescript_performance_tuning.html
-
-* Failures
-- tried to test with figwheel main - but the problem, I think, is that rebel redline uses rewrite-clj and rewrite-cljs so I get collisions…
+* Tool notes
+** using figwheel main for testing
+   Needs a dummy main to call if used only for testing
+   Cannot use rebel readline for this project as rebel readline uses rewrite-clj and we get conflicts
