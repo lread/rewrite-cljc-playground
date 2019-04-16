@@ -62,21 +62,23 @@ jobs:
       name: openjdk
       jdk-version: "11"
     steps: [build]
-    branches:
-      only:
-        - /cljc-spike.*/
 
   openjdk8:
     executor:
       name: openjdk
       jdk-version: "8"
     steps: [build]
-    branches:
-      only:
-        - /cljc-spike.*/
 
 workflows:
   test-matrix:
     jobs:
-      - openjdk11
-      - openjdk8
+      - openjdk11:
+          filters:
+            branches:
+              only:
+                - /cljc-spike.*/
+      - openjdk8:
+          filters:
+            branches:
+              only:
+                - /cljc-spike.*/
