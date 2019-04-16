@@ -2,27 +2,27 @@
 #
 # Check https://circleci.com/docs/2.0/language-clojure/ for more details
 #
-version: 2
-jobs:
-  build:
-    branches:
-      only:
-        - /cljc-spike.*/
+version: 2.1
 
+executuors:
+  open-jdk:
+    parameters:
+      jdk-version:
+        type: enum
+        enum: ["8", "11"]
     docker:
-      - image: circleci/clojure:lein-2.9.1-node-browsers
-
-    working_directory: ~/repo
-
+      - image: openjdk-<< parameters.jdk-version>>-lein-2.9.1-node-browsers
     environment:
       LEIN_ROOT: "true"
-      # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
+    working_directory: ~/repo
 
+commands:
+  build:
+    description: "Checkout, build and test"
     steps:
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "project.clj" }}
@@ -55,3 +55,27 @@ jobs:
 
       - store_artifacts:
           path: target/out/test-results
+
+jobs:
+  open-jdk11:
+    executor:
+      name: openjdk
+      jdk-version: "11"
+    steps: [build]
+    branches:
+      only:
+        - /cljc-spike.*/
+  open-jdk8:
+    executor:
+      name: openjdk
+      jdk-version: "8"
+    steps: [build]
+    branches:
+      only:
+        - /cljc-spike.*/
+
+workflows:
+  test-matrix:
+    jobs:
+      - open-jdk11
+      - open-jdk8
