@@ -19,7 +19,6 @@
                          "reporters" ["progress" "junit"]
                          "junitReporter" {"outputDir" "target/out/test-results/cljs"}}}}
 
-  ;; TODO: is there a better way
   :profiles {:1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
              :kaocha {:dependencies [[lambdaisland/kaocha "0.0-418"]
                                      [lambdaisland/kaocha-junit-xml "0.0-70"]]}
@@ -34,12 +33,12 @@
                    :cljsbuild {:builds
                                [{:id "test"
                                  :source-paths ["test/cljs/" "test/cljc/"]
+                                 :warning-handlers [rewrite-clj.warning-handler/suppressor]
                                  :compiler {:output-dir "target/cljsbuild/test/out"
                                             :output-to "target/cljsbuild/test/test.js"
                                             :main rewrite-clj.doo-test-runner
                                             :source-map true
                                             :optimizations :none
-                                            :warnings {:fn-deprecated false}
                                             :pretty-print true}}
                                 {:id "node-test"
                                  :source-paths ["test/cljs/" "test/cljc/"]
