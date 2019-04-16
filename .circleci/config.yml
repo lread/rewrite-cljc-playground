@@ -5,7 +5,7 @@
 version: 2.1
 
 executuors:
-  open-jdk:
+  openjdk:
     parameters:
       jdk-version:
         type: enum
@@ -57,7 +57,7 @@ commands:
           path: target/out/test-results
 
 jobs:
-  open-jdk11:
+  openjdk11:
     executor:
       name: openjdk
       jdk-version: "11"
@@ -65,7 +65,8 @@ jobs:
     branches:
       only:
         - /cljc-spike.*/
-  open-jdk8:
+
+  openjdk8:
     executor:
       name: openjdk
       jdk-version: "8"
@@ -77,5 +78,5 @@ jobs:
 workflows:
   test-matrix:
     jobs:
-      - open-jdk11
-      - open-jdk8
+      - openjdk11
+      - openjdk8
