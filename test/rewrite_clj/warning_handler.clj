@@ -21,8 +21,8 @@
   {:fn-deprecated
    [{:file "test/rewrite_clj/regression_test.cljc"}
     {:file "test/rewrite_clj/examples/cljx_test.cljc"}
-    {:file "test/rewrite_clj/impl/zip/whitespace_test.cljc"}
-    {:file "src/rewrite_clj/impl/zip/base.cljc" :line 62}]})
+    {:file "test/rewrite_clj/zip/whitespace_test.cljc"}
+    {:file "src/rewrite_clj/zip/base.cljc" :line 62}]})
 
 (def fail-on-first-warning? true)
 

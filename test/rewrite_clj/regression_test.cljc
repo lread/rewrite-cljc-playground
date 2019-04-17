@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest is are testing run-tests]]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip :as z]
-            [rewrite-clj.impl.custom-zipper.core :as fz]))
+            [rewrite-clj.custom-zipper.core :as fz]))
 
 ;; ## Regression Tests for 0.3.x -> 0.4.x
 

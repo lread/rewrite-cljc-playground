@@ -3,10 +3,10 @@
 
   You might find inspirational examples here: http://pub.gajendra.net/src/paredit-refcard.pdf"
   (:require [rewrite-clj.zip :as z]
-            [rewrite-clj.impl.zip.whitespace :as ws]
-            [rewrite-clj.impl.custom-zipper.utils :as u]
+            [rewrite-clj.zip.whitespace :as ws]
+            [rewrite-clj.custom-zipper.utils :as u]
             [rewrite-clj.node :as nd]
-            [rewrite-clj.impl.node.string :as sn]
+            [rewrite-clj.node.stringz :as sn]
             [clojure.string :as cstring]))
 
 
