@@ -27,6 +27,34 @@
 ** TODO reconsider source layout
     I created clj, cljc and cljs layout, but this is probably not worth it. The brunt of my code is cljc so
     I will likely revert to simple src and test layout.
+** TODO look into @sogaui notes on find-last-by-pos
+   in the cljc-spike-2 branch of the aforementioned repository, given:
+
+   ```(require '[rewrite-clj.zip :as rz])
+
+   (def a-form "(defn hi-fn\n  [x]\n  (+ x 1))")```
+
+   why is it that:
+
+   ```(-> a-form (rz/of-string {:track-position? true}) (rz/find-last-by-pos [2 4]) rz/string)
+   (-> a-form (rz/of-string {:track-position? true}) (rz/find-last-by-pos [2 5]) rz/string)```
+
+   both return "x"?
+
+   also i noticed that:
+
+   ```(-> a-form (rz/of-string {:track-position? true}) (rz/find-last-by-pos [1 14]) rz/string)```
+
+   returns "\n" -- here 14 is a position beyond the end of the row in question.
+   is this by design?
+
+   fwiw, it appears that something similar to the "x" example case also occurs with the last element of (+ x 1):
+
+   ```(-> a-form (rz/of-string {:track-position? true}) (rz/find-last-by-pos [3 8]) rz/string)
+   (-> a-form (rz/of-string {:track-position? true}) (rz/find-last-by-pos [3 9]) rz/string)```
+
+   here, both return "1".
+
 ** TODO make sure I am using the right reader
     - clojure.tools.reader
     - clojure.tools.reader.edn <- this one seems safest to me.
