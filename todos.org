@@ -19,8 +19,6 @@
 ** No file support for ClojureScript version
 
 * Todos
-** TODO move dev only source to separate dev folder
-    I have doo support, leing support and my cljs suppres warning support.
 ** TODO experiment with preserving namespaces
     Although I already moved source under impl namespace, experiment with preserving
     old namespaces for both clojure and clojurescript. It might be awkward but probably better
