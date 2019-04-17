@@ -19,10 +19,10 @@
 
 (def ignore-config
   {:fn-deprecated
-   [{:file "test/cljc/rewrite_clj/regression_test.cljc"}
-    {:file "test/cljc/rewrite_clj/examples/cljx_test.cljc"}
-    {:file "test/cljc/rewrite_clj/impl/zip/whitespace_test.cljc"}
-    {:file "src/cljc/rewrite_clj/impl/zip/base.cljc" :line 62}]})
+   [{:file "test/rewrite_clj/regression_test.cljc"}
+    {:file "test/rewrite_clj/examples/cljx_test.cljc"}
+    {:file "test/rewrite_clj/impl/zip/whitespace_test.cljc"}
+    {:file "src/rewrite_clj/impl/zip/base.cljc" :line 62}]})
 
 (def fail-on-first-warning? true)
 
@@ -41,6 +41,7 @@
                                        (and (= source-file ignore-file)
                                             (= source-line at-line))))
                                 files))]
+
       result)))
 
 (defn suppressor [warning-type env extra]
