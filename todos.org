@@ -20,13 +20,11 @@
 
 * Todos
 ** TODO move dev only source to separate dev folder
+    I have doo support, leing support and my cljs suppres warning support.
 ** TODO experiment with preserving namespaces
     Although I already moved source under impl namespace, experiment with preserving
     old namespaces for both clojure and clojurescript. It might be awkward but probably better
     than breaking clients.
-** TODO reconsider source layout
-    I created clj, cljc and cljs layout, but this is probably not worth it. The brunt of my code is cljc so
-    I will likely revert to simple src and test layout.
 ** TODO look into @sogaui notes on find-last-by-pos
    in the cljc-spike-2 branch of the aforementioned repository, given:
 
