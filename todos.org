@@ -45,6 +45,12 @@
 ** No file support for ClojureScript version
 
 * Todos
+** TODO always use reader conditionals for lang differences
+   Some friendly feedback form @sogaui and @borkdude on slack helped me to see that always being explicit with regards to language differences reduces confusion.
+   For examples, if cljs didn't barf, I was often omitting reader conditionals for type hints like java.lang.Character and Object.
+   @sogaui shared his experience that specifying :cljs variant first then letting java/clr fall through as :default can work nicely when java/clr will often be identical.
+   I have no intention of supporting clr at this time, but good to know.
+   @borkdude shared using default instead of object for cljs is usually the preferred route.
 ** TODO refine cljs namespace alias lookup
     Allow a client to provide a resolver fn rather than just a data binding.  The default will be clojure tools reader *ns-alias* but
     should be over-rideable to whatever the client wants.
@@ -96,6 +102,8 @@
     Ran cloverage and it generated a good report but also failed many tests.  Not sure why.
 ** Docs & API
 *** TODO update README to be at least in line with rewrite-clj - ideally improve it.
+*** TODO got good feedback from @sogaui on confusion ^:no-doc.
+    Explain in docs internal vs external apis and intention of generated docs.
 ** Interop
 *** TODO Object vs object String vs string
 ** Language differences from library perspective
@@ -109,6 +117,18 @@
 *** TODO are rundis' optimizations still valid today?
 *** TODO research what others are doing for benchmarking… would like to know if I am making things slower.
 ** Deployment
+*** TODO figure out next version number
+    rewrite-clj is currently 0.6.1
+    rewrite-cljs is currently 0.4.4
+    Historically rewrite-cljs was tracking rewrite-clj.
+    My changes will be me slightly ahead of rewrite-clj. If I am presumptuous, I might try 0.6.2.
+    I do want communicate this needs a good shake though, so 0.6.2-alpha1
+    To consider:
+    - kaocha style versioning 0.0-<commit count>
+    - cljdoc style versioning 0.0.<commit count>-<short hash>
+    I like cljdoc versioning, but it is probably too much of a departure from existing versioning, and I
+    would have to think about how to convey alpha-ness in that scheme. 0.6.<commit count>-<short hash>-alpha1?
+    I will attempt to discuss with @xsc before release.
 *** TODO min clojurescript version - latest
 *** TODO continuity on clojars for rundis deploys?
 *** TODO make sure I understand deploy requirements for cljs - what goes into the jar?
