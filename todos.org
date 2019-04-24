@@ -45,6 +45,8 @@
 ** No file support for ClojureScript version
 
 * Todos
+** TODO cleanup coerce record support
+   See TODOs in code.
 ** TODO refine cljs namespace alias lookup
     Allow a client to provide a resolver fn rather than just a data binding.  The default will be clojure tools reader *ns-alias* but
     should be over-rideable to whatever the client wants.
@@ -55,9 +57,8 @@
     - clojure.tools.reader.edn <- this one seems safest to me.
     - clojure.reader
     - clojure/reader-string
-** TODO cleanup coerce record support
 ** TODO do I need rewrite-clj.node/coerce?
-** TODO have a try with https://github.com/xsc/rewrite-clj/issues/76
+** TODO consider spec
 ** Testing
 *** TODO can I verify that I have not broken the api?
     Would like to automatically verify all is good for clj and cljs
@@ -67,13 +68,19 @@
     - paredit_test.cljs - this is a cljs specific feature… will see if it fits into cli version as well
     - zip_tests.cljs
     Ran cloverage and it generated a good report but also failed many tests.  Not sure why.
+*** TODO test with cljs advanced compilation
+*** TODO have a try with https://github.com/xsc/rewrite-clj/issues/76
 ** Docs & API
 *** TODO update README to be at least in line with rewrite-clj - ideally improve it.
 *** TODO make it clearer that edn reads clojure code
 *** TODO got good feedback from @sogaui on confusion ^:no-doc.
     Explain in docs internal vs external apis and intention of generated docs.
-** Interop
-*** TODO Object vs object String vs string
+*** TODO consider asciidoc - some talk in cljdoc slack room that it might have advantages
+*** TODO dev notes
+    - design notes
+      - namespace clj vs cljs
+      - cljs namespace resolution
+    - dev notes
 ** Language differences from library perspective
 *** TODO what happens when we try to parse a ratio from ClojureScript
 *** TODO test handling a very large int in cljs
@@ -97,9 +104,9 @@
     I like cljdoc versioning, but it is probably too much of a departure from existing versioning, and I
     would have to think about how to convey alpha-ness in that scheme. 0.6.<commit count>-<short hash>-alpha1?
     I will attempt to discuss with @xsc before release.
-*** TODO min clojurescript version - latest
 *** TODO continuity on clojars for rundis deploys?
 *** TODO make sure I understand deploy requirements for cljs - what goes into the jar?
+    Just the source, I think...
 
 * interop notes
   Differences between Clojure and ClojureScript
