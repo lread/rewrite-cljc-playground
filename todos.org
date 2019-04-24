@@ -82,8 +82,24 @@
       - cljs namespace resolution
     - dev notes
 ** Language differences from library perspective
-*** TODO what happens when we try to parse a ratio from ClojureScript
-*** TODO test handling a very large int in cljs
+*** TODO parsing the language specific
+   rewrite-clj should be able to parse and rewrite clojure and clojurescript from clojure or clojurescript.
+   But there are differences between the languages.
+   If I read in a clj/cljs file, make no changes, and spit it out, I should get the same result.
+**** TODO what happens when we try to parse a ratio from ClojureScript
+     from cljs repl:
+     3/4
+     Compile Exception: failed compiling constant: 3/4; clojure.lang.Ratio is not a valid ClojureScript constant.
+
+     This is interesting:
+     (edn/read-string "3/4")
+     0.75
+**** TODO test handling a very large int in cljs
+     cljs.user=> 1234567890123456789012345678901234567890
+     1.2345678901234568e+39
+
+     (edn/read-string "1234567890123456789012345678901234567890")
+     1.2345678901234568e+39
 *** TODO experiment with sexprs across lang differences
 *** TODO experiment with coerce across lang differences
 *** TODO consider not using sepxr internally - I expect it will be an interop problemo
@@ -117,6 +133,8 @@
   - IMetaData and other base types different
   - format not part of cljs standard lib
   - no Character in cljs
+  - no ratios in cljs
+  - different max numerics
 
 * From rundis
    - http://rundis.github.io/blog/2015/clojurescript_performance_tuning.html

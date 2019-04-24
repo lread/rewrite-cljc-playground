@@ -71,6 +71,24 @@
     "sym:sym"                    'sym:sym
     "\"string\""                 "string"))
 
+;; TODO: no ratios in cljs; they will be evaluated on sexpr, need to add notes in docs
+(deftest t-ratios
+  (are [?s ?r]
+       (let [n (p/parse-string ?s)]
+         (is (= :token (node/tag n)))
+         (is (= ?s (node/string n)))
+         (is (= ?r (node/sexpr n))))
+    "3/4"                                      #?(:clj 3/4 :cljs 0.75)))
+
+;; TODO: what to check here? this test is not checking anything
+(deftest t-big-integers
+  (are [?s ?r]
+      (let [n (p/parse-string ?s)]
+        (is (= :token (node/tag n)))
+        (is (= ?s (node/string n)))
+        (is (= ?r (node/sexpr n))))
+    "1234567890123456789012345678901234567890" 1234567890123456789012345678901234567890N))
+
 (deftest t-parsing-reader-prefixed-data
   (are [?s ?t ?ws ?sexpr]
        (let [n (p/parse-string ?s)
