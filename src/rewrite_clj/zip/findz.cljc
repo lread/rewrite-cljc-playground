@@ -28,7 +28,7 @@
     (and (>= r row)
          (<= r end-row)
          (if (= r row) (>= c col) true)
-         (if (= r end-row) (<= c end-col) true))))
+         (if (= r end-row) (< c end-col) true))))
 
 
 ;; ## Find Operations

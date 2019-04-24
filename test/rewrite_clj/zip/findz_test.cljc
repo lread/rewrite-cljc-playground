@@ -138,30 +138,39 @@
                   (rest))]
     (is (= '[defn x x] (map base/sexpr locs)))))
 
-;; TODO: cljs only from here on...
-;; there is pos support in clj proj now...
-(deftest find-last-by-pos
-  (is (= "2" (-> "[1 2 3]"
-                 (base/of-string {:track-position? true})
-                 (f/find-last-by-pos {:row 1 :col 4} (constantly true))
-                 base/string))))
-
-(deftest find-last-by-pos-when-whitespace
-  (is (= " " (-> "[1 2 3]"
-                 (base/of-string {:track-position? true})
-                 (f/find-last-by-pos {:row 1 :col 3} (constantly true))
-                 base/string))))
-
-(deftest find-last-by-pos-multiline
-  (let [sample "\n{:a 1\n :b 2}" ]
-    (is (= ":a" (-> sample
-                    (base/of-string {:track-position? true})
-                    (f/find-last-by-pos {:row 2 :col 2})
-                    base/string)))
-    (is (= "1"  (-> sample
-                    (base/of-string {:track-position? true})
-                    (f/find-last-by-pos {:row 2 :col 5})
-                    base/string)))))
+(deftest t-find-last-by-pos
+  (are [?for-position ?expected]
+      ;; row        1            2      3
+      ;; col        12345678901  12345  1234567890
+      (let [sample "(defn hi-fn\n  [x]\n  (+ x 1))"
+            actual (-> sample
+                       (base/of-string {:track-position? true})
+                       (f/find-last-by-pos ?for-position)
+                       base/string)]
+        (is (= ?expected actual)))
+    [1 1] "(defn hi-fn\n  [x]\n  (+ x 1))"
+    [3 10] "(defn hi-fn\n  [x]\n  (+ x 1))"
+    [1 6] " "
+    [1 7] "hi-fn"
+    [1 10] "hi-fn"
+    [1 11] "hi-fn"
+    [2 4] "x"
+    [2 5] "[x]"
+    {:row 2 :col 5} "[x]" ;; original cljs syntax still works
+    [3 8] "1"
+    [3 9] "(+ x 1)"
+    ;; at and end of row
+    [1 12] "\n"
+    ;; past and end of row TODO: was this behaviour intentional or accidental?
+    [1 200] "\n"
+    ;; past end of sample
+    [3 11] nil
+    [400 400] nil
+    ;; invalid positions
+    [0 0] nil
+    [0 1] nil
+    [1 0] nil
+    [-200 -400] nil))
 
 (deftest find-tag-by-pos
   (is (= "[4 5 6]" (-> "[1 2 3 [4 5 6]]"
