@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest is testing run-tests]]
             [rewrite-clj.potemkin.helper :as helper]))
 
-(deftest t_unravel-syms
+(deftest t-unravel-syms
   (is (= '([one.two.three/a {}]
            [one.two.three/b {}]
            [sunday.sally/f {:name-to-pattern "@@orig-name@@*"}]
@@ -24,20 +24,19 @@
                                {}
                                ['friday.fred 'k]]))))
 
-(deftest t_new-meta
-  (is (= {:doc "Orignal sym `original-name` and original doc `original doc`"}
+(deftest t-new-meta-doc-changed
+  (is (= {:doc "Orignal sym `original-name` and original doc `original doc`" :name 'original-name :line 234}
          (helper/new-meta
-          {:name 'original-name
-           :doc "original doc"
-           :line 234}
-          {:doc-to-pattern "Orignal sym `@@orig-name@@` and original doc `@@orig-doc@@`"})))
-  (is (= {:doc "Orignal sym `original-name` and original doc ``"}
+          {:name 'original-name :doc "original doc" :line 234}
+          {:doc-to-pattern "Orignal sym `@@orig-name@@` and original doc `@@orig-doc@@`"}))))
+
+(deftest t-new-meta-doc-changed-no-orig-doc
+  (is (= {:doc "Orignal sym `original-name` and original doc ``" :name 'original-name :line 234}
          (helper/new-meta
-          {:name 'original-name
-           :line 234}
-          {:doc-to-pattern "Orignal sym `@@orig-name@@` and original doc `@@orig-doc@@`"})))
-  (is (nil? (helper/new-meta
-             {:name 'original-name
-              :doc "original doc"
-              :line 234}
-             nil))))
+          {:name 'original-name :line 234}
+          {:doc-to-pattern "Orignal sym `@@orig-name@@` and original doc `@@orig-doc@@`"}))))
+
+(deftest t-new-meta-doc-unchanged
+  (is (= {:name 'original-name :doc "original doc" :line 234}
+         (helper/new-meta {:name 'original-name :doc "original doc" :line 234}
+                          nil))))

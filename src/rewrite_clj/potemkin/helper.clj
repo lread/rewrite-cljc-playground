@@ -7,11 +7,17 @@
     orig-name))
 
 (defn new-meta [orig-meta opts]
-  (when-let [doc-pattern (:doc-to-pattern opts)]
-    {:doc (-> doc-pattern
-              (string/replace #"@@orig-name@@" (str (:name orig-meta)))
-              (string/replace #"@@orig-doc@@" (or (:doc orig-meta) "")))}))
+  (if-let [doc-pattern (:doc-to-pattern opts)]
+    (assoc orig-meta :doc (-> doc-pattern
+                              (string/replace #"@@orig-name@@" (str (:name orig-meta)))
+                              (string/replace #"@@orig-doc@@" (or (:doc orig-meta) ""))))
+    orig-meta))
 
+(defn- import-type
+  [meta-data]
+  (cond (:macro meta-data) :macro
+        (:arglists meta-data) :fn
+        :else :var))
 
 (defn unravel-syms [x]
   (loop [acc []
@@ -36,3 +42,13 @@
         :else
         (recur (conj acc [n cur-opts]) (rest r) cur-opts))
       acc)))
+
+(defn syms->import-data
+  [syms resolve-fn meta-fn]
+  (map
+   (fn [[sym opts]]
+     (let [vr (resolve-fn sym)
+           m (meta-fn vr)
+           n (:name m)]
+       [sym (import-type m) (new-name n opts) (new-meta m opts)]))
+   (unravel-syms syms)))

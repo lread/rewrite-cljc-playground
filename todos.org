@@ -78,8 +78,8 @@
 *** TODO consider asciidoc - some talk in cljdoc slack room that it might have advantages
 *** TODO dev notes
     - design notes
-      - namespace clj vs cljs
-      - cljs namespace resolution
+      - namespace clj vs cljs and solution
+      - potemkin import-vars
     - dev notes
 ** Language differences from library perspective
 *** TODO parsing the language specific

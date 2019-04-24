@@ -33,7 +33,7 @@
 
 ;; --- potemkin.namespaces
 
-(defn resolved-meta
+(defn- meta-from-resolved
   "mimic what meta would return on a resolved sym in clj"
   [sym-analysis]
   (assoc (:meta sym-analysis)
@@ -42,11 +42,11 @@
          ;; doc is not always under meta (ex. for def)
          :doc (get-in sym-analysis [:meta :doc] (:doc sym-analysis))))
 
-(defn resolve-sym [sym]
+(defn- resolve-sym [sym]
   (or (ana-api/resolve @env/*compiler* sym)
       (throw (ex-info "potemkin cljs does not recognize symbol" {:symbol 'sym}))))
 
-(defn adjust-var-meta! [target-ns target-name src-sym]
+(defn- adjust-var-meta! [target-ns target-name src-sym]
   (let [src-ns (symbol (namespace src-sym))
         src-name (symbol (name src-sym))
         target-ns (symbol (str target-ns))
@@ -64,63 +64,26 @@
                   merge (dissoc (:meta src-data) :name :doc)))))
   nil)
 
-(defmacro fixup-vars
-  "We can't alter-meta! in cljs, some metadata needs to be changed in the compiler state"
+(defmacro ^:private fixup-vars
+  "We can't alter-meta! in cljs, metadata needs to be changed in the compiler state."
   [target-ns & import-data]
   (doall
-   (for [[src-sym target-name _] import-data]
+   (for [[src-sym _ target-name _] import-data]
      (adjust-var-meta! target-ns target-name src-sym)))
   nil)
 
-(defmacro import-fn
-  "Given a function in another namespace, defines a function with the
-   same name in the current namespace.  Argument lists, doc-strings,
-   and original line-numbers are preserved."
-  [src-sym target-name target-meta-changes]
-  (let [vr (resolve-sym src-sym)
-        m (resolved-meta vr)
-        new-meta (-> m (merge target-meta-changes) (dissoc :name))]
-    (when (:macro m)
-      (throw (ex-info "potemkin cljs cannot import-fn on a macro" {:symbol src-sym})))
-    `(def ~(with-meta target-name new-meta) ~(:name vr))))
-
-(defmacro import-macro
-  "Not supported for cljs"
-  [src-sym target-name target-meta-changes]
-  (throw (ex-info "potemkin cljs cannot import macros, do macro importing via potemkin clj" {:symbol src-sym})))
-
-(defmacro import-def
-  "Given a regular def'd var from another namespace, defined a new var with the
-   same name in the current namespace."
-  [src-sym target-name target-meta-changes]
-  (let [vr (resolve-sym src-sym)
-        m (resolved-meta vr)
-        new-meta (-> m (merge target-meta-changes) (dissoc :name))]
-    `(def ~(with-meta target-name new-meta) ~(:name vr))))
-
 (defmacro import-vars
-  "Imports a list of vars from other namespaces."
+  "Imports a list of vars from other namespaces with optional renaming and doc string altering."
   [& raw-syms]
-  (let [syms (helper/unravel-syms raw-syms)
-        import-data (map
-                     (fn [[sym opts]]
-                       (let [vr (resolve-sym sym)
-                             m (resolved-meta vr)
-                             n (:name m)]
-                         [sym (helper/new-name n opts) (helper/new-meta m opts)]))
-                     syms)
+  (let [import-data (helper/syms->import-data raw-syms resolve-sym meta-from-resolved)
         import-cmds (map
-                     (fn [[sym new-name new-meta]]
-                       (let [vr (resolve-sym sym)
-                             m (resolved-meta vr)]
-                         (cond
-                           (:macro m)    `(import-macro ~sym ~new-name ~new-meta)
-                           (:arglists m) `(import-fn ~sym ~new-name ~new-meta)
-                           :else         `(import-def ~sym ~new-name ~new-meta))))
+                     (fn [[src-sym type new-name new-meta]]
+                       (if (= :macro type)
+                         (throw (ex-info "potemkin cljs cannot import macros, do macro importing via potemkin clj" {:symbol src-sym}))
+                         `(def ~(with-meta new-name (dissoc new-meta :name)) ~src-sym)))
                      import-data)
         cmds (concat import-cmds [`(fixup-vars ~*ns* ~@import-data)])]
     `(do ~@cmds)))
-
 
 ;; --- potemkin.types
 
