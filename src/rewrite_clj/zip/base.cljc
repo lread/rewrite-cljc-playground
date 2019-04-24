@@ -87,13 +87,14 @@
   [zloc]
   (some-> zloc z/root node/string))
 
-(defn- print!
-  [^String s writer]
-  #?(:clj
+#?(:clj
+   (defn- print! [^String s writer]
      (if writer
        (.write ^java.io.Writer writer s)
-       (recur s *out*))
-     :cljs (string-print s)))
+       (recur s *out*)))
+   :cljs
+   (defn- print! [s writer]
+     (string-print s)))
 
 (defn print
   "Print current zipper location."

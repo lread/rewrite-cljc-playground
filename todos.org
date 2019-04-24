@@ -45,12 +45,6 @@
 ** No file support for ClojureScript version
 
 * Todos
-** TODO always use reader conditionals for lang differences
-   Some friendly feedback form @sogaui and @borkdude on slack helped me to see that always being explicit with regards to language differences reduces confusion.
-   For examples, if cljs didn't barf, I was often omitting reader conditionals for type hints like java.lang.Character and Object.
-   @sogaui shared his experience that specifying :cljs variant first then letting java/clr fall through as :default can work nicely when java/clr will often be identical.
-   I have no intention of supporting clr at this time, but good to know.
-   @borkdude shared using default instead of object for cljs is usually the preferred route.
 ** TODO refine cljs namespace alias lookup
     Allow a client to provide a resolver fn rather than just a data binding.  The default will be clojure tools reader *ns-alias* but
     should be over-rideable to whatever the client wants.
@@ -90,6 +84,7 @@
     - clojure.reader
     - clojure/reader-string
 ** TODO cleanup coerce record support
+** TODO do I need rewrite-clj.node/coerce?
 ** TODO have a try with https://github.com/xsc/rewrite-clj/issues/76
 ** Testing
 *** TODO can I verify that I have not broken the api?

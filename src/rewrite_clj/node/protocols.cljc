@@ -21,7 +21,7 @@
     "Convert node to printable string."))
 
 (extend-protocol Node
-  #?(:clj Object :cljs object)
+  #?(:clj Object :cljs default)
   (tag [_] :unknown)
   (printable-only? [_] false)
   (sexpr [this] this)
@@ -60,7 +60,7 @@
     "How many characters appear before children?"))
 
 (extend-protocol InnerNode
-  #?(:clj Object :cljs object)
+  #?(:clj Object :cljs default)
   (inner? [_] false)
   (children [_]
     (throw (ex-info "unsupported operation" {})))
@@ -82,8 +82,8 @@
   (coerce [_]))
 
 (defn- ^:no-doc node->string
-  ^String
-  [node]
+  #?(:clj ^String [node]
+     :cljs ^string [node])
   (let [n (str (if (printable-only? node)
                  (pr-str (string node))
                  (string node)))

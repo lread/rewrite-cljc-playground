@@ -72,7 +72,7 @@
 ;; ## Tokens
 
 (extend-protocol NodeCoerceable
-  #?(:clj Object :cljs object)
+  #?(:clj Object :cljs default)
   (coerce [v]
     (node-with-meta
      ;; TODO: might be misleading, should never be a record for clj

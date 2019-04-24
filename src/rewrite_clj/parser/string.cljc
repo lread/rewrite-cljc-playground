@@ -14,7 +14,7 @@
     (conj lines s)))
 
 (defn- read-string-data
-  [#?(:cljs ^not-native reader :clj reader)]
+  [#?(:cljs ^not-native reader :default reader)]
   (u/ignore reader)
   (let [buf (StringBuffer.)]
     (loop [escape? false
@@ -33,10 +33,10 @@
         (u/throw-reader reader "Unexpected EOF while reading string.")))))
 
 (defn parse-string
-  [#?(:cljs ^not-native reader :clj reader)]
+  [#?(:cljs ^not-native reader :default reader)]
   (node/string-node (read-string-data reader)))
 
 (defn parse-regex
-  [#?(:cljs ^not-native reader :clj reader)]
+  [#?(:cljs ^not-native reader :default reader)]
   (let [h (read-string-data reader)]
     (string/join "\n" h)))

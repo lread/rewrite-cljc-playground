@@ -71,7 +71,7 @@
 ;; ## Constructors
 
 (defn- string-of?
-  [^String s pred]
+  [#?(:clj ^String s :default s) pred]
   (and s
        (string? s)
        (pos? (count s))

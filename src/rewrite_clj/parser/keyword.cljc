@@ -5,7 +5,7 @@
             [clojure.tools.reader :as edn]))
 
 (defn parse-keyword
-  [#?(:cljs ^not-native reader :clj reader)]
+  [#?(:cljs ^not-native reader :default reader)]
   (u/ignore reader)
   (if-let [c (r/peek-char reader)]
     (if (= c \:)
