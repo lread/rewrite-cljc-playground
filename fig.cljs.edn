@@ -1,4 +1,4 @@
-^{:watch-dirs ["test/cljs" "src/cljc" "test/cljc"]
+^{:watch-dirs ["test" "src"]
   :auto-testing true}
 {:main rewrite-clj.hello-figwheel
  :warnings {:fn-deprecated false
