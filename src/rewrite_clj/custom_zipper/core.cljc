@@ -86,7 +86,7 @@
   (node/replace-children node children))
 
 (defn position
-  "Returns the ones-based [row col] of the start of the current node"
+  "Returns the ones-based [row col] of the start of the node at `loc`"
   [loc]
   (if (custom-zipper? loc)
     (:position loc)
@@ -94,6 +94,13 @@
      (ex-info
       (str "to use the 'position' function, please construct your zipper with "
            "':track-position?'  set to true.") {}))))
+
+(defn position-span
+  "Returns the ones-based [[start-row start-col] [end-row end-col]] of the node at `loc`"
+  [loc]
+  (let [start-pos (position loc)]
+    [start-pos (node/+extent start-pos (node/extent (node loc)))]))
+
 
 (defn-switchable lefts
   "Returns a seq of the left siblings of this loc"

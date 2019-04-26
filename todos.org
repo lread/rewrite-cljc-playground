@@ -10,6 +10,7 @@
 ** Accretive
 *** Clojure version gains features that were only in ClojureScript version
 *** Forgotten insert-space-left insert-space-right insert-newline-left insert-newline-right exposed on zip api
+*** Added zip/position-span
 ** Of Note
 *** ClojureScript Namespace clash resolution
     ClojureScript picked up an implementation detail of Google Closure with regards to namespaces. In short, some namespaces

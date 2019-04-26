@@ -3,7 +3,8 @@
             [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.node :as n]
             [rewrite-clj.zip.findz :as f]
-            [rewrite-clj.zip.base :as base]))
+            [rewrite-clj.zip.base :as base])
+  #?(:clj (:import clojure.lang.ExceptionInfo)))
 
 ;; ## Fixture
 
@@ -165,12 +166,17 @@
     [1 200] "\n"
     ;; past end of sample
     [3 11] nil
-    [400 400] nil
-    ;; invalid positions
-    [0 0] nil
-    [0 1] nil
-    [1 0] nil
-    [-200 -400] nil))
+    [400 400] nil))
+
+(deftest t-find-last-by-pos-invalid
+  (are [?for-position]
+      (let [sample (base/of-string "(def b 42)" {:track-position? true})]
+        (is (thrown-with-msg? ExceptionInfo #"zipper row and col positions are ones-based"
+                              (f/find-last-by-pos sample ?for-position))))
+    [0 0]
+    [3 0]
+    [0 10]
+    [-100 -200]))
 
 (deftest find-tag-by-pos
   (is (= "[4 5 6]" (-> "[1 2 3 [4 5 6]]"

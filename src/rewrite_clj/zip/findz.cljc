@@ -16,20 +16,16 @@
            (additional node)))
     #(= (base/tag %) t)))
 
-;; TODO: this was in cljs version only
 ;; TODO: note that this is adapted to clj position implementation
 (defn- position-in-range? [zloc pos]
-  (let [n (base/string zloc)
-        [r c] (if (map? pos) [(:row pos) (:col pos)] pos)
-        zpos (z/position zloc)
-        [row col] zpos
-        ;; TODO after verifying this works, consider making and end-pos available from custom-zipper
-        [end-row end-col] (node/+extent zpos (node/extent (z/node zloc)))]
-    (and (>= r row)
-         (<= r end-row)
-         (if (= r row) (>= c col) true)
-         (if (= r end-row) (< c end-col) true))))
-
+  (let [[r c] (if (map? pos) [(:row pos) (:col pos)] pos)]
+    (when (or (<= r 0) (<= c 0))
+      (throw (ex-info "zipper row and col positions are ones-based" {:pos pos})))
+    (let [[[zstart-row zstart-col][zend-row zend-col]] (z/position-span zloc)]
+      (and (>= r zstart-row)
+           (<= r zend-row)
+           (if (= r zstart-row) (>= c zstart-col) true)
+           (if (= r zend-row) (< c zend-col) true)))))
 
 ;; ## Find Operations
 
