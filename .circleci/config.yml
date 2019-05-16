@@ -29,6 +29,15 @@ commands:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
+      # Strange, but circleci does not seem to provide an image with lein AND clojure
+      - run:
+          name: Install clojure
+          command: |
+            curl -O https://download.clojure.org/install/linux-install-1.10.0.442.sh
+            chmod +x linux-install-1.10.0.442.sh
+            sudo ./linux-install-1.10.0.442.sh
+            clojure -e "*clojure-version*"
+
       - run:
           name: Install karma command line
           command: sudo npm install karma-cli -g
