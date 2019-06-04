@@ -5,6 +5,7 @@
 /doc
 /node_modules
 /dumps
+/.clj-kondo
 pom.xml
 pom.xml.asc
 *.jar
