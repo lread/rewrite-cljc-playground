@@ -48,6 +48,74 @@
 * Todos
 ** TODO cleanup coerce record support
    See TODOs in code.
+** TODO rework namespaced maps to not require namespaced state
+   from discussion on Slack with borkdude:
+
+   borkdude [8:57 AM]
+   I’d love to see a proper fix for namespaced maps in rewrite-clj and also support for reading `##Inf`
+   I patched it in clj-kondo to make it work
+
+   lread [9:01 AM]
+   I do have a pre-alpha playground https://github.com/lread/rewrite-cljs-playground/tree/cljc-spike-2
+   but you might want to wait until alpha.  I know that @sogaiu is dipping his toe into my playground as he has already provided some great feedback.
+   my alpha goal is to bring rewrite-cljs features up to rewrite-clj while not breaking rewrite-clj/rewrite-cljs apis - but I did include a version of my rewrite-clj namespace PR (which I still want to tweak to not use sexpr)
+
+   borkdude [9:09 AM]
+   I think a fundamental mistake right now in rewrite-clj is that parsing namespaced maps depends on the namespace state from which you are calling rewrite-clj:
+   https://github.com/xsc/rewrite-clj/issues/54#issuecomment-494445992
+
+   lread [9:13 AM]
+   ah... good reminder, thanks. If memory serves, I think the namespace state requirement is to support sexpr? But surely annoying if you aren’t using sexpr.
+   I’ll add another todo for this issue, thanks. :simple_smile:
+
+   borkdude [9:15 AM]
+   ```clj -Sdeps '{:deps {rewrite-clj {:git/url "https://github.com/lread/rewrite-cljs-playground" :sha "69ef791b949eac1e3cebf6cec154bcda0a109edc"}}}'
+   Cloning: https://github.com/lread/rewrite-cljs-playground
+   Error building classpath. Destination path "rewrite-cljs-playground" already exists and is not an empty directory```
+   not sure what this is
+   this worked: `~/.gitlibs $ rm -rf _repos/github.com/lread`
+   so in summary:
+   ```$ clj -Sdeps '{:deps {rewrite-clj {:git/url "https://github.com/lread/rewrite-cljs-playground" :sha "69ef791b949eac1e3cebf6cec154bcda0a109edc"}}}'
+   Clojure 1.10.0
+   user=> (require '[rewrite-clj.parser :as p])
+   nil
+   user=> (def x (p/parse-string "#::a {:a #::a {:b 1}}"))
+   Syntax error (AssertionError) compiling at (REPL:1:8).
+   Assert failed: :namespaced-map could not resolve namespace ::a```
+   :slightly_smiling_face:
+   I’m not even calling sexpr
+
+   lread [9:20 AM]
+   yeah, I see your point and it is a very good one. :simple_smile:
+
+   borkdude [9:22 AM]
+   FWIW, what I’m doing right now to fix it:
+   ```(p/parse-string "#::a {:a #::a {:b 1}}")
+   #clj_kondo.impl.node.seq.NamespacedMapNode{:ns <token: ::a>, :aliased? true, :children [<map: {:a #::a{:b 1}}>]}```
+   I just store the raw node of the ns and the children as is (edited)
+
+
+   lread [9:24 AM]
+   thanks @borkdude , I’ll add this to my notes
+
+   borkdude [9:25 AM]
+   sorry for being a little bit pushy maybe :wink:
+
+   lread [9:25 AM]
+   I don’t find you pushy at all. I find you both considerate and helpful!
+
+   borkdude [9:26 AM]
+   the patch is defined in these three files:
+   https://github.com/borkdude/clj-kondo/blob/master/src/clj_kondo/impl/node/seq.clj
+   https://github.com/borkdude/clj-kondo/blob/master/src/clj_kondo/impl/parser/namespaced_map.clj
+   https://github.com/borkdude/clj-kondo/blob/master/src/clj_kondo/impl/rewrite_clj_patch.clj
+   and here’s a test: https://github.com/borkdude/clj-kondo/blob/master/test/clj_kondo/impl/parser_test.clj#L10
+   as you can see the roundtrip of parsing and sexpr-ing isn’t identical, but that’s easy to fix using the `aliased?` boolean I’m also storing
+   for the purposes of linting that wasn’t a problem for me
+
+   lread [9:27 AM]
+   Thanks, I’ll be sure to take a close look
+
 ** TODO refine cljs namespace alias lookup
     Allow a client to provide a resolver fn rather than just a data binding.  The default will be clojure tools reader *ns-alias* but
     should be over-rideable to whatever the client wants.
@@ -63,6 +131,8 @@
 ** Testing
 *** TODO can I verify that I have not broken the api?
     Would like to automatically verify all is good for clj and cljs
+    Sooo... get current cljs api, current clj api and compare with my api to make sure at least signatures are the same.
+    Should not be terribly difficult but are there any tools for this?
 *** TODO code coverage? Would be very good to know if coverage is weak in areas I have touched.
 *** TODO review cljs specific tests
     - node_test.cljs
@@ -76,7 +146,270 @@
 *** TODO make it clearer that edn reads clojure code
 *** TODO got good feedback from @sogaui on confusion ^:no-doc.
     Explain in docs internal vs external apis and intention of generated docs.
-*** TODO consider asciidoc - some talk in cljdoc slack room that it might have advantages
+*** TODO give guidance on the limitations of sexpr
+    from discussion with @sogaiu and @borkdude on slack
+
+    sogaiu [7:34 AM]
+    not always easy to be brief but clear :slightly_smiling_face:
+    @lread btw, i encountered a problem processing clojure's core.clj:
+
+    ```(require
+    '[rewrite-clj.zip :as rz]
+    :reload-all)
+
+    (def source-str
+    (slurp "../clojure/src/clj/clojure/core.clj"))
+
+    (def root-zloc
+    (rz/of-string ;;(subs source-str 0 26232) ; no problem
+    (subs source-str 0 26981) ; exception below
+    {:track-position? true}))
+
+    ;; ExceptionInfo unsupported operation for uneval-node ...
+    (def strings
+    (loop [zloc root-zloc
+    results []]
+    (if (rz/end? zloc)
+    results
+    (let [sexpr (rz/sexpr zloc)]
+    (recur (rz/next zloc)
+    (if (string? sexpr)
+    (conj results zloc)
+    results))))))```
+
+    not sure, but i think the section of difficulty in core.clj is:
+
+    ```;equals-based
+    #_(defn =
+    "Equality. Returns true if x equals y, false if not. Same as Java
+    x.equals(y) except it also works for nil. Boxed numbers must have
+    same type. Clojure's immutable data structures define equals() (and
+    thus =) as a value, not an identity, comparison."
+    {:inline (fn [x y] `(. clojure.lang.Util equals ~x ~y))
+    :inline-arities #{2}
+    :added "1.0"}
+    ([x] true)
+    ([x y] (clojure.lang.Util/equals x y))
+    ([x y & more]
+    (if (= x y)
+    (if (next more)
+    (recur y (first more) (next more))
+    (= y (first more)))
+    false)))```
+    (edited)
+
+    borkdude [7:47 AM]
+    I think that makes sense, you can’t turn an uneval into a sexpr:
+    ```$ clj
+    Clojure 1.10.0
+    user=> (require '[rewrite-clj.parser :as p])
+    nil
+    user=> (p/parse-string "#_foo")
+    <uneval: "#_foo">
+    user=> (require '[rewrite-clj.node :as n])
+    nil
+    user=> (n/sexpr (p/parse-string "#_foo"))
+    Execution error (UnsupportedOperationException) at rewrite_clj.node.uneval.UnevalNode/sexpr (uneval.clj:6).
+    null```
+
+    borkdude [7:48 AM]
+    or it should return `nil` maybe, but then you can’t distinguish between a token that represents nil
+
+    borkdude [7:49 AM]
+    ```$ clj
+    Clojure 1.10.0
+    user=> (require '[rewrite-clj.node :as n])
+    nil
+    user=> (require '[rewrite-clj.parser :as p])
+    nil
+    user=> (n/sexpr (p/parse-string "nil"))
+    nil```
+
+    borkdude [7:49 AM]
+    same for comments:
+    ```user=> (n/sexpr (p/parse-string ";; hello"))
+    Execution error (UnsupportedOperationException) at rewrite_clj.node.comment.CommentNode/sexpr (comment.clj:6).
+    null```
+
+    lread [7:58 AM]
+    Thinking about rewrite-clj sexpr feature is on my todo list. I guess it might be convenient but comes with limitation that should be documented.  I’m thinking that I should probably remove internal uses of sexpr because of these limitations. I’ll also have to think about cljs vs clj differences and how sexpr handles them - like ratio is only available in clj, differences in max integers, no char in cljs etc.
+
+    lread [8:02 AM]
+    My current thinking is rewrite-clj sexpr should be used cautiously if at all. What do you folks think?
+
+    borkdude [8:07 AM]
+    yeah, I try to avoid calling sexpr in clj-kondo as much as I can
+    although I already filter out every uneval and comment before
+
+    lread [8:14 AM]
+    I guess if you are quite certain of what you are trying to sexpr you’ll probably be ok, but if you are sexpr-ing an unknown then maybe stay away from sexpr.
+
+    borkdude [8:36 AM]
+    yeah, exactly (edited)
+    I have also made a few predicates like `symbol-token?` so I don’t need to sexpr to check if it’s a symbol
+*** TODO make walk docs clearer
+    from discussion on slack:
+    sogaiu [6:02 PM]
+    thanks.  just hoping some improvement to the situation can come about. (edited)
+    @lread i was trying to remove metadata and had some difficulties initially.  it appears that (at least in some cases) even if one replaces a metadata node with a node for the contained form (w/o the metadata map), the metadata is retained -- presumably because the contained form has the metadata living on it.
+    will post some example code
+    given:
+
+    ```(require '[rewrite-clj.zip :as rz])
+
+    (def comment-form-with-meta-idea-str
+    (str "(comment\n"
+    "\n"
+    "  ^{:ael/expected 0 :ael/name \"simple subtraction\"}\n"
+    "  (- 1 1)\n"
+    ")\n"))```
+    (edited)
+    the following retains the metadata:
+
+    ```(-> (rz/of-string comment-form-with-meta-idea-str)
+    (rz/prewalk (fn [zloc]
+    (when (= (rz/tag zloc) :meta)
+    (let [map-zloc (rz/down zloc)]
+    (contains? (rz/sexpr map-zloc)
+    :ael/expected))))
+    (fn [zloc]
+    (-> zloc
+    rz/down
+    rz/right)))
+    rz/string)```
+    the following successfully removes the metadata:
+
+    ```(-> (rz/of-string comment-form-with-meta-idea-str)
+    (rz/prewalk (fn [zloc]
+    (when (= (rz/tag zloc) :meta)
+    (let [map-zloc (rz/down zloc)]
+    (contains? (rz/sexpr map-zloc)
+    :ael/expected))))
+    (fn [zloc]
+    (rz/edit zloc
+    (fn [expr]
+    (with-meta expr {})))))
+    rz/string)```
+    i was surprised, but do you think the current behavior makes sense / is inevitable?
+
+    lread [6:12 PM]
+    Thanks @sogaiu, I shall have a look sometime over the next few days.
+
+    sogaiu [6:13 PM]
+    thanks!
+
+    lread [3:31 PM]
+    Ok, I have started to have a look.  Remember that, surprising at it may be, I’m not yet an expert in rewrite-clj. :simple_smile:
+
+    lread [3:36 PM]
+    So… looking at your first prewalk… I thought you had to transform a zloc with a manipulation function (edit, replace etc)? If I take a simpler example and do something similar, I will get no change:
+    ```(def ex2 "[1 2 3 [4 5]]")
+
+    (-> (rz/of-string ex2)
+    (rz/prewalk (fn [zloc]
+    (println (rz/string zloc))
+    (= (rz/string zloc) "2"))
+    (fn [zloc]
+    (println "-->" (rz/node (rz/right zloc)))
+    (rz/right zloc)))
+    (rz/string))```
+
+    lread [3:47 PM]
+    rewrite-clj will not allow you to simply `rz/remove` the metadata :map from the :meta node because it does not allow a :meta node without a :map.
+    So maybe your 2nd version is not too shabby?
+    Another way that more closely matches your first attempt might be:
+    ```(-> (rz/of-string comment-form-with-meta-idea-str)
+    (rz/prewalk (fn [zloc]
+    (when (= (rz/tag zloc) :meta)
+    (let [map-zloc (rz/down zloc)]
+    (contains? (rz/sexpr map-zloc)
+    :ael/expected))))
+    (fn [zloc]
+    (rz/replace zloc
+    (-> zloc rz/down rz/right rz/node))))
+    rz/string)```
+    Looking forward to reading what you think. (edited)
+
+    sogaiu [3:51 PM]
+    thanks for the consideration -- i'm even less of an expert, and i just woke up, but i hope to digest your response and get back to you soon :slightly_smiling_face:
+
+    lread [3:52 PM]
+    Sure, take your time.  We can continue to learn together!
+
+    sogaiu [3:53 PM]
+    quite nice :slightly_smiling_face:
+
+    lread [4:19 PM]
+    oh ok… I played a bit more… this makes sense… when we simply return a zloc from prewalk it just changes where we are at in the walk.  I’ll modify my simpler example a tiny bit:
+    ```(-> (rz/of-string ex2)
+    (rz/prewalk (fn [zloc]
+    (println "walking: " (rz/string zloc))
+    (= (rz/string zloc) "2"))
+    (fn [zloc]
+    (rz/right zloc)))
+    (rz/string))```
+    Which outputs:
+    ```walking:  [1 2 3 [4 5]]
+    walking:  1
+    walking:  2
+    walking:  [4 5]
+    walking:  4
+    walking:  5```
+    Notice that our `rz/right` has us skipping element `3` in our prewalk traversal. (edited)
+
+    lread [5:20 PM]
+    Which does not affect the resulting string: `"[1 2 3 [4 5]]"`.
+
+    borkdude [5:57 PM]
+    @lread are you trying to get rid of metadata?
+
+    borkdude [6:14 PM]
+    @lread maybe something like this?
+    ```(require '[rewrite-clj.zip :as rz])
+
+    (def comment-form-with-meta-idea-str
+    (str "(comment\n"
+    "\n"
+    "  ^{:ael/expected 0 :ael/name \"simple subtraction\"}\n"
+    "  (- 1 1)\n"
+    ")\n"))
+
+    (loop [zloc (rz/of-string comment-form-with-meta-idea-str)]
+    (if (rz/end? zloc) (rz/root zloc)
+    (let [t (rz/tag zloc)]
+    (if (= :meta t)
+    (recur (-> zloc rz/splice rz/remove))
+    (recur (rz/next zloc))))))```
+    returns: `"(comment\n\n  (- 1 1)\n)\n"`
+
+    lread [6:16 PM]
+    nah, not me, @sogaiu , just helping out
+
+    borkdude [6:17 PM]
+    sorry misread. but it seems to work @sogaiu :slightly_smiling_face: (edited)
+
+    lread [6:21 PM]
+    coolio, thanks!
+
+    sogaiu [9:36 PM]
+    @lread thanks for the investigation -- looking at prewalk's documentation string, i see:
+
+    >   Perform a depth-first pre-order traversal starting at the given zipper location
+    >   and apply the given function to each child node. If a predicate `p?` is given,
+    >   only apply the function to nodes matching it.
+    (edited)
+    i don't see any warning about the return value of the function (argument passed to prewalk) affecting the traversal.
+    so your most recent code example was enlightening.
+    if the function argument returns some other location, it's possible the walk is not strictly a depth-first traversal any more i guess -- at least not a complete one. (edited)
+
+    i found borkdude's code to be less surprising and straight-forward, thanks @borkdude.
+    i incorrectly assumed that the function argument return value would be used in place of the original -- though the doc string does not imply such a thing -- it was surprising to learn that the traversal could be affected, though perhaps for this sort of thing, may be that should be expected? (edited)
+    the docstring also doesn't explicitly state what the return value of prewalk should be / is.
+    by studying its implementation and examining subedit-node, replace (from zip/editz), and replace (from custom-zipper.core), one can learn more about what might be returned, but this (though helpful in learning parts of rewrite-clj) seems like more work than should be necessary to just learn how to use prewalk. (edited)
+
+    lread [11:27 PM]
+    yeah, good points @sogaiu , I think the docs could use some love
+*** TODO consider asciidoc - some talk in cljdoc slack room that it does have advantages
 *** TODO dev notes
     - design notes
       - namespace clj vs cljs and solution
