@@ -133,7 +133,118 @@
     Would like to automatically verify all is good for clj and cljs
     Sooo... get current cljs api, current clj api and compare with my api to make sure at least signatures are the same.
     Should not be terribly difficult but are there any tools for this?
+
+    borkdude suggested maybe clj-kondo but I am not sure if that will work with import-vars
+
+    borkdude [5:07 AM]
+    @lread you can use clj-kondo for this, I could explain how. but since this is not part of a public contract, I haven’t documented this anywhere :wink: (edited)
+
+    borkdude [5:45 AM]
+    @lread quick REPL session:
+    ```$ clj
+    Clojure 1.10.0
+    user=> (require '[clj-kondo.impl.cache :as cache])
+    nil
+    user=> (require '[clj-kondo.core :as clj-kondo])
+    user=> (clj-kondo/run! {:lint ["/tmp/rewrite-clj/src"] :cache "/tmp/rewrite-clj"})
+    ...
+    user=> (clj-kondo/run! {:lint ["/tmp/rewrite-cljs-playground/src"] :cache "/tmp/playground"})
+    ...
+    user=> (cache/from-cache "/tmp/rewrite-clj/2019.06.02-alpha-SNAPSHOT" :clj ['rewrite-clj.parser.core])
+    {rewrite-clj.parser.core {dispatch {:fixed-arities #{1}, :private? true, :ns rewrite-clj.parser.core, :name dispatch, :base-lang :clj, :lang :clj, :col 1, :row 17}, parse-next {:fixed-arities #{1}, :ns rewrite-clj.parser.core, :name parse-next, :base-lang :clj, :lang :clj, :col 1, :row 33}, parse-delim {:fixed-arities #{2}, :private? true, :ns rewrite-clj.parser.core, :name parse-delim, :base-lang :clj, :lang :clj, :col 1, :row 39}, parse-printables {:private? true, :ns rewrite-clj.parser.core, :name parse-printables, :base-lang :clj, :var-args-min-arity 3, :lang :clj, :col 1, :row 46}, :source :disk}}
+
+    user=> (cache/from-cache "/tmp/playground/2019.06.02-alpha-SNAPSHOT" :cljc ['rewrite-clj.parser.core])
+    {rewrite-clj.parser.core {:clj {dispatch {:fixed-arities #{1}, :private? true, :ns rewrite-clj.parser.core, :name dispatch, :base-lang :cljc, :lang :clj, :col 1, :row 16}, parse-next {:fixed-arities #{0}, :ns rewrite-clj.parser.core, :name parse-next, :base-lang :cljc, :lang :clj, :col 1, :row 32}, parse-delim {:fixed-arities #{1}, :private? true, :ns rewrite-clj.parser.core, :name parse-delim, :base-lang :cljc, :lang :clj, :col 1, :row 38}, parse-printables {:private? true, :ns rewrite-clj.parser.core, :name parse-printables, :base-lang :cljc, :var-args-min-arity 2, :lang :clj, :col 1, :row 45}}, :cljs {dispatch {:fixed-arities #{1}, :private? true, :ns rewrite-clj.parser.core, :name dispatch, :base-lang :cljc, :lang :cljs, :col 1, :row 16}, parse-next {:fixed-arities #{1}, :ns rewrite-clj.parser.core, :name parse-next, :base-lang :cljc, :lang :cljs, :col 1, :row 32}, parse-delim {:fixed-arities #{2}, :private? true, :ns rewrite-clj.parser.core, :name parse-delim, :base-lang :cljc, :lang :cljs, :col 1, :row 38}, parse-printables {:private? true, :ns rewrite-clj.parser.core, :name parse-printables, :base-lang :cljc, :var-args-min-arity 3, :lang :cljs, :col 1, :row 45}}, :source :disk}}```
+    (edited)
+    using the last two values, you could e.g. use https://github.com/lambdaisland/deep-diff to find differences (edited)
+    please note that the cache namespace in clj-kondo is an implementation detail and might break in a future version :wink: (edited)
+
+    martinklepsch [5:53 AM]
+    A similar approach could be taken with the data in cljdoc but that's still a bit hard to get to unless you're willing to add this to cljdoc directly
+
+    martinklepsch [5:54 AM]
+    We should really get this API thing worked out :slightly_smiling_face:
+
+    borkdude [5:54 AM]
+    adding to cljdoc directly would make sense?
+
+    martinklepsch [5:54 AM]
+    oh yeah, that's what I'd love to see
+
+    borkdude [5:54 AM]
+    but then it would maybe not work for libraries that are forks and renamed versions of others
+    unless you would make a “compare to” thingy
+
+    martinklepsch [5:55 AM]
+    like a "mechanical changelog" where you can compare two versions of the same lib and you see the (obvious) API differences (changed arities etc)
+
+    borkdude [5:57 AM]
+    yeah, but in lread’s case he’s doing a reworked version of some other library he’s trying to remain compatible with
+    so it’s not the same lib, different clojars coordinates (edited)
+    for accepting PRs this would also be useful (edited)
+
+    martinklepsch [6:05 AM]
+    ah right, that's a bit of a different thing
+
+    borkdude [6:10 AM]
+    but the automatic changelog is good to start with probably
+    and later a “compare to” option can be added maybe
+
+    martinklepsch [6:11 AM]
+    yeah, or an API so people can do whatever :slightly_smiling_face:
+
+    borkdude [6:34 AM]
+    that’s even better. the automatic changelog could then use that API
+
+    lread [8:09 AM]
+    That’s interesting @borkdude! Thanks for sharing the details!
+
+    borkdude [8:10 AM]
+    @lread yeah, for one-off things it’s pretty easy to make a script out of it for your use case
+
+    lread [8:19 AM]
+    my original thought was, as @martinklepsch was suggesting, to look at publics via analyzers like cljdocs version of codox does. I thought this might work better because rewrite-clj makes use of a version of potemkin (hotly debated) import-vars. (edited)
+
+    martinklepsch [8:19 AM]
+    It always comes back to `import-vars` :smile:
+
+    borkdude [8:22 AM]
+    now that you mention it, clj-kondo should probably support that too :wink:
+    does that also work in cljs?
+    probably not :wink:
+
+    lread [8:45 AM]
+    I have created a version of import-vars for cljs within my rewrite-clj/rewrite-clj merge effort. I did it as a learning effort but since the concept is so contentious I questioned myslef often. :grimacing: It also led me here to cljdoc because the cljdoc codox fork needed to be updated to support cljs import-vars.
+
 *** TODO code coverage? Would be very good to know if coverage is weak in areas I have touched.
+    I did experiment with this but got a whack of errors maybe due to import-vars?
+*** TODO test under advanced optimizations
+    another tip for borkdude
+*** TODO test under self-hosted cljs
+    again borkdude.
+
+    borkdude [8:49 AM]
+    it could work, just something to be aware of. also I’d test if it works under self-hosted CLJS (e.g. Planck or Lumo)
+    (some CLJC libraries I have are tested in 3 ways on CI: clojure, advanced CLJS, self-hosted CLJS)
+    you’ll be surprised how often it doesn’t work directly :wink: (edited)
+    but in most cases things are fixable (edited)
+
+    lread [8:51 AM]
+    Thanks for the tips. I doubt that it works under self hosted cljs.
+
+    borkdude [8:52 AM]
+    well, the analyzer also works in self-hosted I think, so it might
+
+    lread [8:52 AM]
+    But I really don’t understand self hosted cljs yet.
+    Another todo for me, thanks.
+
+    borkdude [8:53 AM]
+    example project: https://github.com/borkdude/respeced/blob/master/script/test (edited)
+
+    lread [8:54 AM]
+    very helpful, thanks!
+
 *** TODO review cljs specific tests
     - node_test.cljs
     - paredit_test.cljs - this is a cljs specific feature… will see if it fits into cli version as well
@@ -458,6 +569,151 @@
 *** TODO make sure I understand deploy requirements for cljs - what goes into the jar?
     Just the source, I think...
 
+* Later
+** TODO consider allowing metadata to be a child
+   of interest to borkdude - and more generally probably
+
+   borkdude [8:36 AM]
+   yeah, exactly (edited)
+   I have also made a few predicates like `symbol-token?` so I don’t need to sexpr to check if it’s a symbol
+
+   caveat is that there might be metadata on anything in clojure
+   I wonder if it would have made better sense if the metadata was a child instead of a parent. it ~certainly~ maybe would have made my life easier, but I haven’t pondered the consequences of that (edited)
+
+   lread [8:42 AM]
+   interesting, we should probably eventually bring your predicates into rewrite-clj. Also interesting thought on metadata, would make it easier to parse the meat, right?
+
+   borkdude [8:42 AM]
+   right, for example: I expect the first node after `defn` to be a symbol, but in rewrite-clj it might be a metadata node with a symbol in it
+
+   borkdude [8:43 AM]
+   I would probably make metadata a field on the defrecord of every node or something
+   but that might not work for rewriting (which I’m not concerned with) to the original expressions, including spaces, etc
+
+   lread [8:44 AM]
+   hmmm... yeah I see your point. It is worth thinking about more.
+
+   borkdude [8:45 AM]
+   I really like rewrite-clj btw. but I might need some clone for tuning towards clj-kondo for more performance… but not now, it’s already very fast (edited)
+   what I basically do for nodes that might be metadata, is rip out the contents and store the metadata node as proper metadata on the node
+
+   lread [8:48 AM]
+   cool, it is very nice to have heavy users of rewrite-clj here like you and @sogaiu. Your feedback and ideas are greatly appreciated! :simple_smile:
+   after I finish up a cljs ticket, I’ll get back on my rewrite-clj todo list and work toward the alpha release.
+
+** TODO add some more support for sepxr
+   of interest to sogaiu
+
+   sogaiu [11:15 PM]
+   two additional approach ideas for dealing with sexpr
+   1) same as earlier idea of a new protocol, but name its method something like sexpr2, and don't remove sexpr from the Node protocol -- this is a change, but it doesn't break existing code?
+   2) add a sexprable? method to the Node protocol -- all it does is tell you if it's safe to call sexpr
+   in approach 1, may be existing sexpr implementations can be moved to external functions and those functions can be called from the protocol methods.  both the Node protocol sexpr and the new protocol sexpr2 can call these externalized functions.  newer code can use sexpr2 and other code can migrate to sexpr2 gradually.  satisfies? can be used to check whether it's safe to call sexpr2 before use.
+   the earlier idea of just having sexprable? has the downside of maintainers having to remember to update it appropriately if node implementation details change in certain ways over time.
+
+   sogaiu [11:41 PM]
+   here is some scratch work for sexprable?
+
+   ```(require '[rewrite-clj.node :as rn])
+
+   (defn uneval?
+   "Check whether a node represents an uneval."
+   [node]
+   (= (rn/tag node) :uneval))
+
+   ;; following things will throw when sexpr is called:
+   ;;
+   ;;   comma,
+   ;;   newline,
+   ;;   whitespace
+   ;;
+   ;;   comment
+   ;;
+   ;;   uneval
+   ;;
+   ;; this could throw:
+   ;;
+   ;;   some reader nodes
+   ;;
+   ;; however, afaict, all currently implemented reader nodes (:var and :eval) don't throw by default
+   (defn sexprable?
+   "Check whether sexpr can be safely called on node."
+   [node]
+   (not (or (uneval? node)
+   (rn/whitespace? node)
+   (rn/comment? node))))```
+
+   lread [12:29 AM]
+   so, I don’t know @sogaiu. There are other reasons to stay away from sexpr. :grimacing: For example, let’s say your cljs app is sexpr-ing clj code that is not cljs compatible.  Like a ratio for example.  Looking at these kind of sexpr language incompatibilities is on my todo list.
+
+   lread [12:35 AM]
+   I would not go so far a deprecating sexpr but I’m thinking I’ll give strong guidance in docs on only using it in specific cases where you have a very good idea of what you are sexpr-ing. For that reason, I am wondering if further work on sexpr is prudent. Whadya think?
+   but the extra predicates seem fine to me.
+
+   sogaiu [2:17 AM]
+   the case you described about a cljs app working with clj code is understandable, but it seems like the kind of thing where a warning would do.  not sure yet -- need to digest it more fully.
+
+   i'm interested in hearing about other reasons to stay away from sexpr.  please share any further thoughts.
+
+   i need to go through all the places i used sexpr in more detail -- perhaps i can manage that in the next day or so :slightly_smiling_face:
+
+   may be you know this already, but for reference, all of the following rewrite-clj-using projects use sexpr (some much more than others):
+
+   https://github.com/benedekfazekas/trin
+   https://github.com/borkdude/clj-kondo
+   https://github.com/clojure-emacs/refactor-nrepl
+   https://github.com/kkinnear/zprint
+   https://github.com/Olical/depot
+   https://github.com/snoe/clojure-lsp
+   https://github.com/weavejester/cljfmt
+
+   i haven't looked in detail how it's used though.
+
+   sogaiu [4:31 AM]
+   @lread regarding extra predicates, borkdude has the following in clj-kondo's impl/utils.clj:
+
+   ```(defn boolean-token? [node]
+   (boolean? (:value node)))
+
+   (defn char-token? [node]
+   (char? (:value node)))
+
+   (defn string-token? [node]
+   (boolean (:lines node)))
+
+   (defn number-token? [node]
+   (number? (:value node)))
+
+   (defn symbol-token? [node]
+   (symbol? (:value node)))```
+
+   i'm not sure about the naming (e.g. in some rewrite-clj/node/*.cljc there are comment?, comma?, etc.), but it'd be nice to have at least the string and symbol predicates -- may be having "-token" helps prevent collisions w/ clojure's built-in predicates?  having those would help with some of the usages of sexpr i'm finding.
+
+   also, there are zip versions of list?, vector?, set?, map?, whitespace?, comment?, ... -- any thoughts on these and/or more of these types?  i know i use list?, vector?, and map?.  it would be nice to have something for string? and symbol? too -- though i also wonder about appropriate names for these.
+
+
+   borkdude [4:32 AM]
+   yeah, I’m not sure about the naming either, but since these are not part of my API I didn’t worry about it :slightly_smiling_face:
+   also these predicates already assume that the node is a token. for efficiency
+
+   sogaiu [4:33 AM]
+   thanks for the clarifications :slightly_smiling_face:
+
+   sogaiu [5:00 AM]
+   one other usage of sexpr i appear to have repeatedly is for getting at values of things, e.g. string, symbol, first item in list.
+
+   i noticed in clj-kondo's impl/util.clj the following:
+
+   ```(defn symbol-call
+   "Returns symbol of call"
+   [expr]
+   (when (= :list (node/tag expr))
+   (let [first-child (-> expr :children first)
+   ?sym (:value first-child)]
+   (when (symbol? ?sym)
+   ?sym))))```
+
+   for string and symbol, i guess the guts of the -token predicates (e.g. (:value token)) above might work.  may be those guts, after being externalized into functions, can be called from the predicates?
 * interop notes
   Differences between Clojure and ClojureScript
   - throws are bit different
