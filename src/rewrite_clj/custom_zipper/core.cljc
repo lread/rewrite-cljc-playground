@@ -92,7 +92,7 @@
     (:position loc)
     (throw
      (ex-info
-      (str "to use the 'position' function, please construct your zipper with "
+      (str "to use position functions, please construct your zipper with "
            "':track-position?'  set to true.") {}))))
 
 (defn position-span
