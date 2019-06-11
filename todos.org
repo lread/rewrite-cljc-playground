@@ -128,6 +128,7 @@
     - clojure/reader-string
 ** TODO do I need rewrite-clj.node/coerce?
 ** TODO consider spec
+** TODO address clj-kondo/joker linter warnings
 ** Testing
 *** TODO can I verify that I have not broken the api?
     Would like to automatically verify all is good for clj and cljs
@@ -714,6 +715,7 @@
    ?sym))))```
 
    for string and symbol, i guess the guts of the -token predicates (e.g. (:value token)) above might work.  may be those guts, after being externalized into functions, can be called from the predicates?
+** TODO consider speculative kaocha plugin
 * interop notes
   Differences between Clojure and ClojureScript
   - throws are bit different
