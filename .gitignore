@@ -6,6 +6,7 @@
 /node_modules
 /dumps
 /.clj-kondo
+/.cpcache
 pom.xml
 pom.xml.asc
 *.jar
