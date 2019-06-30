@@ -3,52 +3,46 @@
             [rewrite-clj.reader :as reader]
             [rewrite-clj.parser.utils :as u]))
 
-(defn- parse-nspaced-map-type
+(defn- specifies-aliased?
   [reader]
   (case (reader/peek reader)
     nil (u/throw-reader reader "Unexpected EOF.")
-    \:  (do (reader/ignore reader) "::")
-    ":"))
+    \:  (do (reader/ignore reader) true)
+    false))
 
-(defn- nspace?
+(defn- includes-keyword?
   [reader]
   (let [c (reader/peek reader)]
     (and (not (reader/whitespace? c))
          (not (= \{ c)))))
 
-(defn- keywordize-nspace [type nspace]
-  (node/token-node
-   (if (= "::" type)
-     (keyword (str ":" (node/string nspace)))
-     (keyword (node/string nspace)))))
-
-(defn- parse-nspace
-  [reader fn-parse-next type]
-  (let [n (fn-parse-next reader)]
+(defn- parse-keyword
+  [reader read-next aliased?]
+  (let [k (read-next reader)]
     (cond
-      (nil? n)
+      (nil? k)
       (u/throw-reader reader "Unexpected EOF.")
 
-      (not= :token (node/tag n))
-      (if (= "::" type)
+      (not= :token (node/tag k))
+      (if aliased?
         (u/throw-reader reader ":namespaced-map expected namespace alias or map")
         (u/throw-reader reader ":namespaced-map expected namespace prefix"))
-      :else (keywordize-nspace type n))))
+      :else (node/token-node (keyword (str (if aliased? ":") (node/string k)))))))
 
-(defn- parse-for-printable
-  [reader fn-parse-next]
+(defn- parse-upto-printable
+  [reader read-next]
   (loop [vs []]
     (if (and
          (seq vs)
          (not (node/printable-only? (last vs))))
       vs
-      (if-let [v (fn-parse-next reader)]
+      (if-let [v (read-next reader)]
         (recur (conj vs v))
         nil))))
 
 (defn- parse-for-map
-  [reader fn-parse-next]
-  (let [m (parse-for-printable reader fn-parse-next)]
+  [reader read-next]
+  (let [m (parse-upto-printable reader read-next)]
     (cond
       (nil? m)
       (u/throw-reader reader "Unexpected EOF.")
@@ -58,15 +52,15 @@
       :else m)))
 
 (defn parse-namespaced-map
-  [reader fn-parse-next]
+  [reader read-next]
   (reader/ignore reader)
-  (let [type (parse-nspaced-map-type reader)]
-    (if (nspace? reader)
+  (let [aliased? (specifies-aliased? reader)]
+    (if (includes-keyword? reader)
       (node/namespaced-map-node
-       (into [(parse-nspace reader fn-parse-next type)]
-             (parse-for-map reader fn-parse-next)))
-      (if (= "::" type)
+       (into [(parse-keyword reader read-next aliased?)]
+             (parse-for-map reader read-next)))
+      (if aliased?
         (node/namespaced-map-node
          (into [(node/token-node (keyword ":"))]
-               (parse-for-map reader fn-parse-next)))
+               (parse-for-map reader read-next)))
         (u/throw-reader reader ":namespaced-map expected namespace prefix")))))

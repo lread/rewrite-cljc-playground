@@ -5,15 +5,14 @@
 
 ;; ## Node
 
-;; TODO: avoid internal usage of sexpr
 (defn- assert-namespaced-map-children
   [children]
-  (let [exs (node/sexprs children)]
-    (assert (= (count exs) 2)
-            "can only contain 2 non-whitespace forms.")
-    (assert (keyword? (first exs))
-            "first form in namespaced map needs to be keyword.")
-    (assert (map? (second exs))
+  (node/assert-sexpr-count children 2)
+  (let [printables (node/without-whitespace children)]
+    ;; TODO: check for keyword
+    (assert (= :token (node/tag (first printables)))
+            (str "first form in namespaced map needs to be a token keyword." (node/tag (first printables))))
+    (assert (= :map (node/tag (second printables)))
             "second form in namespaced map needs to be map.")))
 
 ;; TODO: consider using own *alias-map* instead of reusing reader's version
@@ -48,7 +47,6 @@
     :namespaced-map)
   (printable-only? [_] false)
   (sexpr [this]
-    ;; TODO: avoid internal usage of sexpr
     (let [[nspace-keyword m] (node/sexprs children)]
       (->> (for [[k v] m
                  :let [k' (cond (not (keyword? k))     k
@@ -80,12 +78,23 @@
 ;; ## Constructors
 
 (defn namespaced-map-node
-  "Create a node representing a namespaced map.
-  `#:prefix{a: 1}`  prefix namespaced map
-  `#::{a: 1}`       auto-resolve namespaced map
-  `#::alias{a: 1}`  auto-resolve alias namespaced map
-  First arg is delivered as token node with keyword, second arg is map node.
-  When first arg is :: keyword can be contrived via (keyword \":\")"
+  "Create a node representing a namespaced map. There are 3 types of namespaced maps:
+
+   1. prefix namespaced map
+   The prefix is a keyword which specifies to a namespace.
+   Example: `#:my.name.space{:a 1}`
+
+   2. auto-resolve alias namespaced map
+   The prefix is an auto-resolve keyword specifies a namespace alias.
+   Example: `#::ns-alias{:b 3}`
+
+   3. auto-resolve namespaced map
+   The prefix is `::` which specifies the current namespace.
+   Example: `#::{:c 4}`
+
+  First child is the prefix, followed by optional whitespace then map node.
+  TODO: this still seems hacky to me.
+  Prefix must be a token-node with a keyword value. Use (keyword ':') for auto-resolve."
   [children]
   (assert-namespaced-map-children children)
   (->NamespacedMapNode children))

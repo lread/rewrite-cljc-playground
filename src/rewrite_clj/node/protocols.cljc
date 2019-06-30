@@ -118,10 +118,14 @@
 
 ;; ## Helpers
 
+(defn ^:no-doc without-whitespace
+  [nodes]
+  (remove printable-only? nodes))
+
 (defn  ^:no-doc assert-sexpr-count
   [nodes c]
   (assert
-   (= (count (remove printable-only? nodes)) c)
+   (= (count (without-whitespace nodes)) c)
    (interop/simple-format "can only contain %d non-whitespace form%s."
                           c (if (= c 1) "" "s"))))
 

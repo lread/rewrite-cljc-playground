@@ -307,6 +307,7 @@
 
 (deftest t-parsing-auto-resolve-namespaced-maps
   (are [?s ?children ?sexpr]
+      ;; TODO: Review: Why does this require binding of *ns*?  Is it to make sexpr absolutely correct?
       (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
         (let [n (p/parse-string ?s)]
           (is (= :namespaced-map (node/tag n)))
@@ -362,6 +363,8 @@
     "[<token: ::node> <map: {:a #::node{:b 1}}>]"
     '{::node/a {::node/b 1}}))
 
+;; TODO: Do I absolutely need these bindings?  Am I testing that the code is correct when really we should assume code has
+;; been compiled and thus checked for correct.
 #?(:clj
    (deftest t-parsing-auto-resolve-alias-namespaced-maps-clj-style
      (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
@@ -370,6 +373,22 @@
 (deftest t-parsing-auto-resolve-alias-namespaced-maps-cljs-style
   (binding [*alias-map* '{node rewrite-clj.node}]
     (parsing-auto-resolve-alias-namespaced-maps)))
+
+(deftest t-parsing-namespaced-map-does-not-require-ns-when-not-calling-sexpr[]
+  (are [?s ?children]
+      (let [n (p/parse-string ?s)]
+        (is (= :namespaced-map (node/tag n)))
+        (is (= (count ?s) (node/length n)))
+        (is (= ?s (node/string n)))
+        (is (= ?children (str (node/children n)))))
+    "#::a{:a #::a{:b 1}}"
+    "[<token: ::a> <map: {:a #::a{:b 1}}>]"
+
+    "#:a{:a #:a{:b 1}}"
+    "[<token: :a> <map: {:a #:a{:b 1}}>]"
+
+    "#::{:a #::{:b 1}}"
+    "[<token: ::> <map: {:a #::{:b 1}}>]"))
 
 (deftest t-parsing-exceptions
   (are [?s ?p]
