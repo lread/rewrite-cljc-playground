@@ -115,6 +115,12 @@ The original rewrite-cljs author worked around this problem by renaming namespac
 |rewrite-clj.node.coerce[yellow-background]**r**
 
 |rewrite-clj
+|rewrite-clj.node.string
+
+|rewrite-cljs
+|rewrite-clj.node.string[yellow-background]**z**
+
+|rewrite-clj
 |rewrite-clj.zip.edit
 
 |rewrite-cljs
