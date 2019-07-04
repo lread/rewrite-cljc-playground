@@ -44,6 +44,8 @@ TODO
 ** kaocha for clj testing
 4. Dependencies are now in `deps.edn`
 
+== Feature Differences
+No ability to read from files when using rewrite-cljc from ClojureScript.
 
 == Observations
 === Wow, a lot of libraries use rewrite-clj
