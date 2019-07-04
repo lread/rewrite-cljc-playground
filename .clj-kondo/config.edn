@@ -1,0 +1,3 @@
+{:lint-as
+ {rewrite-clj.potemkin.cljs/defprotocol+ clojure.core/defprotocol
+  rewrite-clj.potemkin.clojure/defprotocol+ clojure.core/defprotocol}}

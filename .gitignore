@@ -4,7 +4,7 @@
 /checkouts
 /node_modules
 /dumps
-/.clj-kondo
+/.clj-kondo/.cache
 /.cpcache
 pom.xml
 pom.xml.asc

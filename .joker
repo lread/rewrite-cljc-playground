@@ -1,0 +1,3 @@
+{:known-macros
+ [rewrite-clj.potemkin.cljs/defprotocol+
+  rewrite-clj.potemkin.clojure/defprotocol+]}
