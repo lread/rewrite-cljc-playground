@@ -48,84 +48,9 @@
 * Todos
 ** TODO cleanup coerce record support
    See TODOs in code.
-** TODO rework namespaced maps to not require namespaced state
-   from discussion on Slack with borkdude:
-
-   borkdude [8:57 AM]
-   I’d love to see a proper fix for namespaced maps in rewrite-clj and also support for reading `##Inf`
-   I patched it in clj-kondo to make it work
-
-   lread [9:01 AM]
-   I do have a pre-alpha playground https://github.com/lread/rewrite-cljs-playground/tree/cljc-spike-2
-   but you might want to wait until alpha.  I know that @sogaiu is dipping his toe into my playground as he has already provided some great feedback.
-   my alpha goal is to bring rewrite-cljs features up to rewrite-clj while not breaking rewrite-clj/rewrite-cljs apis - but I did include a version of my rewrite-clj namespace PR (which I still want to tweak to not use sexpr)
-
-   borkdude [9:09 AM]
-   I think a fundamental mistake right now in rewrite-clj is that parsing namespaced maps depends on the namespace state from which you are calling rewrite-clj:
-   https://github.com/xsc/rewrite-clj/issues/54#issuecomment-494445992
-
-   lread [9:13 AM]
-   ah... good reminder, thanks. If memory serves, I think the namespace state requirement is to support sexpr? But surely annoying if you aren’t using sexpr.
-   I’ll add another todo for this issue, thanks. :simple_smile:
-
-   borkdude [9:15 AM]
-   ```clj -Sdeps '{:deps {rewrite-clj {:git/url "https://github.com/lread/rewrite-cljs-playground" :sha "69ef791b949eac1e3cebf6cec154bcda0a109edc"}}}'
-   Cloning: https://github.com/lread/rewrite-cljs-playground
-   Error building classpath. Destination path "rewrite-cljs-playground" already exists and is not an empty directory```
-   not sure what this is
-   this worked: `~/.gitlibs $ rm -rf _repos/github.com/lread`
-   so in summary:
-   ```$ clj -Sdeps '{:deps {rewrite-clj {:git/url "https://github.com/lread/rewrite-cljs-playground" :sha "69ef791b949eac1e3cebf6cec154bcda0a109edc"}}}'
-   Clojure 1.10.0
-   user=> (require '[rewrite-clj.parser :as p])
-   nil
-   user=> (def x (p/parse-string "#::a {:a #::a {:b 1}}"))
-   Syntax error (AssertionError) compiling at (REPL:1:8).
-   Assert failed: :namespaced-map could not resolve namespace ::a```
-   :slightly_smiling_face:
-   I’m not even calling sexpr
-
-   lread [9:20 AM]
-   yeah, I see your point and it is a very good one. :simple_smile:
-
-   borkdude [9:22 AM]
-   FWIW, what I’m doing right now to fix it:
-   ```(p/parse-string "#::a {:a #::a {:b 1}}")
-   #clj_kondo.impl.node.seq.NamespacedMapNode{:ns <token: ::a>, :aliased? true, :children [<map: {:a #::a{:b 1}}>]}```
-   I just store the raw node of the ns and the children as is (edited)
-
-
-   lread [9:24 AM]
-   thanks @borkdude , I’ll add this to my notes
-
-   borkdude [9:25 AM]
-   sorry for being a little bit pushy maybe :wink:
-
-   lread [9:25 AM]
-   I don’t find you pushy at all. I find you both considerate and helpful!
-
-   borkdude [9:26 AM]
-   the patch is defined in these three files:
-   https://github.com/borkdude/clj-kondo/blob/master/src/clj_kondo/impl/node/seq.clj
-   https://github.com/borkdude/clj-kondo/blob/master/src/clj_kondo/impl/parser/namespaced_map.clj
-   https://github.com/borkdude/clj-kondo/blob/master/src/clj_kondo/impl/rewrite_clj_patch.clj
-   and here’s a test: https://github.com/borkdude/clj-kondo/blob/master/test/clj_kondo/impl/parser_test.clj#L10
-   as you can see the roundtrip of parsing and sexpr-ing isn’t identical, but that’s easy to fix using the `aliased?` boolean I’m also storing
-   for the purposes of linting that wasn’t a problem for me
-
-   lread [9:27 AM]
-   Thanks, I’ll be sure to take a close look
-
 ** TODO refine cljs namespace alias lookup
     Allow a client to provide a resolver fn rather than just a data binding.  The default will be clojure tools reader *ns-alias* but
     should be over-rideable to whatever the client wants.
-** TODO consider a util namespace?
-    Plunk potemkin and interop under there?
-** TODO make sure I am using the right reader
-    - clojure.tools.reader
-    - clojure.tools.reader.edn <- this one seems safest to me.
-    - clojure.reader
-    - clojure/reader-string
 ** TODO do I need rewrite-clj.node/coerce?
 ** TODO consider spec
 ** TODO address clj-kondo/joker linter warnings

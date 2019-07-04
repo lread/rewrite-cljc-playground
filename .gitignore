@@ -2,7 +2,6 @@
 /lib
 /classes
 /checkouts
-/doc
 /node_modules
 /dumps
 /.clj-kondo
