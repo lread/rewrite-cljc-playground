@@ -1,4 +1,4 @@
-<img src="doc/rewrite-clj-logo.svg" height="60" alt="rewrite-clj"/>
+![rewrite-cljc](doc/rewrite-cljc-logo.png)
 
 A library that reads and writes Clojure, ClojureScript and [EDN](https://github.com/edn-format/edn) from Clojure and ClojureScript in a whitespace and comment preserving way.
 
