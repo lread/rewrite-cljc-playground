@@ -10,11 +10,11 @@ A library that reads and writes Clojure, ClojureScript and [EDN](https://github.
 
 TODO: badges here... circleci, cljdoc, clojars
 
-rewrite-cljc versioning scheme is: major.minor.commit-count
+rewrite-cljc versioning scheme is: `major`.`minor`.`patch`
 
-* major will change when the API has been broken - something, as a rule, we'd like to avoid.
-* minor will convey a new feature has been added.
-* commit-count is the number of commits since major.minor
+* `major` increments when the API has been broken - something, as a rule, we'd like to avoid.
+* `minor` increments to convey significant new features have been added.
+* `patch` indicates bug fixes - it is the number of commits since `major`.`minor`.
 
 ## Need help?
 
@@ -32,14 +32,14 @@ lread
 
 ### Contributors
 
-sogaiu
-borkdude
-TODO: add in all people who committed for rewrite-clj and rewrite-cljs
+* borkdude
+* sogaiu
+* TODO: add in all people who committed for rewrite-clj and rewrite-cljs
 
 ### Founders
 
-xsc - original author of rewrite-clj
-rundis - original author of rewrite-cljs
+* xsc - original author of rewrite-clj
+* rundis - original author of rewrite-cljs
 
 ## Licences
 
