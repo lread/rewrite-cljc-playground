@@ -1,0 +1,5 @@
+{:cljdoc.doc/tree
+ [["Readme" {:file "README.md"}]
+  ["Introduction" {:file "doc/introduction.adoc"}]
+  ["Merging rewrite-clj and rewrite-cljs" {:file "merging-rewrite-cj-and-rewrite-cljs.adoc"}]
+  ["Frequently Asked Questions" {:file "faq.adoc"}]]}

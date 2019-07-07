@@ -1,5 +1,130 @@
 (ns rewrite-clj.zip
-  "API for zipper navigation and updating Clojure/ClojureScript source code."
+  "A rich API for navigating and updating Clojure/ClojureScripti/EDN source code via a zipper tree.
+
+  Ingest into a zipper::
+  [[edn]]
+  [[edn*]]
+  [[of-string]]
+  [[of-file]]
+
+  Move::
+  [[left]]
+  [[right]]
+  [[up]]
+  [[down]]
+  [[prev]]
+  [[next]]
+  [[leftmost]]
+  [[rightmost]]
+
+  Move without skipping whitespace and comments::
+  [[left*]]
+  [[right*]]
+  [[up*]]
+  [[down*]]
+  [[prev*]]
+  [[next*]]
+  [[leftmost*]]
+  [[rightmost*]]
+
+  Whitespace/comment aware skip::
+  [[skip]]
+  [[skip-whitespace]]
+  [[skip-whitespace-left]]
+
+  Test for whitespace::
+  [[whitespace?]]
+  [[linebreak?]]
+  [[whitespace-or-comment?]]
+
+  Test location::
+  [[leftmost?]]
+  [[rightmost?]]
+  [[end?]]
+
+  Test data type::
+  [[seq?]]
+  [[list?]]
+  [[vector?]]
+  [[set?]]
+  [[map?]]
+
+  Find::
+  [[find]]
+  [[find-next]]
+  [[find-depth-first]]
+  [[find-next-depth-first]]
+  [[find-tag]]
+  [[find-next-tag]]
+  [[find-value]]
+  [[find-next-value]]
+  [[find-token]]
+  [[find-next-token]]
+  [[find-last-by-pos]]
+  [[find-tag-by-pos]]
+
+  Inspect::
+  [[node]]
+  [[position]]
+  [[position-span]]
+  [[tag]]
+  [[length]]
+
+  Convert::
+  [[sexpr]]
+  [[child-sexpr]]
+
+  Update::
+  [[replace]]
+  [[edit]]
+  [[splice]]
+  [[prefix]] TODO: review
+  [[suffix]] TODO: review
+  [[insert-right]]
+  [[insert-left]]
+  [[insert-child]]
+  [[insert-space-left]]
+  [[insert-space-right]]
+  [[insert-newline-left]]
+  [[insert-newline-right]]
+  [[append-child]]
+  [[remove]]
+  [[remove-preserve-newline]]
+  [[root]]
+
+  Update without whitespace treatment::
+  [[replace*]]
+  [[edit*]]
+  [[insert-left*]]
+  [[insert-right*]]
+  [[append-child*]]
+  [[remove*]]
+
+  Update without changing location::
+  [[edit-node]] TODO: review
+  [[subedit-node]]
+  [[subzip]]
+  [[prewalk]]
+  [[postwalk]]
+  [[edit->]]
+  [[edit->>]]
+  [[subedit->]]
+  [[subedit->>]]
+
+  Sequence operations::
+  [[map]]
+  [[map-keys]]
+  [[map-vals]]
+  [[get]]
+  [[assoc]]
+
+  Stringify::
+  [[string]]
+  [[root-string]]
+
+  Output::
+  [[print]]
+  [[print-root]]"
   (:refer-clojure :exclude [next find replace remove
                             seq? map? vector? list? set?
                             print map get assoc])

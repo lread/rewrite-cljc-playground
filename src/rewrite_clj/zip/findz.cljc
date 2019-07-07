@@ -16,7 +16,6 @@
            (additional node)))
     #(= (base/tag %) t)))
 
-;; TODO: note that this is adapted to clj position implementation
 (defn- position-in-range? [zloc pos]
   (let [[r c] (if (map? pos) [(:row pos) (:col pos)] pos)]
     (when (or (<= r 0) (<= c 0))
@@ -30,9 +29,10 @@
 ;; ## Find Operations
 
 (defn find
-  "Find node satisfying the given predicate by repeatedly
-   applying the given movement function to the initial zipper
-   location."
+  "Return the first node satisfying predicate `p?` seaching from the current zipper
+   location in `zloc` traversing by function `f`.
+
+   `f` defaults to [[rewrite-clj.zip/right]]"
   ([zloc p?]
    (find zloc m/right p?))
   ([zloc f p?]
@@ -43,11 +43,11 @@
         (drop-while (complement p?))
         (first))))
 
-;; TODO: this was in cljs version only
 (defn find-last-by-pos
-  "Find last node (if more than one node) that is in range of `pos` and
-  satisfying the given predicate depth first from initial zipper
-  location."
+  "Return the last node spanning position `pos` that satisfies predicate `p?`
+   searching depth-first from the current zipper location in `zloc`.
+
+  NOTE: Does not ignore whitespace/comment nodes."
   ([zloc pos] (find-last-by-pos zloc pos (constantly true)))
   ([zloc pos p?]
    (->> zloc
@@ -58,60 +58,59 @@
                       (position-in-range? % pos)))
         last)))
 
-
 (defn find-depth-first
-  "Find node satisfying the given predicate by traversing
-   the zipper in a depth-first way."
+  "Return first node satisfying the given predicate `p?` searching depth-first from
+   the current zipper location `zloc`."
   [zloc p?]
   (find zloc m/next p?))
 
-
 (defn find-next
-  "Find node other than the current zipper location matching
-   the given predicate by applying the given movement function
-   to the initial zipper location."
+  "Return the first node satisfying predicate `p?` searching one movement `f` from the current
+   zipper location in `zloc` traversing by function `f`.
+
+   `f` defaults to [[rewrite-clj.zip/right]]"
   ([zloc p?]
    (find-next zloc m/right p?))
   ([zloc f p?]
    (some-> zloc f (find f p?))))
 
 (defn find-next-depth-first
-  "Find node other than the current zipper location matching
-   the given predicate by traversing the zipper in a
-   depth-first way."
+  "Return the first node satisfying predicate `p?` searching depth-first from one
+   node after the current zipper location in `zloc`"
   [zloc p?]
   (find-next zloc m/next p?))
 
 (defn find-tag
-  "Find node with the given tag by repeatedly applying the given
-   movement function to the initial zipper location."
+  "Return the first node with tag `t` searching from the current zipper location in `zloc` traversing by
+   function `f`.
+
+   `f` defaults to [[rewrite-clj.zip/right]]"
   ([zloc t]
    (find-tag zloc m/right t))
   ([zloc f t]
    (find zloc f #(= (base/tag %) t))))
 
 (defn find-next-tag
-  "Find node other than the current zipper location with the
-   given tag by repeatedly applying the given movement function to
-   the initial zipper location."
+  "Return the first node with tag `t` searching one movement `f` from the current
+   zipper location in `zloc` traversing by function `f`.
+
+   `f` defaults to [[rewrite-clj.zip/right]]"
   ([zloc t]
    (find-next-tag zloc m/right t))
   ([zloc f t]
    (->> (tag-predicate t)
         (find-next zloc f))))
 
-;; TODO: this was in cljs version only
 (defn find-tag-by-pos
-  "Find node with the given tag and pos depth-first from initial zipper location."
+  "Return the last node spanning position `pos` with tag `t` searching depth-first from the current zipper location in `zloc`."
   ([zloc pos t]
    (find-last-by-pos zloc pos #(= (base/tag %) t))))
 
-
-
 (defn find-token
-  "Find token node matching the given predicate by applying the
-   given movement function to the initial zipper location, defaulting
-   to `right`."
+  "Return the first token node satisfying predicate `p?` searching from the current zipper location in `zloc` traversing
+   by function `f`.
+
+   `f` defaults to [[rewrite-clj.zip/right]]"
   ([zloc p?]
    (find-token zloc m/right p?))
   ([zloc f p?]
@@ -119,18 +118,20 @@
         (find zloc f))))
 
 (defn find-next-token
-  "Find next token node matching the given predicate by applying the
-   given movement function to the initial zipper location, defaulting
-   to `right`."
+  "Return the first token node satisfying predicate `p?` searching from the current zipper location in `zloc` traversing
+   by function `f`.
+
+   `f` defaults to [[rewrite-clj.zip/right]]"
   ([zloc p?]
    (find-next-token zloc m/right p?))
   ([zloc f p?]
    (find-token (f zloc) f p?)))
 
 (defn find-value
-  "Find token node whose value matches the given one by applying the
-   given movement function to the initial zipper location, defaulting
-   to `right`."
+  "Return the first token node with value `v` searching one movement `f` from the current zipper location in `zloc` traversing
+   by function `f`.
+
+   `f` defaults to [[rewrite-clj.zip/right]]"
   ([zloc v]
    (find-value zloc m/right v))
   ([zloc f v]
@@ -140,9 +141,10 @@
      (find-token zloc f p?))))
 
 (defn find-next-value
-  "Find next token node whose value matches the given one by applying the
-   given movement function to the initial zipper location, defaulting
-   to `right`."
+  "Return the first token node with value `v` searching one movement `f` from the current zipper location in `zloc` traversing
+   by function `f`.
+
+   `f` defaults to [[rewrite-clj.zip/right]]"
   ([zloc v]
    (find-next-value zloc m/right v))
   ([zloc f v]

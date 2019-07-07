@@ -15,9 +15,12 @@
         (recur (m/next loc))))))
 
 (defn prewalk
-  "Perform a depth-first pre-order traversal starting at the given zipper location
-   and apply the given function to each child node. If a predicate `p?` is given,
-   only apply the function to nodes matching it."
+  "Return zipper modified by an isolated depth-first pre-order traversal.
+   Traversal starts at the node at the current location in `zloc` and continues to the end of the isolated sub-tree.
+   Function `f` is called on the zipper locations satisfying predicate `p?`, or all locations when `p?` is absent,
+   and must return a valid zipper - modified or not.
+
+   WARNING: when function `f` changes the location in the zipper, normal traversal will be affected."
   ([zloc f] (prewalk zloc (constantly true) f))
   ([zloc p? f]
    (->> (partial prewalk-subtree p? f)
@@ -34,9 +37,12 @@
       loc')))
 
 (defn ^{:added "0.4.9"} postwalk
-  "Perform a depth-first post-order traversal starting at the given zipper location
-   and apply the given function to each child node. If a predicate `p?` is given,
-   only apply the function to nodes matching it."
+  "Return zipper modified by an isolated depth-first post-order traversal.
+   Traversal starts at the node at the current location in `zloc` and continues to the end of the isolated sub-tree.
+   Function `f` is called on the zipper locations satisfying predicate `p?`, or all locations when `p?` is absent,
+   and must return a valid zipper - modified or not.
+
+   WARNING: when function `f` changes the location in the zipper, normal traversal will be affected."
   ([zloc f] (postwalk zloc (constantly true) f))
   ([zloc p? f]
    (subedit-node zloc #(postwalk-subtree p? f %))))

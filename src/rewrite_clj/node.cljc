@@ -1,5 +1,6 @@
 (ns rewrite-clj.node
-  ^{:added "0.4.0" :doc "API to create and evaluate zipper tree nodes."}
+  ^{:added "0.4.0"
+    :doc "Create and evaluate nodes."}
   (:refer-clojure :exclude [string coerce])
   (:require [rewrite-clj.node.coercer] ;; <-- TODO: needed implicitly?
             [rewrite-clj.node.comment]

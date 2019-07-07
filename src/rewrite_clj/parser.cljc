@@ -1,5 +1,5 @@
 (ns rewrite-clj.parser
-  "API to injest Clojure/ClojureScript source code for zipping."
+  "Parse Clojure/ClojureScript/EDN source code to nodes."
   (:require [rewrite-clj.parser.core :as p]
             [rewrite-clj.node :as node]
             [rewrite-clj.reader :as reader]))

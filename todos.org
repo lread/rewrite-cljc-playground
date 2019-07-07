@@ -140,10 +140,6 @@
 *** TODO test with cljs advanced compilation
 *** TODO have a try with https://github.com/xsc/rewrite-clj/issues/76
 ** Docs & API
-*** TODO update README to be at least in line with rewrite-clj - ideally improve it.
-*** TODO make it clearer that edn reads clojure code
-*** TODO got good feedback from @sogaui on confusion ^:no-doc.
-    Explain in docs internal vs external apis and intention of generated docs.
 *** TODO give guidance on the limitations of sexpr
     from discussion with @sogaiu and @borkdude on slack
 
@@ -407,6 +403,10 @@
 
     lread [11:27 PM]
     yeah, good points @sogaiu , I think the docs could use some love
+*** TODO test cljdoc wiki-links - how do they work with import-vars?
+*** TODO push along my PR to support import-vars in cljs for cljdoc
+*** TODO verify my guess at doc string for prefix and suffix
+*** TODO subedit could use some examples
 ** Language differences from library perspective
 *** TODO parsing the language specific
    rewrite-clj should be able to parse and rewrite clojure and clojurescript from clojure or clojurescript.

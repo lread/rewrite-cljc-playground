@@ -10,11 +10,12 @@ rewrite-cljc is a library that reads and writes Clojure, ClojureScript and https
 Seeing an opportunity to give back to the Clojure community, in 2019 @lread, with guidance and help from many friendly Clojurians, created rewrite-cljc under clj-commons. The goal is to provide thoughtfully maintained feature-complete library that can be used from either Clojure or ClojureScript. While the merge was not trivial the real hard work over the years was done under the leadership of @xsc and @rundis (thanks guys!). Read link:merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs] for the details.
 
 == Usage
-rewrite-cljc is intended to be a drop-in replacement for rewrite-clj or rewrite-cljs. There are 3 public apis:
+rewrite-cljc is intended to be a drop-in replacement for rewrite-clj or rewrite-cljs. There are 4 public apis:
 
 . rewrite-clj.parser
 . rewrite-clj.node
 . rewrite-clj.zip
+. rewrite-clj.paredit
 
 === Parser API
 Parses Clojure/ClojureScript/EDN to custom node types. It takes advantage of https://github.com/clojure/tools.reader[clojure.tools.reader] for simple forms.
@@ -190,3 +191,12 @@ user=> (-> data (z/assoc 1 5) z/sexpr)
 user=> (->> data (z/map #(z/edit % + 4)) z/->root-string)
 "[5\n6\n7]"
 ----
+
+=== Tracking Position
+TODO: an example
+
+
+== Paredit API
+Structured editing.
+
+TODO: describe and give examples.

@@ -5,26 +5,29 @@
 ;; ## Predicates
 
 (defn whitespace?
+  "Returns true when the node at the current location in `zloc` is a Clojure whitespace (which includes the comma)."
   [zloc]
   (some-> zloc z/node node/whitespace?))
 
 (defn linebreak?
+  "Returns true when the node at the current location in `zloc` is a linebreak."
   [zloc]
   (some-> zloc z/node node/linebreak?))
 
-;; TODO: cljs only
 (defn comment?
+  "Returns true when the node at the current location in `zloc` is a comment."
   [zloc]
   (some-> zloc z/node node/comment?))
 
-;; TODO: cljs only
 (defn whitespace-not-linebreak?
+  "Returns true when the node at the current location in `zloc` is a whitespace but not a linebreak."
   [zloc]
   (and
    (whitespace? zloc)
    (not (linebreak? zloc))))
 
 (defn whitespace-or-comment?
+  "Returns true when the node at the current location in `zloc` is whitespace or a comment."
   [zloc]
   (some-> zloc z/node node/whitespace-or-comment?))
 
@@ -32,7 +35,8 @@
 ;; ## Movement
 
 (defn skip
-  "Perform the given movement while the given predicate returns true."
+  "Return zipper with location moved to first location not satisfying predicate `p?` starting from current zipper location in
+   `zloc` and traversing by function `f`."
   [f p? zloc]
   (->> (iterate f zloc)
        (take-while identity)
@@ -41,21 +45,23 @@
        (first)))
 
 (defn skip-whitespace
-  "Perform the given movement (default: `z/right`) until a non-whitespace/
-   non-comment node is encountered."
+  "Return zipper with location moved to first non-whitespace/non-comment starting from current zipper location in `zloc`
+   and traversing by function `f`.
+
+   `f` defaults to [[rewrite-clj.zip/right]]"
   ([zloc] (skip-whitespace z/right zloc))
   ([f zloc] (skip f whitespace-or-comment? zloc)))
 
 (defn skip-whitespace-left
-  "Move left until a non-whitespace/non-comment node is encountered."
+  "Return zipper with location moved to first non-whitespace/non-comment starting from current zipper location in `zloc` traversing left."
   [zloc]
   (skip-whitespace z/left zloc))
 
 ;; ## Insertion
 
 (defn ^{:added "0.5.0"} insert-space-left
-  "Insert a whitespace node before the given one, representing the given
-   number of spaces (default: 1)."
+  "Return zipper with `n` space whitespace node with inserted to the left of the node in at the current zipper location in `zloc`.
+   `n` defaults to 1."
   ([zloc] (insert-space-left zloc 1))
   ([zloc n]
    {:pre [(>= n 0)]}
@@ -64,8 +70,8 @@
      zloc)))
 
 (defn ^{:added "0.5.0"} insert-space-right
-  "Insert a whitespace node after the given one, representing the given number
-   of spaces (default: 1)."
+  "Return zipper with `n` space whitespace node with inserted to the right of the node in at the current zipper location in `zloc`.
+   `n` defaults to 1."
   ([zloc] (insert-space-right zloc 1))
   ([zloc n]
    {:pre [(>= n 0)]}
@@ -74,15 +80,15 @@
      zloc)))
 
 (defn ^{:added "0.5.0"} insert-newline-left
-  "Insert a newline node before the given one, representing the given number of
-   spaces (default: 1)."
+  "Return zipper with `n` newlines node with inserted to the left of the node in at the current zipper location in `zloc`.
+   `n` defaults to 1."
   ([zloc] (insert-newline-left zloc 1))
   ([zloc n]
    (z/insert-left zloc (node/newlines n))))
 
 (defn ^{:added "0.5.0"} insert-newline-right
-  "Insert a newline node after the given one, representing the given number of
-   linebreaks (default: 1)."
+  "Return zipper with `n` newlines node with inserted to the right of the node in at the current zipper location in `zloc`.
+   `n` defaults to 1."
   ([zloc] (insert-newline-right zloc 1))
   ([zloc n]
    (z/insert-right zloc (node/newlines n))))
@@ -90,27 +96,21 @@
 ;; ## Deprecated Functions
 
 (defn ^{:deprecated "0.5.0"} prepend-space
-  "Prepend a whitespace node representing the given number of spaces (default: 1).
-   DEPRECATED: use 'insert-space-left' instead."
+   "DEPRECATED: renamed to [[insert-space-left]]."
   [zloc & [n]]
   (insert-space-left zloc (or n 1)))
 
 (defn ^{:deprecated "0.5.0"} append-space
-  "Append a whitespace node representing the given number of spaces (default: 1).
-   DEPRECATED: use 'insert-space-right' instead."
+   "DEPRECATED: renamed to [[insert-space-right]]."
   [zloc & [n]]
   (insert-space-right zloc (or n 1)))
 
 (defn ^{:deprecated "0.5.0"} prepend-newline
-  "Prepend a newline node representing the given number of linebreaks (default:
-   1).
-   DEPRECATED: use 'insert-newline-left' instead."
+   "DEPRECATED: renamed to [[insert-newline-left]]."
   [zloc & [n]]
   (insert-newline-left zloc (or n 1)))
 
 (defn ^{:deprecated "0.5.0"} append-newline
-  "Append a newline node representing the given number of linebreaks (default:
-   1).
-   DEPRECATED: use 'insert-newline-right' instead."
+   "DEPRECATED: renamed to [[insert-newline-right]]."
   [zloc & [n]]
   (insert-newline-right zloc (or n 1)))

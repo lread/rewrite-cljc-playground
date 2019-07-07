@@ -26,9 +26,9 @@
        (ws/skip-whitespace z/prev)))
 
 (defn remove
-  "Remove value at the given zipper location. Returns the first non-whitespace
-   node that would have preceded it in a depth-first walk. Will remove whitespace
-   appropriately.
+  "Return zipper with node at the current zipper location in `zloc` removed. Returned zipper location
+   is moved to the first non-whitespace node preceding removed node in a depth-first walk.
+   Removes whitespace appropriately.
 
   - `[1  2  3]   => [1  3]`
   - `[1 2]       => [1]`
@@ -38,8 +38,8 @@
   - `[1 [2 3] 4] => [1 [2 3]]`
   - `[1 [2 3] 4] => [[2 3] 4]`
 
-   If a node is located rightmost, both preceding and trailing spaces are removed,
-   otherwise only trailing spaces are touched. This means that a following element
+   If the removed node is at the rightmost location, both preceding and trailing spaces are removed,
+   otherwise only trailing spaces are removed. This means that a following element
    (no matter whether on the same line or not) will end up in the same position
    (line/column) as the removed one, _unless_ a comment lies between the original
    node and the neighbour."
@@ -48,9 +48,8 @@
    :post [%]}
   (remove-p zloc ws/whitespace?))
 
-;; TODO: this was in cljs version only...
 (defn remove-preserve-newline
-  "Same as remove but preserves newlines"
+  "Same as [[remove]] but preserves newlines"
   [zloc]
   {:pre [zloc]
    :post [%]}

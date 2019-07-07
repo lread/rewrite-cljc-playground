@@ -22,7 +22,7 @@
    [{:file "test/rewrite_clj/regression_test.cljc"}
     {:file "test/rewrite_clj/examples/cljx_test.cljc"}
     {:file "test/rewrite_clj/zip/whitespace_test.cljc"}
-    {:file "src/rewrite_clj/zip/base.cljc" :line 62}]})
+    {:file "src/rewrite_clj/zip/base.cljc" :line 65}]})
 
 (def fail-on-first-warning? true)
 

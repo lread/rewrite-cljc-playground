@@ -11,9 +11,8 @@
 ;; ## In-Place Modification
 
 (defn replace
-  "Replace the node at the given location with one representing
-   the given value. (The value will be coerced to a node if
-   possible.)"
+  "Return zipper with the node at the current zipper location in `zloc` replaced with one representing
+   the given `value`. The `value` will be coerced to a node if possible."
   [zloc value]
   (z/replace zloc (node/coerce value)))
 
@@ -26,25 +25,22 @@
       (node/coerce)))
 
 (defn edit
-  "Apply the given function to the s-expression at the given
-   location, using its result to replace the node there. (The
-   result will be coerced to a node if possible.)"
+  "Return zipper with the node at the current zipper location in `zloc` replaced with the result of
+   (`f` (s-expression node) `args`).
+   The result will be coerced to a node if possible."
   [zloc f & args]
   (z/edit zloc edit-node #(apply f % args)))
 
 ;; ## Splice
 
-
-
 (defn splice
-  "Splice the given node, i.e. merge its children into the current one
+  "Return zipper with the node at the current zipper location in `zloc` with its children merged into itself.
    (akin to Clojure's `unquote-splicing` macro: `~@...`).
    - if the node is not one that can have children, no modification will
      be performed.
    - if the node has no or only whitespace children, it will be removed.
    - otherwise, splicing will be performed, moving the zipper to the first
-     non-whitespace child afterwards.
-   "
+     non-whitespace child afterwards."
   [zloc]
   (if (z/branch? zloc)
     (if-let [children (->> (z/children zloc)
@@ -75,6 +71,8 @@
     (z/replace zloc n)))
 
 (defn prefix
+  "Return zipper with the token node at the current zipper location `zloc` prefixed with string `s`.
+  If node is multi-line prefix all lines."
   [zloc s]
   (case (base/tag zloc)
     :token      (edit-token zloc #(str s %))
@@ -85,6 +83,8 @@
                      (edit-multi-line zloc ))))
 
 (defn suffix
+  "Return zipper with the token node at the current zipper location `zloc` suffixed with string `s`.
+  If node is multi-line suffix all lines."
   [zloc s]
   (case (base/tag zloc)
     :token      (edit-token zloc #(str % s))

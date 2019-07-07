@@ -10,11 +10,12 @@ A library that reads and writes Clojure, ClojureScript and [EDN](https://github.
 
 TODO: badges here... circleci, cljdoc, clojars
 
-rewrite-cljc versioning scheme is: `major`.`minor`.`patch`
+rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 
 * `major` increments when the API has been broken - something, as a rule, we'd like to avoid.
 * `minor` increments to convey significant new features have been added.
 * `patch` indicates bug fixes - it is the number of commits since `major`.`minor`.
+* `test-qualifier` is absent for stable releases. Can be `alpha`, `beta`, `rc1`, etc.
 
 ## Need help?
 
