@@ -1,3 +1,7 @@
 {:lint-as
  {rewrite-clj.potemkin.cljs/defprotocol+ clojure.core/defprotocol
-  rewrite-clj.potemkin.clojure/defprotocol+ clojure.core/defprotocol}}
+  rewrite-clj.potemkin.clojure/defprotocol+ clojure.core/defprotocol}
+ :linters
+ {:unresolved-symbol
+  {:exclude [(rewrite-clj.potemkin.cljs/import-vars)
+             (rewrite-clj.potemkin.clojure/import-vars)]}}}

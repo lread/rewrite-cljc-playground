@@ -252,9 +252,9 @@
 (defn ^{:deprecated "0.4.0"} ->string
   "DEPRECATED. Renamed to [[string]]."
   [zloc]
-  (string zloc))
+  (rewrite-clj.zip.base/string zloc))
 
 (defn ^{:deprecated "0.4.0"} ->root-string
   "DEPRECATED. Renamed to [[root-string]]."
   [zloc]
-  (root-string zloc))
+  (rewite-clj.zip.base/root-string zloc))
