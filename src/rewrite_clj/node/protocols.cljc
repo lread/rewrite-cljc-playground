@@ -8,16 +8,16 @@
 
 (defprotocol+ Node
   "Protocol for EDN/Clojure/ClojureScript nodes."
-  (tag [_]
-    "Returns keyword representing the type of the node.")
-  (printable-only? [_]
-    "Return true if the node cannot be converted to an s-expression element.")
-  (sexpr [_]
-    "Return node converted to form.")
-  (length [_]
-    "Return number of characters for the string version of this node.")
-  (string [_]
-    "Return the string version of this node."))
+  (tag [node]
+    "Returns keyword representing type of `node`.")
+  (printable-only? [node]
+    "Return true if `node` cannot be converted to an s-expression element.")
+  (sexpr [node]
+    "Return `node` converted to form.")
+  (length [node]
+    "Return number of characters for the string version of `node`.")
+  (string [node]
+    "Return the string version of `node`."))
 
 (extend-protocol Node
   #?(:clj Object :cljs default)
@@ -48,14 +48,14 @@
 
 (defprotocol+ InnerNode
   "Protocol for non-leaf EDN/Clojure/ClojureScript nodes."
-  (inner? [_]
-    "Returns true if the node can have children.")
-  (children [_]
-    "Returns child nodes.")
-  (replace-children [_ children]
-    "Returns node with replaced `children`.")
-  (leader-length [_]
-    "Returns number of characters before children."))
+  (inner? [node]
+    "Returns true if `node` can have children.")
+  (children [node]
+    "Returns child nodes for `node`.")
+  (replace-children [node children]
+    "Returns `node` replacing current children with `children`.")
+  (leader-length [node]
+    "Returns number of characters before children for `node`."))
 
 (extend-protocol InnerNode
   #?(:clj Object :cljs default)
@@ -77,7 +77,7 @@
 
 (defprotocol+ NodeCoerceable
   "Protocol for values that can be coerced to nodes."
-  (coerce [_] "Coerce form to node."))
+  (coerce [form] "Coerce `form` to node."))
 
 (defn- ^:no-doc node->string
   #?(:clj ^String [node]
