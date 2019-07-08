@@ -16,7 +16,7 @@
 
 (defn prewalk
   "Return zipper modified by an isolated depth-first pre-order traversal.
-   Traversal starts at the node at the current location in `zloc` and continues to the end of the isolated sub-tree.
+   Traversal starts at the current node in `zloc` and continues to the end of the isolated sub-tree.
    Function `f` is called on the zipper locations satisfying predicate `p?`, or all locations when `p?` is absent,
    and must return a valid zipper - modified or not.
 
@@ -38,7 +38,7 @@
 
 (defn ^{:added "0.4.9"} postwalk
   "Return zipper modified by an isolated depth-first post-order traversal.
-   Traversal starts at the node at the current location in `zloc` and continues to the end of the isolated sub-tree.
+   Traversal starts at the current node in `zloc` and continues to the end of the isolated sub-tree.
    Function `f` is called on the zipper locations satisfying predicate `p?`, or all locations when `p?` is absent,
    and must return a valid zipper - modified or not.
 

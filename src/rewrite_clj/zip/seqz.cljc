@@ -10,29 +10,29 @@
 ;; ## Predicates
 
 (defn seq?
-  "Returns true if node at current zipper location in `zloc` is a sequence."
+  "Returns true if current node in `zloc` is a sequence."
   [zloc]
   (contains?
     #{:forms :list :vector :set :map}
     (base/tag zloc)))
 
 (defn list?
-  "Returns true if node at current zipper location in `zloc` is a list."
+  "Returns true if current node in `zloc` is a list."
   [zloc]
   (= (base/tag zloc) :list))
 
 (defn vector?
-  "Returns true if node at current zipper location in `zloc` is a vector."
+  "Returns true if current node in `zloc` is a vector."
   [zloc]
   (= (base/tag zloc) :vector))
 
 (defn set?
-  "Returns true if node at current zipper location in `zloc` is a set."
+  "Returns true if current node in `zloc` is a set."
   [zloc]
   (= (base/tag zloc) :set))
 
 (defn map?
-  "Returns true if node at current zipper location in `zloc` is a map."
+  "Returns true if current node in `zloc` is a map."
   [zloc]
   (= (base/tag zloc) :map))
 
@@ -53,7 +53,8 @@
     zloc))
 
 (defn map-vals
-  "Returns zipper with function `f` applied to all value nodes of the map node at the current zipper location in `zloc`."
+  "Returns zipper with function `f` applied to all value current node in `zloc`.
+   Current node must be map node."
   [f zloc]
   {:pre [(map? zloc)]}
   (loop [loc (m/down zloc)
@@ -67,7 +68,8 @@
         parent))))
 
 (defn map-keys
-  "Returns zipper with function `f` applied to all key nodes of the map node at the current zipper location in `zloc`."
+  "Returns zipper with function `f` applied to all key nodes of the current node in `zloc`.
+   Current node must be map node."
   [f zloc]
   {:pre [(map? zloc)]}
   (loop [loc (m/down zloc)
@@ -79,7 +81,8 @@
         (recur (m/right (m/right loc)) parent)))))
 
 (defn map
-  "Returns zipper with function `f` applied to all value nodes of the seq node at the current zipper location in `zloc`.
+  "Returns zipper with function `f` applied to all value nodes of current node in `zloc`.
+   Current node must be a sequence node.
 
    Iterates over:
    - value nodes of maps
@@ -93,8 +96,8 @@
 ;; ## Get/Assoc
 
 (defn get
-  "Returns value node mapped to key `k` when current zipper location in `zloc` is a map node.
-   Returns nth `k` value node when current zipper location in `zloc` is a seq node."
+  "Returns value node mapped to key `k` when current node in `zloc` is a map node.
+   Returns nth `k` value node when current node in `zloc` is a sequence node."
   [zloc k]
   {:pre [(or (map? zloc) (and (seq? zloc) (integer? k)))]}
   (if (map? zloc)
@@ -106,8 +109,8 @@
       k)))
 
 (defn assoc
-  "Returns zipper with key `k` set to value `v` when current zipper location in `zloc` is a map node.
-   Returns zipper with index `k` set to value `v` when current zipper location in `zloc` is a sequence."
+  "Returns zipper with key `k` set to value `v` when current node in `zloc` is a map node.
+   Returns zipper with index `k` set to value `v` when current node in `zloc` is a sequence."
   [zloc k v]
   (if-let [vloc (get zloc k)]
     (-> vloc (e/replace v) m/up)

@@ -7,12 +7,12 @@
 
 ;; ## Zipper
 (defn edn*
-  "Create and return zipper over the given Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj.parse]]`).
+  "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj.parse]]).
 
-   When `:track-position?` is set in `options`, row/column (1-based) is tracked and available via
-   [[rewrite-clj.zip/position]].
+   Set `:track-position?` in `options` to enable ones-based row/column tracking.
+   See [[rewrite-clj.zip/position]].
 
-   :IMPORTANT the position tracking zipper is incompatible with `clojure.zip`'s functions."
+   NOTE: when position tracking is enabled, `clojure.zip` is not interchangeable with `rewrite-clj.zip`, you must use `rewrite-clj.zip`."
   ([node]
    (edn* node {}))
   ([node {:keys [track-position?]}]
@@ -21,13 +21,13 @@
      (z/zipper node))))
 
 (defn edn
-  "Create and return zipper over the given Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj-.parse]])
+  "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj-.parse]])
    and move to the first non-whitespace/non-comment child.
 
-   When `:track-position?` is set in `options`, row/column (1-based) is tracked and available via
-   [[rewrite-clj.zip/position]].
+   Set `:track-position?` in `options` to enable ones-based row/column tracking.
+   See [[rewrite-clj.zip/position]].
 
-   :IMPORTANT the position tracking zipper is incompatible with `clojure.zip`'s functions."
+   NOTE: when position tracking is enabled, `clojure.zip` is not interchangeable with `rewrite-clj.zip`, you must use `rewrite-clj.zip`."
   ([node] (edn node {}))
   ([node {:keys [track-position?] :as options}]
    (if (= (node/tag node) :forms)
@@ -39,22 +39,22 @@
 ;; ## Inspection
 
 (defn tag
-  "Return tag of node at current zipper location in `zloc`."
+  "Return tag of current node in `zloc`."
   [zloc]
   (some-> zloc z/node node/tag))
 
 (defn sexpr
-  "Return s-expression of node at current zipper location in `zloc`."
+  "Return s-expression of current node in `zloc`."
   [zloc]
   (some-> zloc z/node node/sexpr))
 
 (defn ^{:added "0.4.4"} child-sexprs
-  "Return s-expression of children of node at current zipper location in `zloc`."
+  "Return s-expression of children of current node in `zloc`."
   [zloc]
   (some-> zloc z/node node/child-sexprs))
 
 (defn length
-  "Return length of printable string of node at current zipper location in `zloc`."
+  "Return length of printable string of current node in `zloc`."
   [zloc]
   (or (some-> zloc z/node node/length) 0))
 
@@ -68,10 +68,10 @@
 (defn of-string
   "Create and return zipper from all forms in Clojure/ClojureScript/EDN string `s`.
 
-   When `:track-position?` is set in `options`, row/column (1-based) is tracked and available via
-   [[rewrite-clj.zip/position]].
+   Set `:track-position?` in `options` to enable ones-based row/column tracking.
+   See [[rewrite-clj.zip/position]].
 
-   :IMPORTANT the position tracking zipper is incompatible with `clojure.zip`'s functions."
+   NOTE: when position tracking is enabled, `clojure.zip` is not interchangeable with `rewrite-clj.zip`, you must use `rewrite-clj.zip`."
   ([s] (of-string s {}))
   ([s options]
    (some-> s p/parse-string-all (edn options))))
@@ -80,10 +80,10 @@
    (defn of-file
      "Create and return zipper from all forms in Clojure/ClojureScript/EDN File `f`.
 
-     When `:track-position?` is set in `options`, row/column (1-based) is tracked and available via
-     [[rewrite-clj.zip/position]].
+      Set `:track-position?` in `options` to enable ones-based row/column tracking.
+      See [[rewrite-clj.zip/position]].
 
-     :IMPORTANT the position tracking zipper is incompatible with `clojure.zip`'s functions."
+      NOTE: when position tracking is enabled, `clojure.zip` is not interchangeable with `rewrite-clj.zip`, you must use `rewrite-clj.zip`."
      ([f] (of-file f {}))
      ([f options]
       (some-> f p/parse-file-all (edn options)))))
@@ -91,7 +91,7 @@
 ;; ## Write
 
 (defn ^{:added "0.4.0"} string
-  "Return string representing the current zipper location in `zloc`."
+  "Return string representing the current node in `zloc`."
   [zloc]
   (some-> zloc z/node node/string))
 
@@ -110,16 +110,18 @@
      (string-print s)))
 
 (defn print
-  "Print node at current zipper location in `zloc`.
-  Optional `writer` is ignored for ClojureScript."
+  "Print current node in `zloc`.
+
+   NOTE: Optional `writer` is currently ignored for ClojureScript."
   [zloc & [writer]]
   (some-> zloc
           string
           (print! writer)))
 
 (defn print-root
-  "Zip up and print `zloc` root node.
-  Optional `writer` is ignored for ClojureScript."
+  "Zip up and print `zloc` from root node.
+
+   NOTE: Optional `writer` is currently ignored for ClojureScript."
   [zloc & [writer]]
   (some-> zloc
           root-string

@@ -26,7 +26,7 @@
        (ws/skip-whitespace z/prev)))
 
 (defn remove
-  "Return zipper with node at the current zipper location in `zloc` removed. Returned zipper location
+  "Return zipper with current node in `zloc` removed. Returned zipper location
    is moved to the first non-whitespace node preceding removed node in a depth-first walk.
    Removes whitespace appropriately.
 
@@ -49,7 +49,7 @@
   (remove-p zloc ws/whitespace?))
 
 (defn remove-preserve-newline
-  "Same as [[remove]] but preserves newlines"
+  "Same as [[remove]] but preserves newlines."
   [zloc]
   {:pre [zloc]
    :post [%]}

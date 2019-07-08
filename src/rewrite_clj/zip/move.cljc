@@ -33,19 +33,19 @@
         (vary-meta zloc assoc ::end? true))))
 
 (defn end?
-  "Return true if at `zloc` is at end of depth-first traversal."
+  "Return true if `zloc` is at end of depth-first traversal."
   [zloc]
   (or (not zloc)
       (z/end? zloc)
       (::end? (meta zloc))))
 
 (defn rightmost?
-  "Return true if at rightmost non-whitespace/non-comment location in `zloc`."
+  "Return true if at rightmost non-whitespace/non-comment node in `zloc`."
   [zloc]
   (nil? (ws/skip-whitespace (z/right zloc))))
 
 (defn leftmost?
-  "Return true if at leftmost non-whitespace/non-comment location in `zloc`."
+  "Return true if at leftmost non-whitespace/non-comment node in `zloc`."
   [zloc]
   (nil? (ws/skip-whitespace-left (z/left zloc))))
 

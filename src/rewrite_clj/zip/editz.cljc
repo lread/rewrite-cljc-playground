@@ -11,8 +11,8 @@
 ;; ## In-Place Modification
 
 (defn replace
-  "Return zipper with the node at the current zipper location in `zloc` replaced with one representing
-   the given `value`. The `value` will be coerced to a node if possible."
+  "Return zipper with the current node in `zloc` replaced with one representing `value`.
+   `value` will be coerced to a node if possible."
   [zloc value]
   (z/replace zloc (node/coerce value)))
 
@@ -25,16 +25,18 @@
       (node/coerce)))
 
 (defn edit
-  "Return zipper with the node at the current zipper location in `zloc` replaced with the result of
-   (`f` (s-expression node) `args`).
-   The result will be coerced to a node if possible."
+  "Return zipper with the current node in `zloc` replaced with the result of:
+
+   (`f` (s-expression node) `args`)
+
+   The result of `f` will be coerced to a node if possible."
   [zloc f & args]
   (z/edit zloc edit-node #(apply f % args)))
 
 ;; ## Splice
 
 (defn splice
-  "Return zipper with the node at the current zipper location in `zloc` with its children merged into itself.
+  "Return zipper with the children of the current node in `zloc` merged into itself.
    (akin to Clojure's `unquote-splicing` macro: `~@...`).
    - if the node is not one that can have children, no modification will
      be performed.
@@ -67,12 +69,16 @@
 (defn- edit-multi-line
   [zloc line-fn]
   (let [n (-> (z/node zloc)
+              ;; TODO: seems stale, don't think rewrite-clj uses :lines anymore?
               (update-in [:lines] (comp line-fn vec)))]
     (z/replace zloc n)))
 
 (defn prefix
-  "Return zipper with the token node at the current zipper location `zloc` prefixed with string `s`.
-  If node is multi-line prefix all lines."
+  "Return zipper with the current node in `zloc` prefixed with string `s`.
+   Operates on token node or a multi-line node, else exception is thrown.
+   When multi-line, all lines are prefixed.
+
+   TODO: either multi-line handling is broken or I don't understand intent of code."
   [zloc s]
   (case (base/tag zloc)
     :token      (edit-token zloc #(str s %))
@@ -83,8 +89,11 @@
                      (edit-multi-line zloc ))))
 
 (defn suffix
-  "Return zipper with the token node at the current zipper location `zloc` suffixed with string `s`.
-  If node is multi-line suffix all lines."
+  "Return zipper with the current node in `zloc` suffixed with string `s`.
+   Operates on token node or a multi-line node, else exception is thrown.
+   When multi-line, all lines are suffixed.
+
+   TODO: either multi-line handling is broken or I don't understand intent of code."
   [zloc s]
   (case (base/tag zloc)
     :token      (edit-token zloc #(str % s))

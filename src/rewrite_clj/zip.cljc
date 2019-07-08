@@ -1,13 +1,15 @@
 (ns rewrite-clj.zip
   "A rich API for navigating and updating Clojure/ClojureScripti/EDN source code via a zipper tree.
 
-  Ingest into a zipper::
+  Because the API contains many functions, we offer the following categorized listing:
+
+  *Create a zipper*
   [[edn]]
   [[edn*]]
   [[of-string]]
   [[of-file]]
 
-  Move::
+  *Move*
   [[left]]
   [[right]]
   [[up]]
@@ -17,7 +19,7 @@
   [[leftmost]]
   [[rightmost]]
 
-  Move without skipping whitespace and comments::
+  *Move without skipping whitespace and comments*
   [[left*]]
   [[right*]]
   [[up*]]
@@ -27,29 +29,29 @@
   [[leftmost*]]
   [[rightmost*]]
 
-  Whitespace/comment aware skip::
+  *Whitespace/comment aware skip*
   [[skip]]
   [[skip-whitespace]]
   [[skip-whitespace-left]]
 
-  Test for whitespace::
+  *Test for whitespace*
   [[whitespace?]]
   [[linebreak?]]
   [[whitespace-or-comment?]]
 
-  Test location::
+  *Test location*
   [[leftmost?]]
   [[rightmost?]]
   [[end?]]
 
-  Test data type::
+  *Test data type*
   [[seq?]]
   [[list?]]
   [[vector?]]
   [[set?]]
   [[map?]]
 
-  Find::
+  *Find*
   [[find]]
   [[find-next]]
   [[find-depth-first]]
@@ -63,18 +65,18 @@
   [[find-last-by-pos]]
   [[find-tag-by-pos]]
 
-  Inspect::
+  *Inspect*
   [[node]]
   [[position]]
   [[position-span]]
   [[tag]]
   [[length]]
 
-  Convert::
+  *Convert*
   [[sexpr]]
   [[child-sexpr]]
 
-  Update::
+  *Update*
   [[replace]]
   [[edit]]
   [[splice]]
@@ -92,7 +94,7 @@
   [[remove-preserve-newline]]
   [[root]]
 
-  Update without whitespace treatment::
+  *Update without whitespace treatment*
   [[replace*]]
   [[edit*]]
   [[insert-left*]]
@@ -100,7 +102,7 @@
   [[append-child*]]
   [[remove*]]
 
-  Update without changing location::
+  *Isolated update without changing location*
   [[edit-node]] TODO: review
   [[subedit-node]]
   [[subzip]]
@@ -111,18 +113,18 @@
   [[subedit->]]
   [[subedit->>]]
 
-  Sequence operations::
+  *Sequence operations*
   [[map]]
   [[map-keys]]
   [[map-vals]]
   [[get]]
   [[assoc]]
 
-  Stringify::
+  *Stringify*
   [[string]]
   [[root-string]]
 
-  Output::
+  *Output*
   [[print]]
   [[print-root]]"
   (:refer-clojure :exclude [next find replace remove
@@ -220,7 +222,7 @@
   prepend-newline append-newline]
 
  {:sym-to-pattern "@@orig-name@@*"
-  :doc-to-pattern "Call zipper `@@orig-name@@` function directly.\n\n@@orig-doc@@"}
+  :doc-to-pattern "Call zipper `@@orig-name@@` function directly to avoid whitespace and comment node skipping and handling.\n\n@@orig-doc@@"}
 
  [rewrite-clj.custom-zipper.core
   right left up down
@@ -233,11 +235,11 @@
 ;; ## DEPRECATED
 
 (defn ^{:deprecated "0.4.0"} ->string
-  "DEPRECATED. Use `string` instead."
+  "DEPRECATED. Renamed to [[string]]."
   [zloc]
   (string zloc))
 
 (defn ^{:deprecated "0.4.0"} ->root-string
-  "DEPRECATED. Use `root-string` instead."
+  "DEPRECATED. Renamed to [[root-string]]."
   [zloc]
   (root-string zloc))
