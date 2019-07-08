@@ -5,8 +5,7 @@
             [rewrite-clj.parser.string :refer [parse-string parse-regex]]
             [rewrite-clj.parser.token :refer [parse-token]]
             [rewrite-clj.parser.namespaced-map :refer [parse-namespaced-map]]
-            [rewrite-clj.parser.whitespace :refer [parse-whitespace]]
-            [clojure.tools.reader.reader-types :refer [peek-char]]))
+            [rewrite-clj.parser.whitespace :refer [parse-whitespace]]))
 
 ;; ## Base Parser
 

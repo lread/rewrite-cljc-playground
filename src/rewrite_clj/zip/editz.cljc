@@ -1,7 +1,6 @@
 (ns ^:no-doc rewrite-clj.zip.editz
   (:refer-clojure :exclude [replace])
   (:require [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.move :as m]
             [rewrite-clj.zip.removez :as r]
             [rewrite-clj.zip.whitespace :as ws]
             [rewrite-clj.node :as node]

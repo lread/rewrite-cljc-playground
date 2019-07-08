@@ -1,6 +1,5 @@
 (ns ^:no-doc rewrite-clj.zip.walk
-  (:require [rewrite-clj.custom-zipper.core :as z]
-            [rewrite-clj.zip.subedit :refer [subedit-node]]
+  (:require [rewrite-clj.zip.subedit :refer [subedit-node]]
             [rewrite-clj.zip.move :as m]))
 
 (defn- prewalk-subtree

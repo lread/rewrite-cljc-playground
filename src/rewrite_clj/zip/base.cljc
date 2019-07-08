@@ -29,7 +29,7 @@
 
    NOTE: when position tracking is enabled, `clojure.zip` is not interchangeable with `rewrite-clj.zip`, you must use `rewrite-clj.zip`."
   ([node] (edn node {}))
-  ([node {:keys [track-position?] :as options}]
+  ([node options]
    (if (= (node/tag node) :forms)
      (let [top (edn* node options)]
        (or (-> top z/down ws/skip-whitespace)

@@ -24,8 +24,8 @@
 ;; ## Decisions
 
 (defn boundary?
-  [#?(:clj ^java.lang.Character c :default c)]
   "Check whether a given char is a token boundary."
+  [#?(:clj ^java.lang.Character c :default c)]
   (contains?
    #{\" \: \; \' \@ \^ \` \~
      \( \) \[ \] \{ \} \\ nil}

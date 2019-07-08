@@ -1,9 +1,8 @@
 (ns ^:no-doc rewrite-clj.potemkin.cljs
- (:require [clojure.string :as string]
-           [cljs.analyzer.api :as ana-api]
-           [cljs.env :as env]
-           [cljs.analyzer :as ana]
-           [rewrite-clj.potemkin.helper :as helper]))
+  (:require [cljs.analyzer.api :as ana-api]
+            [cljs.env :as env]
+            [cljs.analyzer :as ana]
+            [rewrite-clj.potemkin.helper :as helper]))
 
 ;; Strongly based on code from:
 ;;

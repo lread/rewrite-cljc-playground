@@ -1,6 +1,5 @@
 (ns ^:no-doc rewrite-clj.parser.string
-  (:require [clojure.tools.reader.edn :as edn]
-            [clojure.tools.reader.reader-types :as r]
+  (:require [clojure.tools.reader.reader-types :as r]
             [clojure.string :as string]
             [rewrite-clj.node :as node]
             [rewrite-clj.parser.utils :as u])

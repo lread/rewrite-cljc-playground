@@ -5,9 +5,7 @@
   (:require [rewrite-clj.zip :as z]
             [rewrite-clj.zip.whitespace :as ws]
             [rewrite-clj.custom-zipper.utils :as u]
-            [rewrite-clj.node :as nd]
-            [rewrite-clj.node.stringz :as sn]
-            [clojure.string :as cstring]))
+            [rewrite-clj.node :as nd]))
 
 
 ;;*****************************
