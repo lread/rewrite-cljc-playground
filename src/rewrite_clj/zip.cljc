@@ -14,7 +14,7 @@
 
   Some conventions in the code and docstrings:
   - `zloc` is the used as the argument name for our zipper
-  - \"current node in `zloc`\" is shorthand for: node at current location zipper `zloc`
+  - \"current node in `zloc`\" is shorthand for: node at current location in zipper `zloc`
 
   Because this API contains many functions, we offer the following categorized listing:
 
@@ -237,7 +237,7 @@
   prepend-newline append-newline]
 
  {:sym-to-pattern "@@orig-name@@*"
-  :doc-to-pattern "Call zipper `@@orig-name@@` function directly to avoid whitespace and comment node skipping and handling.\n\n@@orig-doc@@"}
+  :doc-to-pattern "Raw version of [[@@orig-name@@]].\n\n@@orig-doc@@\n\nNOTE: This function does not skip, nor provide any special handling for whitespace/comment nodes."}
 
  [rewrite-clj.custom-zipper.core
   right left up down

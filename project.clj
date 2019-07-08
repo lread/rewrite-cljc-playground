@@ -1,8 +1,10 @@
 (defproject rewrite-cljs "0.4.5-SNAPSHOT"
   :description "Comment-/Whitespace-preserving rewriting of EDN documents."
   :url "https://github.com/clj-commons/rewrite-cljs"
-  ;;TODO: point to real repo
-  :scm {:name "git" :url "file:///Users/lee/other-proj/rewrite-cljs"}
+  :scm {;;TODO: point to real repo
+        :name "git"
+        :url "https://github.com/lread/rewrite-cljs-playground.git"
+        :tag "cc148d3cae40bb3ef67aaa8ab86b76e684283057"}
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"
             :year 2015
