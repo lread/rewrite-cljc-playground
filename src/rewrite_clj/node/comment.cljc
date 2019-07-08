@@ -23,12 +23,12 @@
 ;; ## Constructor
 
 (defn comment-node
-  "Create node representing an EDN comment."
+  "Create node representing a comment with text `s`."
   [s]
   {:pre [(re-matches #"[^\r\n]*[\r\n]?" s)]}
   (->CommentNode s))
 
 (defn comment?
-  "Check whether a node represents a comment."
+  "Returns true if `node` is a comment."
   [node]
   (= (node/tag node) :comment))

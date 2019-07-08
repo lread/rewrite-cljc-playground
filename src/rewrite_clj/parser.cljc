@@ -1,5 +1,9 @@
 (ns rewrite-clj.parser
-  "Parse Clojure/ClojureScript/EDN source code to nodes."
+  "Parse Clojure/ClojureScript/EDN source code to nodes.
+
+  After parsing, the typical next step is [[rewrite-clj.zip/edn]] to create zipper.
+
+  Alternatively consider parsing and zipping in one step from [[rewrite-clj.zip/of-string]] or [[rewrite-clj.zip/of-file]]."
   (:require [rewrite-clj.parser.core :as p]
             [rewrite-clj.node :as node]
             [rewrite-clj.reader :as reader]))

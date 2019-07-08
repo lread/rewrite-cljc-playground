@@ -20,7 +20,7 @@
 ;; ## Constructor
 
 (defn token-node
-  "Create node for an unspecified EDN token."
+  "Create node for an unspecified token of `value`."
   ([value]
    (token-node value (pr-str value)))
   ([value string-value]

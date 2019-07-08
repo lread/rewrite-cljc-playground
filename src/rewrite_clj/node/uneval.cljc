@@ -32,7 +32,7 @@
 ;; ## Constructor
 
 (defn uneval-node
-  "Create node representing an EDN uneval `#_` form."
+  "Create node representing an uneval `#_` form with `children`."
   [children]
   (if (sequential? children)
     (do

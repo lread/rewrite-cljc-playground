@@ -1,6 +1,8 @@
 (ns rewrite-clj.node
-  ^{:added "0.4.0"
-    :doc "Create and evaluate nodes."}
+  "Create and evaluate nodes.
+
+  All nodes represent Clojure/ClojureScript/EDN."
+  ^{:added "0.4.0"}
   (:refer-clojure :exclude [string coerce])
   (:require [rewrite-clj.node.coercer] ;; <-- TODO: needed implicitly?
             [rewrite-clj.node.comment]
@@ -107,7 +109,7 @@
 ;; ## Predicates
 
 (defn whitespace-or-comment?
-  "Check whether the given node represents whitespace or comment."
+  "Return true when `node` represents whitespace or comment."
   [node]
   (or (whitespace? node)
       (comment? node)))

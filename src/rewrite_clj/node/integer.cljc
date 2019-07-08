@@ -32,7 +32,9 @@
 ;; ## Constructor
 
 (defn integer-node
-  "Create node for an EDN integer with the given base."
+  "Create node representing an integer `value` in `base`.
+
+  `base` defaults to 10."
   ([value]
    (integer-node value 10))
   ([value base]

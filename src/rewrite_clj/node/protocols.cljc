@@ -7,18 +7,17 @@
 ;; ## Node
 
 (defprotocol+ Node
-  "Protocol for EDN/Clojure nodes."
+  "Protocol for EDN/Clojure/ClojureScript nodes."
   (tag [_]
-    "Keyword representing the type of the node.")
+    "Returns keyword representing the type of the node.")
   (printable-only? [_]
-    "Return true if the node cannot be converted to an s-expression
-     element.")
+    "Return true if the node cannot be converted to an s-expression element.")
   (sexpr [_]
-    "Convert node to s-expression.")
+    "Return node converted to form.")
   (length [_]
-    "Get number of characters for the string version of this node.")
+    "Return number of characters for the string version of this node.")
   (string [_]
-    "Convert node to printable string."))
+    "Return the string version of this node."))
 
 (extend-protocol Node
   #?(:clj Object :cljs default)
@@ -29,35 +28,34 @@
   (string [this] (pr-str this)))
 
 (defn sexprs
-  "Given a seq of nodes, convert those that represent s-expressions
-   to the respective forms."
+  "Return forms for `nodes`. Nodes that do not represent s-expression are skipped."
   [nodes]
   (->> nodes
        (remove printable-only?)
        (map sexpr)))
 
 (defn ^:no-doc sum-lengths
-  "Sum up lengths of the given nodes."
+  "Return total string length for `nodes`."
   [nodes]
   (reduce + (map length nodes)))
 
 (defn ^:no-doc concat-strings
-  "Convert nodes to strings and concatenate them."
+  "Return string version of `nodes`."
   [nodes]
   (reduce str (map string nodes)))
 
 ;; ## Inner Node
 
 (defprotocol+ InnerNode
-  "Protocol for non-leaf EDN/Clojure nodes."
+  "Protocol for non-leaf EDN/Clojure/ClojureScript nodes."
   (inner? [_]
-    "Check whether the node can contain children.")
+    "Returns true if the node can have children.")
   (children [_]
-    "Get child nodes.")
+    "Returns child nodes.")
   (replace-children [_ children]
-    "Replace the node's children.")
+    "Returns node with replaced `children`.")
   (leader-length [_]
-    "How many characters appear before children?"))
+    "Returns number of characters before children."))
 
 (extend-protocol InnerNode
   #?(:clj Object :cljs default)
@@ -70,7 +68,7 @@
     (throw (ex-info "unsupported operation" {}))))
 
 (defn child-sexprs
-  "Get all child s-expressions for the given node."
+  "Return all children converted to forms."
   [node]
   (if (inner? node)
     (sexprs (children node))))
@@ -79,7 +77,7 @@
 
 (defprotocol+ NodeCoerceable
   "Protocol for values that can be coerced to nodes."
-  (coerce [_]))
+  (coerce [_] "Coerce form to node."))
 
 (defn- ^:no-doc node->string
   #?(:clj ^String [node]

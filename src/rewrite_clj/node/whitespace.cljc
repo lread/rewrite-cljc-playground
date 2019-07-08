@@ -78,19 +78,19 @@
        (every? pred s)))
 
 (defn whitespace-node
-  "Create whitespace node."
+  "Create whitespace node of string `s`."
   [s]
   {:pre [(string-of? s r/space?)]}
   (->WhitespaceNode s))
 
 (defn comma-node
-  "Create comma node."
+  "Create comma node of string `s`."
   [s]
   {:pre [(string-of? s r/comma?)]}
   (->CommaNode s))
 
 (defn newline-node
-  "Create newline node."
+  "Create newline node of string `s`."
   [s]
   {:pre [(string-of? s r/linebreak?)]}
   (->NewlineNode s))
@@ -102,7 +102,7 @@
         :else :whitespace))
 
 (defn whitespace-nodes
-  "Convert a string of whitespace to whitespace/newline nodes."
+  "Convert string `s` of whitespace to whitespace/newline nodes."
   [s]
   {:pre [(string-of? s r/whitespace?)]}
   (->> (partition-by classify-whitespace s)
@@ -117,18 +117,18 @@
 ;; ## Utilities
 
 (defn spaces
-  "Create node representing the given number of spaces."
+  "Create node representing `n` spaces."
   [n]
   (whitespace-node (apply str (repeat n \space))))
 
 (defn newlines
-  "Create node representing the given number of newline characters."
+  "Create node representing `n` newline characters."
   [n]
   (newline-node (apply str (repeat n \newline))))
 
 (let [comma (whitespace-nodes ", ")]
   (defn comma-separated
-    "Interleave the given seq of nodes with `\", \"` nodes."
+    "Interleave `nodes` with `\", \"` nodes."
     [nodes]
     (->> nodes
          (mapcat #(cons % comma))
@@ -136,20 +136,20 @@
 
 (let [nl (newline-node "\n")]
   (defn line-separated
-    "Interleave the given seq of nodes with newline nodes."
+    "Interleave `nodes` with newline nodes."
     [nodes]
     (butlast (interleave nodes (repeat nl)))))
 
 (let [space (whitespace-node " ")]
   (defn space-separated
-    "Interleave the given seq of nodes with `\" \"` nodes."
+    "Interleave `nodes` with `\" \"` nodes."
     [nodes]
     (butlast (interleave nodes (repeat space)))))
 
 ;; ## Predicates
 
 (defn whitespace?
-  "Check whether a node represents whitespace."
+  "Returns true if `node represents whitespace."
   [node]
   (contains?
     #{:whitespace
@@ -158,11 +158,11 @@
     (node/tag node)))
 
 (defn linebreak?
-  "Check whether a ndoe represents linebreaks."
+  "Returns true if `node` represents linebreak(s)."
   [node]
   (= (node/tag node) :newline))
 
 (defn comma?
-  "Check whether a node represents a comma."
+  "Returns true if `node` represents a comma."
   [node]
   (= (node/tag node) :comma))

@@ -38,7 +38,7 @@
 ;; ## Constructor
 
 (defn forms-node
-  "Create top-level node wrapping multiple children
-   (equals an implicit `do` on the top-level)."
+  "Create top-level node wrapping multiple `children`
+   (equivalent to an implicit `do` on the top-level)."
   [children]
   (->FormsNode children))

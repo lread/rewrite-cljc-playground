@@ -40,21 +40,21 @@
 ;; ## Constructors
 
 (defn list-node
-  "Create a node representing an EDN list."
+  "Create a node representing a list with `children`."
   [children]
   (->SeqNode :list "(%s)" 2 #(apply list %) children))
 
 (defn vector-node
-  "Create a node representing an EDN vector."
+  "Create a node representing a vector with `children`."
   [children]
   (->SeqNode :vector "[%s]" 2 vec children))
 
 (defn set-node
-  "Create a node representing an EDN set."
+  "Create a node representing a set with `children`."
   [children]
   (->SeqNode :set "#{%s}" 3 set children))
 
 (defn map-node
-  "Create a node representing an EDN map."
+  "Create a node representing an map with `children`."
   [children]
   (->SeqNode :map "{%s}" 2 #(apply hash-map %) children))

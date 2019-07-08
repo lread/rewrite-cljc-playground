@@ -17,6 +17,6 @@
 ;; ## Constructor
 
 (defn regex-node
-  "Create node representing a regex"
+  "Create node representing a regex with `pattern-string`"
   [pattern-string]
   (->RegexNode pattern-string))

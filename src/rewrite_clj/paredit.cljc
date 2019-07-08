@@ -10,8 +10,6 @@
             [clojure.string :as cstring]))
 
 
-
-
 ;;*****************************
 ;; Helpers
 ;;*****************************
@@ -84,7 +82,7 @@
 
 
 (defn kill
-  "Kill all sibling nodes to the right of the current node
+  "Kill all sibling nodes to the right of the current node in `zloc`.
 
   - [1 2| 3 4] => [1 2|]"
   [zloc]
@@ -198,7 +196,7 @@
 
 
 (defn kill-one-at-pos
-  "In string and comment aware kill for one node/word at given pos
+  "In string and comment aware kill for one node/word at `pos` in `zloc`.
 
   - `(+ |100 100) => (+ |100)`
   - `(for |(bar do)) => (foo)`

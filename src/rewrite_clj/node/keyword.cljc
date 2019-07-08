@@ -38,7 +38,7 @@
 ;; ## Constructor
 
 (defn keyword-node
-  "Create node representing a keyword. If `namespaced?` is given as `true`
+  "Create node representing a keyword `k`. If `namespaced?` is `true`
    a keyword à la `::x` or `::ns/x` (i.e. namespaced/aliased) is generated."
   [k & [namespaced?]]
   {:pre [(keyword? k)]}

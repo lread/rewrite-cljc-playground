@@ -63,17 +63,17 @@
 
 
 (defn-switchable node
-  "Returns the current node in `zloc`"
+  "Returns the current node in `zloc`."
   [zloc]
   (:node zloc))
 
 (defn-switchable branch?
-  "Returns true if the current node in `zloc` is a branch"
+  "Returns true if the current node in `zloc` is a branch."
   [zloc]
   (node/inner? (:node zloc)))
 
 (defn-switchable children
-  "Returns a seq of the children of current node in `zloc`, which must be a branch"
+  "Returns a seq of the children of current node in `zloc`, which must be a branch."
   [{:keys [node] :as zloc}]
   (if (branch? zloc)
     (seq (node/children node))
@@ -86,7 +86,7 @@
   (node/replace-children node children))
 
 (defn position
-  "Returns the ones-based `[row col]` of the start of the current node in `zloc`"
+  "Returns the ones-based `[row col]` of the start of the current node in `zloc`."
   [zloc]
   (if (custom-zipper? zloc)
     (:position zloc)
@@ -96,20 +96,20 @@
            "':track-position?'  set to true.") {}))))
 
 (defn position-span
-  "Returns the ones-based `[[start-row start-col] [end-row end-col]]` of the current node in `zloc`"
+  "Returns the ones-based `[[start-row start-col] [end-row end-col]]` of the current node in `zloc`."
   [zloc]
   (let [start-pos (position zloc)]
     [start-pos (node/+extent start-pos (node/extent (node zloc)))]))
 
 
 (defn-switchable lefts
-  "Returns a seq of the left siblings of current node in `zloc`"
+  "Returns a seq of the left siblings of current node in `zloc`."
   [zloc]
   (map first (:left zloc)))
 
 (defn-switchable down
   "Returns zipper with the location at the leftmost child of current node in `zloc`, or
-  nil if no children"
+  nil if no children."
   [zloc]
   (when (branch? zloc)
     (let [{:keys [node path] [row col] :position} zloc
@@ -124,7 +124,7 @@
 
 (defn-switchable up
   "Returns zipper with the location at the parent of current node in `zloc`, or nil if at
-  the top"
+  the top."
   [zloc]
   (let [{:keys [node parent left right changed?]} zloc]
     (when parent
@@ -137,7 +137,7 @@
         parent))))
 
 (defn-switchable root
-  "zips all the way up `zloc` and returns the root node, reflecting any changes."
+  "Zips all the way up `zloc` and returns zipper at the root node, reflecting any changes."
   [{:keys [end?] :as zloc}]
   (if end?
     (node zloc)
@@ -147,7 +147,7 @@
         (node zloc)))))
 
 (defn-switchable right
-  "Returns zipper with location at the right sibling of the current node in `zloc`, or nil"
+  "Returns zipper with location at the right sibling of the current node in `zloc`, or nil."
   [zloc]
   (let [{:keys [node parent position left] [r & rnext :as right] :right} zloc]
     (when (and parent right)
@@ -158,14 +158,14 @@
              :position (node/+extent position (node/extent node))))))
 
 (defn-switchable rightmost
-  "Returns zipper with location at the rightmost sibling of the current node in `zloc`, or self"
+  "Returns zipper with location at the rightmost sibling of the current node in `zloc`, or self."
   [zloc]
   (if-let [next (right zloc)]
     (recur next)
     zloc))
 
 (defn-switchable left
-  "Returns zipper with location at the left sibling of the current node in `zloc`, or nil"
+  "Returns zipper with location at the left sibling of the current node in `zloc`, or nil."
   [zloc]
   (let [{:keys [node parent left right]} zloc]
     (when (and parent (seq left))
@@ -177,7 +177,7 @@
                :right (cons node right))))))
 
 (defn-switchable leftmost
-  "Returns zipper with location at the leftmost sibling of the current node in `zloc`, or self"
+  "Returns zipper with location at the leftmost sibling of the current node in `zloc`, or self."
   [zloc]
   (let [{:keys [node parent left right]} zloc]
     (if (and parent (seq left))
@@ -191,7 +191,7 @@
 
 (defn-switchable insert-left
   "Returns zipper with `item` inserted as the left sibling of current node in `zloc`,
- without moving location"
+ without moving location."
   [zloc item]
   (let [{:keys [parent position left]} zloc]
     (if-not parent
@@ -203,7 +203,7 @@
 
 (defn-switchable insert-right
   "Returns zipper with `item` inserted as the right sibling of the current node in `zloc`,
-  without moving location"
+  without moving location."
   [zloc item]
   (let [{:keys [parent right]} zloc]
     (if-not parent
@@ -213,7 +213,7 @@
              :right (cons item right)))))
 
 (defn-switchable replace
-  "Returns zipper with `node` replacing current node in `zloc`, without moving location"
+  "Returns zipper with `node` replacing current node in `zloc`, without moving location."
   [zloc node]
   (assoc zloc :changed? true :node node))
 
@@ -226,13 +226,13 @@
 
 (defn-switchable insert-child
   "Returns zipper with `item` inserted as the leftmost child of the current node in `zloc`,
-  without moving location"
+  without moving location."
   [zloc item]
   (replace zloc (make-node zloc (node zloc) (cons item (children zloc)))))
 
 (defn-switchable append-child
   "Returns zipper with `item` inserted as the rightmost child of the current node in `zloc`,
-  without moving"
+  without moving."
   [zloc item]
   (replace zloc (make-node zloc (node zloc) (concat (children zloc) [item]))))
 
@@ -263,7 +263,7 @@
     (up zloc)))
 
 (defn-switchable end?
-  "Returns true if at end of depth-first walk in `zloc`"
+  "Returns true if at end of depth-first walk in `zloc`."
   [zloc]
   (:end? zloc))
 

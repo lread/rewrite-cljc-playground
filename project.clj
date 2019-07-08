@@ -3,8 +3,7 @@
   :url "https://github.com/clj-commons/rewrite-cljs"
   :scm {;;TODO: point to real repo
         :name "git"
-        :url "https://github.com/lread/rewrite-cljs-playground"
-        :tag "cc148d3cae40bb3ef67aaa8ab86b76e684283057"}
+        :url "https://github.com/lread/rewrite-cljs-playground"}
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"
             :year 2015

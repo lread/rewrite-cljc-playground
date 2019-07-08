@@ -92,6 +92,6 @@
 ;; ## Constructor
 
 (defn fn-node
-  "Create node representing an anonymous function."
+  "Create node representing an anonymous function with `children`."
   [children]
   (->FnNode children))
