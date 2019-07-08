@@ -1,15 +1,30 @@
 (ns rewrite-clj.zip
   "A rich API for navigating and updating Clojure/ClojureScripti/EDN source code via a zipper tree.
 
-  Because the API contains many functions, we offer the following categorized listing:
+  The zipper holds a tree of nodes representing source code. It also holds your current location while navigating
+  through the tree and any pending changes you have made. Changes are applied back into the tree
+  when invoking root functions.
 
-  *Create a zipper*
+  Although they are preserved, whitespace and comment nodes are normally skipped when navigating through the tree.
+  There are times when you will want to include whitespace and comment nodes, and as you see below, provisions are
+  available to do so.
+
+  It is good to remember that while some function names convey mutation, we are never changing anything, we are
+  instead returning modified copies.
+
+  Some conventions in the code and docstrings:
+  - `zloc` is the used as the argument name for our zipper
+  - \"current node in `zloc`\" is shorthand for: node at current location zipper `zloc`
+
+  Because this API contains many functions, we offer the following categorized listing:
+
+  **Create a zipper**
   [[edn]]
   [[edn*]]
   [[of-string]]
   [[of-file]]
 
-  *Move*
+  **Move**
   [[left]]
   [[right]]
   [[up]]
@@ -19,7 +34,7 @@
   [[leftmost]]
   [[rightmost]]
 
-  *Move without skipping whitespace and comments*
+  **Move without skipping whitespace and comments**
   [[left*]]
   [[right*]]
   [[up*]]
@@ -29,29 +44,29 @@
   [[leftmost*]]
   [[rightmost*]]
 
-  *Whitespace/comment aware skip*
+  **Whitespace/comment aware skip**
   [[skip]]
   [[skip-whitespace]]
   [[skip-whitespace-left]]
 
-  *Test for whitespace*
+  **Test for whitespace**
   [[whitespace?]]
   [[linebreak?]]
   [[whitespace-or-comment?]]
 
-  *Test location*
+  **Test location**
   [[leftmost?]]
   [[rightmost?]]
   [[end?]]
 
-  *Test data type*
+  **Test data type**
   [[seq?]]
   [[list?]]
   [[vector?]]
   [[set?]]
   [[map?]]
 
-  *Find*
+  **Find**
   [[find]]
   [[find-next]]
   [[find-depth-first]]
@@ -65,23 +80,23 @@
   [[find-last-by-pos]]
   [[find-tag-by-pos]]
 
-  *Inspect*
+  **Inspect**
   [[node]]
   [[position]]
   [[position-span]]
   [[tag]]
   [[length]]
 
-  *Convert*
+  **Convert**
   [[sexpr]]
   [[child-sexpr]]
 
-  *Update*
+  **Update**
   [[replace]]
   [[edit]]
   [[splice]]
-  [[prefix]] TODO: review
-  [[suffix]] TODO: review
+  [[prefix]]
+  [[suffix]]
   [[insert-right]]
   [[insert-left]]
   [[insert-child]]
@@ -94,7 +109,7 @@
   [[remove-preserve-newline]]
   [[root]]
 
-  *Update without whitespace treatment*
+  **Update without whitespace treatment**
   [[replace*]]
   [[edit*]]
   [[insert-left*]]
@@ -102,8 +117,8 @@
   [[append-child*]]
   [[remove*]]
 
-  *Isolated update without changing location*
-  [[edit-node]] TODO: review
+  **Isolated update without changing location**
+  [[edit-node]]
   [[subedit-node]]
   [[subzip]]
   [[prewalk]]
@@ -113,18 +128,18 @@
   [[subedit->]]
   [[subedit->>]]
 
-  *Sequence operations*
+  **Sequence operations**
   [[map]]
   [[map-keys]]
   [[map-vals]]
   [[get]]
   [[assoc]]
 
-  *Stringify*
+  **Stringify**
   [[string]]
   [[root-string]]
 
-  *Output*
+  **Output**
   [[print]]
   [[print-root]]"
   (:refer-clojure :exclude [next find replace remove
