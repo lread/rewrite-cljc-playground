@@ -1,10 +1,13 @@
 {:lint-as
  {rewrite-clj.potemkin.cljs/defprotocol+ clojure.core/defprotocol
-  rewrite-clj.potemkin.clojure/defprotocol+ clojure.core/defprotocol}
+  rewrite-clj.potemkin.clojure/defprotocol+ clojure.core/defprotocol
+  clojure.test.check.clojure-test/defspec clojure.core/def}
  :linters
  {:unresolved-symbol
   {:exclude [(rewrite-clj.potemkin.cljs/import-vars)
              (rewrite-clj.potemkin.clojure/import-vars)
              (clojure.test/is [thrown? thrown-with-msg?])
              (cljs.test/are)
-             (cljs.test/is [thrown? thrown-with-msg?] )]}}}
+             (cljs.test/is [thrown? thrown-with-msg?] )]}
+  :unused-namespace
+  {:exclude [clojure.test.check]}}}
