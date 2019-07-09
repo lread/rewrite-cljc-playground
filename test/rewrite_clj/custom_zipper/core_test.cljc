@@ -2,6 +2,7 @@
   (:require [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop #?@(:cljs [:include-macros true])]
             [clojure.test :refer [deftest is are testing run-tests]]
+            #?(:cljs [clojure.test.check :refer-macros [quick-check]])
             [clojure.test.check.clojure-test :refer [defspec]]
             [rewrite-clj.node :as node]
             [rewrite-clj.node.generators :as g]
