@@ -1,7 +1,7 @@
 (ns rewrite-clj.potemkin-test
   (:require [clojure.test :refer [deftest is are testing run-tests]]
-            [rewrite-clj.potemkin-t1 :include-macros true]
-            [rewrite-clj.potemkin-t2 :include-macros true] )
+            [rewrite-clj.potemkin-t1 #?@(:cljs [:include-macros true])]
+            [rewrite-clj.potemkin-t2 #?@(:cljs [:include-macros true])] )
   #?(:clj (:require [rewrite-clj.potemkin.clojure :refer [import-vars]])
      :cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [import-vars]]
                             ;; macros need to be required for cljs
@@ -27,7 +27,7 @@
   [test-sym]
   (let [md #?(:cljs (dissoc (meta test-sym) :ns)
               :clj (meta test-sym))]
-    (is (not (empty? md)) "no metadata, test malconfigured?")
+    (is (seq md) "no metadata, test malconfigured?")
     md))
 
 (deftest t-straight-imports-meta-data

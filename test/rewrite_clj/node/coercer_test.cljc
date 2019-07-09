@@ -1,7 +1,6 @@
 (ns rewrite-clj.node.coercer-test
   (:require [clojure.test :refer [deftest is are testing run-tests]]
             [rewrite-clj.node.protocols :as node :refer [coerce]]
-            [rewrite-clj.node.coercer]
             [rewrite-clj.parser :as p]))
 
 (deftest t-sexpr->node->sexpr-roundtrip

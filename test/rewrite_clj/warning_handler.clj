@@ -29,7 +29,7 @@
 (defn- canonical-path [file]
   (.getCanonicalPath (io/file file)))
 
-(defn- ignore-warning?[warning-type env extra]
+(defn- ignore-warning?[warning-type env _extra]
   (when-let [files (warning-type ignore-config)]
     (let [source-info (ana/source-info env)
           source-file (canonical-path (:file source-info))

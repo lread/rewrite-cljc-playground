@@ -2,8 +2,7 @@
   (:require [clojure.test :refer [deftest is are testing run-tests]]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]
-            [rewrite-clj.zip.removez :as r]
-            [rewrite-clj.custom-zipper.core :as z]))
+            [rewrite-clj.zip.removez :as r]))
 
 (deftest t-whitespace-aware-removal
   (are [?data ?n ?s]

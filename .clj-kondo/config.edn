@@ -4,4 +4,7 @@
  :linters
  {:unresolved-symbol
   {:exclude [(rewrite-clj.potemkin.cljs/import-vars)
-             (rewrite-clj.potemkin.clojure/import-vars)]}}}
+             (rewrite-clj.potemkin.clojure/import-vars)
+             (clojure.test/is [thrown? thrown-with-msg?])
+             (cljs.test/are)
+             (cljs.test/is [thrown? thrown-with-msg?] )]}}}

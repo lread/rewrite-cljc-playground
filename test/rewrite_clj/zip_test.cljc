@@ -1,13 +1,11 @@
 (ns rewrite-clj.zip-test
   (:require [clojure.test :refer [deftest is testing run-tests]]
-            [rewrite-clj.zip :as z]
-            [rewrite-clj.node :as n]))
+            [rewrite-clj.zip :as z]))
 
 ;; TODO: this was only in rewrite-cljs
 (deftest of-string-simple-sexpr
   (let [sexpr "(+ 1 2)"]
    (is (= sexpr (-> sexpr z/of-string z/root-string)))))
-
 
 
 (deftest manipulate-sexpr

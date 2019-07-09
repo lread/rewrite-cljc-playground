@@ -1,6 +1,5 @@
 (ns rewrite-clj.zip.insert-test
   (:require [clojure.test :refer [deftest is are testing run-tests]]
-            [clojure.string :as string]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]
             [rewrite-clj.zip.insert :refer [insert-right insert-left insert-child append-child]]

@@ -1,7 +1,6 @@
 (ns rewrite-clj.zip.findz-test
   (:require [clojure.test :refer [deftest is are testing run-tests]]
             [rewrite-clj.custom-zipper.core :as z]
-            [rewrite-clj.node :as n]
             [rewrite-clj.zip.findz :as f]
             [rewrite-clj.zip.base :as base])
   #?(:clj (:import clojure.lang.ExceptionInfo)))

@@ -206,7 +206,8 @@
        (let [s (str ?s " s")
              n (p/parse-string s)
              [mta ws n'] (node/children n)
-             [mta2 ws2 sym] (node/children n')]
+             ;; TODO: verify sym?
+             [mta2 ws2 _sym] (node/children n')]
           ;; outer meta
          (is (= ?t (node/tag n)))
          (is (= s (node/string n)))
@@ -477,6 +478,7 @@
            (is (= ?t (node/tag node)))
            (is (= ?s (node/string node)))
            (is (= ?sexpr (node/sexpr node)))
+           ;; TODO: hmmm... did not see this one before. something to address? or maybe this is from cljs version before custom zipper?
            #_(deftest t-reliable-decision-on-end-pos-not-currently-possible
                (is (= ?end end-pos))))
       [1 1]  [3 14] :list   s              '(defn f [x] (println x))
