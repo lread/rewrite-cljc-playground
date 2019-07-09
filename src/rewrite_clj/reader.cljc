@@ -2,9 +2,7 @@
   (:refer-clojure :exclude [peek next])
   (:require [clojure.tools.reader.edn :as edn]
             [clojure.tools.reader.reader-types :as r]
-            [clojure.tools.reader.impl.commons :refer [parse-symbol]]
             [rewrite-clj.interop :as interop]
-            [rewrite-clj.node.protocols :as nd]
             #?@(:clj [[clojure.java.io :as io]]))
   #?(:cljs (:import [goog.string StringBuffer])
      :clj (:import [java.io PushbackReader])))

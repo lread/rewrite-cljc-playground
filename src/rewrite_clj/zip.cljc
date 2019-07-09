@@ -153,7 +153,7 @@
             [rewrite-clj.zip.insert]
             [rewrite-clj.zip.removez]
             [rewrite-clj.zip.seqz]
-            [rewrite-clj.zip.subedit :include-macros true]
+            [rewrite-clj.zip.subedit #?@(:cljs [:include-macros true])]
             [rewrite-clj.zip.walk]
             [rewrite-clj.zip.whitespace]
             [rewrite-clj.custom-zipper.core :as z]

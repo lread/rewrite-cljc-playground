@@ -12,7 +12,7 @@
             [rewrite-clj.node.keyword]
             [rewrite-clj.node.meta]
             [rewrite-clj.node.namespaced-map]
-            [rewrite-clj.node.protocols]
+            [rewrite-clj.node.protocols :as np]
             [rewrite-clj.node.quote]
             [rewrite-clj.node.reader-macro]
             [rewrite-clj.node.regex]
@@ -111,8 +111,8 @@
 (defn whitespace-or-comment?
   "Return true when `node` represents whitespace or comment."
   [node]
-  (or (whitespace? node)
-      (comment? node)))
+  (or (rewrite-clj.node.whitespace/whitespace? node)
+      (rewrite-clj.node.comment/comment? node)))
 
 ;; ## Value
 
@@ -121,8 +121,8 @@
    or just the node's own sexpr. (use explicit analysis of `children`
    `child-sexprs` instead) "
   [node]
-  (if (inner? node)
-    (some-> (children node)
+  (if (np/inner? node)
+    (some-> (np/children node)
             (first)
-            ((juxt tag sexpr)))
-    (sexpr node)))
+            ((juxt np/tag np/sexpr)))
+    (np/sexpr node)))

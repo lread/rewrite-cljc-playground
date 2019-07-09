@@ -54,7 +54,7 @@
       (throw (ex-info "potemkin clj cannot import-fn on a macro" {:symbol src-sym})))
     `(do
        (def ~(with-meta target-name (if protocol {:protocol protocol} {})) (deref ~vr))
-       (alter-meta! (var ~target-name) merge '~new-meta)
+       (alter-meta! (var ~target-name) merge (quote ~new-meta))
        ~vr)))
 
 (defmacro import-macro
@@ -69,7 +69,7 @@
        (throw (ex-info "potemkin clj can only import-macro on macro" {:symbol src-sym})))
      `(do
         (def ~target-name ~(resolve src-sym))
-        (alter-meta! (var ~target-name) merge '~new-meta)
+        (alter-meta! (var ~target-name) merge (quote ~new-meta))
         (.setMacro (var ~target-name))
         ~vr)))
 
@@ -83,7 +83,7 @@
         target-name (with-meta target-name (if (:dynamic m) {:dynamic true} {}))]
     `(do
        (def ~target-name @~vr)
-       (alter-meta! (var ~target-name) merge '~new-meta)
+       (alter-meta! (var ~target-name) merge (quote ~new-meta))
        ~vr)))
 
 (defmacro import-vars
