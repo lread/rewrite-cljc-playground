@@ -22,11 +22,11 @@
 
 (defn min-int[]
   #?(:clj  Long/MIN_VALUE
-     :cljs Number.MIN_SAFE_INTEGER))
+     :cljs js/Number.MIN_SAFE_INTEGER))
 
 (defn max-int[]
   #?(:clj Long/MAX_VALUE
-     :cljs Number.MAX_SAFE_INTEGER))
+     :cljs js/Number.MAX_SAFE_INTEGER))
 
 (defn clojure-whitespace?
   [#?(:clj ^java.lang.Character c :default c)]

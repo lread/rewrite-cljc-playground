@@ -474,7 +474,7 @@
                      (nodes-with-meta))]
   (deftest t-rowcolumn-metadata
     (are [?pos ?end ?t ?s ?sexpr]
-         (let [{:keys [node end-pos]} (positions ?pos)]
+         (let [{:keys [node _end-pos]} (positions ?pos)]
            (is (= ?t (node/tag node)))
            (is (= ?s (node/string node)))
            (is (= ?sexpr (node/sexpr node)))

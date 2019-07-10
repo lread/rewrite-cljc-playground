@@ -53,7 +53,7 @@
         arglists (list params)]
     `(defn ~sym
        ~docstring
-       {:arglists (quote ~arglists)}
+       {:arglists '~arglists}
        [~@placeholders]
        (if (custom-zipper? ~(first placeholders))
          (let [~@(interleave params placeholders)]
