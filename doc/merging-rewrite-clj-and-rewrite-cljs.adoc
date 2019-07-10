@@ -205,7 +205,10 @@ That said, I decided, at least for now, to honor the original rewrite-clj codeba
 
 I also extended import-vars to rewrite-clj's purposes by adding a facility to rename imported vars and adapt docstrings.
 
-All is not entirely rainbows and unicorns yet, I am not certain, but I think import-vars might not play well we cloverage. I gave it a quick try and it failed miserably. My first suspect is import-vars.
+All is not entirely rainbows and unicorns yet,
+
+. I am not certain, but I think import-vars might not play well we cloverage. I gave it a quick try and it failed miserably. My first suspect is import-vars.
+. Linters like joker and clj-kondo don't know what import-vars intent is and can report false positives.
 
 === Positional support
 rewrite-clj
