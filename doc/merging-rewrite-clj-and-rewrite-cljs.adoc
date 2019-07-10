@@ -67,6 +67,41 @@ I am not sure why `rewrite-clj.custom-zipper` is included in the documented publ
 
 Because what is public versus what is private was not stressed strongly, I frequently see private APIs used in code.
 
+=== Library version scheme
+I see plenty of version scheme variations out there these days. Here are a few examples I find interesting:
+
+[cols="10,40,20,~",options="header"]
+|====
+|Project
+|Scheme
+|Example
+|Observation
+
+|https://github.com/clojure/clojurescript/releases[ClojureScript]
+|major.minor.<commit count since major.minor>
+|`1.10.520`
+|Tracks Clojure version.
+
+|https://github.com/borkdude/clj-kondo/releases[clj-kondo]
+|yyyy-mm-dd-qualifier
+|`2019.07.05-alpha`
+|Freshness built into version.
+
+|https://github.com/cljdoc/cljdoc[cljdoc]
+|major.minor.<commit count>-<short git sha>
+|`0.0.1315-c9e9a73`
+|The short-sha safeguards against any potential confusion with duplicate commit counts for builds on different machines.
+|====
+
+rewrite-clj is not a new project. I feel the version should reflect at least some familiarity with its current scheme.
+
+As of this writing the current version of rewrite-clj is `0.6.2`. I am guessing that the 0 is an unused version element, and we have a `0.major.minor` scheme.
+
+rewrite-cljc is going to switch to a ClojureScript-ish scheme. +
+It will use a `major.minor.<commit count since major.minor>-<qualifier>` scheme. +
+Our first version will be `1.0.42-alpha` where `42` is just a wild guess right now.
+
+
 === Source directory layout
 When I first started to experiment with a cljc version of rewrite-clj, my directory layout looked like:
 [svgbob]
