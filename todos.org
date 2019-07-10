@@ -11,9 +11,7 @@
 ** TODO refine cljs namespace alias lookup
     Allow a client to provide a resolver fn rather than just a data binding.  The default will be clojure tools reader *ns-alias* but
     should be over-rideable to whatever the client wants.
-** TODO do I need rewrite-clj.node/coerce?
 ** TODO consider spec
-** TODO address clj-kondo/joker linter warnings
 ** TODO make a coherent commit history from my spike experiments?
 ** Testing
 *** TODO can I verify that I have not broken the api?
@@ -138,7 +136,6 @@
     - zip_tests.cljs
     Ran cloverage and it generated a good report but also failed many tests.  Not sure why.
 *** TODO test with cljs advanced compilation
-*** TODO have a try with https://github.com/xsc/rewrite-clj/issues/76
 ** Docs & API
 *** TODO give guidance on the limitations of sexpr
     from discussion with @sogaiu and @borkdude on slack
@@ -241,172 +238,10 @@
     borkdude [8:36 AM]
     yeah, exactly (edited)
     I have also made a few predicates like `symbol-token?` so I don’t need to sexpr to check if it’s a symbol
-*** TODO make walk docs clearer
-    from discussion on slack:
-    sogaiu [6:02 PM]
-    thanks.  just hoping some improvement to the situation can come about. (edited)
-    @lread i was trying to remove metadata and had some difficulties initially.  it appears that (at least in some cases) even if one replaces a metadata node with a node for the contained form (w/o the metadata map), the metadata is retained -- presumably because the contained form has the metadata living on it.
-    will post some example code
-    given:
-
-    ```(require '[rewrite-clj.zip :as rz])
-
-    (def comment-form-with-meta-idea-str
-    (str "(comment\n"
-    "\n"
-    "  ^{:ael/expected 0 :ael/name \"simple subtraction\"}\n"
-    "  (- 1 1)\n"
-    ")\n"))```
-    (edited)
-    the following retains the metadata:
-
-    ```(-> (rz/of-string comment-form-with-meta-idea-str)
-    (rz/prewalk (fn [zloc]
-    (when (= (rz/tag zloc) :meta)
-    (let [map-zloc (rz/down zloc)]
-    (contains? (rz/sexpr map-zloc)
-    :ael/expected))))
-    (fn [zloc]
-    (-> zloc
-    rz/down
-    rz/right)))
-    rz/string)```
-    the following successfully removes the metadata:
-
-    ```(-> (rz/of-string comment-form-with-meta-idea-str)
-    (rz/prewalk (fn [zloc]
-    (when (= (rz/tag zloc) :meta)
-    (let [map-zloc (rz/down zloc)]
-    (contains? (rz/sexpr map-zloc)
-    :ael/expected))))
-    (fn [zloc]
-    (rz/edit zloc
-    (fn [expr]
-    (with-meta expr {})))))
-    rz/string)```
-    i was surprised, but do you think the current behavior makes sense / is inevitable?
-
-    lread [6:12 PM]
-    Thanks @sogaiu, I shall have a look sometime over the next few days.
-
-    sogaiu [6:13 PM]
-    thanks!
-
-    lread [3:31 PM]
-    Ok, I have started to have a look.  Remember that, surprising at it may be, I’m not yet an expert in rewrite-clj. :simple_smile:
-
-    lread [3:36 PM]
-    So… looking at your first prewalk… I thought you had to transform a zloc with a manipulation function (edit, replace etc)? If I take a simpler example and do something similar, I will get no change:
-    ```(def ex2 "[1 2 3 [4 5]]")
-
-    (-> (rz/of-string ex2)
-    (rz/prewalk (fn [zloc]
-    (println (rz/string zloc))
-    (= (rz/string zloc) "2"))
-    (fn [zloc]
-    (println "-->" (rz/node (rz/right zloc)))
-    (rz/right zloc)))
-    (rz/string))```
-
-    lread [3:47 PM]
-    rewrite-clj will not allow you to simply `rz/remove` the metadata :map from the :meta node because it does not allow a :meta node without a :map.
-    So maybe your 2nd version is not too shabby?
-    Another way that more closely matches your first attempt might be:
-    ```(-> (rz/of-string comment-form-with-meta-idea-str)
-    (rz/prewalk (fn [zloc]
-    (when (= (rz/tag zloc) :meta)
-    (let [map-zloc (rz/down zloc)]
-    (contains? (rz/sexpr map-zloc)
-    :ael/expected))))
-    (fn [zloc]
-    (rz/replace zloc
-    (-> zloc rz/down rz/right rz/node))))
-    rz/string)```
-    Looking forward to reading what you think. (edited)
-
-    sogaiu [3:51 PM]
-    thanks for the consideration -- i'm even less of an expert, and i just woke up, but i hope to digest your response and get back to you soon :slightly_smiling_face:
-
-    lread [3:52 PM]
-    Sure, take your time.  We can continue to learn together!
-
-    sogaiu [3:53 PM]
-    quite nice :slightly_smiling_face:
-
-    lread [4:19 PM]
-    oh ok… I played a bit more… this makes sense… when we simply return a zloc from prewalk it just changes where we are at in the walk.  I’ll modify my simpler example a tiny bit:
-    ```(-> (rz/of-string ex2)
-    (rz/prewalk (fn [zloc]
-    (println "walking: " (rz/string zloc))
-    (= (rz/string zloc) "2"))
-    (fn [zloc]
-    (rz/right zloc)))
-    (rz/string))```
-    Which outputs:
-    ```walking:  [1 2 3 [4 5]]
-    walking:  1
-    walking:  2
-    walking:  [4 5]
-    walking:  4
-    walking:  5```
-    Notice that our `rz/right` has us skipping element `3` in our prewalk traversal. (edited)
-
-    lread [5:20 PM]
-    Which does not affect the resulting string: `"[1 2 3 [4 5]]"`.
-
-    borkdude [5:57 PM]
-    @lread are you trying to get rid of metadata?
-
-    borkdude [6:14 PM]
-    @lread maybe something like this?
-    ```(require '[rewrite-clj.zip :as rz])
-
-    (def comment-form-with-meta-idea-str
-    (str "(comment\n"
-    "\n"
-    "  ^{:ael/expected 0 :ael/name \"simple subtraction\"}\n"
-    "  (- 1 1)\n"
-    ")\n"))
-
-    (loop [zloc (rz/of-string comment-form-with-meta-idea-str)]
-    (if (rz/end? zloc) (rz/root zloc)
-    (let [t (rz/tag zloc)]
-    (if (= :meta t)
-    (recur (-> zloc rz/splice rz/remove))
-    (recur (rz/next zloc))))))```
-    returns: `"(comment\n\n  (- 1 1)\n)\n"`
-
-    lread [6:16 PM]
-    nah, not me, @sogaiu , just helping out
-
-    borkdude [6:17 PM]
-    sorry misread. but it seems to work @sogaiu :slightly_smiling_face: (edited)
-
-    lread [6:21 PM]
-    coolio, thanks!
-
-    sogaiu [9:36 PM]
-    @lread thanks for the investigation -- looking at prewalk's documentation string, i see:
-
-    >   Perform a depth-first pre-order traversal starting at the given zipper location
-    >   and apply the given function to each child node. If a predicate `p?` is given,
-    >   only apply the function to nodes matching it.
-    (edited)
-    i don't see any warning about the return value of the function (argument passed to prewalk) affecting the traversal.
-    so your most recent code example was enlightening.
-    if the function argument returns some other location, it's possible the walk is not strictly a depth-first traversal any more i guess -- at least not a complete one. (edited)
-
-    i found borkdude's code to be less surprising and straight-forward, thanks @borkdude.
-    i incorrectly assumed that the function argument return value would be used in place of the original -- though the doc string does not imply such a thing -- it was surprising to learn that the traversal could be affected, though perhaps for this sort of thing, may be that should be expected? (edited)
-    the docstring also doesn't explicitly state what the return value of prewalk should be / is.
-    by studying its implementation and examining subedit-node, replace (from zip/editz), and replace (from custom-zipper.core), one can learn more about what might be returned, but this (though helpful in learning parts of rewrite-clj) seems like more work than should be necessary to just learn how to use prewalk. (edited)
-
-    lread [11:27 PM]
-    yeah, good points @sogaiu , I think the docs could use some love
-*** TODO test cljdoc wiki-links - how do they work with import-vars?
 *** TODO push along my PR to support import-vars in cljs for cljdoc
 *** TODO verify my guess at doc string for prefix and suffix
 *** TODO subedit could use some examples
+** Review all TODOS in source code
 ** Language differences from library perspective
 *** TODO parsing the language specific
    rewrite-clj should be able to parse and rewrite clojure and clojurescript from clojure or clojurescript.
@@ -429,7 +264,6 @@
 *** TODO experiment with sexprs across lang differences
 *** TODO experiment with coerce across lang differences
 *** TODO consider not using sepxr internally - I expect it will be an interop problemo
-*** TODO regex - any issues?
 ** Performance
 *** TODO are rundis' optimizations still valid today?
 *** TODO research what others are doing for benchmarking… would like to know if I am making things slower.
