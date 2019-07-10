@@ -56,6 +56,10 @@ commands:
           key: v1-dependencies-{{ checksum "project.clj" }}
 
       - run:
+          name: Lint code
+          command: clj -A:clj-kondo-lint
+
+      - run:
           name: Run tests
           command: lein test-all
 
