@@ -30,13 +30,6 @@ commands:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      # rlwrap is needed to allow clj to be used in place of clojure
-      - run:
-          name: Install extra linux packages
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y rlwrap
-
       # Strange, but circleci does not seem to provide an image with lein AND clojure
       - run:
           name: Install clojure
@@ -44,7 +37,7 @@ commands:
             curl -O https://download.clojure.org/install/linux-install-${CLOJURE_VERSION}.sh
             chmod +x linux-install-${CLOJURE_VERSION}.sh
             sudo ./linux-install-${CLOJURE_VERSION}.sh
-            clj -e "*clojure-version*"
+            clojure -e "*clojure-version*"
 
       - run:
           name: Install karma command line
@@ -65,7 +58,7 @@ commands:
 
       - run:
           name: Lint code
-          command: clj -A:clj-kondo-lint
+          command: clojure -A:clj-kondo-lint
 
       - run:
           name: Run tests
