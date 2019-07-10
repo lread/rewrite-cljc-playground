@@ -15,6 +15,7 @@ executors:
     environment:
       LEIN_ROOT: "true"
       JVM_OPTS: -Xmx3200m
+      CLOJURE_VERSION: "1.10.1.462"
     working_directory: ~/repo
 
 commands:
@@ -28,11 +29,6 @@ commands:
             - v1-dependencies-{{ checksum "project.clj" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-
-      - run:
-          name: Setup some environment variables
-          command: |
-            echo 'export CLOJURE_VERSION==1.10.1.462' >> $BASH_ENV
 
       # rlwrap is needed to allow clj to be used in place of clojure
       - run:
