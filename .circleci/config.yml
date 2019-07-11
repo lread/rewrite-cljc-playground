@@ -57,8 +57,10 @@ commands:
           key: v1-dependencies-{{ checksum "project.clj" }}
 
       - run:
-          name: Lint code
-          command: clojure -A:clj-kondo-lint
+          name: Initialize clj-kondo to lint against dependencies
+          command: |
+            clojure -A:clj-kondo -m clj-kondo.main --lint $(clojure -Spath) --cache
+            exit 0
 
       - run:
           name: Run tests

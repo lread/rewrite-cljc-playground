@@ -23,6 +23,7 @@
                          "junitReporter" {"outputDir" "target/out/test-results/cljs"}}}}
 
   :profiles {:1.9 {:lein-tools-deps/config {:resolve-aliases [:1.9]}}
+             :clj-kondo {:lein-tools-deps/config {:resolve-aliases [:clj-kondo]}}
              :kaocha {:lein-tools-deps/config {:resolve-aliases [:kaocha]}}
              :fig-test {:lein-tools-deps/config {:resolve-aliases [:fig-test]}
                         :resource-paths ["target"]}
@@ -59,7 +60,15 @@
                                             :warnings {:fn-deprecated false}
                                             :pretty-print true}}]}}}
 
-  :aliases {"kaocha"
+  :aliases {"_clj-kondo"
+            ^{:doc "base for clj-kondo"}
+            ["with-profile" "clj-kondo" "run" "-m" "clj-kondo.main"]
+
+            "clj-kondo"
+            ^{:doc "lint with clj-kondo "}
+            ["_clj-kondo" "--lint" "src" "test"]
+
+            "kaocha"
             ^{:doc "base kaocha - use to run all clj tests once for default clojure env"}
             ["with-profile" "+kaocha" "run" "-m" "kaocha.runner"]
 
@@ -113,7 +122,7 @@
 
             "test-all"
             ^{:doc "run all clj and cljs tests for all supported environments"}
-            ["do" "clean," "clj-test-envs-junit," "cljs-test-envs"]
+            ["do" "clean," "clj-kondo," "clj-test-envs-junit," "cljs-test-envs"]
 
             "clj-auto-test"
             ^{:doc "run all clj tests, watch and rerun automatically"}
