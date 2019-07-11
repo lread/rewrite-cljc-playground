@@ -1,5 +1,7 @@
 = Merging rewrite-clj and rewrite-cljs
+:toc:
 
+== Introduction
 rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] with https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] giving us a one stop rewrite-clj shop for Clojure and ClojureScript developers.
 
 == Goals
@@ -55,17 +57,32 @@ During this work, I noticed how pervasive rewrite-clj usage is. This discovery o
 . https://github.com/Olical/depot[depot] uses rewrite-clj
 . https://github.com/clojure-emacs/cider[cider] which can optionally enable https://github.com/clojure-emacs/clj-refactor.el[clj-refactor] which brings in rewrite-clj
 
+== Tooling
+
+=== Build tools
+I am currently specifying dependencies in `deps.edn` but am using leiningen for everything else.
+Having a `deps.edn` allows users to easily bring in my library as a git dependency.
+I plan to explore moving entirely to deps.edn.
+
+=== Continuous integration
+The future of https://travis-ci.org/[Travis CI] looked a bit tenuous so I switched over to https://circleci.com/[circleci].
+
+=== Testing and linting tools
+After looking around, I settled on the following for continuous integration:
+
+. https://github.com/lambdaisland/kaocha[Kaocha] for running Clojure unit tests.
+. an upgraded https://github.com/bensu/doo[doo] for running ClojureScript unit tests under node and chrome headless. I considered Koacha's cljs support and will reconsider when it matures a bit.
+. I fail the build when:
+.. a lint with https://github.com/borkdude/clj-kondo[clj-kondo] produces any warnings
+.. a special ClojureScript build uncovers any unwanted deprecated calls - this check may someday be taken over by clj-kondo.
+
+During development, I found the following helpful:
+
+. kaocha --watch for clojure
+. figwheel main for clojurescript
+
+
 == Analysis & Implementation Notes
-=== What is the public API?
-rewrite-clj purposefully only generated documentation for specific namespaces. It is reasonable to assume that these namespaces represent the public API.
-
-* `rewrite-clj.parse`
-* `rewrite-clj.node`
-* `rewrite-clj.zip`
-
-I am not sure why `rewrite-clj.custom-zipper` is included in the documented public API, because its functionality is exposed through `rewrite-clj.zip`, I expect this was perhaps an oversight.
-
-Because what is public versus what is private was not stressed strongly, I frequently see private APIs used in code.
 
 === Library version scheme
 I see plenty of version scheme variations out there these days. Here are a few examples I find interesting:
@@ -101,7 +118,6 @@ rewrite-cljc is going to switch to a ClojureScript-ish scheme. +
 It will use a `major.minor.<commit count since major.minor>-<qualifier>` scheme. +
 Our first version will be `1.0.42-alpha` where `42` is just a wild guess right now.
 
-
 === Source directory layout
 When I first started to experiment with a cljc version of rewrite-clj, my directory layout looked like:
 [svgbob]
@@ -130,6 +146,17 @@ After a certain amount of work, I realized the majority of the code was cljc so 
 |-test
 | '-rewrite-clj
 ....
+
+=== What is the public API?
+rewrite-clj purposefully only generated documentation for specific namespaces. It is reasonable to assume that these namespaces represent the public API.
+
+* `rewrite-clj.parse`
+* `rewrite-clj.node`
+* `rewrite-clj.zip`
+
+I am not sure why `rewrite-clj.custom-zipper` is included in the documented public API, because its functionality is exposed through `rewrite-clj.zip`, I expect this was perhaps an oversight.
+
+Because what is public versus what is private was not stressed strongly, I frequently see private APIs used in code.
 
 === ClojureScript namespace clashes
 ClojureScript uses Google Closure under the hood. Because of the way Google Closure handles namespaces, some namespaces that work fine on Clojure clash under ClojureScript. Some rewrite-clj namespaces clash for ClojureScript, for example:
