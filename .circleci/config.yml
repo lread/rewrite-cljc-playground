@@ -63,7 +63,7 @@ commands:
             clojure -A:clj-kondo -m clj-kondo.main --lint $(clojure -Spath) --cache
             exit_code=$?
             if [ ${exit_code} -ne 0 ] && [ ${exit_code} -ne 2 ] && [ ${exit_code} -ne 3 ]; then
-              echo "clj-kondo exited with unexpected exit code: ${exit_code}
+              echo "clj-kondo exited with unexpected exit code: ${exit_code}"
               exit ${exit_code}
             fi
 
