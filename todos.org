@@ -268,22 +268,9 @@
 *** TODO are rundis' optimizations still valid today?
 *** TODO research what others are doing for benchmarking… would like to know if I am making things slower.
 ** Deployment
-*** TODO figure out next version number
-    rewrite-clj is currently 0.6.1
-    rewrite-cljs is currently 0.4.4
-    Historically rewrite-cljs was tracking rewrite-clj.
-    My changes will be me slightly ahead of rewrite-clj. If I am presumptuous, I might try 0.6.2.
-    I do want communicate this needs a good shake though, so 0.6.2-alpha1
-    To consider:
-    - kaocha style versioning 0.0-<commit count>
-    - cljdoc style versioning 0.0.<commit count>-<short hash>
-    I like cljdoc versioning, but it is probably too much of a departure from existing versioning, and I
-    would have to think about how to convey alpha-ness in that scheme. 0.6.<commit count>-<short hash>-alpha1?
-    I will attempt to discuss with @xsc before release.
-*** TODO continuity on clojars for rundis deploys?
 *** TODO make sure I understand deploy requirements for cljs - what goes into the jar?
     Just the source, I think...
-
+*** TODO deploy scripts
 * Later
 ** TODO consider allowing metadata to be a child
    of interest to borkdude - and more generally probably
