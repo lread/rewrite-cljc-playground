@@ -9,9 +9,6 @@
   {:level :warning
    :exclude [(rewrite-clj.potemkin.cljs/import-vars)
              (rewrite-clj.potemkin.clojure/import-vars)
-             #_(clojure.test/is [thrown? thrown-with-msg?])
-             #_(cljs.test/are)
-             #_(cljs.test/is [thrown? thrown-with-msg?])
              ;; TODO: would like to restrict exclusion to potemkin-test t-imports-evaluation-equivalent
              t-def t-def-doc t-fn t-fn-doc t-macro t-macro-doc mod-t-def mod-t-def-doc mod-t-fn mod-t-fn-doc mod-t-macro mod-t-macro-doc]}
   :unused-namespace
