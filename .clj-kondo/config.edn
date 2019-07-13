@@ -12,4 +12,15 @@
              ;; TODO: would like to restrict exclusion to potemkin-test t-imports-evaluation-equivalent
              t-def t-def-doc t-fn t-fn-doc t-macro t-macro-doc mod-t-def mod-t-def-doc mod-t-fn mod-t-fn-doc mod-t-macro mod-t-macro-doc]}
   :unused-namespace
-  {:exclude [clojure.test.check]}}}
+  {:exclude [clojure.test.check]}
+  :deprecated-var
+  {:exclude {rewrite-clj.zip/->root-string
+             [rewrite-clj.regression-test]
+             rewrite-clj.zip/->string
+             [rewrite-clj.regression-test]
+             rewrite-clj.zip.whitespace/append-newline
+             [rewrite-clj.zip.whitespace-test]
+             rewrite-clj.zip.whitespace/prepend-newline
+             [rewrite-clj.zip.whitespace-test]
+             rewrite-clj.node/value
+             [rewrite-clj.zip.base/value]}}}}
