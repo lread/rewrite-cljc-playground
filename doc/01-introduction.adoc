@@ -1,5 +1,5 @@
 = Introduction
-:cljdoc-api-url: https://clojdoc.org/d/clj-commons/rewrite-cljc/CURRENT/api
+:cljdoc-api-url: /d/clj-commons/rewrite-cljc/CURRENT/api
 :toc:
 
 == Introduction
