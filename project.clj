@@ -4,7 +4,8 @@
   :url"https://github.com/lread/rewrite-cljs-playground"
   :scm {;;TODO: point to real repo
         :name "git"
-        :url "https://github.com/lread/rewrite-cljs-playground:cljc-spike-2"}
+        :url "https://github.com/lread/rewrite-cljs-playground"}
+
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"
             :year 2015
