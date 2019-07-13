@@ -2,12 +2,17 @@
 /lib
 /classes
 /checkouts
-/doc
 /node_modules
+/dumps
+/.clj-kondo/.cache
+/.cpcache
 pom.xml
 pom.xml.asc
 *.jar
 *.class
+.cljs_node_repl
+.cljs_nashorn_repl
+nashorn_code_cache
 .lein-deps-sum
 .lein-failures
 .lein-plugins
@@ -17,3 +22,4 @@ pom.xml.asc
 .nrepl-port
 .idea/
 *.iml
+.dir-locals.el

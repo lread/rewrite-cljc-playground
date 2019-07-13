@@ -1,0 +1,5 @@
+^{:watch-dirs ["test" "src"]
+  :auto-testing true}
+{:main rewrite-clj.hello-figwheel
+ :warnings {:fn-deprecated false
+            :single-segment-namespace false}}

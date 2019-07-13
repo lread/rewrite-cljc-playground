@@ -2,42 +2,104 @@
 #
 # Check https://circleci.com/docs/2.0/language-clojure/ for more details
 #
-version: 2
-jobs:
-  build:
+version: 2.1
+
+executors:
+  openjdk:
+    parameters:
+      jdk-version:
+        type: enum
+        enum: ["8", "11"]
     docker:
-      - image: circleci/clojure:lein-2.9.1-node-browsers
-
-    working_directory: ~/repo
-
+      - image: circleci/clojure:openjdk-<< parameters.jdk-version>>-lein-2.9.1-node-browsers
     environment:
       LEIN_ROOT: "true"
-      # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
+      CLOJURE_VERSION: "1.10.1.462"
+    working_directory: ~/repo
 
+commands:
+  build:
+    description: "Checkout, build and test"
     steps:
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "project.clj" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: sudo npm install karma-cli -g
-      - run: npm install
-      - run: lein deps
+      # Strange, but circleci does not seem to provide an image with lein AND clojure
+      - run:
+          name: Install clojure
+          command: |
+            curl -O https://download.clojure.org/install/linux-install-${CLOJURE_VERSION}.sh
+            chmod +x linux-install-${CLOJURE_VERSION}.sh
+            sudo ./linux-install-${CLOJURE_VERSION}.sh
+            clojure -e "*clojure-version*"
+
+      - run:
+          name: Install karma command line
+          command: sudo npm install karma-cli -g
+
+      - run:
+          name: Download node dependencies
+          command: npm install
+
+      - run:
+          name: Download clojure dependencies
+          command: lein deps
 
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "project.clj" }}
 
-      - run: lein doo chrome-headless test once
+      - run:
+          name: Initialize clj-kondo to lint against dependencies
+          command: |
+            set +e
+            clojure -A:clj-kondo -m clj-kondo.main --lint $(clojure -Spath) --cache
+            exit_code=$?
+            if [ ${exit_code} -ne 0 ] && [ ${exit_code} -ne 2 ] && [ ${exit_code} -ne 3 ]; then
+              echo "clj-kondo exited with unexpected exit code: ${exit_code}"
+              exit ${exit_code}
+            fi
+
+      - run:
+          name: Run tests
+          command: lein test-all
 
       - store_test_results:
           path: target/out/test-results
 
       - store_artifacts:
           path: target/out/test-results
+
+jobs:
+  openjdk11:
+    executor:
+      name: openjdk
+      jdk-version: "11"
+    steps: [build]
+
+  openjdk8:
+    executor:
+      name: openjdk
+      jdk-version: "8"
+    steps: [build]
+
+workflows:
+  test-matrix:
+    jobs:
+      - openjdk11:
+          filters:
+            branches:
+              only:
+                - /cljc-spike.*/
+      - openjdk8:
+          filters:
+            branches:
+              only:
+                - /cljc-spike.*/

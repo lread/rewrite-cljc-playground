@@ -1,0 +1,52 @@
+= Developer Guide
+:toc:
+
+== Setup
+After checking out this project from github,
+
+1. install JavaScript libraries and tools required by https://github.com/bensu/doo[doo]:
++
+----
+sudo npm install karma-cli -g
+npm install
+----
+2. initialize cache for clj-kondo so it can lint against your dependencies
++
+----
+clojure -A:clj-kondo -m clj-kondo.main --lint $(clojure -Spath) --cache
+----
+
+== Testing During Development
+Your personal preference will likely be different, but during maintenance and refactoring, I found running tests continuously for Clojure and ClojureScript helpful.
+
+=== Clojure
+For Clojure, I open a shell terminal window and run:
+
+----
+lein clj-auto-test
+----
+
+This launches https://github.com/lambdaisland/kaocha[kaocha] in watch mode.
+
+=== ClojureScript
+For ClojureScript, I jack in a ClojureScript REPL from  http://spacemacs.org/[spacemacs] that has https://github.com/bhauman/figwheel-main[figwheel main] test support.
+
+I found placing the following `.dir-locals.el` makes the jack-in smooth and easy:
+
+..dir-locals.el
+[source,lisp]
+----
+((nil . ((cider-lein-parameters . "with-profile dev,fig-test repl :headless :host localhost")
+         (cider-default-cljs-repl . figwheel-main)
+         (cider-figwheel-main-default-options . ":fig"))))
+----
+
+After the REPL is initialized navigate to http://localhost:9500/figwheel-extra-main/auto-testing to view auto-updating test results.
+
+
+== Testing Before a Push
+Before pushing, you likely want to mimic what we do up on https://circleci.com/[circleci].
+
+----
+lein test-all
+----

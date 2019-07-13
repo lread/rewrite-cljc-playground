@@ -1,115 +1,52 @@
-## rewrite-cljs
+<img src="doc/rewrite-cljc-logo.png" width=234 height=60 alt="rewrite-cljc">
 
-This library is a ClojureScript port of [rewrite-clj](https://github.com/xsc/rewrite-clj).
-It provides features to traverse and rewrite Clojure/ClojureScript/EDN documents in a whitespace and comment-aware manner replicating
-the behavior of its Clojure counterpart as closely as possible.
+A library that reads and writes Clojure, ClojureScript and [EDN](https://github.com/edn-format/edn) from Clojure and ClojureScript in a whitespace and comment preserving way.
 
-> :wave: Want to chat? Say hi on [Clojurians Slack](http://clojurians.net/) in [#rewrite-clj](https://clojurians.slack.com/messages/CHB5Q2XUJ).
+>
+> WARNING: Very much a work in progress.
+>
 
-Created by @rundis in 2015, rewrite-cljs was originally used for Clojure/ClojureScript refactoring support in [Light Table](https://github.com/LightTable/LightTable). In January of 2019, @rundis graciously transferred rewrite-cljs to clj-commons.
+## Status
 
-rewrite-cljs includes:
-- An EDN parser
-- An EDN aware zipper (using clojure.zip for ClojureScript)
-- A customized cljs.reader (based on [clojurescript-in-clojurescript](https://github.com/kanaka/clojurescript/blob/cljs_in_cljs/src/cljs/cljs/reader.cljs) that mimics more of clojure.tools.reader
+TODO: badges here... circleci, cljdoc, clojars
 
-[![CircleCI](https://circleci.com/gh/clj-commons/rewrite-cljs.svg?style=svg)](https://circleci.com/gh/clj-commons/rewrite-cljs)
-[![cljdoc badge](https://cljdoc.org/badge/rewrite-cljs)](https://cljdoc.org/d/rewrite-cljs)
-[![Clojars Project](https://img.shields.io/clojars/v/rewrite-cljs.svg)](https://clojars.org/rewrite-cljs)
+rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 
-## Quick start
-Here's a little teaser on the sort of things you can do with the zipper features.
+* `major` increments when the API has been broken - something, as a rule, we'd like to avoid.
+* `minor` increments to convey significant new features have been added.
+* `patch` indicates bug fixes - it is the number of commits since `major`.`minor`.
+* `test-qualifier` is absent for stable releases. Can be `alpha`, `beta`, `rc1`, etc.
 
-```clojure
-(ns rewrite-clj.zip-test
-  (:require-macros [cemerick.cljs.test :refer (is deftest )])
-  (:require [cemerick.cljs.test :as t]
-            [rewrite-clj.zip :as z]
-            [rewrite-clj.node :as n]))
+## Need help?
 
-(deftest manipulate-sexpr
-  (let [sexpr "
- ^{:dynamic true} (+ 1 1
-   (+ 2 2)
-   (reduce + [1 3 4]))"
-        expected "
- ^{:dynamic true} (+ 1 1
-   (+ 2 2)
-   (reduce + [6 7 [1 2]]))"]
-    (is (= expected (-> sexpr
-                        z/of-string
-                        (z/find-tag-by-pos {:row 4 :col 19} :vector)
-                        (z/replace [5 6 7])
-                        (z/append-child [1 2])
-                        z/down
-                        z/remove
-                        z/root-string)))))
-```
+:wave: Want to chat? Say hi on [Clojurians Slack](http://clojurians.net/) in [#rewrite-clj](https://clojurians.slack.com/messages/CHB5Q2XUJ).
 
-## Limitations and ommissions
+## Docs
 
-- rewrite-cljs has fallen quite far behind rewrite-clj - with some love from the community, we can bring it up to date.
-- There is no support for parsing files (duh)
-- cljs.extended.reader which is used for reading edn/clojure/clojurescript, has lot of limitations. Please don't be surprised
-when encountering errors during reading of perhaps legal but hopefully infrequently used language constructs.
-- Some features in rewrite-clj are heavily based on macros, these features have been omitted for now
-  - Nice printing of nodes - Not implemented
-  - [zip subedit support](https://github.com/xsc/rewrite-clj/blob/master/src/rewrite_clj/zip/subedit.clj) is not implemented (YET!)
-- The reader captures positional metadata {:row :col :end-row :end-col} for all nodes. As long as you are only traversing the nodes you should be fine using the meta data and functions that depend on them (example zip/find-last-by-pos). However if you perform any form of rewriting the meta-data can't be trusted any longer. Not sure how to address that tbh. Pull requests are more than welcome!
+TODO: Point to docs hosted on cljdoc - once we publish.
 
-## Rationale
-Why a separate project? Why not incorporate ClojureScript support directly into rewrite-clj?
+## People
 
-This might have not been terribly viable when this project was first created, but certainly is an option to consider today.
+### Current maintainers
 
-## Licenses
+lread
 
-### License for rewrite-cljs
-```
-The MIT License (MIT)
+### Contributors
 
-Copyright (c) 2015 Magnus Rundberget
+* borkdude
+* sogaiu
+* TODO: add in all people who committed for rewrite-clj and rewrite-cljs
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+### Founders
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+* xsc - original author of rewrite-clj
+* rundis - original author of rewrite-cljs
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+## Licences
 
-### License for rewrite-clj
-```
-The MIT License (MIT)
+We honor the original licenses from [rewrite-clj](LICENSE-rewrite-clj) and [rewrite-cljs](LICENSE-rewrite-cljs).
 
-Copyright (c) 2013-2015 Yannick Scherer
+Some code has been adapted from:
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+* [potemkin import-vars and defprotocol+](https://github.com/ztellman/potemkin#license)
+* [clojure zip](https://github.com/clojure/clojure/blob/master/readme.txt)
