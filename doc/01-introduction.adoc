@@ -44,7 +44,7 @@ user=> form
 
 TIP: Depending on your needs, you can opt to skip the parser api and instead use zip api `of-string` or `of-file`.
 
-See link:{cljdoc-api-url}/rewrite-clj.node[parser API docs].
+See link:{cljdoc-api-url}/rewrite-clj.parse[parser API docs].
 
 === Node API
 Inspect and analyse parsed nodes.
@@ -81,7 +81,7 @@ user=> (n/meta-node  // <4>
 <3> create a node from nearly any value using `coerce`
 <4> nodes can be created by hand
 
-See link:{cljdoc-api-url}/rewrite-clj.node[t node API docs].
+See link:{cljdoc-api-url}/rewrite-clj.node[node API docs].
 
 === Zip API
 Traverse and modify Clojure/ClojureScript/EDN.
