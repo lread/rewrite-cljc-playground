@@ -1,5 +1,8 @@
 = Introduction
+:cljdoc-api-url: https://clojdoc.org/d/clj-commons/rewrite-cljc/CURRENT/api
+:toc:
 
+== Introduction
 rewrite-cljc is a library that reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] from Clojure and ClojureScript in a whitespace and comment preserving way.
 
 == History
@@ -7,7 +10,7 @@ rewrite-cljc is a library that reads and writes Clojure, ClojureScript and https
 
 @rundis created rewrite-cljs in 2015 to match the features of rewrite-clj for ClojureScript developers. It was originally used for refactoring support in https://github.com/LightTable/LightTable[Light Table]. In January of 2019, @rundis graciously https://github.com/clj-commons/rewrite-cljs[transferred rewrite-cljs to clj-commons].
 
-Seeing an opportunity to give back to the Clojure community, in 2019 @lread, with guidance and help from many friendly Clojurians, created rewrite-cljc under clj-commons. The goal is to provide a thoughtfully maintained feature-complete library that can be used from either Clojure or ClojureScript. While the merge was not trivial the real hard work over the years was done under the leadership of @xsc and @rundis (thanks guys!). Read link:merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs] for the details.
+Seeing an opportunity to give back to the Clojure community, in 2019 @lread, with guidance and help from many friendly Clojurians, created rewrite-cljc under clj-commons. The goal is to provide a thoughtfully maintained feature-complete library that can be used from either Clojure or ClojureScript. While the merge was not trivial the real hard work over the years was done under the leadership of @xsc and @rundis (thanks guys!). Read link:merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs] for details on the merge.
 
 == Usage
 rewrite-cljc is intended to be a drop-in replacement for rewrite-clj or rewrite-cljs. There are 4 public apis:
@@ -39,10 +42,12 @@ user=> form
 
 TIP: Depending on your needs, you can opt to skip the parser api and instead use zip api `of-string` or `of-file`.
 
+See link:{cljdoc-api-url}/rewrite-clj.parser[current parser API docs].
+
 === Node API
 Inspect and analyse parsed nodes.
 
-Continueing form the form we parsed above:
+Continueing from the form we parsed above:
 
 .REPL session continued
 [source, clojure]
@@ -74,6 +79,7 @@ user=> (n/meta-node  // <4>
 <3> create a node from nearly any value using `coerce`
 <4> nodes can be created by hand
 
+See link:{cljdoc-api-url}/rewrite-clj.node[current node API docs].
 
 === Zip API
 Traverse and modify Clojure/ClojureScript/EDN.
@@ -128,7 +134,10 @@ Use rewrite.zip/sexpr with care:
 * Not everything can be converted into an s-expression.
 * Be mindful of language differences between Clojure and ClojureScript.
 ====
-==== Sweet Code Traversal
+
+See link:{cljdoc-api-url}/rewrite-clj.zip[current zip API docs].
+
+==== Sweet Code Traversal with the Zip API
 
 rewrite-clj.zip includes find operations to navigate to locations of interest. Let's assume you want to modify the following `project.clj` by replacing the `:description` placeholder text with something more meaningful:
 
@@ -169,7 +178,7 @@ nil
 <3> navigate to the description text by searching right for `:description` and then moving one node to the right. Remember that while whitespace is preserved it is automatically skipped during navigation.
 <4> replace the description, zip up and print the result.
 
-==== Handling Clojure Data Structures
+==== Handling Clojure Data Structures with the Zip API
 
 The zip api provides familiar ways to work with Clojure data structures. It offers functions that correspond to the standard seq functions, for example:
 
@@ -192,11 +201,11 @@ user=> (->> data (z/map #(z/edit % + 4)) z/->root-string)
 "[5\n6\n7]"
 ----
 
-=== Tracking Position
+==== Tracking Position with the Zip API
 TODO: an example
 
 
-== Paredit API
-Structured editing.
+=== Paredit API
+Structured editing was introduce by rewrite-cljs.
 
-TODO: describe and give examples.
+See link:{cljdoc-api-url}/rewrite-clj.paredit[current paredit API docs].
