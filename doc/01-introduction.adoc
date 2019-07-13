@@ -1,5 +1,5 @@
 = Introduction
-:cljdoc-api-url: /d/clj-commons/rewrite-cljc/CURRENT/api
+:cljdoc-api-url: http://localhost:8000/d/clj-commons/rewrite-cljc/CURRENT/api
 :toc:
 
 == Introduction
@@ -42,7 +42,7 @@ user=> form
 
 TIP: Depending on your needs, you can opt to skip the parser api and instead use zip api `of-string` or `of-file`.
 
-See link:/d/lread/rewrite-cljs-playground/CURRENT/api/rewrite-clj.node[current parser API docs].
+See link:../d/clj-commons/rewrite-cljc/CURRENT/api/rewrite-clj.node[parser API docs].
 
 === Node API
 Inspect and analyse parsed nodes.
@@ -79,7 +79,7 @@ user=> (n/meta-node  // <4>
 <3> create a node from nearly any value using `coerce`
 <4> nodes can be created by hand
 
-See link:{cljdoc-api-url}/rewrite-clj.node[current node API docs].
+See link:{cljdoc-api-url}/rewrite-clj.node[t node API docs].
 
 === Zip API
 Traverse and modify Clojure/ClojureScript/EDN.
@@ -135,7 +135,7 @@ Use rewrite.zip/sexpr with care:
 * Be mindful of language differences between Clojure and ClojureScript.
 ====
 
-See link:{cljdoc-api-url}/rewrite-clj.zip[current zip API docs].
+See link:{cljdoc-api-url}/rewrite-clj.zip[zip API docs].
 
 ==== Sweet Code Traversal with the Zip API
 
