@@ -1,4 +1,4 @@
-(defproject rewrite-cljs "0.4.5-SNAPSHOT"
+(defproject lread/rewrite-cljs-playground "0.4.5-SNAPSHOT"
   :description "Reads and write Clojure, ClojureScript and EDN from Clojure and ClojureScript in a whitespace and comment preserving way."
   ;; TODO set to correct URL
   :url"https://github.com/lread/rewrite-cljs-playground"
