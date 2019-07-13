@@ -42,7 +42,7 @@ user=> form
 
 TIP: Depending on your needs, you can opt to skip the parser api and instead use zip api `of-string` or `of-file`.
 
-See link:{cljdoc-api-url}/rewrite-clj.parser[current parser API docs].
+See link:/d/lread/rewrite-cljs-playground/CURRENT/api/rewrite-clj.node[current parser API docs].
 
 === Node API
 Inspect and analyse parsed nodes.
