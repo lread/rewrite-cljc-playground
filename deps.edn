@@ -16,4 +16,4 @@
                       :main-opts ["-m" "depot.outdated.main"]}
            ;;TODO: move to official version on next release
            :clj-kondo {:extra-deps {clj-kondo {:git/url "https://github.com/borkdude/clj-kondo.git"
-                                               :sha "c795c4471b9e1ae495ec0bdc9faf9009c679eec0"}}}}}
+                                               :sha "1ba464a5687607bcdca9fdf7d91bdd62c72bc34d"}}}}}
