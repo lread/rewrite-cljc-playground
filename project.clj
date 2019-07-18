@@ -34,16 +34,7 @@
                    :exclusions [org.clojure/clojure]
                    :plugins [[lein-cljsbuild "1.1.7"]]
                    :cljsbuild {:builds
-                               [{:id "fail-on-warning"
-                                 :source-paths ["test"]
-                                 :warning-handlers [rewrite-clj.warning-handler/suppressor]
-                                 :compiler {:output-dir "target/cljsbuild/fail-test/out"
-                                            :output-to "target/cljsbuild/fail-test/test.js"
-                                            :main rewrite-clj.doo-test-runner
-                                            :source-map true
-                                            :optimizations :none
-                                            :pretty-print true}}
-                                {:id "test"
+                               [{:id "test"
                                  :source-paths ["test"]
                                  :compiler {:output-dir "target/cljsbuild/test/out"
                                             :output-to "target/cljsbuild/test/test.js"
@@ -102,10 +93,6 @@
             ^{:doc "internal base to setup for chrome headless"}
             ["with-profile" "doo-test,dev" "doo" "chrome-headless"]
 
-            "cljs-fail-on-warning"
-            ^{:doc "compile cljs source and fail on any warning - ignoring fn-deprecations we are ok with"}
-            ["cljsbuild" "once" "fail-on-warning"]
-
             "_cljs-node"
             ^{:doc "internal base to setup for nodejs"}
             ["with-profile" "doo-test,dev" "doo" "node"]
@@ -120,7 +107,7 @@
 
             "cljs-test-envs"
             ^{:doc "run all cljs tests for all supported environments"}
-            ["do" "cljs-fail-on-warning," "cljs-test-chrome-headless," "cljs-test-node"]
+            ["do" "cljs-test-chrome-headless," "cljs-test-node"]
 
             "test-all"
             ^{:doc "run all clj and cljs tests for all supported environments"}

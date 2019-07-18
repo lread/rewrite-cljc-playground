@@ -14,17 +14,10 @@
   :unused-namespace
   {:exclude [clojure.test.check]}
   :deprecated-var
-  {:exclude {rewrite-clj.zip/->root-string
-             [rewrite-clj.regression-test]
-             rewrite-clj.zip/->string
-             [rewrite-clj.regression-test]
-             rewrite-clj.zip.whitespace/append-space
-             [rewrite-clj.zip.whitespace-test]
-             rewrite-clj.zip.whitespace/prepend-space
-             [rewrite-clj.zip.whitespace-test]
-             rewrite-clj.zip.whitespace/append-newline
-             [rewrite-clj.zip.whitespace-test]
-             rewrite-clj.zip.whitespace/prepend-newline
-             [rewrite-clj.zip.whitespace-test]
-             rewrite-clj.node/value
-             [rewrite-clj.zip.base/value]}}}}
+  {:exclude {rewrite-clj.zip/->root-string {:namespaces [rewrite-clj.regression-test]}
+             rewrite-clj.zip/->string {:namespaces [rewrite-clj.regression-test]}
+             rewrite-clj.zip.whitespace/append-space {:namespaces [rewrite-clj.zip.whitespace-test]}
+             rewrite-clj.zip.whitespace/prepend-space {:namespaces [rewrite-clj.zip.whitespace-test]}
+             rewrite-clj.zip.whitespace/append-newline {:namespaces  [rewrite-clj.zip.whitespace-test]}
+             rewrite-clj.zip.whitespace/prepend-newline {:namespaces [rewrite-clj.zip.whitespace-test]}
+             rewrite-clj.node/value {:defs [rewrite-clj.zip.base/value]}}}}}
