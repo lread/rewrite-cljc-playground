@@ -309,7 +309,7 @@ As part of this merge I decided to include full namespaced map support which mea
 1. including a refined version of my rewrite-clj pull request
 2. adding namespaced maps support for ClojureScript
 
-[INFO]
+[NOTE]
 ====
 Refresher on namespaced maps:
 [source, clojure]
