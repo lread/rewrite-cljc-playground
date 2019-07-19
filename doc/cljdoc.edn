@@ -1,6 +1,6 @@
 {:cljdoc.doc/tree
- [["Readme" {:file "README.md"}]
+ [["Readme" {:file "README.adoc"}]
   ["Introduction" {:file "doc/01-introduction.adoc"}]
   ["Developer Guide" {:file "doc/02-developer-guide.adoc"}]
-  ["Merging rewrite-clj and rewrite-cljs" {:file "doc/design/01-merging-rewrite-cj-and-rewrite-cljs.adoc"}]
+  ["Merging rewrite-clj and rewrite-cljs" {:file "doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc"}]
   ["Frequently Asked Questions" {:file "doc/03-faq.adoc"}]]}
