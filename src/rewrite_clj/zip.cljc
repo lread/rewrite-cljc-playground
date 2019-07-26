@@ -145,8 +145,7 @@
   (:refer-clojure :exclude [next find replace remove
                             seq? map? vector? list? set?
                             print map get assoc])
-  (:require [clojure.string :as string]
-            [rewrite-clj.zip.base]
+  (:require [rewrite-clj.zip.base]
             [rewrite-clj.zip.move]
             [rewrite-clj.zip.findz]
             [rewrite-clj.zip.editz]
@@ -156,7 +155,7 @@
             [rewrite-clj.zip.subedit #?@(:cljs [:include-macros true])]
             [rewrite-clj.zip.walk]
             [rewrite-clj.zip.whitespace]
-            [rewrite-clj.custom-zipper.core :as z]
+            [rewrite-clj.custom-zipper.core]
             #?(:clj [rewrite-clj.potemkin.clojure :refer [import-vars]]))
   #?(:cljs (:require-macros [rewrite-clj.zip]
                             [rewrite-clj.potemkin.cljs :refer [import-vars]])))

@@ -1,5 +1,5 @@
 (ns rewrite-clj.transform-test
-  (:require [clojure.test :refer [deftest is testing run-tests]]
+  (:require [clojure.test :refer [deftest is]]
             [rewrite-clj.zip :as z]
             [clojure.string :as string]))
 

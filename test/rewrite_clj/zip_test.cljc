@@ -1,5 +1,5 @@
 (ns rewrite-clj.zip-test
-  (:require [clojure.test :refer [deftest is testing run-tests]]
+  (:require [clojure.test :refer [deftest is]]
             [rewrite-clj.zip :as z]))
 
 ;; TODO: this was only in rewrite-cljs

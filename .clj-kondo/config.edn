@@ -13,6 +13,8 @@
              t-def t-def-doc t-fn t-fn-doc t-macro t-macro-doc mod-t-def mod-t-def-doc mod-t-fn mod-t-fn-doc mod-t-macro mod-t-macro-doc]}
   :unused-namespace
   {:exclude [clojure.test.check]}
+  :unused-referred-var
+  {:exclude {clojure.test.check [quick-check]}}
   :deprecated-var
   {:exclude {rewrite-clj.zip/->root-string {:namespaces [rewrite-clj.regression-test]}
              rewrite-clj.zip/->string {:namespaces [rewrite-clj.regression-test]}

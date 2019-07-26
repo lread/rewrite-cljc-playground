@@ -2,7 +2,7 @@
       :author "Yannick Scherer"}
     rewrite-clj.parser-test
   (:refer-clojure :exclude [read-string])
-  (:require [clojure.test :refer [deftest is are testing run-tests]]
+  (:require [clojure.test :refer [deftest is are]]
             [clojure.tools.reader.edn :refer [read-string]]
             [clojure.tools.reader :refer [*alias-map*]]
             [rewrite-clj.node :as node]

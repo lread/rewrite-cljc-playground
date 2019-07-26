@@ -23,7 +23,7 @@
         [rewrite-clj.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
         [rewrite-clj.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
         [rewrite-clj.node.token :refer [TokenNode token-node]]
-        [rewrite-clj.node.whitespace :refer [WhitespaceNode NewlineNode whitespace-node] :as ws]]))
+        [rewrite-clj.node.whitespace :refer [WhitespaceNode NewlineNode] :as ws]]))
    #?(:clj
       (:import [rewrite_clj.node.comment CommentNode]
                [rewrite_clj.node.forms FormsNode]

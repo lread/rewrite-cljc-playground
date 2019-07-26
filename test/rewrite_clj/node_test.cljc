@@ -1,5 +1,5 @@
 (ns rewrite-clj.node-test
-  (:require [clojure.test :refer [deftest is testing run-tests]]
+  (:require [clojure.test :refer [deftest is testing]]
             [rewrite-clj.node :as n]
             [rewrite-clj.parser :as p]))
 

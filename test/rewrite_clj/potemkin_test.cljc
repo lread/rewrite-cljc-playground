@@ -1,5 +1,5 @@
 (ns rewrite-clj.potemkin-test
-  (:require [clojure.test :refer [deftest is are testing run-tests]]
+  (:require [clojure.test :refer [deftest is are]]
             [rewrite-clj.potemkin-t1 #?@(:cljs [:include-macros true])]
             [rewrite-clj.potemkin-t2 #?@(:cljs [:include-macros true])] )
   #?(:clj (:require [rewrite-clj.potemkin.clojure :refer [import-vars]])

@@ -1,5 +1,5 @@
 (ns rewrite-clj.potemkin.helper-test
-  (:require [clojure.test :refer [deftest is testing run-tests]]
+  (:require [clojure.test :refer [deftest is]]
             [rewrite-clj.potemkin.helper :as helper]))
 
 (deftest t-unravel-syms
