@@ -29,7 +29,7 @@ You can choose to parse one or all https://www.braveclojure.com/do-things/#Forms
 Here we parse a single form from a string:
 
 .REPL session
-[source, clojure]
+[source, clojure-repl]
 ----
 user=> (require '[rewrite-clj.parser :as p])
 nil
@@ -96,7 +96,7 @@ rewrite-clj uses a customized version of the https://clojure.github.io/clojure/c
 ====
 
 .REPL session
-[source, clojure]
+[source, clojure-repl]
 ----
 user=> (require '[rewrite-clj.zip :as z])
 nil
@@ -154,7 +154,7 @@ rewrite-clj.zip includes find operations to navigate to locations of interest. L
 Most find functions accept an optional location movement function. To perform a depth-first search use `rewrite-clj.zip/next`, to search sibling nodes to the right, use `rewrite-clj.zip/right` (the default), to search siblings to left, use `rewrite-clj.zip/left`.
 
 .REPL session
-[source, clojure]
+[source, clojure-repl]
 ----
 user=> (require '[rewrite-clj.zip :as z])
 nil
@@ -185,7 +185,7 @@ nil
 The zip api provides familiar ways to work with Clojure data structures. It offers functions that correspond to the standard seq functions, for example:
 
 .REPL session
-[source, clojure]
+[source, clojure-repl]
 ----
 user=> (require '[rewrite-clj.zip :as z])
 nil
