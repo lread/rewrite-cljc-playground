@@ -93,13 +93,5 @@ jobs:
 workflows:
   test-matrix:
     jobs:
-      - openjdk11:
-          filters:
-            branches:
-              only:
-                - /cljc-spike.*/
-      - openjdk8:
-          filters:
-            branches:
-              only:
-                - /cljc-spike.*/
+      - openjdk11
+      - openjdk8
