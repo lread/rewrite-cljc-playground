@@ -6,6 +6,9 @@
 *** Forgotten insert-space-left insert-space-right insert-newline-left insert-newline-right exposed on zip api
 *** Added zip/position-span
 * Todos
+** TODO investigate
+*** Also a problem for rewrite-cljc? https://github.com/borkdude/clj-kondo/issues/378
+*** Borkdude keyword hack needed? https://github.com/borkdude/clj-kondo/blob/18d97a6c3ca7d5d9eba351aa4291fc828bd2b215/parser/clj_kondo/impl/rewrite_clj/parser/keyword.clj#L14
 ** TODO cleanup coerce record support
    See TODOs in code.
 ** TODO refine cljs namespace alias lookup
