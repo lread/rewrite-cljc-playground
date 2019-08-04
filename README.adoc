@@ -1,3 +1,7 @@
+:notitle:
+:figure-caption!:
+:pimage: image:https://github.com/
+:cimage: .png?size=110[role="related thumb left",width=110]
 ifdef::env-cljdoc[]
 :logo-image: rewrite-cljc-logo.png
 endif::[]
@@ -12,6 +16,7 @@ ifndef::env-github[]
 endif::[]
 
 image:{logo-image}[rewrite-cljc,234,60]
+
 TODO: badges here... circleci, cljdoc, clojars
 
 
@@ -47,25 +52,96 @@ rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 
 == People
 
-=== Current maintainers
-
-* lread
-
 === Contributors
 
-* borkdude
-* sogaiu
-* TODO: add in all people who committed for rewrite-clj and rewrite-cljs
+[cols="3*", stripes=none]
+|====
+
+|{pimage}sogaiu{cimage}
+**@sogaiu** +
+rewrite-cljc +
+encouragement +
+education
+|{pimage}borkdude{cimage}
+**@borkdude** +
+rewrite-cljc +
+encouragement +
+education
+|{pimage}danielcompton{cimage}
+**@danielcompton** +
+rewrite-cljs +
+encouragement
+|{pimage}swannodette{cimage}
+**@swannodette** +
+education
+|{pimage}PEZ{cimage}
+**@PEZ** +
+encouragement +
+rewrite-cljs
+|{pimage}eraserhd{cimage}
+**@eraserhd** +
+rewrite-clj
+|{pimage}arrdem{cimage}
+**@arrdem** +
+rewrite-clj
+|{pimage}stathissideris{cimage}
+**@stathissideris** +
+rewrite-clj
+|{pimage}plexus{cimage}
+**@plexus** +
+rewrite-clj
+|{pimage}jespera{cimage}
+**@jespera** +
+rewrite-clj
+|{pimage}brian-dawn{cimage}
+**@brian-dawn** +
+rewrite-clj
+|{pimage}bbatsov{cimage}
+**@bbatsov** +
+rewrite-clj
+|{pimage}AndreaCrotti{cimage}
+**@AndreaCrotti** +
+rewrite-clj
+
+|{pimage}slipset{cimage}
+**@slipset** +
+rewrite-cljs
+|{pimage}mhuebert{cimage}
+**@mhuebert** +
+rewrite-cljs
+|{pimage}kkinnear{cimage}
+**@kkinnear** +
+rewrite-cljs
+|{pimage}anmonteiro{cimage}
+**@anmonteiro** +
+rewrite-cljs
+|====
 
 === Founders
 
-* xsc - original author of rewrite-clj
-* rundis - original author of rewrite-cljs
+[cols="2*", stripes=none]
+|====
+
+|{pimage}xsc{cimage}
+**@xsc** +
+original author of rewrite-clc
+|{pimage}rundis{cimage}
+**@rundis** +
+original author of rewrite-cljs
+|====
+
+=== Current maintainers
+
+[cols="1*", stripes=none]
+|====
+
+|{pimage}lread{cimage}
+**@lread** +
+grateful explorer
+|====
 
 === Licences
-TODO: add links to rewrite LICENSE files
-
-We honor the original MIT licenses from rewrite-clj and rewrite-cljs.
+We honor the original MIT licenses from link:LICENSE-rewrite-clj[rewrite-clj] and link:LICENSE-rewrite-cljs[rewrite-cljs].
 
 Some code has been adapted from:
 
