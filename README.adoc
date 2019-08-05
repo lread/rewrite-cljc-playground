@@ -126,7 +126,7 @@ encouragement +
 
 |{pimage}xsc{cimage}
 **@xsc** +
-original author of {link-rewrite-clc}
+original author of {link-rewrite-clj}
 |{pimage}rundis{cimage}
 **@rundis** +
 original author of {link-rewrite-cljs}
