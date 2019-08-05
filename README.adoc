@@ -1,24 +1,7 @@
 :notitle:
 :figure-caption!:
-:pre-bio-image: image:https://github.com/
 
-ifdef::env-cljdoc[]
-:post-bio-image: .png?size=110[role="thumb left related",width=110]
-endif::[]
-ifndef::env-cljdoc[]
-:post-bio-image: .png?size=110[role="thumb related",width=110] + \
-
-endif::[]
-
-:link-rewrite-cljs: https://github.com/clj-commons/rewrite-cljs[rewrite-cljs]
-:link-rewrite-clj: https://github.com/xsc/rewrite-clj[rewrite-clj]
-
-:contrib-code-rewrite-cljc: 💻 rewrite-cljc
-:contrib-code-rewrite-cljs: 💻 {link-rewrite-cljs}
-:contrib-code-rewrite-clj: 💻 {link-rewrite-clj}
-:contrib-encouragement: 🌞 encouragement
-:contrib-education: 🎓 education
-
+// TODO: do I still need this?
 ifdef::env-cljdoc[]
 :logo-image: rewrite-cljc-logo.png
 endif::[]
@@ -74,80 +57,82 @@ rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 == People
 
 === Contributors
-
-[cols="{contrib-cols}*<.<", stripes=none, grid=none, frame=none, width=100%]
+// Contributors updated by script, do not edit
+// AUTO-GENERATED:CONTRIBUTORS-START
+[cols="{contrib-cols}*<.<",stripes=none,grid=none,frame=none]
 |====
 
-|{pre-bio-image}sogaiu{post-bio-image}
-**@sogaiu** +
-{contrib-code-rewrite-cljc} +
-{contrib-encouragement} +
-{contrib-education}
-|{pre-bio-image}borkdude{post-bio-image}
-**@borkdude** +
-{contrib-code-rewrite-cljc} +
-{contrib-encouragement} +
-{contrib-education}
-|{pre-bio-image}danielcompton{post-bio-image}
-**@danielcompton** +
-{contrib-code-rewrite-cljs} +
-{contrib-encouragement}
-|{pre-bio-image}swannodette{post-bio-image}
-**@swannodette** +
-{contrib-education}
-|{pre-bio-image}PEZ{post-bio-image}
-**@PEZ** +
-{contrib-code-rewrite-cljs} +
-{contrib-encouragement}
-|{pre-bio-image}eraserhd{post-bio-image}
-**@eraserhd** +
-{contrib-code-rewrite-clj}
-|{pre-bio-image}arrdem{post-bio-image}
-**@arrdem** +
-{contrib-code-rewrite-clj}
-|{pre-bio-image}stathissideris{post-bio-image}
-**@stathissideris** +
-{contrib-code-rewrite-clj}
-|{pre-bio-image}plexus{post-bio-image}
-**@plexus** +
-{contrib-code-rewrite-clj}
-|{pre-bio-image}jespera{post-bio-image}
-**@jespera** +
-{contrib-code-rewrite-clj}
-|{pre-bio-image}brian-dawn{post-bio-image}
-**@brian-dawn** +
-{contrib-code-rewrite-clj}
-|{pre-bio-image}bbatsov{post-bio-image}
-**@bbatsov** +
-{contrib-code-rewrite-clj}
-|{pre-bio-image}AndreaCrotti{post-bio-image}
-**@AndreaCrotti** +
-{contrib-code-rewrite-clj}
-|{pre-bio-image}slipset{post-bio-image}
-**@slipset** +
-{contrib-code-rewrite-cljs}
-|{pre-bio-image}mhuebert{post-bio-image}
-**@mhuebert** +
-{contrib-code-rewrite-cljs}
-|{pre-bio-image}kkinnear{post-bio-image}
-**@kkinnear** +
-{contrib-code-rewrite-cljs}
-|{pre-bio-image}anmonteiro{post-bio-image}
-**@anmonteiro** +
-{contrib-code-rewrite-cljs}
+|image:https://github.com/sogaiu.png?size=110[role="thumb left related",width=110]
+https://github.com/sogaiu[@sogaiu] +
+💻 rewrite-cljc +
+🌞 encouragement +
+🎓 education +
+|image:https://github.com/borkdude.png?size=110[role="thumb left related",width=110]
+https://github.com/borkdude[@borkdude] +
+💻 rewrite-cljc +
+🌞 encouragement +
+🎓 education +
+|image:https://github.com/danielcompton.png?size=110[role="thumb left related",width=110]
+https://github.com/danielcompton[@danielcompton] +
+💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
+🌞 encouragement +
+|image:https://github.com/swannodette.png?size=110[role="thumb left related",width=110]
+https://github.com/swannodette[@swannodette] +
+🎓 education +
+|image:https://github.com/PEZ.png?size=110[role="thumb left related",width=110]
+https://github.com/PEZ[@PEZ] +
+💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
+🌞 encouragement +
+|image:https://github.com/eraserhd.png?size=110[role="thumb left related",width=110]
+https://github.com/eraserhd[@eraserhd] +
+💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
+|image:https://github.com/arrdem.png?size=110[role="thumb left related",width=110]
+https://github.com/arrdem[@arrdem] +
+💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
+|image:https://github.com/stathissideris.png?size=110[role="thumb left related",width=110]
+https://github.com/stathissideris[@stathissideris] +
+💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
+|image:https://github.com/plexus.png?size=110[role="thumb left related",width=110]
+https://github.com/plexus[@plexus] +
+💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
+|image:https://github.com/jespera.png?size=110[role="thumb left related",width=110]
+https://github.com/jespera[@jespera] +
+💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
+|image:https://github.com/brian-dawn.png?size=110[role="thumb left related",width=110]
+https://github.com/brian-dawn[@brian-dawn] +
+💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
+|image:https://github.com/bbatsov.png?size=110[role="thumb left related",width=110]
+https://github.com/bbatsov[@bbatsov] +
+💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
+|image:https://github.com/AndreaCrotti.png?size=110[role="thumb left related",width=110]
+https://github.com/AndreaCrotti[@AndreaCrotti] +
+💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
+|image:https://github.com/slipset.png?size=110[role="thumb left related",width=110]
+https://github.com/slipset[@slipset] +
+💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
+|image:https://github.com/mhuebert.png?size=110[role="thumb left related",width=110]
+https://github.com/mhuebert[@mhuebert] +
+💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
+|image:https://github.com/kkinnear.png?size=110[role="thumb left related",width=110]
+https://github.com/kkinnear[@kkinnear] +
+💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
+|image:https://github.com/anmonteiro.png?size=110[role="thumb left related",width=110]
+https://github.com/anmonteiro[@anmonteiro] +
+💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
 |====
+// AUTO-GENERATED:CONTRIBUTORS-END
 
 === Founders
 
-[cols="2*", stripes=none, grid=none, frame=none]
+[cols="2*<.<",stripes=none,grid=none,frame=none]
 |====
 
-|{pre-bio-image}xsc{post-bio-image}
-**@xsc** +
-original author of {link-rewrite-clj}
-|{pre-bio-image}rundis{post-bio-image}
-**@rundis** +
-original author of {link-rewrite-cljs}
+|image:https://github.com/xsc.png?size=110[role="thumb left related",width=110]
+https://github.com/xsc[@xsc] +
+💻 original author of https://github.com/xsc/rewrite-clj[rewrite-clj] +
+|image:https://github.com/rundis.png?size=110[role="thumb left related",width=110]
+https://github.com/rundis[@rundis] +
+💻 original author of https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
 |====
 
 === Current maintainers
@@ -155,9 +140,10 @@ original author of {link-rewrite-cljs}
 [cols="1*", stripes=none, grid=none, frame=none]
 |====
 
-|{pre-bio-image}lread{post-bio-image}
-**@lread** +
+|image:https://github.com/lread.png?size=110[role="thumb left related",width=110]
+https://github.com/lread[@lread] +
 grateful explorer
+
 |====
 
 === Licences

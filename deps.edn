@@ -12,6 +12,8 @@
            :dev {:extra-deps {org.clojure/test.check {:mvn/version "0.9.0"}
                               doo {:mvn/version "0.1.11"}}
                  :extra-paths ["test"]}
+           :update-readme {:extra-paths ["script"]
+                           :main-opts ["-m" "update-readme"]}
            :outdated {:extra-deps {olical/depot {:mvn/version "1.8.4"}}
                       :main-opts ["-m" "depot.outdated.main"]}
            :clj-kondo {:extra-deps {clj-kondo {:mvn/version "2019.07.31-alpha"}}}}}
