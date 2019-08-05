@@ -2,6 +2,8 @@
 :figure-caption!:
 :pimage: image:https://github.com/
 :cimage: .png?size=110[role="related thumb left",width=110]
+:link-rewrite-cljs: https://github.com/clj-commons/rewrite-cljs[rewrite-cljs]
+:link-rewrite-clj: https://github.com/xsc/rewrite-clj[rewrite-clj]
 ifdef::env-cljdoc[]
 :logo-image: rewrite-cljc-logo.png
 endif::[]
@@ -54,7 +56,7 @@ rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 
 === Contributors
 
-[cols="3*", stripes=none]
+[cols="3*", stripes=none, grid=none, frame=none]
 |====
 
 |{pimage}sogaiu{cimage}
@@ -69,7 +71,7 @@ encouragement +
 education
 |{pimage}danielcompton{cimage}
 **@danielcompton** +
-rewrite-cljs +
+{link-rewrite-cljs} +
 encouragement
 |{pimage}swannodette{cimage}
 **@swannodette** +
@@ -77,62 +79,62 @@ education
 |{pimage}PEZ{cimage}
 **@PEZ** +
 encouragement +
-rewrite-cljs
+{link-rewrite-cljs}
 |{pimage}eraserhd{cimage}
 **@eraserhd** +
-rewrite-clj
+{link-rewrite-clj}
 |{pimage}arrdem{cimage}
 **@arrdem** +
-rewrite-clj
+{link-rewrite-clj}
 |{pimage}stathissideris{cimage}
 **@stathissideris** +
-rewrite-clj
+{link-rewrite-clj}
 |{pimage}plexus{cimage}
 **@plexus** +
-rewrite-clj
+{link-rewrite-clj}
 |{pimage}jespera{cimage}
 **@jespera** +
-rewrite-clj
+{link-rewrite-clj}
 |{pimage}brian-dawn{cimage}
 **@brian-dawn** +
-rewrite-clj
+{link-rewrite-clj}
 |{pimage}bbatsov{cimage}
 **@bbatsov** +
-rewrite-clj
+{link-rewrite-clj}
 |{pimage}AndreaCrotti{cimage}
 **@AndreaCrotti** +
-rewrite-clj
+{link-rewrite-clj}
 
 |{pimage}slipset{cimage}
 **@slipset** +
-rewrite-cljs
+{link-rewrite-cljs}
 |{pimage}mhuebert{cimage}
 **@mhuebert** +
-rewrite-cljs
+{link-rewrite-cljs}
 |{pimage}kkinnear{cimage}
 **@kkinnear** +
-rewrite-cljs
+{link-rewrite-cljs}
 |{pimage}anmonteiro{cimage}
 **@anmonteiro** +
-rewrite-cljs
+{link-rewrite-cljs}
 |====
 
 === Founders
 
-[cols="2*", stripes=none]
+[cols="2*", stripes=none, grid=none, frame=none]
 |====
 
 |{pimage}xsc{cimage}
 **@xsc** +
-original author of rewrite-clc
+original author of {link-rewrite-clc}
 |{pimage}rundis{cimage}
 **@rundis** +
-original author of rewrite-cljs
+original author of {link-rewrite-cljs}
 |====
 
 === Current maintainers
 
-[cols="1*", stripes=none]
+[cols="1*", stripes=none, grid=none, frame=none]
 |====
 
 |{pimage}lread{cimage}
