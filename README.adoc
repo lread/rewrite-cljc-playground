@@ -27,10 +27,12 @@ ifndef::env-cljdoc[]
 endif::[]
 
 ifdef::env-github[]
+:contrib-cols: 5
 :warning-caption: :warning:
 endif::[]
 
 ifndef::env-github[]
+:contrib-cols: 3
 :warning-caption: ⚠️
 endif::[]
 
@@ -73,7 +75,7 @@ rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 
 === Contributors
 
-[cols="3*<.<", stripes=none, grid=none, frame=none, width=100%]
+[cols="{contrib-cols}*<.<", stripes=none, grid=none, frame=none, width=100%]
 |====
 
 |{pre-bio-image}sogaiu{post-bio-image}
