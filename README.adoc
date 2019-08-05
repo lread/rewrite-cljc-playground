@@ -56,7 +56,7 @@ rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 
 === Contributors
 
-[cols="3*", stripes=none, grid=none, frame=none]
+[cols="3*", stripes=none, grid=none, frame=none, width=100%]
 |====
 
 |{pimage}sogaiu{cimage}
