@@ -1,18 +1,35 @@
 :notitle:
 :figure-caption!:
-:pimage: image:https://github.com/
-:cimage: .png?size=110[role="thumb left related",width=110]
+:pre-bio-image: image:https://github.com/
+
+ifdef::env-cljdoc[]
+:post-bio-image: .png?size=110[role="thumb left related",width=110]
+endif::[]
+ifndef::env-cljdoc[]
+:post-bio-image: .png?size=110[role="thumb related",width=110] + \
+
+endif::[]
+
 :link-rewrite-cljs: https://github.com/clj-commons/rewrite-cljs[rewrite-cljs]
 :link-rewrite-clj: https://github.com/xsc/rewrite-clj[rewrite-clj]
+
+:contrib-code-rewrite-cljc: 💻 rewrite-cljc
+:contrib-code-rewrite-cljs: 💻 {link-rewrite-cljs}
+:contrib-code-rewrite-clj: 💻 {link-rewrite-clj}
+:contrib-encouragement: 🌞 encouragement
+:contrib-education: 🎓 education
+
 ifdef::env-cljdoc[]
 :logo-image: rewrite-cljc-logo.png
 endif::[]
 ifndef::env-cljdoc[]
 :logo-image: doc/rewrite-cljc-logo.png
 endif::[]
+
 ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
+
 ifndef::env-github[]
 :warning-caption: ⚠️
 endif::[]
@@ -59,64 +76,63 @@ rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 [cols="3*<.<", stripes=none, grid=none, frame=none, width=100%]
 |====
 
-|{pimage}sogaiu{cimage}
+|{pre-bio-image}sogaiu{post-bio-image}
 **@sogaiu** +
-rewrite-cljc +
-encouragement +
-education
-|{pimage}borkdude{cimage}
+{contrib-code-rewrite-cljc} +
+{contrib-encouragement} +
+{contrib-education}
+|{pre-bio-image}borkdude{post-bio-image}
 **@borkdude** +
-rewrite-cljc +
-encouragement +
-education
-|{pimage}danielcompton{cimage}
+{contrib-code-rewrite-cljc} +
+{contrib-encouragement} +
+{contrib-education}
+|{pre-bio-image}danielcompton{post-bio-image}
 **@danielcompton** +
-{link-rewrite-cljs} +
-encouragement
-|{pimage}swannodette{cimage}
+{contrib-code-rewrite-cljs} +
+{contrib-encouragement}
+|{pre-bio-image}swannodette{post-bio-image}
 **@swannodette** +
-education
-|{pimage}PEZ{cimage}
+{contrib-education}
+|{pre-bio-image}PEZ{post-bio-image}
 **@PEZ** +
-encouragement +
-{link-rewrite-cljs}
-|{pimage}eraserhd{cimage}
+{contrib-code-rewrite-cljs} +
+{contrib-encouragement}
+|{pre-bio-image}eraserhd{post-bio-image}
 **@eraserhd** +
-{link-rewrite-clj}
-|{pimage}arrdem{cimage}
+{contrib-code-rewrite-clj}
+|{pre-bio-image}arrdem{post-bio-image}
 **@arrdem** +
-{link-rewrite-clj}
-|{pimage}stathissideris{cimage}
+{contrib-code-rewrite-clj}
+|{pre-bio-image}stathissideris{post-bio-image}
 **@stathissideris** +
-{link-rewrite-clj}
-|{pimage}plexus{cimage}
+{contrib-code-rewrite-clj}
+|{pre-bio-image}plexus{post-bio-image}
 **@plexus** +
-{link-rewrite-clj}
-|{pimage}jespera{cimage}
+{contrib-code-rewrite-clj}
+|{pre-bio-image}jespera{post-bio-image}
 **@jespera** +
-{link-rewrite-clj}
-|{pimage}brian-dawn{cimage}
+{contrib-code-rewrite-clj}
+|{pre-bio-image}brian-dawn{post-bio-image}
 **@brian-dawn** +
-{link-rewrite-clj}
-|{pimage}bbatsov{cimage}
+{contrib-code-rewrite-clj}
+|{pre-bio-image}bbatsov{post-bio-image}
 **@bbatsov** +
-{link-rewrite-clj}
-|{pimage}AndreaCrotti{cimage}
+{contrib-code-rewrite-clj}
+|{pre-bio-image}AndreaCrotti{post-bio-image}
 **@AndreaCrotti** +
-{link-rewrite-clj}
-
-|{pimage}slipset{cimage}
+{contrib-code-rewrite-clj}
+|{pre-bio-image}slipset{post-bio-image}
 **@slipset** +
-{link-rewrite-cljs}
-|{pimage}mhuebert{cimage}
+{contrib-code-rewrite-cljs}
+|{pre-bio-image}mhuebert{post-bio-image}
 **@mhuebert** +
-{link-rewrite-cljs}
-|{pimage}kkinnear{cimage}
+{contrib-code-rewrite-cljs}
+|{pre-bio-image}kkinnear{post-bio-image}
 **@kkinnear** +
-{link-rewrite-cljs}
-|{pimage}anmonteiro{cimage}
+{contrib-code-rewrite-cljs}
+|{pre-bio-image}anmonteiro{post-bio-image}
 **@anmonteiro** +
-{link-rewrite-cljs}
+{contrib-code-rewrite-cljs}
 |====
 
 === Founders
@@ -124,10 +140,10 @@ encouragement +
 [cols="2*", stripes=none, grid=none, frame=none]
 |====
 
-|{pimage}xsc{cimage}
+|{pre-bio-image}xsc{post-bio-image}
 **@xsc** +
 original author of {link-rewrite-clj}
-|{pimage}rundis{cimage}
+|{pre-bio-image}rundis{post-bio-image}
 **@rundis** +
 original author of {link-rewrite-cljs}
 |====
@@ -137,7 +153,7 @@ original author of {link-rewrite-cljs}
 [cols="1*", stripes=none, grid=none, frame=none]
 |====
 
-|{pimage}lread{cimage}
+|{pre-bio-image}lread{post-bio-image}
 **@lread** +
 grateful explorer
 |====
