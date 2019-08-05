@@ -1,7 +1,7 @@
 :notitle:
 :figure-caption!:
 :pimage: image:https://github.com/
-:cimage: .png?size=110[role="related thumb left",width=110]
+:cimage: .png?size=110[role="thumb left related",width=110]
 :link-rewrite-cljs: https://github.com/clj-commons/rewrite-cljs[rewrite-cljs]
 :link-rewrite-clj: https://github.com/xsc/rewrite-clj[rewrite-clj]
 ifdef::env-cljdoc[]
@@ -56,7 +56,7 @@ rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 
 === Contributors
 
-[cols="3*", stripes=none, grid=none, frame=none, width=100%]
+[cols="3*<.<", stripes=none, grid=none, frame=none, width=100%]
 |====
 
 |{pimage}sogaiu{cimage}
