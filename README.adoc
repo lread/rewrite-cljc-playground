@@ -10,7 +10,7 @@ ifndef::env-cljdoc[]
 endif::[]
 
 ifdef::env-github[]
-:contrib-cols: 5
+:contrib-cols: 4
 :warning-caption: :warning:
 endif::[]
 
