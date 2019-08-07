@@ -1,46 +1,151 @@
 (ns update-readme
+  "This is a bit of an experiment using clojure instead of bash."
   (:require [clojure.string :as string]
-            [clojure.edn :as edn]))
+            [clojure.edn :as edn]
+            [hiccup.page :refer [html5 include-css]]
+            [clojure.java.shell :as shell]
+            [clojure.java.io :as io])
+  (:import (java.nio.file Files Paths CopyOption StandardCopyOption)
+           (java.nio.file.attribute FileAttribute)
+           (org.apache.commons.io FileUtils)))
+
 
 (def contributions-lookup
   {:code-rewrite-cljc "💻 rewrite-cljc"
-   :code-rewrite-cljs "💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs]"
-   :code-rewrite-clj "💻 https://github.com/xsc/rewrite-clj[rewrite-clj]"
+   :code-rewrite-cljs "💻 rewrite-cljs"
+   :code-rewrite-clj "💻 rewrite-clj"
    :encouragement "🌞 encouragement"
-   :education "🎓 education"})
+   :education     "🎓 enlightenment"
+   :original-author "👑 original author"})
 
 
-(defn- generate-asciidoc-rows [contributors]
-  (for [{:keys [github-id contributions]} contributors]
-    (str "|image:https://github.com/" github-id ".png?size=110[role=\"thumb left related\",width=110]\n"
-         "https://github.com/" github-id "[@" github-id "] +\n"
-         (apply str (map #(if-let [c (% contributions-lookup)]
-                            (str  c " +\n")
-                            (println "WARN: specified contribution key for" github-id "does not exist" %))
-                         contributions)))))
+(defn- generate-asciidoc [contributors {:keys [images-dir image-width]}]
+  (str ":imagesdir: " images-dir "\n"
+       "[.float-group]\n"
+       "--\n"
+       (apply str (for [{:keys [github-id]} contributors]
+                    (str "image:" github-id ".png[" github-id ",role=\"left\",width=" image-width "]\n")))
+       "--\n"))
 
-(defn- generate-asciidoc-table [contributors]
-  (str "[cols=\"{contrib-cols}*<.<\",stripes=none,grid=none,frame=none]\n"
-       "|====\n"
-       "\n"
-       (apply str (generate-asciidoc-rows contributors))
-       "|===="))
+(defn- update-readme-text [old-text marker-id new-content]
+  (let [marker (str "// AUTO-GENERATED:" marker-id )
+        marker-start (str marker "-START")
+        marker-end (str marker "-END")]
+    (string/replace old-text
+                    (re-pattern (str "(?s)" marker-start ".*" marker-end))
+                    (str marker-start "\n" new-content "\n" marker-end))))
 
-(defn- update-readme-text [old-text new-table]
-  (string/replace old-text
-                  #"(?s)// AUTO-GENERATED:CONTRIBUTORS-START.*// AUTO-GENERATED:CONTRIBUTORS-END"
-                  (str "// AUTO-GENERATED:CONTRIBUTORS-START\n" new-table "\n// AUTO-GENERATED:CONTRIBUTORS-END")))
 
-(defn update-readme-file [contributors-filename readme-filename]
+(defn update-readme-file [contributors readme-filename image-info]
   (let [old-text (slurp readme-filename)
-        contributors (edn/read-string (slurp contributors-filename))
-        new-text (update-readme-text old-text (generate-asciidoc-table contributors))]
+        new-text (-> old-text
+                     (update-readme-text "CONTRIBUTORS" (generate-asciidoc (:contributors contributors) image-info))
+                     (update-readme-text "FOUNDERS" (generate-asciidoc (:founders contributors) image-info))
+                     (update-readme-text "MAINTAINERS" (generate-asciidoc (:maintainers contributors) image-info)))]
     (if (not (= old-text new-text))
-      (spit readme-filename new-text)
-      (println "INFO" readme-filename "unchanged"))))
+      (do
+        (spit readme-filename new-text)
+        (println readme-filename "text updated") )
+      (println readme-filename "text unchanged"))))
+
+(defn generate-contributor-html [ github-id contributions]
+  (html5
+   [:head
+    (include-css "https://fonts.googleapis.com/css?family=Fira+Code&display=swap")
+    [:style
+        "* {
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;}
+         body {
+           font-family: 'Fira Code', monospace;
+           margin: 0;}
+         .card {
+           min-width: 295px;
+           float: left;
+           border-radius: 5px;
+           border: 1px solid #CCCCCC;
+           padding: 4px;
+           margin: 0 5px 5px 0;
+           box-shadow: 4px 4px 3px grey;
+           background-color: #F4F4F4;}
+         .avatar {
+           float: left;
+           height: 110px;
+           border-radius: 4px;
+           padding: 0;
+           margin-right: 6px; }
+         .image { margin: 2px;}
+         .text {
+           margin-left: 2px;
+           padding: 0}
+         .contrib { margin: 0; }
+         .name {
+           font-size: 1.20em;
+           margin: 0 3px 5px 0;}"]]
+   [:div.card
+    [:img.avatar {:src (str "https://github.com/" github-id ".png?size=110")}]
+    [:div.text
+     [:p.name (str "@" github-id)]
+     [:div.contribs
+      (doall
+       (for [c contributions]
+         (when-let [c-text (c contributions-lookup)]
+           [:p.contrib c-text])))]]]))
+
+(defn- str->Path [spath]
+  (Paths/get spath (into-array String [])))
+
+  (defn- temp-Path [prefix]
+  (Files/createTempDirectory prefix (into-array FileAttribute [])))
+
+(defn- move-Path [source target]
+  (FileUtils/deleteDirectory (.toFile target))
+  (.mkdirs (.toFile target))
+  (Files/move source target (into-array CopyOption
+                                        [(StandardCopyOption/ATOMIC_MOVE)
+                                         (StandardCopyOption/REPLACE_EXISTING)])))
+
+(defn generate-image [target-dir github-id contributions image-opts]
+  (let [html-file (str target-dir "/temp.html")]
+    (try
+      (spit html-file (generate-contributor-html github-id contributions))
+      (let [result (shell/sh "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+                             "--headless"
+                             (str "--screenshot=" target-dir "/" github-id ".png")
+                             (str "--window-size=" (:image-width image-opts) ",125")
+                             "--default-background-color=0"
+                             "--hide-scrollbars"
+                             html-file)]
+        (if (not (= 0 (:exit result)))
+          (throw (ex-info "png generation failed" result))))
+      (finally
+        (FileUtils/deleteQuietly (io/file html-file))))))
+
+(defn generate-contributor-images [contributors image-opts]
+  (let [work-dir (temp-Path "rewrite-cljc-update-readme")]
+    (try
+      (doall
+       (for [ctype (keys contributors)]
+         (do
+           (println "Generating pics for" ctype)
+           (doall
+            (for [{:keys [github-id contributions]} (ctype contributors)]
+              (do
+                (println " " github-id)
+                (generate-image (str work-dir) github-id contributions image-opts)))))))
+      (let [target-path (str->Path (:images-dir image-opts))]
+        (move-Path work-dir target-path))
+      (catch java.lang.Exception e
+        (FileUtils/forceDeleteOnExit (.toFile work-dir))
+        (throw e)))))
 
 (defn -main []
   (let [readme-filename "README.adoc"
-        contributors-filename "doc/contributors.edn"]
-    (println "INFO updating contributors" readme-filename "from" contributors-filename)
-    (update-readme-file contributors-filename readme-filename)))
+        contributors-source "doc/contributors.edn"
+        image-opts {:image-width 310
+                    :images-dir "./doc/generated/contributors"}
+        contributors (edn/read-string (slurp contributors-source))]
+    (println "honoring those who contributed in" readme-filename "from" contributors-source)
+    (generate-contributor-images contributors image-opts)
+    (update-readme-file contributors readme-filename image-opts))
+  (shutdown-agents))

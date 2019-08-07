@@ -10,6 +10,7 @@ ifndef::env-cljdoc[]
 endif::[]
 
 ifdef::env-github[]
+// our generated contributors list formats differently on github than cljdoc, so tweaks to compromise.
 :contrib-cols: 4
 :warning-caption: :warning:
 endif::[]
@@ -59,92 +60,53 @@ rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 === Contributors
 // Contributors updated by script, do not edit
 // AUTO-GENERATED:CONTRIBUTORS-START
-[cols="{contrib-cols}*<.<",stripes=none,grid=none,frame=none]
-|====
+:imagesdir: ./doc/generated/contributors
+[.float-group]
+--
+image:sogaiu.png[sogaiu,role="left",width=310]
+image:borkdude.png[borkdude,role="left",width=310]
+image:danielcompton.png[danielcompton,role="left",width=310]
+image:martinklepsch.png[martinklepsch,role="left",width=310]
+image:swannodette.png[swannodette,role="left",width=310]
+image:PEZ.png[PEZ,role="left",width=310]
+image:eraserhd.png[eraserhd,role="left",width=310]
+image:arrdem.png[arrdem,role="left",width=310]
+image:stathissideris.png[stathissideris,role="left",width=310]
+image:plexus.png[plexus,role="left",width=310]
+image:jespera.png[jespera,role="left",width=310]
+image:brian-dawn.png[brian-dawn,role="left",width=310]
+image:bbatsov.png[bbatsov,role="left",width=310]
+image:AndreaCrotti.png[AndreaCrotti,role="left",width=310]
+image:slipset.png[slipset,role="left",width=310]
+image:mhuebert.png[mhuebert,role="left",width=310]
+image:kkinnear.png[kkinnear,role="left",width=310]
+image:anmonteiro.png[anmonteiro,role="left",width=310]
+--
 
-|image:https://github.com/sogaiu.png?size=110[role="thumb left related",width=110]
-https://github.com/sogaiu[@sogaiu] +
-💻 rewrite-cljc +
-🌞 encouragement +
-🎓 education +
-|image:https://github.com/borkdude.png?size=110[role="thumb left related",width=110]
-https://github.com/borkdude[@borkdude] +
-💻 rewrite-cljc +
-🌞 encouragement +
-🎓 education +
-|image:https://github.com/danielcompton.png?size=110[role="thumb left related",width=110]
-https://github.com/danielcompton[@danielcompton] +
-💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
-🌞 encouragement +
-|image:https://github.com/swannodette.png?size=110[role="thumb left related",width=110]
-https://github.com/swannodette[@swannodette] +
-🎓 education +
-|image:https://github.com/PEZ.png?size=110[role="thumb left related",width=110]
-https://github.com/PEZ[@PEZ] +
-💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
-🌞 encouragement +
-|image:https://github.com/eraserhd.png?size=110[role="thumb left related",width=110]
-https://github.com/eraserhd[@eraserhd] +
-💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
-|image:https://github.com/arrdem.png?size=110[role="thumb left related",width=110]
-https://github.com/arrdem[@arrdem] +
-💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
-|image:https://github.com/stathissideris.png?size=110[role="thumb left related",width=110]
-https://github.com/stathissideris[@stathissideris] +
-💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
-|image:https://github.com/plexus.png?size=110[role="thumb left related",width=110]
-https://github.com/plexus[@plexus] +
-💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
-|image:https://github.com/jespera.png?size=110[role="thumb left related",width=110]
-https://github.com/jespera[@jespera] +
-💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
-|image:https://github.com/brian-dawn.png?size=110[role="thumb left related",width=110]
-https://github.com/brian-dawn[@brian-dawn] +
-💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
-|image:https://github.com/bbatsov.png?size=110[role="thumb left related",width=110]
-https://github.com/bbatsov[@bbatsov] +
-💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
-|image:https://github.com/AndreaCrotti.png?size=110[role="thumb left related",width=110]
-https://github.com/AndreaCrotti[@AndreaCrotti] +
-💻 https://github.com/xsc/rewrite-clj[rewrite-clj] +
-|image:https://github.com/slipset.png?size=110[role="thumb left related",width=110]
-https://github.com/slipset[@slipset] +
-💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
-|image:https://github.com/mhuebert.png?size=110[role="thumb left related",width=110]
-https://github.com/mhuebert[@mhuebert] +
-💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
-|image:https://github.com/kkinnear.png?size=110[role="thumb left related",width=110]
-https://github.com/kkinnear[@kkinnear] +
-💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
-|image:https://github.com/anmonteiro.png?size=110[role="thumb left related",width=110]
-https://github.com/anmonteiro[@anmonteiro] +
-💻 https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
-|====
 // AUTO-GENERATED:CONTRIBUTORS-END
 
 === Founders
+// Founders updated by script, do not edit
+// AUTO-GENERATED:FOUNDERS-START
+:imagesdir: ./doc/generated/contributors
+[.float-group]
+--
+image:xsc.png[xsc,role="left",width=310]
+image:rundis.png[rundis,role="left",width=310]
+--
 
-[cols="2*<.<",stripes=none,grid=none,frame=none]
-|====
-
-|image:https://github.com/xsc.png?size=110[role="thumb left related",width=110]
-https://github.com/xsc[@xsc] +
-💻 original author of https://github.com/xsc/rewrite-clj[rewrite-clj] +
-|image:https://github.com/rundis.png?size=110[role="thumb left related",width=110]
-https://github.com/rundis[@rundis] +
-💻 original author of https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] +
-|====
+// AUTO-GENERATED:FOUNDERS-END
 
 === Current maintainers
+// Maintainers updated by script, do not edit
+// AUTO-GENERATED:MAINTAINERS-START
+:imagesdir: ./doc/generated/contributors
+[.float-group]
+--
+image:lread.png[lread,role="left",width=310]
+--
 
-[cols="1*", stripes=none, grid=none, frame=none]
-|====
-
-|image:https://github.com/lread.png?size=110[role="thumb left related",width=110]
-https://github.com/lread[@lread] +
-grateful explorer
-
-|====
+// AUTO-GENERATED:MAINTAINERS-END
 
 === Licences
 We honor the original MIT licenses from link:LICENSE-rewrite-clj[rewrite-clj] and link:LICENSE-rewrite-cljs[rewrite-cljs].
