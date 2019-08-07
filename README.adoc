@@ -1,48 +1,24 @@
 :notitle:
 :figure-caption!:
+:imagesdir: ./doc
 
-// TODO: do I still need this?
-ifdef::env-cljdoc[]
-:logo-image: rewrite-cljc-logo.png
-endif::[]
-ifndef::env-cljdoc[]
-:logo-image: doc/rewrite-cljc-logo.png
-endif::[]
-
-ifdef::env-github[]
-// our generated contributors list formats differently on github than cljdoc, so tweaks to compromise.
-:contrib-cols: 4
-:warning-caption: :warning:
-endif::[]
-
-ifndef::env-github[]
-:contrib-cols: 3
-:warning-caption: ⚠️
-endif::[]
-
-image:{logo-image}[rewrite-cljc,234,60]
+image:rewrite-cljc-logo.png[rewrite-cljc,234,60]
 
 TODO: badges here... circleci, cljdoc, clojars
-
 
 A library that reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] from Clojure and ClojureScript in a whitespace and comment preserving way.
 
 [WARNING]
 ====
-Very much a work in progress.
+Warning: Very much a work in progress.
 ====
 
 ## Need help?
 
-ifdef::env-github[]
-:wave:
-endif::[]
-ifndef::env-github[]
-👋
-endif::[]
-Want to chat? Say hi on http://clojurians.net/[Clojurians Slack] in https://clojurians.slack.com/messages/CHB5Q2XUJ[#rewrite-clj].
+👋 Want to chat? Say hi on http://clojurians.net/[Clojurians Slack] in https://clojurians.slack.com/messages/CHB5Q2XUJ[#rewrite-clj].
 
 == Docs
+Documentation are best viewed on cljdoc.org.
 
 TODO: Point to docs hosted on cljdoc - once we publish.
 
