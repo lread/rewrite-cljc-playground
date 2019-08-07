@@ -5,15 +5,12 @@
 === What is the meaning of the ^:no-doc metadata?
 Our goal is to produce documentation for users of rewrite-cljc. As such we only want to document public APIs.
 
-`^:no-doc` is a signal to https://cljdoc.org/[cljdoc] that source code should not be included in generated documentation. This metadata was introduced by https://github.com/weavejester/codox[codox]. Cljdoc uses a fork of codox internally.
+`^:no-doc` is a signal to https://cljdoc.org/[cljdoc] that source code should not be included in generated documentation. This metadata was introduced by https://github.com/weavejester/codox[codox].
 
 == What the markdown?
 Stand alone articles are written up in https://asciidoctor.org/docs/what-is-asciidoc/[AsciiDoc].
 
 1. it is a richer markup language the GitHub markdown.
 2. is supported by cljdoc.
-
-README.md is written up using GitHub markdown. It is the introduction people will read when coming to our project from GitHub so we use the markdown language of GitHub to ensure it will format well.
-Note that GitHub does partially support AsciiDoc but will not properly render all features.
 
 Our docstrings sometimes take advantage of https://commonmark.org/[CommonMark] which is supported by cljdoc for docstrings. GitHub uses CommonMark as part of of its markdown solution.

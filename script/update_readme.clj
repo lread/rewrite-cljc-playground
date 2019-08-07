@@ -45,8 +45,8 @@
     (if (not (= old-text new-text))
       (do
         (spit readme-filename new-text)
-        (println readme-filename "text updated") )
-      (println readme-filename "text unchanged"))))
+        (println "-" readme-filename "text updated") )
+      (println "-" readme-filename "text unchanged"))))
 
 (defn generate-contributor-html [ github-id contributions]
   (html5
@@ -105,11 +105,27 @@
                                         [(StandardCopyOption/ATOMIC_MOVE)
                                          (StandardCopyOption/REPLACE_EXISTING)])))
 
-(defn generate-image [target-dir github-id contributions image-opts]
+(defn- chrome []
+  (let [mac-chrome "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        linux-chrome "chrome"]
+    (cond
+      (.canExecute (io/file mac-chrome)) mac-chrome
+      :else linux-chrome)))
+
+(defn- chrome-info []
+  (try
+    (let [chrome (chrome)
+          result (shell/sh chrome "--version")]
+      (if (= 0 (:exit result))
+        {:exe chrome
+         :version (string/trim (:out result))}))
+    (catch Exception _e)))
+
+(defn- generate-image [target-dir github-id contributions image-opts]
   (let [html-file (str target-dir "/temp.html")]
     (try
       (spit html-file (generate-contributor-html github-id contributions))
-      (let [result (shell/sh "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+      (let [result (shell/sh (chrome)
                              "--headless"
                              (str "--screenshot=" target-dir "/" github-id ".png")
                              (str "--window-size=" (:image-width image-opts) ",125")
@@ -121,17 +137,17 @@
       (finally
         (FileUtils/deleteQuietly (io/file html-file))))))
 
-(defn generate-contributor-images [contributors image-opts]
+(defn- generate-contributor-images [contributors image-opts]
   (let [work-dir (temp-Path "rewrite-cljc-update-readme")]
     (try
       (doall
        (for [ctype (keys contributors)]
          (do
-           (println "Generating pics for" ctype)
+           (println "- generating pics for" ctype)
            (doall
             (for [{:keys [github-id contributions]} (ctype contributors)]
               (do
-                (println " " github-id)
+                (println " -" github-id)
                 (generate-image (str work-dir) github-id contributions image-opts)))))))
       (let [target-path (str->Path (:images-dir image-opts))]
         (move-Path work-dir target-path))
@@ -139,13 +155,25 @@
         (FileUtils/forceDeleteOnExit (.toFile work-dir))
         (throw e)))))
 
+(defn- check-prerequesites []
+  (let [chrome-info (chrome-info)]
+    (if chrome-info
+      (println "- found chrome:" (:exe chrome-info) "\n"
+               "- version:" (:version chrome-info))
+      (println "* error: did not find google chrome - need it to generate images."))
+    chrome-info))
+
 (defn -main []
   (let [readme-filename "README.adoc"
         contributors-source "doc/contributors.edn"
         image-opts {:image-width 310
                     :images-dir "./doc/generated/contributors"}
         contributors (edn/read-string (slurp contributors-source))]
-    (println "honoring those who contributed in" readme-filename "from" contributors-source)
+    (println "Updating" readme-filename "to honor those who contributed.")
+    (if (not (check-prerequesites))
+      (System/exit 1))
+    (println "- contributors source:" contributors-source)
     (generate-contributor-images contributors image-opts)
-    (update-readme-file contributors readme-filename image-opts))
+    (update-readme-file contributors readme-filename image-opts)
+    (println "SUCCESS"))
   (shutdown-agents))

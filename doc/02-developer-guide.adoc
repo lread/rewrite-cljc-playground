@@ -50,3 +50,9 @@ Before pushing, you likely want to mimic what we do up on https://circleci.com/[
 ----
 lein test-all
 ----
+
+
+== Contributors
+We honor current and past contributors to rewrite-cljc in our README file.
+
+To update contributors, update `doc/contributors.edn` then run `clojure -A:update-readme`.
