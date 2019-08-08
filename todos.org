@@ -16,10 +16,14 @@
     should be over-rideable to whatever the client wants.
 ** TODO consider spec
 ** TODO make a coherent commit history from my spike experiments?
+    My path was circuitous.. and based off rewrite-cljs... can/I/should/I do some major squashing?
 ** TODO consider separating import-vars transform support
    clj-kondo does understand import-vars now, but it does not understand the transform support I added to it.
    Perhaps create a separate import-vars-as fn to isolate transform support.
 ** Testing
+*** TODO test under advanced optimizations
+    another tip for borkdude
+    actually should do this soon because it might invalidate cljs import-vars
 *** TODO can I verify that I have not broken the api?
     Would like to automatically verify all is good for clj and cljs
     Sooo... get current cljs api, current clj api and compare with my api to make sure at least signatures are the same.
@@ -109,8 +113,6 @@
 
 *** TODO code coverage? Would be very good to know if coverage is weak in areas I have touched.
     I did experiment with this but got a whack of errors maybe due to import-vars?
-*** TODO test under advanced optimizations
-    another tip for borkdude
 *** TODO test under self-hosted cljs
     again borkdude.
 
@@ -141,8 +143,8 @@
     - paredit_test.cljs - this is a cljs specific feature… will see if it fits into cli version as well
     - zip_tests.cljs
     Ran cloverage and it generated a good report but also failed many tests.  Not sure why.
-*** TODO test with cljs advanced compilation
 ** Docs & API
+*** TODO include change logs from both rewrite-cljs and rewrite-clj
 *** TODO give guidance on the limitations of sexpr
     from discussion with @sogaiu and @borkdude on slack
 
@@ -277,6 +279,9 @@
 *** TODO make sure I understand deploy requirements for cljs - what goes into the jar?
     Just the source, I think...
 *** TODO deploy scripts
+    Am moving away form lein to tools deps.  For cldoc-exerciser, I tried using maven to package and deploy.
+    This seems to be a solid way to go and avoids the confusion of the many competing clojure libraries.
+    Consider using garmamond to update the pom - doing that with maven was a bit awkward/slow.
 * Later
 ** TODO consider allowing metadata to be a child
    of interest to borkdude - and more generally probably
