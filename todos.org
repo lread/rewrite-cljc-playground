@@ -16,6 +16,9 @@
     should be over-rideable to whatever the client wants.
 ** TODO consider spec
 ** TODO make a coherent commit history from my spike experiments?
+** TODO consider separating import-vars transform support
+   clj-kondo does understand import-vars now, but it does not understand the transform support I added to it.
+   Perhaps create a separate import-vars-as fn to isolate transform support.
 ** Testing
 *** TODO can I verify that I have not broken the api?
     Would like to automatically verify all is good for clj and cljs
