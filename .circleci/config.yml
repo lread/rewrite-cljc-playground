@@ -26,9 +26,8 @@ commands:
 
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "deps.edn" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - v1-npm-dependencies-{{ checksum "package-lock.json" }}
+            - v1-npm-dependencies- # fallback if cache not found
 
       - run:
           name: Install karma command line
@@ -38,18 +37,28 @@ commands:
           name: Download node dependencies
           command: npm install
 
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "deps.edn" }}
+            - v1-dependencies- # fallback if cache not found
+
       - run:
-          name: Download clojure dependencies
+          name: Clojure classpath
           command: clojure -Spath
+
+      - run:
+          name: Run ci tests
+          command: ./script/ci-tests.sh
 
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "deps.edn" }}
 
-      - run:
-          name: Run ci tests
-          command: ./script/ci-tests.sh
+      - save_cache:
+          paths:
+            - ./node_modules
+          key: v1-npm-dependencies-{{ checksum "package-lock.json" }}
 
       - store_test_results:
           path: target/out/test-results
