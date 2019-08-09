@@ -35,7 +35,7 @@
         marker-end (str marker "-END")]
     (string/replace old-text
                     (re-pattern (str "(?s)" marker-start ".*" marker-end))
-                    (str marker-start "\n" new-content "\n" marker-end))))
+                    (str marker-start "\n" (string/trim new-content) "\n" marker-end))))
 
 
 (defn update-readme-file [contributors readme-filename image-info]

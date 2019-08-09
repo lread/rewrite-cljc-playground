@@ -58,7 +58,6 @@ image:mhuebert.png[mhuebert,role="left",width=310,link="https://github.com/mhueb
 image:kkinnear.png[kkinnear,role="left",width=310,link="https://github.com/kkinnear"]
 image:anmonteiro.png[anmonteiro,role="left",width=310,link="https://github.com/anmonteiro"]
 --
-
 // AUTO-GENERATED:CONTRIBUTORS-END
 
 === Founders
@@ -70,7 +69,6 @@ image:anmonteiro.png[anmonteiro,role="left",width=310,link="https://github.com/a
 image:xsc.png[xsc,role="left",width=310,link="https://github.com/xsc"]
 image:rundis.png[rundis,role="left",width=310,link="https://github.com/rundis"]
 --
-
 // AUTO-GENERATED:FOUNDERS-END
 
 === Current maintainers
@@ -81,7 +79,6 @@ image:rundis.png[rundis,role="left",width=310,link="https://github.com/rundis"]
 --
 image:lread.png[lread,role="left",width=310,link="https://github.com/lread"]
 --
-
 // AUTO-GENERATED:MAINTAINERS-END
 
 == link:CHANGESLOG.adoc[Changes]
