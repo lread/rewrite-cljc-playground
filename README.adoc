@@ -18,7 +18,7 @@ Warning: Very much a work in progress.
 👋 Want to chat? Say hi on http://clojurians.net/[Clojurians Slack] in https://clojurians.slack.com/messages/CHB5Q2XUJ[#rewrite-clj].
 
 == Docs
-Documentation are best viewed on cljdoc.org.
+Documentation is best viewed on cljdoc.org.
 
 TODO: Point to docs hosted on cljdoc - once we publish.
 
@@ -84,8 +84,10 @@ image:lread.png[lread,role="left",width=310,link="https://github.com/lread"]
 
 // AUTO-GENERATED:MAINTAINERS-END
 
-=== Licences
-We honor the original MIT licenses from link:LICENSE-rewrite-clj[rewrite-clj] and link:LICENSE-rewrite-cljs[rewrite-cljs].
+== link:CHANGESLOG.adoc[Changes]
+
+== Licences
+We honor the original MIT licenses from link:historical/rewrite-clj/LICENSE[rewrite-clj] and link:historical/rewrite-cljs/LICENSE[rewrite-cljs].
 
 Some code has been adapted from:
 
