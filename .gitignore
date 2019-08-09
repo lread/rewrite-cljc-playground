@@ -6,8 +6,6 @@
 /dumps
 /.clj-kondo/.cache
 /.cpcache
-pom.xml
-pom.xml.asc
 *.jar
 *.class
 .cljs_node_repl

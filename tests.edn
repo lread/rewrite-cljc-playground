@@ -1,3 +1,4 @@
+;; koacha config for clj testing
 #kaocha/v1
 {:tests [{:id :unit
           :source-paths ["src"]

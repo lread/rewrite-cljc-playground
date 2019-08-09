@@ -1,5 +1,7 @@
 (ns update-readme
-  "This is a bit of an experiment using clojure instead of bash."
+  "Script to update README.adoc to credit contributors
+  Run manually as needed.
+  This is a bit of an experiment using clojure instead of bash."
   (:require [clojure.string :as string]
             [clojure.edn :as edn]
             [hiccup.page :refer [html5 include-css]]
@@ -37,6 +39,7 @@
 
 
 (defn update-readme-file [contributors readme-filename image-info]
+  (println "--[updating" readme-filename "]--")
   (let [old-text (slurp readme-filename)
         new-text (-> old-text
                      (update-readme-text "CONTRIBUTORS" (generate-asciidoc (:contributors contributors) image-info))
@@ -45,8 +48,8 @@
     (if (not (= old-text new-text))
       (do
         (spit readme-filename new-text)
-        (println "-" readme-filename "text updated") )
-      (println "-" readme-filename "text unchanged"))))
+        (println readme-filename "text updated") )
+      (println readme-filename "text unchanged"))))
 
 (defn generate-contributor-html [ github-id contributions]
   (html5
@@ -138,16 +141,17 @@
         (FileUtils/deleteQuietly (io/file html-file))))))
 
 (defn- generate-contributor-images [contributors image-opts]
+  (println "--[generating images]--")
   (let [work-dir (temp-Path "rewrite-cljc-update-readme")]
     (try
       (doall
        (for [ctype (keys contributors)]
          (do
-           (println "- generating pics for" ctype)
+           (println ctype)
            (doall
             (for [{:keys [github-id contributions]} (ctype contributors)]
               (do
-                (println " -" github-id)
+                (println " " github-id)
                 (generate-image (str work-dir) github-id contributions image-opts)))))))
       (let [target-path (str->Path (:images-dir image-opts))]
         (move-Path work-dir target-path))
@@ -156,10 +160,11 @@
         (throw e)))))
 
 (defn- check-prerequesites []
+  (println "--[checking prerequesites]--")
   (let [chrome-info (chrome-info)]
     (if chrome-info
-      (println "- found chrome:" (:exe chrome-info) "\n"
-               "- version:" (:version chrome-info))
+      (println (str "found chrome:" (:exe chrome-info) "\n"
+                    "version:" (:version chrome-info)))
       (println "* error: did not find google chrome - need it to generate images."))
     chrome-info))
 
@@ -169,10 +174,10 @@
         image-opts {:image-width 310
                     :images-dir "./doc/generated/contributors"}
         contributors (edn/read-string (slurp contributors-source))]
-    (println "Updating" readme-filename "to honor those who contributed.")
+    (println "--[updating docs to honor those who contributed]--")
     (if (not (check-prerequesites))
       (System/exit 1))
-    (println "- contributors source:" contributors-source)
+    (println "contributors source:" contributors-source)
     (generate-contributor-images contributors image-opts)
     (update-readme-file contributors readme-filename image-opts)
     (println "SUCCESS"))
