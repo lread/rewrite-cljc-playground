@@ -39,24 +39,24 @@ rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 :imagesdir: ./doc/generated/contributors
 [.float-group]
 --
-image:sogaiu.png[sogaiu,role="left",width=310]
-image:borkdude.png[borkdude,role="left",width=310]
-image:danielcompton.png[danielcompton,role="left",width=310]
-image:martinklepsch.png[martinklepsch,role="left",width=310]
-image:swannodette.png[swannodette,role="left",width=310]
-image:PEZ.png[PEZ,role="left",width=310]
-image:eraserhd.png[eraserhd,role="left",width=310]
-image:arrdem.png[arrdem,role="left",width=310]
-image:stathissideris.png[stathissideris,role="left",width=310]
-image:plexus.png[plexus,role="left",width=310]
-image:jespera.png[jespera,role="left",width=310]
-image:brian-dawn.png[brian-dawn,role="left",width=310]
-image:bbatsov.png[bbatsov,role="left",width=310]
-image:AndreaCrotti.png[AndreaCrotti,role="left",width=310]
-image:slipset.png[slipset,role="left",width=310]
-image:mhuebert.png[mhuebert,role="left",width=310]
-image:kkinnear.png[kkinnear,role="left",width=310]
-image:anmonteiro.png[anmonteiro,role="left",width=310]
+image:sogaiu.png[sogaiu,role="left",width=310,link="https://github.com/sogaiu"]
+image:borkdude.png[borkdude,role="left",width=310,link="https://github.com/borkdude"]
+image:danielcompton.png[danielcompton,role="left",width=310,link="https://github.com/danielcompton"]
+image:martinklepsch.png[martinklepsch,role="left",width=310,link="https://github.com/martinklepsch"]
+image:swannodette.png[swannodette,role="left",width=310,link="https://github.com/swannodette"]
+image:PEZ.png[PEZ,role="left",width=310,link="https://github.com/PEZ"]
+image:eraserhd.png[eraserhd,role="left",width=310,link="https://github.com/eraserhd"]
+image:arrdem.png[arrdem,role="left",width=310,link="https://github.com/arrdem"]
+image:stathissideris.png[stathissideris,role="left",width=310,link="https://github.com/stathissideris"]
+image:plexus.png[plexus,role="left",width=310,link="https://github.com/plexus"]
+image:jespera.png[jespera,role="left",width=310,link="https://github.com/jespera"]
+image:brian-dawn.png[brian-dawn,role="left",width=310,link="https://github.com/brian-dawn"]
+image:bbatsov.png[bbatsov,role="left",width=310,link="https://github.com/bbatsov"]
+image:AndreaCrotti.png[AndreaCrotti,role="left",width=310,link="https://github.com/AndreaCrotti"]
+image:slipset.png[slipset,role="left",width=310,link="https://github.com/slipset"]
+image:mhuebert.png[mhuebert,role="left",width=310,link="https://github.com/mhuebert"]
+image:kkinnear.png[kkinnear,role="left",width=310,link="https://github.com/kkinnear"]
+image:anmonteiro.png[anmonteiro,role="left",width=310,link="https://github.com/anmonteiro"]
 --
 
 // AUTO-GENERATED:CONTRIBUTORS-END
@@ -67,8 +67,8 @@ image:anmonteiro.png[anmonteiro,role="left",width=310]
 :imagesdir: ./doc/generated/contributors
 [.float-group]
 --
-image:xsc.png[xsc,role="left",width=310]
-image:rundis.png[rundis,role="left",width=310]
+image:xsc.png[xsc,role="left",width=310,link="https://github.com/xsc"]
+image:rundis.png[rundis,role="left",width=310,link="https://github.com/rundis"]
 --
 
 // AUTO-GENERATED:FOUNDERS-END
@@ -79,7 +79,7 @@ image:rundis.png[rundis,role="left",width=310]
 :imagesdir: ./doc/generated/contributors
 [.float-group]
 --
-image:lread.png[lread,role="left",width=310]
+image:lread.png[lread,role="left",width=310,link="https://github.com/lread"]
 --
 
 // AUTO-GENERATED:MAINTAINERS-END

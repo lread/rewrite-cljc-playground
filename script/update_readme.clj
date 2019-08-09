@@ -26,7 +26,7 @@
        "[.float-group]\n"
        "--\n"
        (apply str (for [{:keys [github-id]} contributors]
-                    (str "image:" github-id ".png[" github-id ",role=\"left\",width=" image-width "]\n")))
+                    (str "image:" github-id ".png[" github-id ",role=\"left\",width=" image-width ",link=\"https://github.com/" github-id "\"]\n")))
        "--\n"))
 
 (defn- update-readme-text [old-text marker-id new-content]
