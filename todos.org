@@ -22,8 +22,11 @@
    Perhaps create a separate import-vars-as fn to isolate transform support.
 ** Testing
 *** TODO test under advanced optimizations
-    another tip for borkdude
+    another tip from borkdude
     actually should do this soon because it might invalidate cljs import-vars
+    I see two things broken by advanced:
+       trying to print out name of record
+       sexpr on auto-resolve namespace keywords ::these-guys
 *** TODO can I verify that I have not broken the api?
     Would like to automatically verify all is good for clj and cljs
     Sooo... get current cljs api, current clj api and compare with my api to make sure at least signatures are the same.
