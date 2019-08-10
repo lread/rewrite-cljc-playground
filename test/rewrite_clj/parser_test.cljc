@@ -41,6 +41,7 @@
 
 (deftest t-parsing-simple-data
   (are [?s ?r]
+      ;; TODO: find-ns is not kosher for advanced optimized cljs - nor :browser target cljs
        (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
          (let [n (p/parse-string ?s)]
            (is (= :token (node/tag n)))
@@ -60,7 +61,9 @@
     ":1.5.0"                     :1.5.0
     ":ns/key"                    :ns/key
     ":key:key"                   :key:key
+    ;; TODO: failing under cljs advanced
     "::1.5.1"                    ::1.5.1
+    ;; TODO: failing under cljs advanced
     "::key"                      ::key
     "::xyz/key"                  :xyz/key
     ":x'"                        :x'
@@ -308,7 +311,7 @@
 
 (deftest t-parsing-auto-resolve-namespaced-maps
   (are [?s ?children ?sexpr]
-      ;; TODO: Review: Why does this require binding of *ns*?  Is it to make sexpr absolutely correct?
+      ;; TODO: find-ns is not kosher for advanced optimized cljs - nor :browser target cljs
       (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
         (let [n (p/parse-string ?s)]
           (is (= :namespaced-map (node/tag n)))
@@ -316,22 +319,27 @@
           (is (= ?s (node/string n)))
           (is (= ?children (str (node/children n))))
           (is (= ?sexpr (node/sexpr n)))))
+    ;; TODO: failing under cljs advanced
     "#::{:x 1, :y 1}"
     "[<token: ::> <map: {:x 1, :y 1}>]"
     {::x 1, ::y 1}
 
+    ;; TODO: failing under cljs advanced
     "#::   {:x 1, :y 1}"
     "[<token: ::> <whitespace: \"   \"> <map: {:x 1, :y 1}>]"
     {::x 1, ::y 1}
 
+    ;; TODO: failing under cljs advanced
     "#::{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
     "[<token: ::> <map: {:kw 1, :n/kw 2, :_/bare 3, 0 4}>]"
     {::kw 1, :n/kw 2, :bare 3, 0 4}
 
+    ;; TODO: failing under cljs advanced
     "#::{:a {:b 1}}"
     "[<token: ::> <map: {:a {:b 1}}>]"
     {::a {:b 1}}
 
+    ;; TODO: failing under cljs advanced
     "#::{:a #::{:b 1}}"
     "[<token: ::> <map: {:a #::{:b 1}}>]"
     {::a {::b 1}}))

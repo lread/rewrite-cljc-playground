@@ -15,6 +15,7 @@
     (if (and namespaced?
              (not (namespace k)))
       (keyword
+       ;;TODO: *ns* will be nil on advanced optimized cljs
        (name (ns-name *ns*))
        (name k))
       k))
