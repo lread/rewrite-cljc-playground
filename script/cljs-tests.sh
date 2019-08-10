@@ -15,6 +15,7 @@ function usage() {
     echo ""
 }
 
+DEP_ALIASES=:test-common:cljs-test
 # default options
 TEST_ENV=node
 CLJS_OPTIMIZATIONS=none
@@ -27,7 +28,7 @@ do case $1 in
        *) echo -e "* invalid option: $1\n"; usage; exit 1;;
    esac; shift; done
 
-if [[ ! "${TEST_ENV}" =~ ^(node|chrome-headless)$ ]]; then
+if [[ ! "${TEST_ENV}" =~ ^(node|chrome-headless|planck)$ ]]; then
     echo -e "* invalid env: ${TEST_ENV}\n"
     usage
     exit 1
@@ -50,6 +51,10 @@ if [ ${TEST_ENV} == "node" ]; then
 else
     # TODO: nil might be wrong, :browser might be correct?
     TARGET="nil"
+fi
+
+if [ ${TEST_ENV} == "planck" ]; then
+    DEP_ALIASES=${DEP_ALIASES}:planck-test
 fi
 
 if [ ${CLJS_OPTIMIZATIONS} == "none" ]; then
@@ -78,10 +83,8 @@ cat <<EOF > ${DOO_OPTS_FILENAME}
                   "junitReporter" {"outputDir" "target/out/test-results/cljs-${TEST_COMBO}"}}}}
 EOF
 
-clojure -A:test-common:cljs-test \
+clojure -A${DEP_ALIASES} \
         --out ${OUT_DIR} \
         --env ${TEST_ENV} \
         --compile-opts ${CLJS_OPTS_FILENAME} \
         --doo-opts ${DOO_OPTS_FILENAME}
-
-# TODO: test self-hosted (would lumo or planck do the trick for these?)

@@ -35,6 +35,8 @@
                        :extra-paths [ "test" ]
                        :main-opts ["-m" "cljs-test-runner.main"]}
 
+           :planck-test {:extra-paths [ "target/cljsbuild/test/planck-none/gen"]}
+
            ;;
            ;; Script support
            ;;

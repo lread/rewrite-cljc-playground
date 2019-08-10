@@ -27,6 +27,34 @@
     I see two things broken by advanced:
        trying to print out name of record
        sexpr on auto-resolve namespace keywords ::these-guys
+*** TODO test under self-hosted cljs
+    First thing broken:
+    - can't find potemkin helper.
+    ---
+    again borkdude.
+
+    borkdude [8:49 AM]
+    it could work, just something to be aware of. also I’d test if it works under self-hosted CLJS (e.g. Planck or Lumo)
+    (some CLJC libraries I have are tested in 3 ways on CI: clojure, advanced CLJS, self-hosted CLJS)
+    you’ll be surprised how often it doesn’t work directly :wink: (edited)
+    but in most cases things are fixable (edited)
+
+    lread [8:51 AM]
+    Thanks for the tips. I doubt that it works under self hosted cljs.
+
+    borkdude [8:52 AM]
+    well, the analyzer also works in self-hosted I think, so it might
+
+    lread [8:52 AM]
+    But I really don’t understand self hosted cljs yet.
+    Another todo for me, thanks.
+
+    borkdude [8:53 AM]
+    example project: https://github.com/borkdude/respeced/blob/master/script/test (edited)
+
+    lread [8:54 AM]
+    very helpful, thanks!
+
 *** TODO can I verify that I have not broken the api?
     Would like to automatically verify all is good for clj and cljs
     Sooo... get current cljs api, current clj api and compare with my api to make sure at least signatures are the same.
@@ -116,31 +144,6 @@
 
 *** TODO code coverage? Would be very good to know if coverage is weak in areas I have touched.
     I did experiment with this but got a whack of errors maybe due to import-vars?
-*** TODO test under self-hosted cljs
-    again borkdude.
-
-    borkdude [8:49 AM]
-    it could work, just something to be aware of. also I’d test if it works under self-hosted CLJS (e.g. Planck or Lumo)
-    (some CLJC libraries I have are tested in 3 ways on CI: clojure, advanced CLJS, self-hosted CLJS)
-    you’ll be surprised how often it doesn’t work directly :wink: (edited)
-    but in most cases things are fixable (edited)
-
-    lread [8:51 AM]
-    Thanks for the tips. I doubt that it works under self hosted cljs.
-
-    borkdude [8:52 AM]
-    well, the analyzer also works in self-hosted I think, so it might
-
-    lread [8:52 AM]
-    But I really don’t understand self hosted cljs yet.
-    Another todo for me, thanks.
-
-    borkdude [8:53 AM]
-    example project: https://github.com/borkdude/respeced/blob/master/script/test (edited)
-
-    lread [8:54 AM]
-    very helpful, thanks!
-
 *** TODO review cljs specific tests
     - node_test.cljs
     - paredit_test.cljs - this is a cljs specific feature… will see if it fits into cli version as well
