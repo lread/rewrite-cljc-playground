@@ -46,6 +46,8 @@
            ;; Maintenance support
            ;;
            :outdated {;; note that depot uses rewrite-clj internally which can get trippy
-                      :extra-deps {olical/depot {:mvn/version "1.8.4"}}
+                      ;; I think I would exclude this project's src paths if I could do so easily, but I instead
+                      ;; exclude rewrite-clj dep in depot
+                      :extra-deps {olical/depot {:mvn/version "1.8.4" :exclusions [rewrite-clj/rewrite-clj]}}
                       :main-opts ["-m" "depot.outdated.main"]}
            }}
