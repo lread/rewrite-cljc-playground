@@ -1,6 +1,15 @@
 = Developer Guide
 :toc:
 
+== Supported Environments
+All rewrite-cljc development has been done on macOS and we use linux for our builds up on circleci.
+
+If circleci or GitHub Actions start to offer Windows as free build tool for open source projects
+we will likely take advantage of that using Git Bash or equivalent.
+
+We make use of planck for cljs bootstrap (aka self-hosted) testing. Planck is currently not available for Windows.
+We'll test cljs bootstrap on Windows through some other mechanism when the time comes.
+
 == Setup
 After checking out this project from github,
 
@@ -10,7 +19,9 @@ After checking out this project from github,
 sudo npm install karma-cli -g
 npm install
 ----
-2. initialize cache for clj-kondo so it can lint against your dependencies
+2. https://github.com/planck-repl/planck#installing[install planck].
+
+3. initialize cache for clj-kondo so it can lint against your dependencies
 +
 ----
 ./script/lint.sh

@@ -8,6 +8,7 @@ function usage() {
     echo "-e --env           JavaScript environment, specify one of:"
     echo "                    node            (default)"
     echo "                    chrome-headless"
+    echo "                    planck"
     echo "-o --optimizations clojurescript compiler optimizations, specify one of:"
     echo "                    none            (default)"
     echo "                    advanced"
