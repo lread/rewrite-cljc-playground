@@ -71,6 +71,4 @@
         n (coerce v)]
     (is (satisfies? node/Node n))
     (is (= :reader-macro (node/tag n)))
-    ;; TODO: failing under cljs advanced
-    ;; actual: (not (= "#rewrite-clj.node.coercer-test.Foo-Bar{:a 0}" "##object[h2]{:a 0}"))
     (is (= (pr-str v) (node/string n)))))

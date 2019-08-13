@@ -65,7 +65,9 @@
   [m]
   (reader-macro-node
    [(token-node #?(:clj (symbol (.getName ^Class (class m)))
-                   :cljs (symbol (string/replace (pr-str (type m)) "/" "."))))
+                   :cljs ;; this is a bit hacky, but is one way of preserving original name under advanced cljs optimizations
+                   (let [s (pr-str m)]
+                     (symbol (subs s 1 (clojure.string/index-of s "{"))))))
     (map-node (map->children m))]))
 
 ;; ## Tokens
@@ -85,7 +87,7 @@
   (coerce [v]
     (token-node nil)))
 
-;; TODO: cljs only - is this needed?
+;; TODO: rewrite-cljs only - is this needed?
 #?(:cljs (extend-protocol NodeCoerceable
            number
            (coerce [n]
@@ -93,7 +95,7 @@
               (token-node n)
               n))))
 
-;; TODO: cljs only - is this needed?
+;; TODO: rewrite-cljs only - is this needed?
 #?(:cljs (extend-protocol NodeCoerceable
            string
            (coerce [n]
