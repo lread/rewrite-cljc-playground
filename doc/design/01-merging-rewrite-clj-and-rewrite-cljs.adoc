@@ -46,7 +46,7 @@ TODO
 3. Test tooling now uses:
 ** figwheel main for development cljs testing
 ** kaocha for clj testing
-4. Dependencies are now in `deps.edn`
+4. Switched from leiningen to tools cli `deps.edn`
 
 == Feature Differences
 No ability to read from files when using rewrite-cljc from ClojureScript.
@@ -62,9 +62,7 @@ During this work, I noticed how pervasive rewrite-clj usage is. This discovery o
 == Tooling
 
 === Build tools
-I am currently specifying dependencies in `deps.edn` but am using leiningen for everything else.
-Having a `deps.edn` allows users to easily bring in my library as a git dependency.
-I plan to explore moving entirely to `deps.edn`.
+I have moved from leiningen to tools cli and `deps.edn`. Like everything, this change has pros and cons. Overall, I like the simplicity and control it brings. Bash scripts take the place of lein aliases where I can have the build do exactly what I want it to. One current, but likely temporary, downside is the jar and deploy support for tools cli is fragmented with many young libraries. I have opted, for now to employ the tried and true maven for jar and deploy.
 
 === Continuous integration
 The future of https://travis-ci.org/[Travis CI] looked a bit tenuous when I started this work, so I switched over to https://circleci.com/[circleci].
