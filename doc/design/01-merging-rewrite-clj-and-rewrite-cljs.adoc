@@ -71,16 +71,13 @@ The future of https://travis-ci.org/[Travis CI] looked a bit tenuous when I star
 After looking around, I settled on the following for continuous integration:
 
 . https://github.com/lambdaisland/kaocha[Kaocha] for running Clojure unit tests.
-. an upgraded https://github.com/bensu/doo[doo] for running ClojureScript unit tests under node and chrome headless. I considered Koacha's cljs support and will reconsider when it matures a bit.
-. I fail the build when:
-.. a lint with https://github.com/borkdude/clj-kondo[clj-kondo] produces any warnings
-.. a special ClojureScript build uncovers any unwanted deprecated calls - this check may someday be taken over by clj-kondo.
+. moved from lein-doo to https://github.com/Olical/cljs-test-runner[cljs-test-runner] (which still uses https://github.com/bensu/doo[doo] under the hood) for running ClojureScript unit tests under node and chrome headless. I considered Koacha's cljs support and will reconsider when it matures a bit.
+. I fail the build when a lint with https://github.com/borkdude/clj-kondo[clj-kondo] produces any warnings
 
 During development, I found the following helpful:
 
-. kaocha --watch for clojure
+. kaocha in watch mode for clojure
 . figwheel main for clojurescript
-
 
 == General Decisions
 
@@ -277,12 +274,14 @@ I also extended import-vars to rewrite-clj's purposes by adding a facility to re
 All is not entirely rainbows and unicorns yet,
 
 . I am not certain, but I think import-vars might not play well with https://github.com/cloverage/cloverage[cloverage]. I gave it a quick try and it failed miserably. My first suspect is import-vars.
-. Linters like https://github.com/candid82/joker[joker] and https://github.com/borkdude/clj-kondo[clj-kondo] don't know what import-vars intent is and can report false positives.
+. Linters can report false posistives
+.. https://github.com/candid82/joker[joker] has no concept of import-vars
+.. https://github.com/borkdude/clj-kondo[clj-kondo] does understand import-vars - but not my customized version that handles transformations of symbols.
 
 === Positional support
 rewrite-clj
 
-1. added a custom zipper to optionally track row/col within your Clojure/ClojureScript/EDN file.
+1. added a custom zipper to optionally track row/col within Clojure/ClojureScript/EDN files.
 2. expresses positions as a `[row-number col-number]` vector.
 
 rewrite-cljs
