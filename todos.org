@@ -14,7 +14,6 @@
 ** TODO refine cljs namespace alias lookup
     Allow a client to provide a resolver fn rather than just a data binding.  The default will be clojure tools reader *ns-alias* but
     should be over-rideable to whatever the client wants.
-** TODO consider spec
 ** TODO make a coherent commit history from my spike experiments?
     My path was circuitous.. and based off rewrite-cljs... can/I/should/I do some major squashing?
 ** TODO consider separating import-vars transform support
@@ -22,39 +21,11 @@
    Perhaps create a separate import-vars-as fn to isolate transform support.
 ** Testing
 *** TODO test under advanced optimizations
-    another tip from borkdude
-    actually should do this soon because it might invalidate cljs import-vars
-    I see two things broken by advanced:
-       trying to print out name of record
-       sexpr on auto-resolve namespace keywords ::these-guys
-*** TODO test under self-hosted cljs
-    First thing broken:
-    - can't find potemkin helper.
-    ---
-    again borkdude.
-
-    borkdude [8:49 AM]
-    it could work, just something to be aware of. also I’d test if it works under self-hosted CLJS (e.g. Planck or Lumo)
-    (some CLJC libraries I have are tested in 3 ways on CI: clojure, advanced CLJS, self-hosted CLJS)
-    you’ll be surprised how often it doesn’t work directly :wink: (edited)
-    but in most cases things are fixable (edited)
-
-    lread [8:51 AM]
-    Thanks for the tips. I doubt that it works under self hosted cljs.
-
-    borkdude [8:52 AM]
-    well, the analyzer also works in self-hosted I think, so it might
-
-    lread [8:52 AM]
-    But I really don’t understand self hosted cljs yet.
-    Another todo for me, thanks.
-
-    borkdude [8:53 AM]
-    example project: https://github.com/borkdude/respeced/blob/master/script/test (edited)
-
-    lread [8:54 AM]
-    very helpful, thanks!
-
+    initial test under with node advanced pushed
+*** TODO what is browser target for cljs?
+    noticed that cljs-test-runner explicitly sets :browser for target
+    my scripts override this... and probably should not.
+    what does it mean to run with a cljs target of nil in a browser?
 *** TODO can I verify that I have not broken the api?
     Would like to automatically verify all is good for clj and cljs
     Sooo... get current cljs api, current clj api and compare with my api to make sure at least signatures are the same.
@@ -142,15 +113,11 @@
     lread [8:45 AM]
     I have created a version of import-vars for cljs within my rewrite-clj/rewrite-clj merge effort. I did it as a learning effort but since the concept is so contentious I questioned myslef often. :grimacing: It also led me here to cljdoc because the cljdoc codox fork needed to be updated to support cljs import-vars.
 
-*** TODO code coverage? Would be very good to know if coverage is weak in areas I have touched.
-    I did experiment with this but got a whack of errors maybe due to import-vars?
 *** TODO review cljs specific tests
     - node_test.cljs
     - paredit_test.cljs - this is a cljs specific feature… will see if it fits into cli version as well
     - zip_tests.cljs
-    Ran cloverage and it generated a good report but also failed many tests.  Not sure why.
 ** Docs & API
-*** TODO include change logs from both rewrite-cljs and rewrite-clj
 *** TODO give guidance on the limitations of sexpr
     from discussion with @sogaiu and @borkdude on slack
 
@@ -253,7 +220,7 @@
     yeah, exactly (edited)
     I have also made a few predicates like `symbol-token?` so I don’t need to sexpr to check if it’s a symbol
 *** TODO push along my PR to support import-vars in cljs for cljdoc
-*** TODO verify my guess at doc string for prefix and suffix
+*** TODO verify my guess at doc string for rewrite-clj prefix and suffix fns
 *** TODO subedit could use some examples
 ** Review all TODOS in source code
 ** Language differences from library perspective
@@ -278,12 +245,7 @@
 *** TODO experiment with sexprs across lang differences
 *** TODO experiment with coerce across lang differences
 *** TODO consider not using sepxr internally - I expect it will be an interop problemo
-** Performance
-*** TODO are rundis' optimizations still valid today?
-*** TODO research what others are doing for benchmarking… would like to know if I am making things slower.
 ** Deployment
-*** TODO make sure I understand deploy requirements for cljs - what goes into the jar?
-    Just the source, I think...
 *** TODO deploy scripts
     Am moving away form lein to tools deps.  For cldoc-exerciser, I tried using maven to package and deploy.
     This seems to be a solid way to go and avoids the confusion of the many competing clojure libraries.
@@ -434,6 +396,7 @@
 
    for string and symbol, i guess the guts of the -token predicates (e.g. (:value token)) above might work.  may be those guts, after being externalized into functions, can be called from the predicates?
 ** TODO consider speculative kaocha plugin
+** TODO consider spec
 * interop notes
   Differences between Clojure and ClojureScript
   - throws are bit different
