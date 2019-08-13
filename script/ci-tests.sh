@@ -9,6 +9,7 @@ set -eou pipefail
 ./script/cljs-tests.sh --env node --optimizations none
 ./script/cljs-tests.sh --env node --optimizations advanced
 ./script/cljs-tests.sh --env chrome-headless --optimizations none
+./script/cljs-tests.sh --env chrome-headless --optimizations advanced
 if [[ ${OSTYPE} =~ ^darwin* ]] || [ "${OSTYPE}" == "linux-gnu" ];then
     ./script/cljs-tests.sh --env planck          --optimizations none
 else
