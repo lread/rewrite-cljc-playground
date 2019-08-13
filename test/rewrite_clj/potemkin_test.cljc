@@ -7,19 +7,12 @@
                             ;; macros need to be required for cljs
                             [rewrite-clj.potemkin-test :refer [t-macro t-macro-doc mod-t-macro mod-t-macro-doc]])))
 
-;; import macros in clj context to make them available for both clj and cljs
-#?(:clj
-   (import-vars
-    [rewrite-clj.potemkin-t1 t-macro t-macro-doc]
-    {:sym-to-pattern "mod-@@orig-name@@"
-     :doc-to-pattern "Orig sym: @@orig-name@@, orig doc: @@orig-doc@@"}
-    [rewrite-clj.potemkin-t2 t-macro t-macro-doc]))
-
-;; import rest non-macros both contexts
 (import-vars
+ [rewrite-clj.potemkin-t1 t-macro t-macro-doc]
  [rewrite-clj.potemkin-t1 t-def t-def-doc t-fn t-fn-doc]
  {:sym-to-pattern "mod-@@orig-name@@"
   :doc-to-pattern "Orig sym: @@orig-name@@, orig doc: @@orig-doc@@"}
+ [rewrite-clj.potemkin-t2 t-macro t-macro-doc]
  [rewrite-clj.potemkin-t2 t-def t-def-doc t-fn t-fn-doc])
 
 (defn- get-meta

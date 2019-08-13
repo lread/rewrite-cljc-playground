@@ -43,7 +43,7 @@
 
 (defn- resolve-sym [sym]
   (or (ana-api/resolve @env/*compiler* sym)
-      (throw (ex-info "potemkin cljs does not recognize symbol" {:symbol 'sym}))))
+      (throw (ex-info (str "potemkin cljs does not recognize symbol: " sym) {:symbol sym}))))
 
 (defn- adjust-var-meta! [target-ns target-name src-sym]
   (let [src-ns (symbol (namespace src-sym))
@@ -71,17 +71,20 @@
      (adjust-var-meta! target-ns target-name src-sym)))
   nil)
 
+
 (defmacro import-vars
   "Imports a list of vars from other namespaces with optional renaming and doc string altering."
   [& raw-syms]
   (let [import-data (helper/syms->import-data raw-syms resolve-sym meta-from-resolved)
+        import-data-filtered #?(;; silently skip over macros for cljs JVM, they must be included by clj
+                                :clj (filter (fn [[_ type _ _]] (not (= :macro type))) import-data)
+                                ;; import all, including macros, for cljs JavaScript (aka bootstrapped cljs, aka self-hosted cljs)
+                                :cljs import-data)
         import-cmds (map
-                     (fn [[src-sym type new-name new-meta]]
-                       (if (= :macro type)
-                         (throw (ex-info "potemkin cljs cannot import macros, do macro importing via potemkin clj" {:symbol src-sym}))
-                         `(def ~(with-meta new-name (dissoc new-meta :name)) ~src-sym)))
-                     import-data)
-        cmds (concat import-cmds [`(fixup-vars ~*ns* ~@import-data)])]
+                     (fn [[src-sym _type new-name new-meta]]
+                       `(def ~(with-meta new-name (dissoc new-meta :name)) ~src-sym))
+                     import-data-filtered)
+        cmds (concat import-cmds [`(fixup-vars ~*ns* ~@import-data-filtered)])]
     `(do ~@cmds)))
 
 ;; --- potemkin.types

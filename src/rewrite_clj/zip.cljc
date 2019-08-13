@@ -160,13 +160,6 @@
   #?(:cljs (:require-macros [rewrite-clj.zip]
                             [rewrite-clj.potemkin.cljs :refer [import-vars]])))
 
-;; import macros for both clj and cljs
-#?(:clj
-   (import-vars
-    [rewrite-clj.zip.subedit
-     edit-> edit->>
-     subedit-> subedit->>]))
-
 (import-vars
  [rewrite-clj.custom-zipper.core
   node position position-span root]
@@ -193,7 +186,6 @@
   find-tag find-next-tag
   find-value find-next-value
   find-token find-next-token
-  ;; clsj extras
   find-last-by-pos
   find-tag-by-pos]
 
@@ -208,7 +200,6 @@
 
  [rewrite-clj.zip.removez
   remove
-  ;; cljs extras
   remove-preserve-newline]
 
  [rewrite-clj.zip.seqz
@@ -219,7 +210,9 @@
  [rewrite-clj.zip.subedit
   edit-node
   subedit-node
-  subzip]
+  subzip
+  edit-> edit->>
+  subedit-> subedit->>]
 
  [rewrite-clj.zip.walk
   prewalk

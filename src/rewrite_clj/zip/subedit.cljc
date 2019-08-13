@@ -38,21 +38,19 @@
     (assert (not (nil? zloc')) "function applied in 'edit-node' returned nil.")
     (move-to zloc' (path zloc))))
 
-#?(:clj
-   (defmacro edit->
-     "Like `->`. Threads `zloc` through forms.
-      The resulting zipper will be located at the same path (i.e. the same
-      number of downwards and right movements from the root) as incoming `zloc`."
-     [zloc & body]
-     `(edit-node ~zloc #(-> % ~@body))))
+(defmacro edit->
+  "Like `->`. Threads `zloc` through forms.
+   The resulting zipper will be located at the same path (i.e. the same
+   number of downwards and right movements from the root) as incoming `zloc`."
+  [zloc & body]
+  `(edit-node ~zloc #(-> % ~@body)))
 
-#?(:clj
-   (defmacro edit->>
-     "Like `->>`. Threads `zloc` through forms.
-      The resulting zipper will be located at the same path (i.e. the same
-      number of downwards and right movements from the root) as incoming `zloc`."
-     [zloc & body]
-     `(edit-node ~zloc #(->> % ~@body))))
+(defmacro edit->>
+  "Like `->>`. Threads `zloc` through forms.
+   The resulting zipper will be located at the same path (i.e. the same
+   number of downwards and right movements from the root) as incoming `zloc`."
+  [zloc & body]
+  `(edit-node ~zloc #(->> % ~@body)))
 
 ;; ## Sub-Zipper
 
@@ -71,16 +69,14 @@
     (assert (not (nil? zloc')) "function applied in 'subedit-node' returned nil.")
     (z/replace zloc (z/root zloc'))))
 
-#?(:clj
-   (defmacro subedit->
-     "Like `->`. Threads `zloc`, as an isolated sub-tree through forms, then zips
-      up to, and locates at, the root of the modified sub-tree."
-     [zloc & body]
-     `(subedit-node ~zloc #(-> % ~@body))))
+(defmacro subedit->
+  "Like `->`. Threads `zloc`, as an isolated sub-tree through forms, then zips
+   up to, and locates at, the root of the modified sub-tree."
+  [zloc & body]
+  `(subedit-node ~zloc #(-> % ~@body)))
 
-#?(:clj
-   (defmacro subedit->>
-     "Like `->`. Threads `zloc`, as an isolated sub-tree through forms, then zips
+(defmacro subedit->>
+  "Like `->`. Threads `zloc`, as an isolated sub-tree through forms, then zips
       up to, and locates at, the root of the modified sub-tree."
-     [zloc & body]
-     `(subedit-node ~zloc #(->> % ~@body))))
+  [zloc & body]
+  `(subedit-node ~zloc #(->> % ~@body)))

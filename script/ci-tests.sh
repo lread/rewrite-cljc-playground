@@ -8,3 +8,4 @@ set -eou pipefail
 ./script/clj-tests.sh 1.10
 ./script/cljs-tests.sh --env node --optimizations none
 ./script/cljs-tests.sh --env chrome-headless --optimizations none
+./script/cljs-tests.sh --env planck --optimizations none

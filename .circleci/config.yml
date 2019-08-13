@@ -24,6 +24,22 @@ commands:
     steps:
       - checkout
 
+      - run:
+          name: Update linux packages
+          command: |
+            sudo apt-get update
+            # packages needed for planck
+            sudo apt-get install -y javascriptcoregtk-4.0 libglib2.0-dev libzip-dev libcurl4-gnutls-dev
+
+      - run:
+          name: Install planck
+          command: |
+            curl -O https://planck-repl.org/releases/2.24.0-debian-9.0-x86_64/planck
+            chmod +x planck
+            echo e19e28efb00733912c8cf114e56da10b  planck | md5sum --check
+            sudo mv planck /usr/local/bin
+            planck --version
+
       - restore_cache:
           keys:
             - v1-npm-dependencies-{{ checksum "package-lock.json" }}

@@ -9,8 +9,6 @@
 
 (defn t-fn-doc "function with doc" [arg] arg)
 
-#?(:clj
-   (defmacro t-macro [a] a))
+(defmacro t-macro [a] a)
 
-#?(:clj
-   (defmacro t-macro-doc "macro with doc" [a b c d] `(str ~a ~b ~c ~d)))
+(defmacro t-macro-doc "macro with doc" [a b c d] `(str ~a ~b ~c ~d))

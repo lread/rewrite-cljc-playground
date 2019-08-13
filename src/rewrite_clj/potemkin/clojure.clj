@@ -31,7 +31,7 @@
 
 (defn- resolve-sym [sym]
   (or (resolve sym)
-      (throw (ex-info "potemkin clj does not recognize symbol" {:symbol sym}))))
+      (throw (ex-info (str "potemkin clj does not recognize symbol: " sym) {:symbol sym}))))
 
 (defn- resolve-fn-location[var-meta]
   (if-let [p (:protocol var-meta)]
