@@ -19,12 +19,16 @@
 ** TODO consider separating import-vars transform support
    clj-kondo does understand import-vars now, but it does not understand the transform support I added to it.
    Perhaps create a separate import-vars-as fn to isolate transform support.
+   as borkdude suggested, this could also be an opportunity to "decomplect" my strategy.
 ** Testing
+*** TODO study borkdude parser
+    Distilled parser down to 140 lines: https://github.com/borkdude/sci/blob/master/src/sci/impl/parser.cljc
+    Can we apply to rewrite-cljc?
 *** TODO test under advanced optimizations
-    initial test under with node advanced pushed
+    initial tests under with node advanced pushed
 *** TODO what is browser target for cljs?
     noticed that cljs-test-runner explicitly sets :browser for target
-    my scripts override this... and probably should not.
+    my scripts override target to nil... and probably should not.
     what does it mean to run with a cljs target of nil in a browser?
 *** TODO can I verify that I have not broken the api?
     Would like to automatically verify all is good for clj and cljs
