@@ -58,6 +58,7 @@ During this work, I noticed how pervasive rewrite-clj usage is. This discovery o
 . https://github.com/bhauman/figwheel-main[figwheel-main] which uses https://github.com/bhauman/rebel-readline[rebel-readline] which uses rewrite-clj
 . https://github.com/Olical/depot[depot] uses rewrite-clj
 . https://github.com/clojure-emacs/cider[cider] which can optionally enable https://github.com/clojure-emacs/clj-refactor.el[clj-refactor] which brings in rewrite-clj
+. https://github.com/cognitect-labs/REBL-distro[REBL] which uses cljfmt which uses rewrite-clj
 
 == Tooling
 
