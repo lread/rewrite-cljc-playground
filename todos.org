@@ -254,6 +254,11 @@
     Am moving away form lein to tools deps.  For cldoc-exerciser, I tried using maven to package and deploy.
     This seems to be a solid way to go and avoids the confusion of the many competing clojure libraries.
     Consider using garmamond to update the pom - doing that with maven was a bit awkward/slow.
+*** TODO migrate to clj-commons
+    This project will replace rewrite-cljs on clj-commons as rewrite-cljc
+    Commit history - I have preserved commit history from rewrite-cljs which shares some history with rewrite-clj.
+    Git issues - Also be nice to preserve git issues. I think I can transfer over any git issues I created here to clj-commons/rewrite-cljs.
+
 * Later
 ** TODO consider allowing metadata to be a child
    of interest to borkdude - and more generally probably
@@ -411,6 +416,7 @@
   - format not part of cljs standard lib
   - no Character in cljs
   - no ratios in cljs
+  - testing for NaN is different
   - different max numerics
 
 * From rundis
