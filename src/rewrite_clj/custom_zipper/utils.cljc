@@ -65,7 +65,7 @@
   [loc]
   (if (z/custom-zipper? loc)
     (let [{:keys [left]} loc]
-      (if (seq left)
+      (when (seq left)
         (let [[lnode lpos] (peek left)]
           (assoc loc
                  :changed? true
@@ -73,7 +73,7 @@
                  :position lpos
                  :left (pop left)))))
     (let [[_ {:keys [l] :as path}] loc]
-      (if (seq l)
+      (when (seq l)
         (with-meta
           [(peek l) (-> path
                         (update-in [:l] pop)
@@ -86,14 +86,14 @@
   [loc]
   (if (z/custom-zipper? loc)
     (let [{:keys [right]} loc]
-      (if (seq right)
+      (when (seq right)
         (assoc loc
                :changed? true
                :node (first right)
                :right (next right))))
 
     (let [[_ {:keys [r] :as path}] loc]
-      (if (seq r)
+      (when (seq r)
         (with-meta
           [(first r) (-> path
                          (update-in [:r] next)

@@ -70,7 +70,7 @@
 (defn child-sexprs
   "Return all children converted to forms."
   [node]
-  (if (inner? node)
+  (when (inner? node)
     (sexprs (children node))))
 
 ;; ## Coerceable

@@ -27,7 +27,7 @@
       (if aliased?
         (u/throw-reader reader ":namespaced-map expected namespace alias or map")
         (u/throw-reader reader ":namespaced-map expected namespace prefix"))
-      :else (node/token-node (keyword (str (if aliased? ":") (node/string k)))))))
+      :else (node/token-node (keyword (str (when aliased? ":") (node/string k)))))))
 
 (defn- parse-upto-printable
   [reader read-next]

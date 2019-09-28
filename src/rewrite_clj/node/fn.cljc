@@ -14,7 +14,7 @@
     (vec
       (concat
         syms
-        (if vararg
+        (when vararg
           (list '& vararg))))
     body))
 
@@ -55,7 +55,7 @@
                form)]
     (construct-fn
       (take @max-n (rest syms))
-      (if @vararg?
+      (when @vararg?
         (first syms))
       body)))
 

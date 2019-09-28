@@ -119,7 +119,7 @@
   (try
     (let [chrome (chrome)
           result (shell/sh chrome "--version")]
-      (if (= 0 (:exit result))
+      (when (= 0 (:exit result))
         {:exe chrome
          :version (string/trim (:out result))}))
     (catch Exception _e)))
@@ -135,7 +135,7 @@
                              "--default-background-color=0"
                              "--hide-scrollbars"
                              html-file)]
-        (if (not (= 0 (:exit result)))
+        (when (not (= 0 (:exit result)))
           (throw (ex-info "png generation failed" result))))
       (finally
         (FileUtils/deleteQuietly (io/file html-file))))))
@@ -175,7 +175,7 @@
                     :images-dir "./doc/generated/contributors"}
         contributors (edn/read-string (slurp contributors-source))]
     (println "--[updating docs to honor those who contributed]--")
-    (if (not (check-prerequesites))
+    (when (not (check-prerequesites))
       (System/exit 1))
     (println "contributors source:" contributors-source)
     (generate-contributor-images contributors image-opts)
