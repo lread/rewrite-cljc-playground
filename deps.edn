@@ -20,14 +20,14 @@
                          :extra-paths ["test"]}
 
            ;; koacha for clojure testing
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "0.0-521"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "0.0-541"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0-70"}}
                     :main-opts ["-m" "kaocha.runner"]}
 
            ;; figwheel for clojurescript testing during dev
            :fig-test {;; note that rebel readline uses rewrite-clj internally and for that
                       ;; reason we do not include it.
-                      :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.1"}}
+                      :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}
                       :extra-paths ["target" "test"]
                       :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
 
