@@ -22,3 +22,4 @@ nashorn_code_cache
 *.iml
 .dir-locals.el
 .rebl
+.DS_Store
