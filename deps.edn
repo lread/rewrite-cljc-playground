@@ -13,14 +13,14 @@
            ;;
            ;; Test support
            ;;
-           :clj-kondo {:extra-deps {clj-kondo {:mvn/version "2019.09.22-alpha"}}
+           :clj-kondo {:extra-deps {clj-kondo {:mvn/version "2019.10.11-alpha"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "0.10.0"}}
                          :extra-paths ["test"]}
 
            ;; koacha for clojure testing
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "0.0-541"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "0.0-554"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0-70"}}
                     :main-opts ["-m" "kaocha.runner"]}
 
@@ -51,5 +51,4 @@
                       ;; I think I would exclude this project's src paths if I could do so easily, but I instead
                       ;; exclude rewrite-clj dep in depot
                       :extra-deps {olical/depot {:mvn/version "1.8.4" :exclusions [rewrite-clj/rewrite-clj]}}
-                      :main-opts ["-m" "depot.outdated.main"]}
-           }}
+                      :main-opts ["-m" "depot.outdated.main"]}}}
