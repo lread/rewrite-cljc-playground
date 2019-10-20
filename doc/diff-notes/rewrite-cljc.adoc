@@ -1,0 +1,16 @@
+The cljs and clj sides of rewrite-cljc have the following differences of note:
+
+1. You'll notice that the clojure api has the ability to deal with files, the
+   clojurescript api does not.
+2. If we were to exclude api namespaces and functions marked with no-doc we
+   link:rewrite-cljc-documented-only.adoc[would see only item 1 as differences].
+   We include them because it seems that historically, internal undocumented
+   features have been used in rewrite-cljs and rewrite-clj.
+3. The clojure api has the extra namespaces that would cause collisions on the
+   clojurescript side. These are all undocumented internal namespaces, but they
+   have historically been used in rewrite-cljs, so they are included here for
+   backwards compatibility.
+
+TODO:
+
+- string-node clj only?

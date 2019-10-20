@@ -44,6 +44,14 @@
                            :extra-deps {hiccup {:mvn/version "1.0.5"}
                                         commons-io/commons-io {:mvn/version "2.6"}}
                            :main-opts ["-m" "update-readme"]}
+
+           ;;
+           ;; Document rewrite-clj* differences
+           ;;
+           :diff-apis {:extra-deps {lread/diff-apis {:git/url "https://github.com/lread/diff-apis"
+                                                     :sha "0c6358ba45668f025a463319a5a9ae6abd9262fc"}}
+                       :main-opts ["-m" "diff-apis.main" "projects"]}
+
            ;;
            ;; Maintenance support
            ;;

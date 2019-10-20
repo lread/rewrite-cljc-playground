@@ -1,0 +1,13 @@
+The api of the last released version of rewrite-clj was used as a reference for
+the rewrite-cljc. As such, you'll notice the apis are almost the same.
+
+There are some differences in arglists. Notably, a macro that rewrite-clj used
+left argument names as gensyms. This has been corrected in rewrite-cljc.
+
+There were some features unique to rewrite-cljs (such as paredit and some
+positional searching) which were brought over to rewrite-cljc. Also the internal
+rewrite-cljs namespaces that were renamed to avoid cljs namespace collisions
+also occur in rewrite-cljc (for example `rewrite.clj.zip.editz` is included and
+functionally the same as `rewrite.clj.zip.edit`).
+
+All other differences are considered internal refactorings.

@@ -67,6 +67,23 @@ and you can too.
 
 https://github.com/borkdude/clj-kondo/blob/master/doc/editor-integration.md[Integrate clj-kondo into your editor] to catch mistakes as they happen.
 
+== API diffs
+
+To generate reports on differences between rewrite-clj, rewrite-cljs and
+rewrite-cljc APIs, run `script/gen-api-diffs.sh`.
+
+Ru this script manually on an as-needed basis. Generated reports are checked in
+to version control.
+
+Reports are generated to `doc/generated/api-diffs/` and include manually written
+notes from `doc/diff-notes/`.
+
+These reports are referenced from other docs, so if you rename files, be sure to
+search for links.
+
+Makes use of https://github.com/lread/diff-apis[diff-apis]. Delete
+`.diff-apis/.cache` if you need a clean run.
+
 == Contributors
 We honor current and past contributors to rewrite-cljc in our README file.
 
