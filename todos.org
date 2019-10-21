@@ -1,10 +1,5 @@
 #+TITLE: rewrite-cljs spike notes
 
-* Changes
-** Accretive
-*** Clojure version gains features that were only in ClojureScript version
-*** Forgotten insert-space-left insert-space-right insert-newline-left insert-newline-right exposed on zip api
-*** Added zip/position-span
 * Todos
 ** TODO investigate
 *** Also a problem for rewrite-cljc? https://github.com/borkdude/clj-kondo/issues/378
@@ -16,10 +11,6 @@
     should be over-rideable to whatever the client wants.
 ** TODO make a coherent commit history from my spike experiments?
     My path was circuitous.. and based off rewrite-cljs... can/I/should/I do some major squashing?
-** TODO consider separating import-vars transform support
-   clj-kondo does understand import-vars now, but it does not understand the transform support I added to it.
-   Perhaps create a separate import-vars-as fn to isolate transform support.
-   as borkdude suggested, this could also be an opportunity to "decomplect" my strategy.
 ** Testing
 *** TODO study borkdude parser
     Distilled parser down to 140 lines: https://github.com/borkdude/sci/blob/master/src/sci/impl/parser.cljc

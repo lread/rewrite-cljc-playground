@@ -5,26 +5,41 @@
   clojure.test.check.properties/for-all clojure.core/let
   rewrite-clj.zip/subedit-> clojure.core/->
   rewrite-clj.zip.subedit/subedit-> clojure.core/->
+  rewrite-clj.zip/subedit->> clojure.core/->>
+  rewrite-clj.zip.subedit/subedit->> clojure.core/->>
   rewrite-clj.zip/edit-> clojure.core/->
   rewrite-clj.zip.subedit/edit-> clojure.core/->
-  rewrite-clj.custom-zipper.switchable/defn-switchable clojure.core/defn}
+  rewrite-clj.zip/edit->> clojure.core/->>
+  rewrite-clj.zip.subedit/edit->> clojure.core/->>
+  rewrite-clj.custom-zipper.switchable/defn-switchable clojure.core/defn
+  rewrite-clj.potemkin.clojure/import-vars potemkin/import-vars
+  rewrite-clj.potemkin.cljs/import-varfs potemkin/import-vars}
  :linters
  {:unresolved-symbol
   {:level :warning
-   :exclude [(rewrite-clj.potemkin.cljs/import-vars)
-             (rewrite-clj.potemkin.clojure/import-vars)
-             ;; TODO: would like to restrict exclusion to potemkin-test t-imports-evaluation-equivalent
-             t-def t-def-doc t-fn t-fn-doc t-macro t-macro-doc mod-t-def mod-t-def-doc mod-t-fn mod-t-fn-doc mod-t-macro mod-t-macro-doc]}
+   :exclude [(rewrite-clj.potemkin.cljs/import-vars-with-mods)
+             (rewrite-clj.potemkin.clojure/import-vars-with-mods)
+             ;; clj-kondo has no concept of import-vars-with-mods so we compensate here
+             mod-t-def mod-t-def-doc mod-t-fn mod-t-fn-doc mod-t-macro mod-t-macro-doc]}
   :unused-namespace
   {:exclude [clojure.test.check]}
   :unused-referred-var
   {:exclude {clojure.test.check [quick-check]}}
   :deprecated-var
-  {:exclude {rewrite-clj.zip/->root-string {:namespaces [rewrite-clj.regression-test]}
-             rewrite-clj.zip/->string {:namespaces [rewrite-clj.regression-test]}
-             rewrite-clj.zip.whitespace/append-space {:namespaces [rewrite-clj.zip.whitespace-test]}
-             rewrite-clj.zip.whitespace/prepend-space {:namespaces [rewrite-clj.zip.whitespace-test]}
-             rewrite-clj.zip.whitespace/append-newline {:namespaces  [rewrite-clj.zip.whitespace-test]}
-             rewrite-clj.zip.whitespace/prepend-newline {:namespaces [rewrite-clj.zip.whitespace-test]}
-             rewrite-clj.node/value {:defs [rewrite-clj.zip.base/value]}}}}
+  {:exclude {rewrite-clj.zip.base/value
+             {:namespaces [rewrite-clj.zip]}
+             rewrite-clj.zip/->root-string
+             {:namespaces [rewrite-clj.regression-test]}
+             rewrite-clj.zip/->string
+             {:namespaces [rewrite-clj.regression-test]}
+             rewrite-clj.zip.whitespace/append-space
+             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             rewrite-clj.zip.whitespace/prepend-space
+             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             rewrite-clj.zip.whitespace/append-newline
+             {:namespaces  [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             rewrite-clj.zip.whitespace/prepend-newline
+             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             rewrite-clj.node/value
+             {:defs [rewrite-clj.zip.base/value]}}}}
  :output {:include-files ["^src" "^test" "script"]}}

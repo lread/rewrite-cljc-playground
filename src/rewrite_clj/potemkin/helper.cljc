@@ -19,34 +19,26 @@
         (:arglists meta-data) :fn
         :else :var))
 
-(defn unravel-syms [x]
+(defn unravel-syms [sym-args]
   (loop [acc []
-         r x
-         cur-opts {}]
-    (if-let [n (first r)]
-      (cond
-        (sequential? n)
-        (recur (apply conj acc (map #(vector (symbol
-                                              (str (first n)
-                                                   (when-let [ns (namespace %)]
-                                                     (str "." ns)))
-                                              (name %))
-                                             cur-opts)
-                                    (rest n)))
-               (rest r)
-               cur-opts)
-
-        (map? n)
-        (recur acc (rest r) n)
-
-        :else
-        (recur (conj acc [n cur-opts]) (rest r) cur-opts))
+         rest-args sym-args]
+    (if-let [next-arg (first rest-args)]
+      (if (sequential? next-arg)
+        (recur (apply conj acc (map #(symbol
+                                      (str (first next-arg)
+                                           (when-let [ns (namespace %)]
+                                             (str "." ns)))
+                                      (name %))
+                                    (rest next-arg)))
+               (rest rest-args))
+        (recur (conj acc next-arg) (rest rest-args)))
       acc)))
 
+
 (defn syms->import-data
-  [syms resolve-fn meta-fn]
+  [syms resolve-fn meta-fn opts]
   (map
-   (fn [[sym opts]]
+   (fn [sym]
      (let [vr (resolve-fn sym)
            m (meta-fn vr)
            n (:name m)]

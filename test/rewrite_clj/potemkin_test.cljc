@@ -2,18 +2,20 @@
   (:require [clojure.test :refer [deftest is are]]
             [rewrite-clj.potemkin-t1 #?@(:cljs [:include-macros true])]
             [rewrite-clj.potemkin-t2 #?@(:cljs [:include-macros true])] )
-  #?(:clj (:require [rewrite-clj.potemkin.clojure :refer [import-vars]])
-     :cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [import-vars]]
+  #?(:clj (:require [rewrite-clj.potemkin.clojure :refer [import-vars import-vars-with-mods]])
+     :cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [import-vars import-vars-with-mods]]
                             ;; macros need to be required for cljs
                             [rewrite-clj.potemkin-test :refer [t-macro t-macro-doc mod-t-macro mod-t-macro-doc]])))
 
 (import-vars
  [rewrite-clj.potemkin-t1 t-macro t-macro-doc]
- [rewrite-clj.potemkin-t1 t-def t-def-doc t-fn t-fn-doc]
+ [rewrite-clj.potemkin-t1 t-def t-def-doc t-fn t-fn-doc])
+
+(import-vars-with-mods
  {:sym-to-pattern "mod-@@orig-name@@"
   :doc-to-pattern "Orig sym: @@orig-name@@, orig doc: @@orig-doc@@"}
  [rewrite-clj.potemkin-t2 t-macro t-macro-doc]
- [rewrite-clj.potemkin-t2 t-def t-def-doc t-fn t-fn-doc])
+ [rewrite-clj.potemkin-t2 t-def t-def-doc t-fn t-fn-doc] )
 
 (defn- get-meta
   "The ns is not copied over for cljs. I *think* that is ok and probably good? Perhaps I should dupe behaviour for clj."

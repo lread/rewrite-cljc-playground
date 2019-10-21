@@ -156,9 +156,9 @@
             [rewrite-clj.zip.walk]
             [rewrite-clj.zip.whitespace]
             [rewrite-clj.custom-zipper.core]
-            #?(:clj [rewrite-clj.potemkin.clojure :refer [import-vars]]))
+            #?(:clj [rewrite-clj.potemkin.clojure :refer [import-vars import-vars-with-mods]]))
   #?(:cljs (:require-macros [rewrite-clj.zip]
-                            [rewrite-clj.potemkin.cljs :refer [import-vars]])))
+                            [rewrite-clj.potemkin.cljs :refer [import-vars import-vars-with-mods]])))
 
 (import-vars
  [rewrite-clj.custom-zipper.core
@@ -226,11 +226,11 @@
   insert-space-left insert-space-right
   insert-newline-left insert-newline-right
   prepend-space append-space
-  prepend-newline append-newline]
+  prepend-newline append-newline])
 
+(import-vars-with-mods
  {:sym-to-pattern "@@orig-name@@*"
   :doc-to-pattern "Raw version of [[@@orig-name@@]].\n\n@@orig-doc@@\n\nNOTE: This function does not skip, nor provide any special handling for whitespace/comment nodes."}
-
  [rewrite-clj.custom-zipper.core
   right left up down
   next prev

@@ -71,12 +71,8 @@
      (adjust-var-meta! target-ns target-name src-sym)))
   nil)
 
-
-(defmacro import-vars
-  "Imports a list of vars from other namespaces with optional renaming and doc string altering."
-  [& raw-syms]
-  (let [import-data (helper/syms->import-data raw-syms resolve-sym meta-from-resolved)
-        import-data-filtered #?(;; silently skip over macros for cljs JVM, they must be included by clj
+(defmacro _import-var-data [import-data]
+  (let [import-data-filtered #?(;; silently skip over macros for cljs JVM, they must be included by clj
                                 :clj (filter (fn [[_ type _ _]] (not (= :macro type))) import-data)
                                 ;; import all, including macros, for cljs JavaScript (aka bootstrapped cljs, aka self-hosted cljs)
                                 :cljs import-data)
@@ -85,7 +81,20 @@
                        `(def ~(with-meta new-name (dissoc new-meta :name)) ~src-sym))
                      import-data-filtered)
         cmds (concat import-cmds [`(fixup-vars ~*ns* ~@import-data-filtered)])]
-    `(do ~@cmds)))
+    `(do ~@cmds)) )
+
+
+(defmacro import-vars
+  "Imports a list of vars from other namespaces."
+  [& raw-syms]
+  (let [import-data (helper/syms->import-data raw-syms resolve-sym meta-from-resolved {})]
+    `(_import-var-data ~import-data)))
+
+(defmacro import-vars-with-mods
+  "Imports a list of vars from other namespaces modifying imports via `opts`. "
+  [opts & raw-syms]
+  (let [import-data (helper/syms->import-data raw-syms resolve-sym meta-from-resolved opts)]
+    `(_import-var-data ~import-data)))
 
 ;; --- potemkin.types
 

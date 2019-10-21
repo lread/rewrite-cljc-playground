@@ -86,11 +86,8 @@
        (alter-meta! (var ~target-name) merge '~new-meta)
        ~vr)))
 
-(defmacro import-vars
-  "Imports a list of vars from other namespaces with optional renaming and doc string altering."
-  [& raw-syms]
-  (let [import-data (helper/syms->import-data raw-syms resolve-sym meta)
-        import-cmds (map
+(defmacro _import-var-data [import-data]
+  (let [import-cmds (map
                      (fn [[sym type target-name new-meta]]
                        (case type
                          :macro `(import-macro ~sym ~target-name ~new-meta)
@@ -98,6 +95,19 @@
                          :var   `(import-def ~sym ~target-name ~new-meta)))
                      import-data)]
     `(do ~@import-cmds)))
+
+
+(defmacro import-vars
+  "Imports a list of vars from other namespaces."
+  [& raw-syms]
+  (let [import-data (helper/syms->import-data raw-syms resolve-sym meta {})]
+    `(_import-var-data ~import-data)))
+
+(defmacro import-vars-with-mods
+  "Imports a list of vars from other namespaces modifying imports via `opts`. "
+  [opts & raw-syms]
+  (let [import-data (helper/syms->import-data raw-syms resolve-sym meta opts)]
+    `(_import-var-data ~import-data)))
 
 ;; --- potemkin.types
 
