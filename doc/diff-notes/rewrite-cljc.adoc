@@ -6,10 +6,8 @@ The cljs and clj sides of rewrite-cljc have the following differences of note:
    link:rewrite-cljc-documented-only.adoc[would see only item 1 as differences].
    We include them because it seems that historically, internal undocumented
    features have been used in rewrite-cljs and rewrite-clj.
-3. The clojure api has the extra namespaces that would cause collisions on the
-   clojurescript side. These are all undocumented internal namespaces, but they
-   have historically been used in rewrite-cljs, so they are included here for
-   backwards compatibility.
+3. The clojurescript api is missing the clojure namespaces that cause
+   link:../../design/01-merging-rewrite-clj-and-rewrite-cljs.adoc#_clojurescript_namespace_clashes[namespace clashes on the clojurescript side].
 
 TODO:
 
