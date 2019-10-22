@@ -1,6 +1,6 @@
 = Merging rewrite-clj and rewrite-cljs
 :toc:
-
+:toclevels: 6
 == Introduction
 rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] with https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] giving us a one stop rewrite-clj shop for Clojure and ClojureScript developers.
 
@@ -206,21 +206,34 @@ After a certain amount of work, I realized the majority of the code was cljc so 
 ....
 
 == Questionable Decisions
-=== Customizing keyword reading
+
+=== Allowing garden style keywords
 
 Borkdude is kind enough to ping me when there are issues with the internally
 forked version of rewrite-clj he uses for clj-kondo. It turns out that
 clojure.tools.reader.edn does not parse https://github.com/noprompt/garden[garden-style]
 keywords such as `:&::before`. The reader sees a double colon as illegal if it is anywhere in the keyword.
 Borkdude overcame this limitation by allowing a keyword to contain embedded
-double colons via a customized version of clojure.tools.reader.edn's
-read-keyword.
+double colons via a customized version of ``clojure.tools.reader.edn``'s
+`read-keyword` function.
 
 I transcribed his work to rewrite-cljc.
 
 The maintenance cost to hacking a 3rd party lib is that upgrades will have to be
 carefully tracked. That said, we do have a good suite of tests that should
 uncover any issues.
+
+=== Not allowing symbols with multiple slashes
+
+While clojure reads `'org/clojure/math.numeric-tower`, `clojure.tools.reader.edn`
+barfs on this and therefore rewrite-cljc does as well.
+
+It has been documented as illegal for a symbol to have more than one `/`.
+
+I have opted to not, at this time, adapt rewrite-cljc to allow parsing of this
+illegal syntax. This might seem a bit hypocritical because I did, some time ago, innocently
+https://github.com/borkdude/clj-kondo/issues/378[raise an issue on clj-kondo for
+this].
 
 == Clojure/ClojureScript Issues
 
