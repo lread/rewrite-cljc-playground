@@ -175,6 +175,7 @@ rewrite-cljc is going to switch to a ClojureScript-ish scheme. +
 It will use a `major.minor.<commit count since major.minor>-<qualifier>` scheme. +
 Our first version will be `1.0.42-alpha` where `42` is just a wild guess right now.
 
+
 === Source directory layout
 When I first started to experiment with a cljc version of rewrite-clj, my directory layout looked like:
 [svgbob]
@@ -203,6 +204,23 @@ After a certain amount of work, I realized the majority of the code was cljc so 
 |-test
 | '-rewrite-clj
 ....
+
+== Questionable Decisions
+=== Customizing keyword reading
+
+Borkdude is kind enough to ping me when there are issues with the internally
+forked version of rewrite-clj he uses for clj-kondo. It turns out that
+clojure.tools.reader.edn does not parse https://github.com/noprompt/garden[garden-style]
+keywords such as `:&::before`. The reader sees a double colon as illegal if it is anywhere in the keyword.
+Borkdude overcame this limitation by allowing a keyword to contain embedded
+double colons via a customized version of clojure.tools.reader.edn's
+read-keyword.
+
+I transcribed his work to rewrite-cljc.
+
+The maintenance cost to hacking a 3rd party lib is that upgrades will have to be
+carefully tracked. That said, we do have a good suite of tests that should
+uncover any issues.
 
 == Clojure/ClojureScript Issues
 
