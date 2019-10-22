@@ -9,105 +9,12 @@
 ** TODO make a coherent commit history from my spike experiments?
     My path was circuitous.. and based off rewrite-cljs... can/I/should/I do some major squashing?
 ** Testing
-*** TODO study borkdude parser
-    Distilled parser down to 140 lines: https://github.com/borkdude/sci/blob/master/src/sci/impl/parser.cljc
-    Can we apply to rewrite-cljc?
-*** TODO test under advanced optimizations
-    initial tests under with node advanced pushed
 *** TODO what is browser target for cljs?
     noticed that cljs-test-runner explicitly sets :browser for target
     my scripts override target to nil... and probably should not.
     what does it mean to run with a cljs target of nil in a browser?
-*** TODO can I verify that I have not broken the api?
-    Would like to automatically verify all is good for clj and cljs
-    Sooo... get current cljs api, current clj api and compare with my api to make sure at least signatures are the same.
-    Should not be terribly difficult but are there any tools for this?
-
-    borkdude suggested maybe clj-kondo but I am not sure if that will work with import-vars
-
-    borkdude [5:07 AM]
-    @lread you can use clj-kondo for this, I could explain how. but since this is not part of a public contract, I haven’t documented this anywhere :wink: (edited)
-
-    borkdude [5:45 AM]
-    @lread quick REPL session:
-    ```$ clj
-    Clojure 1.10.0
-    user=> (require '[clj-kondo.impl.cache :as cache])
-    nil
-    user=> (require '[clj-kondo.core :as clj-kondo])
-    user=> (clj-kondo/run! {:lint ["/tmp/rewrite-clj/src"] :cache "/tmp/rewrite-clj"})
-    ...
-    user=> (clj-kondo/run! {:lint ["/tmp/rewrite-cljs-playground/src"] :cache "/tmp/playground"})
-    ...
-    user=> (cache/from-cache "/tmp/rewrite-clj/2019.06.02-alpha-SNAPSHOT" :clj ['rewrite-clj.parser.core])
-    {rewrite-clj.parser.core {dispatch {:fixed-arities #{1}, :private? true, :ns rewrite-clj.parser.core, :name dispatch, :base-lang :clj, :lang :clj, :col 1, :row 17}, parse-next {:fixed-arities #{1}, :ns rewrite-clj.parser.core, :name parse-next, :base-lang :clj, :lang :clj, :col 1, :row 33}, parse-delim {:fixed-arities #{2}, :private? true, :ns rewrite-clj.parser.core, :name parse-delim, :base-lang :clj, :lang :clj, :col 1, :row 39}, parse-printables {:private? true, :ns rewrite-clj.parser.core, :name parse-printables, :base-lang :clj, :var-args-min-arity 3, :lang :clj, :col 1, :row 46}, :source :disk}}
-
-    user=> (cache/from-cache "/tmp/playground/2019.06.02-alpha-SNAPSHOT" :cljc ['rewrite-clj.parser.core])
-    {rewrite-clj.parser.core {:clj {dispatch {:fixed-arities #{1}, :private? true, :ns rewrite-clj.parser.core, :name dispatch, :base-lang :cljc, :lang :clj, :col 1, :row 16}, parse-next {:fixed-arities #{0}, :ns rewrite-clj.parser.core, :name parse-next, :base-lang :cljc, :lang :clj, :col 1, :row 32}, parse-delim {:fixed-arities #{1}, :private? true, :ns rewrite-clj.parser.core, :name parse-delim, :base-lang :cljc, :lang :clj, :col 1, :row 38}, parse-printables {:private? true, :ns rewrite-clj.parser.core, :name parse-printables, :base-lang :cljc, :var-args-min-arity 2, :lang :clj, :col 1, :row 45}}, :cljs {dispatch {:fixed-arities #{1}, :private? true, :ns rewrite-clj.parser.core, :name dispatch, :base-lang :cljc, :lang :cljs, :col 1, :row 16}, parse-next {:fixed-arities #{1}, :ns rewrite-clj.parser.core, :name parse-next, :base-lang :cljc, :lang :cljs, :col 1, :row 32}, parse-delim {:fixed-arities #{2}, :private? true, :ns rewrite-clj.parser.core, :name parse-delim, :base-lang :cljc, :lang :cljs, :col 1, :row 38}, parse-printables {:private? true, :ns rewrite-clj.parser.core, :name parse-printables, :base-lang :cljc, :var-args-min-arity 3, :lang :cljs, :col 1, :row 45}}, :source :disk}}```
-    (edited)
-    using the last two values, you could e.g. use https://github.com/lambdaisland/deep-diff to find differences (edited)
-    please note that the cache namespace in clj-kondo is an implementation detail and might break in a future version :wink: (edited)
-
-    martinklepsch [5:53 AM]
-    A similar approach could be taken with the data in cljdoc but that's still a bit hard to get to unless you're willing to add this to cljdoc directly
-
-    martinklepsch [5:54 AM]
-    We should really get this API thing worked out :slightly_smiling_face:
-
-    borkdude [5:54 AM]
-    adding to cljdoc directly would make sense?
-
-    martinklepsch [5:54 AM]
-    oh yeah, that's what I'd love to see
-
-    borkdude [5:54 AM]
-    but then it would maybe not work for libraries that are forks and renamed versions of others
-    unless you would make a “compare to” thingy
-
-    martinklepsch [5:55 AM]
-    like a "mechanical changelog" where you can compare two versions of the same lib and you see the (obvious) API differences (changed arities etc)
-
-    borkdude [5:57 AM]
-    yeah, but in lread’s case he’s doing a reworked version of some other library he’s trying to remain compatible with
-    so it’s not the same lib, different clojars coordinates (edited)
-    for accepting PRs this would also be useful (edited)
-
-    martinklepsch [6:05 AM]
-    ah right, that's a bit of a different thing
-
-    borkdude [6:10 AM]
-    but the automatic changelog is good to start with probably
-    and later a “compare to” option can be added maybe
-
-    martinklepsch [6:11 AM]
-    yeah, or an API so people can do whatever :slightly_smiling_face:
-
-    borkdude [6:34 AM]
-    that’s even better. the automatic changelog could then use that API
-
-    lread [8:09 AM]
-    That’s interesting @borkdude! Thanks for sharing the details!
-
-    borkdude [8:10 AM]
-    @lread yeah, for one-off things it’s pretty easy to make a script out of it for your use case
-
-    lread [8:19 AM]
-    my original thought was, as @martinklepsch was suggesting, to look at publics via analyzers like cljdocs version of codox does. I thought this might work better because rewrite-clj makes use of a version of potemkin (hotly debated) import-vars. (edited)
-
-    martinklepsch [8:19 AM]
-    It always comes back to `import-vars` :smile:
-
-    borkdude [8:22 AM]
-    now that you mention it, clj-kondo should probably support that too :wink:
-    does that also work in cljs?
-    probably not :wink:
-
-    lread [8:45 AM]
-    I have created a version of import-vars for cljs within my rewrite-clj/rewrite-clj merge effort. I did it as a learning effort but since the concept is so contentious I questioned myslef often. :grimacing: It also led me here to cljdoc because the cljdoc codox fork needed to be updated to support cljs import-vars.
-
 *** TODO review cljs specific tests
     - node_test.cljs
-    - paredit_test.cljs - this is a cljs specific feature… will see if it fits into cli version as well
     - zip_tests.cljs
 ** Docs & API
 *** TODO give guidance on the limitations of sexpr
@@ -212,6 +119,8 @@
     yeah, exactly (edited)
     I have also made a few predicates like `symbol-token?` so I don’t need to sexpr to check if it’s a symbol
 *** TODO push along my PR to support import-vars in cljs for cljdoc
+*** TODO push along my PR to support asciidoc formatting for cljdoc
+     My docs kind of look horrible in cljdoc right now.
 *** TODO verify my guess at doc string for rewrite-clj prefix and suffix fns
 *** TODO subedit could use some examples
 ** Review all TODOS in source code
@@ -394,22 +303,3 @@
    for string and symbol, i guess the guts of the -token predicates (e.g. (:value token)) above might work.  may be those guts, after being externalized into functions, can be called from the predicates?
 ** TODO consider speculative kaocha plugin
 ** TODO consider spec
-* interop notes
-  Differences between Clojure and ClojureScript
-  - throws are bit different
-  - catch Throwable
-  - ns def must be verbose version
-  - macros must be included differently
-  - IMetaData and other base types different
-  - format not part of cljs standard lib
-  - no Character in cljs
-  - no ratios in cljs
-  - testing for NaN is different
-  - different max numerics
-
-* From rundis
-   - http://rundis.github.io/blog/2015/clojurescript_performance_tuning.html
-* Tool notes
-** using figwheel main for testing
-   Needs a dummy main to call if used only for testing
-   Cannot use rebel readline for this project as rebel readline uses rewrite-clj and we get conflicts

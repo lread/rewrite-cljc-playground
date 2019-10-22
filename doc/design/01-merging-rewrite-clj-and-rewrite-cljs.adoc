@@ -15,7 +15,7 @@ rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] with 
 8. *Find home for this work*. Ideally, I think this work would be merged into `xsc/rewrite-clj`, but if that does not work out, a reasonable alternative might be `clj-commons/rewrite-cljc` (which would be a replacement for a deprecated `clj-commons\rewrite-cljs`)
 
 == Strategic Compromises
-1. *Favor single code base*. I will favor a single code base over maintaining ClojureScript specific optimizations from rewrite-cljs. These can be brought in at a later date if needed.
+1. *Favor single code base*. I will favor a single code base over maintaining  http://rundis.github.io/blog/2015/clojurescript_performance_tuning.html[ClojureScript specific optimizations from rewrite-cljs]. These can be brought in at a later date if needed.
 2. *Use generic exceptions*.  This is technically an API breakage, but I will switch to using the Clojure/ClojureScript agnostic `ex-info` for exceptions.
 3. *Favor rewrite-clj features when there is overlap*. I currently only see one feature that overlaps between the two projects. rewrite-clj and rewrite-cljs both have positional (row/col) support. Base positional support in rewrite-clj is full featured and updates with any changes made, so we'll use it instead of rewrite-cljs's more primitive tools reader based positional support. This technically constitutes an API breakage for rewrite-cljs. We will, though, carry over rewrite-cljs's higher level positional functions.
 
@@ -289,10 +289,19 @@ The original rewrite-cljs author worked around this problem by renaming namespac
 None of these namespaces are part of public APIs, but because I see a lot of code that uses these internal namespaces, I decided to preserve the existing naming for both Clojure and ClojureScript. ClojureScript will continue to use the `rewrite-cljs` renames, and Clojure will get both versions.
 
 === Clojure/ClojureScript interop
-Where I felt I could get away with it, I localized Clojure/ClojureScript differences in the `rewrite-clj.interop` namespace.
 
-Although technically an API breakage, I made a choice to switch all rewrite-cljc thrown exceptions to the Clojure/ClojureScript compatible ex-info.
-
+* Where I felt I could get away with it, I localized Clojure/ClojureScript differences in the `rewrite-clj.interop` namespace.
+* Although technically an API breakage, I made a choice to switch all rewrite-cljc thrown exceptions to the Clojure/ClojureScript compatible ex-info.
+* Some notes on differences between Clojure and ClojureScript
+** throws and catches, if not using ex-info are different
+** namespace requires cannot use shorthand syntax in cljs
+** macros must (sometimes) be included differently
+** IMetaData and other base types different
+** format not part of cljs standard lib
+** no Character in cljs
+** no ratios in cljs
+** testing for NaN is different
+** different max numerics
 
 == rewrite-clj/cljs Analysis
 
