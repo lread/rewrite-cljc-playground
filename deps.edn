@@ -13,7 +13,7 @@
            ;;
            ;; Test support
            ;;
-           :clj-kondo {:extra-deps {clj-kondo {:mvn/version "2019.10.11-alpha"}}
+           :clj-kondo {:extra-deps {clj-kondo {:mvn/version "2019.10.26"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "0.10.0"}}
