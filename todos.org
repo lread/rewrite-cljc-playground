@@ -8,6 +8,12 @@
     should be over-rideable to whatever the client wants.
 ** TODO make a coherent commit history from my spike experiments?
     My path was circuitous.. and based off rewrite-cljs... can/I/should/I do some major squashing?
+** TODO look at graalvm support
+    sogaiu has been experimenting, works for rewrite-clj, so should work for rewrite-cljc.
+** TODO reconsider version scheme
+    looks like olical's depot has special treatment of qualifiers which won't find upgrades
+    with default options.  I don't think using a qualifier (like alpha) wrong, but might
+    reconsider because of depot behaviour.
 ** Testing
 *** TODO what is browser target for cljs?
     noticed that cljs-test-runner explicitly sets :browser for target
