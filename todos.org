@@ -9,7 +9,28 @@
 ** TODO make a coherent commit history from my spike experiments?
     My path was circuitous.. and based off rewrite-cljs... can/I/should/I do some major squashing?
 ** TODO look at graalvm support
-    sogaiu has been experimenting, works for rewrite-clj, so should work for rewrite-cljc.
+*** can I even compile rewrite-cljc native?
+    sogaiu has been experimenting, works for rewrite-clj, and after my reader fix, at least compiles for
+    rewrite-cljc!
+*** baby steps: understand how to compile and run graalvm with tools dep
+    ok got a little 2 namespace hello world going
+*** strategy for testing under graalvm
+    Looked at sci and jet as recommended by borkdude. His tests will shell out to natively built jet and
+    sci tools when an env var indicates to do so. this works nicely for his tools.
+
+    The difference is rewrite-cljc is a pure library. It currently does not have a command line.
+
+    I suppose I could expose something over the command line for sanity testing purposes?
+
+    But ideally I would just rerun all my existing tests under graalvm.
+
+    Would the typical cljs strategy of compiling src and test to a blob then running tests work?
+    this would mean my tests would also have to be graalvm friendly.
+
+    Does kaocha have anything here?
+
+    More research required.
+
 ** TODO reconsider version scheme
     looks like olical's depot has special treatment of qualifiers which won't find upgrades
     with default options.  I don't think using a qualifier (like alpha) wrong, but might
