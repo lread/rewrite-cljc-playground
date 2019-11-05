@@ -136,7 +136,7 @@ During development, I found the following helpful:
 
 == General Decisions
 
-=== Library version scheme
+=== * Library version scheme - [red]*in progress*
 I see plenty of version scheme variations out there these days. Here are a few examples I find interesting:
 
 [cols="10,40,20,~",options="header"]
@@ -204,6 +204,23 @@ After a certain amount of work, I realized the majority of the code was cljc so 
 |-test
 | '-rewrite-clj
 ....
+
+=== * Graalvm support - [red]*in progress*
+
+Even though Clojure does not support Graalvm, some command line tools written in
+Clojure are using Graal to compile to native code for fast startup times.
+
+Others have done the work to test that rewrite-clj can be compiled with Graal.
+There is benefit to the community to test that rewrite-cljc can also be compiled
+to native code with Graal.
+
+The first step to creating a native image with graal is aot compiling, then
+uberjaring clj source. While aot compiling can be achieved in the tools deps
+world, others have had better success using leiningen for this task.
+
+As part of this merge, I moved from leiningen to tools deps, my preference is
+to stick with tools deps. I'll see how that works out as I progress.
+
 
 == Questionable Decisions
 
@@ -288,6 +305,7 @@ The original rewrite-cljs author worked around this problem by renaming namespac
 
 None of these namespaces are part of public APIs, but because I see a lot of code that uses these internal namespaces, I decided to preserve the existing naming for both Clojure and ClojureScript. ClojureScript will continue to use the `rewrite-cljs` renames, and Clojure will get both versions.
 
+
 === Clojure/ClojureScript interop
 
 * Where I felt I could get away with it, I localized Clojure/ClojureScript differences in the `rewrite-clj.interop` namespace.
@@ -302,6 +320,7 @@ None of these namespaces are part of public APIs, but because I see a lot of cod
 ** no ratios in cljs
 ** testing for NaN is different
 ** different max numerics
+
 
 == rewrite-clj/cljs Analysis
 
@@ -409,7 +428,7 @@ We:
 
 The most glaring breaking change for ClojureScript is that it must now create the zipper with positional support enabled, for example: `(z/of-string "[1 2 3]" {:track-position true})`
 
-=== Namespaced maps
+=== * Namespaced maps - [red]*in progress*
 
 At the time of this writing, rewrite-clj had released partial support for
 namespaced maps. I attempted to complete this support in a pull request which
