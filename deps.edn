@@ -13,7 +13,7 @@
            ;;
            ;; Test support
            ;;
-           :clj-kondo {:extra-deps {clj-kondo {:mvn/version "2019.10.26"}}
+           :clj-kondo {:extra-deps {clj-kondo {:mvn/version "2019.11.07"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "0.10.0"}}
@@ -59,4 +59,6 @@
                       ;; I think I would exclude this project's src paths if I could do so easily, but I instead
                       ;; exclude rewrite-clj dep in depot
                       :extra-deps {olical/depot {:mvn/version "1.8.4" :exclusions [rewrite-clj/rewrite-clj]}}
-                      :main-opts ["-m" "depot.outdated.main"]}}}
+                      ;; when checking for updates, depot requires that you specify aliases, next version
+                      ;; might fix this
+                      :main-opts ["-m" "depot.outdated.main" "-a" "clj-kondo,test-common,kaocha,fig-test,cljs-test,update-readme,outdated"]}}}
