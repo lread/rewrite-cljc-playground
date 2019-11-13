@@ -207,45 +207,27 @@ After a certain amount of work, I realized the majority of the code was cljc so 
 
 === * Graalvm support - [red]*in progress*
 
-Even though Clojure does not support Graalvm, some command line tools written in
-Clojure are using Graal to compile to native code for fast startup times.
+Some command line tools written in Clojure are using Graal to compile to native
+executables for fast startup times.
 
 Others have done the work to test that rewrite-clj can be compiled with Graal.
 There is benefit to the community to test that rewrite-cljc can also be compiled
 to native code with Graal.
 
+Noticing that there were differing approaches Graalifying Clojure, none of them centrally
+documented, @borkdude and I created https://github.com/lread/clj-graal-docs[clj-graal-docs]
+to develop and share scripts and tips.
+
 My goal is to run the rewrite-cljc test suite from a graalvm native image to
-give some confidence that rewrite-cljc works under graal.
+give some confidence that rewrite-cljc works after compiled with Graal.
 
 ==== Technical approach
 
-The first step to creating a native image with graal is aot compiling, then
-uberjaring clj source. While aot compiling can be achieved in the tools deps
-world, others have had better success using leiningen for this task.
-
-As part of this merge, I moved from leiningen to tools deps, my preference is
-to stick with tools deps. I'll see how that works out as I progress.
-
-==== Clojure locking & Graalvm
-
-Clojure 1.10 introduced locking that causes graalvm's native-image command to
-fail.
-
-As of November 2019, I know of three work-arounds:
-
-. Create a native-image against Clojure 1.9. No locking issue, no problem.
-. Create a patched version of Clojure 1.10 using a patch from
-https://clojure.atlassian.net/browse/CLJ-1472[CLJ-1472], there are 2 candidates
-(https://gist.github.com/borkdude/dd0857cf1958b25496fddbdbf359ca59[@borkdude
-has written up some good notes on how to apply these patches]).
-.. `clj-1472-3.patch` - This one is favored as the simpler of the 2 by @eraserhd
-https://github.com/eraserhd/rep[and is the one he used for rep].
-.. `CLJ-1472-reentrant-finally2.patch` - an alternative candidate
-. Patch Clojure locking at runtime as needed. This is the approach taken by
-@taylorwood in the https://github.com/taylorwood/clojurl/commit/12b96b5e9a722b372f153436b1f6827709d0f2ab[locking-fix
-branch of clojurl].
-
-I have a minimal test bed using option 3, but I think I'll switch to option 2a.
+1. create a custom version of Clojure by applying a patch from CLJ-1472 to Clojure 1.10.1
+2. generate a test-runner in Clojure that explicitly references and runs all my tests
+3. aot compile the test-runner (aot compilation automatically compiles all referenced source)
+4. compile the aot compiled test-runner to native binary with Graal
+5. run test-runner binary
 
 == Questionable Decisions
 
