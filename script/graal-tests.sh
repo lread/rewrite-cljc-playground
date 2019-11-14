@@ -54,7 +54,8 @@ $NATIVE_IMAGE \
     --report-unsupported-elements-at-runtime \
     -H:+ReportExceptionStackTraces \
     --verbose \
-    "-J-Xmx3g" \
+    "-J-XX:+PrintGC" \
+    "-J-Xmx3584m" \
     clj_graal.test_runner
 
 
