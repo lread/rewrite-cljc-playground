@@ -55,7 +55,7 @@ $NATIVE_IMAGE \
     -H:+ReportExceptionStackTraces \
     --verbose \
     "-J-XX:+PrintGC" \
-    "-J-Xmx3584m" \
+    "-J-Xmx3g" \
     clj_graal.test_runner
 
 
