@@ -53,6 +53,7 @@ $NATIVE_IMAGE \
     --initialize-at-build-time \
     --report-unsupported-elements-at-runtime \
     -H:+ReportExceptionStackTraces \
+    --verbose \
     "-J-Xmx3g" \
     clj_graal.test_runner
 
