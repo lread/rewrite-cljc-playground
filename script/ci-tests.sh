@@ -15,4 +15,3 @@ if [[ ${OSTYPE} =~ ^darwin* ]] || [ "${OSTYPE}" == "linux-gnu" ];then
 else
     echo "* WARNING: skipping planck tests, can only run on linux or macos"
 fi
-./script/graal-tests.sh

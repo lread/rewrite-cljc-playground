@@ -45,7 +45,7 @@ java -cp "$(clojure ${ALIAS} -Spath):${TARGET_RUNNER_DIR}" \
 
 echo "--native compile tests--"
 rm -f "${TARGET_EXE}"
-$NATIVE_IMAGE \
+time $NATIVE_IMAGE \
     -H:Name=target/native-test-runner \
     --no-server \
     --no-fallback \
@@ -55,7 +55,7 @@ $NATIVE_IMAGE \
     -H:+ReportExceptionStackTraces \
     --verbose \
     "-J-XX:+PrintGC" \
-    "-J-Xmx3g" \
+    "-J-Xmx16g" \
     clj_graal.test_runner
 
 

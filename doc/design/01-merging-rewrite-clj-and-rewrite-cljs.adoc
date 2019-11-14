@@ -229,6 +229,16 @@ give some confidence that rewrite-cljc works after compiled with Graal.
 4. compile the aot compiled test-runner to native binary with Graal
 5. run test-runner binary
 
+==== Issues
+
+GraalVM's native-image command needs a significant amount of RAM to compile rewrite-cljc tests in a reasonable amount of time, and still a significant amount of RAM to run at all. A few ad hoc tests on a 3.5 GHz Quad-Core i7 iMac with "-J-Xmx" at:
+
+* 16g ~3 minutes
+* 8g ~11 minutes
+* 4g - failed with java.lang.OutOfMemoryError: Java heap space after ~1 hour
+
+This means running these tests on the free tier of a service such as circleci, which has a limit of 4gb, is not currently an option.
+
 == Questionable Decisions
 
 === Allowing garden style keywords
