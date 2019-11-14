@@ -90,6 +90,8 @@ commands:
           name: Bring down the deps
           command: |
             clojure -Spath
+            git config --global user.email "lee@dlread.com"
+            git config --global user.name "lread"
             ./script/graal-deps.sh
 
       - run:
