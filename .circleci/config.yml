@@ -26,6 +26,10 @@ commands:
       - checkout
 
       - run:
+          name: System info
+          command: free -h
+
+      - run:
           name: Update linux packages
           command: |
             sudo apt-get update
