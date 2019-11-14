@@ -11,7 +11,8 @@ set -eou pipefail
 ./script/cljs-tests.sh --env chrome-headless --optimizations none
 ./script/cljs-tests.sh --env chrome-headless --optimizations advanced
 if [[ ${OSTYPE} =~ ^darwin* ]] || [ "${OSTYPE}" == "linux-gnu" ];then
-    ./script/cljs-tests.sh --env planck          --optimizations none
+    ./script/cljs-tests.sh --env planck --optimizations none
 else
-    echo "* WARNING: skipping planck tests, not on linux or macos"
+    echo "* WARNING: skipping planck tests, can only run on linux or macos"
 fi
+./script/graal-tests.sh

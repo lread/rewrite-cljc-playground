@@ -11,11 +11,12 @@ executors:
         type: enum
         enum: ["8", "11"]
     docker:
-      - image: circleci/clojure:openjdk-<< parameters.jdk-version>>-tools-deps-1.10.0.442-node-browsers
+      - image: circleci/clojure:openjdk-<< parameters.jdk-version>>-tools-deps-1.10.1.483-node-browsers
     environment:
-      LEIN_ROOT: "true"
+      MAVEN_VERSION: "3.6.2"
+      GRAALVM_VERSION: "19.2.1"
+      GRAALVM_HOME: /home/circleci/graalvm-ce-19.2.1
       JVM_OPTS: -Xmx3200m
-      CLOJURE_VERSION: "1.10.1.462"
     working_directory: ~/repo
 
 commands:
@@ -28,8 +29,10 @@ commands:
           name: Update linux packages
           command: |
             sudo apt-get update
-            # packages needed for planck
-            sudo apt-get install -y javascriptcoregtk-4.0 libglib2.0-dev libzip-dev libcurl4-gnutls-dev
+            # packages needed for planck & graalvm
+            sudo apt-get install -y javascriptcoregtk-4.0 libglib2.0-dev libzip-dev libcurl4-gnutls-dev \
+              git-extras \
+              gcc
 
       - run:
           name: Install planck
@@ -39,6 +42,31 @@ commands:
             echo e19e28efb00733912c8cf114e56da10b  planck | md5sum --check
             sudo mv planck /usr/local/bin
             planck --version
+
+      - run:
+          name: Install maven
+          command: |
+            curl -O https://www.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz
+            sudo tar xf apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /opt/
+            sudo ln -s /opt/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/local/bin
+            mvn --version
+
+      - run:
+          name: Install jet
+          command: |
+            curl -s https://raw.githubusercontent.com/borkdude/jet/master/install | sudo bash
+            jet --version
+
+      - run:
+          name: Install GraalVM
+          command: |
+            cd ~
+            if ! [ -d "graalvm-ce-${GRAALVM_VERSION}" ]; then
+              curl -O -L "https://github.com/oracle/graal/releases/download/vm-${GRAALVM_VERSION}/graalvm-ce-linux-amd64-${GRAALVM_VERSION}.tar.gz"
+              tar -xvf "graalvm-ce-linux-amd64-${GRAALVM_VERSION}.tar.gz"
+            fi
+            "${GRAALVM_HOME}/bin/gu" install native-image
+            "${GRAALVM_HOME}/bin/native-image" --version
 
       - restore_cache:
           keys:
@@ -59,8 +87,10 @@ commands:
             - v1-dependencies- # fallback if cache not found
 
       - run:
-          name: Clojure classpath
-          command: clojure -Spath
+          name: Bring down the deps
+          command: |
+            clojure -Spath
+            ./script/graal-deps.sh
 
       - run:
           name: Run ci tests
@@ -69,6 +99,7 @@ commands:
       - save_cache:
           paths:
             - ~/.m2
+            - ~/graalvm-ce-19.2.1
           key: v1-dependencies-{{ checksum "deps.edn" }}
 
       - save_cache:

@@ -46,6 +46,15 @@
                            :main-opts ["-m" "update-readme"]}
 
            ;;
+           ;; Running tests under graal
+           ;; see script/graal-tests.sh for usage
+           ;;
+           :graal {:extra-paths ["script"]
+                   :override-deps {org.clojure/clojure
+                                   {:mvn/version "1.10.1-patch_38bafca9_clj_1472_3"}}
+                   :extra-deps {org.clojure/tools.namespace {:mvn/version "0.3.1"}}}
+
+           ;;
            ;; Document rewrite-clj* differences
            ;;
            :diff-apis {:extra-deps {lread/diff-apis {:git/url "https://github.com/lread/diff-apis"
