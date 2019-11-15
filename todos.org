@@ -184,37 +184,6 @@
     Git issues - Also be nice to preserve git issues. I think I can transfer over any git issues I created here to clj-commons/rewrite-cljs.
 
 * Later
-** TODO consider allowing metadata to be a child
-   of interest to borkdude - and more generally probably
-
-   borkdude [8:36 AM]
-   yeah, exactly (edited)
-   I have also made a few predicates like `symbol-token?` so I don’t need to sexpr to check if it’s a symbol
-
-   caveat is that there might be metadata on anything in clojure
-   I wonder if it would have made better sense if the metadata was a child instead of a parent. it ~certainly~ maybe would have made my life easier, but I haven’t pondered the consequences of that (edited)
-
-   lread [8:42 AM]
-   interesting, we should probably eventually bring your predicates into rewrite-clj. Also interesting thought on metadata, would make it easier to parse the meat, right?
-
-   borkdude [8:42 AM]
-   right, for example: I expect the first node after `defn` to be a symbol, but in rewrite-clj it might be a metadata node with a symbol in it
-
-   borkdude [8:43 AM]
-   I would probably make metadata a field on the defrecord of every node or something
-   but that might not work for rewriting (which I’m not concerned with) to the original expressions, including spaces, etc
-
-   lread [8:44 AM]
-   hmmm... yeah I see your point. It is worth thinking about more.
-
-   borkdude [8:45 AM]
-   I really like rewrite-clj btw. but I might need some clone for tuning towards clj-kondo for more performance… but not now, it’s already very fast (edited)
-   what I basically do for nodes that might be metadata, is rip out the contents and store the metadata node as proper metadata on the node
-
-   lread [8:48 AM]
-   cool, it is very nice to have heavy users of rewrite-clj here like you and @sogaiu. Your feedback and ideas are greatly appreciated! :simple_smile:
-   after I finish up a cljs ticket, I’ll get back on my rewrite-clj todo list and work toward the alpha release.
-
 ** TODO add some more support for sepxr
    of interest to sogaiu
 
