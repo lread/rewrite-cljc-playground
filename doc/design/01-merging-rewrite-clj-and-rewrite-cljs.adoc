@@ -102,8 +102,50 @@ report contains some observations under the "Notes" header.
 * link:../generated/api-diffs/rewrite-cljc.adoc[rewrite-cljc] a look at how cljs and clj sides fof rewrite-cljc differ
 * link:../generated/api-diffs/rewrite-cljc-documented-only.adoc[rewrite-cljc documented apis only] a look at how cljs and clj sides of rewrite-cljc differ for documented apis.
 
-== Feature Differences
+=== Feature Differences
 No ability to read from files when using rewrite-cljc from ClojureScript.
+
+== * Not a drop in replacement? [red]*in progress*
+
+I was thinking of rewrite-cljc as a drop in replacement for rewrite-clj and
+rewrite-cljs but there is an issue.
+
+The maven coordinates for rewrite-cljc will likely be `clj-commons/rewrite-cljc`.
+
+If rewrite-clj or rewrite-cljs are being used directly or indirectly by a
+project, and rewrite-cljc is added, there will be a `rewrite-clj` namespace
+collision. Basically, things won't work.
+
+=== overcoming direct usage
+
+The easy case: an author can simply replace his direct usage of rewrite-cljs or
+rewrite-clj with rewrite-cljc.
+
+=== overcoming indirect usage
+
+The more confusing case: the indirect usages of rewrite-cljs or rewrite-clj must
+be excluded from deps.
+
+In deps.edn, for example:
+
+[source,clojure]
+----
+{olical/depot {:mvn/version "1.8.4" :exclusions [rewrite-clj/rewrite-clj]}}
+----
+
+Maybe that's not too bad? But maybe it gets more confusing when you are using
+multiple libraries - some of which are using rewrite-clj, others are using
+rewrite-cljc.
+
+=== alternatives
+
+* rewrite-cljc could switch to a `rewrite-cljc` namespace. This would mean
+  source edits to upgrade to rewrite-cljc.
+* carry on with rewrite-clj maven coordinates - this is a no go as multiple
+  attempts to contact original author have gone unanswered
+* carry on with rewrite-cljs maven coordinates - this is less attractive and of
+  little value because the audience for rewrite-cljs was much smaller than
+  rewrite-clj.
 
 == Observations
 === Wow, a lot of libraries use rewrite-clj
