@@ -43,6 +43,8 @@ jobs:
     - name: Bring down Clojure m2 dependencies
       run: |
         clojure -Spath
+        git config --global user.email "lread@example.com"
+        git config --global user.name "lread"
         script/graal-deps.sh
 
     - name: Try a clj test
