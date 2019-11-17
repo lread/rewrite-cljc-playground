@@ -17,7 +17,7 @@ jobs:
     - uses: DeLaGuardo/setup-graalvm@1.0
       with:
         graalvm-version: '19.2.1'
-      run: java -version
+    - run: java -version
 
     - name: Install jet
       run: |
