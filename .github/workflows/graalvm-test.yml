@@ -19,6 +19,9 @@ jobs:
         tools-deps: '1.10.1.483'
     - run: clojure -Sdescribe
 
+    - name: Tool versions
+      run:  mvn --version
+
     - name: Cache maven deps
       id: cache-maven-deps
       uses: actions/cache@v1
