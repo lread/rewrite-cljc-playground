@@ -23,7 +23,7 @@ jobs:
       id: cache-maven-deps
       uses: actions/cache@v1
       with:
-        path: /github/home/.m2
+        path: ~/.m2
         key: ${{ runner.OS }}-m2-${{ hashFiles('deps.edn') }}
         restore-keys: |
           ${{ runner.OS }}-m2-${{ env.cache.name }}-
