@@ -38,7 +38,7 @@
            :planck-test {:extra-paths [ "target/cljsbuild/test/planck-none/gen"]}
 
            ;;
-           ;; Script support
+           ;; Update contributors in readme.
            ;;
            :update-readme {:extra-paths ["script"]
                            :extra-deps {hiccup {:mvn/version "1.0.5"}
