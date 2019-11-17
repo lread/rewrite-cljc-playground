@@ -1,0 +1,36 @@
+name: Toy with actions
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v1
+
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '8.42.0.23'
+    - run: java -version
+
+    - uses: DeLaGuardo/setup-clojure@2.0
+      with:
+        tools-deps: '1.10.1.483'
+    - run: clojure -Sdescribe
+
+    - name: Cache maven deps
+      id: cache-maven-deps
+      uses: actions/cache@v1
+      with:
+        path: .m2
+        key: ${{ runner.OS }}-m2-${{ hashFiles('deps.edn') }}
+        restore-keys: |
+          ${{ runner.OS }}-m2-${{ env.cache.name }}-
+          ${{ runner.OS }}-m2
+
+    - name: Bring down Clojure m2 dependencies
+      run: clojure -Spath
+
+    - name: Try a clj test
+      run: script/clj-tests.sh
