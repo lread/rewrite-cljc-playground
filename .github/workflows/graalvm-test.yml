@@ -47,5 +47,5 @@ jobs:
         git config --global user.name "lread"
         script/graal-deps.sh
 
-    - name: Try a clj test
-      run: script/clj-tests.sh
+    - name: Run tests under GraalVM
+      run: script/graal-tests.sh
