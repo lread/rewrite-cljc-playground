@@ -1,9 +1,10 @@
 kind: pipeline
 type: docker
-name: default
+name: graalvm-test
 
 steps:
 - name: test
   image: clojure
   commands:
   - lein --version
+  - uname -a
