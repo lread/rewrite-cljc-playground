@@ -18,9 +18,9 @@ steps:
   - clojure -Sdescribe
   - echo "install maven"
   - export MAVEN_VERSION="3.6.2"
-  - curl -O https://www.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz
-  - tar xf apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /opt/
-  - ln -s /opt/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/local/bin
+  - curl -O https://www.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz
+  - tar xf apache-maven-$MAVEN_VERSION-bin.tar.gz -C /opt/
+  - ln -s /opt/apache-maven-$MAVEN_VERSION/bin/mvn /usr/local/bin
   - mvn --version
   - echo "install jet"
   - curl -s https://raw.githubusercontent.com/borkdude/jet/master/install | bash
