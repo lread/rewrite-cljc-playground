@@ -25,3 +25,7 @@ steps:
   - echo "install jet"
   - curl -s https://raw.githubusercontent.com/borkdude/jet/master/install | bash
   - jet --version
+  - echo "graal tests"
+  - git config --global user.email "lread@example.com"
+  - git config --global user.name "lread"
+  - script/graal-tests.sh
