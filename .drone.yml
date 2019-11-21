@@ -3,8 +3,26 @@ type: docker
 name: graalvm-test
 
 steps:
-- name: test
+- name: native-image-test
+  # this image seemed like a good choice but uses oracle linux... which?... I dunno.
   image: oracle/graalvm-ce:19.3.0
   commands:
+  - echo "versions"
   - java -version
   - uname -a
+  - echo "install extras"
+  - yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+  - yum -y install git-extras
+  - echo "install clojure"
+  - curl -L -s https://download.clojure.org/install/linux-install-1.10.1.489.sh | bash
+  - echo "install maven"
+  - curl -O https://www.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz
+  - tar xf apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /opt/
+  - ln -s /opt/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/local/bin
+  - mvn --version
+  - echo "install jet"
+  - curl -s https://raw.githubusercontent.com/borkdude/jet/master/install | bash
+  - jet --version
+
+  environment:
+    MAVEN_VERSION: "3.6.2"
