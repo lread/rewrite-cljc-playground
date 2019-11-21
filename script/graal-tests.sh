@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-set -eou pipefail
+set -eoux pipefail
+
+NATIVE_IMAGE_XMX="16g"
 
 echo "--[running Clojure tests natively compiled via GraalVM]--"
 
@@ -36,7 +38,7 @@ echo "--generate test runner--"
 rm -rf "${TARGET_RUNNER_DIR}"
 mkdir -p "${TARGET_RUNNER_DIR}"
 clojure "${ALIAS}" \
-        -m clj-graal.gen-test-runner "${TARGET_RUNNER_DIR}"
+        -m clj-graal.gen-by-discovery-test-runner "${TARGET_RUNNER_DIR}"
 
 echo "--aot compile tests--"
 java -cp "$(clojure ${ALIAS} -Spath):${TARGET_RUNNER_DIR}" \
@@ -45,19 +47,31 @@ java -cp "$(clojure ${ALIAS} -Spath):${TARGET_RUNNER_DIR}" \
 
 echo "--native compile tests--"
 rm -f "${TARGET_EXE}"
-time $NATIVE_IMAGE \
-    -H:Name=target/native-test-runner \
-    --no-server \
-    --no-fallback \
-    -cp "$(clojure ${ALIAS} -Spath):classes" \
-    --initialize-at-build-time \
-    --report-unsupported-elements-at-runtime \
-    -H:+ReportExceptionStackTraces \
-    --verbose \
-    "-J-XX:+PrintGC" \
-    "-J-Xmx16g" \
+
+# an array for args makes fiddling with args easier (can comment out a line during testing)
+native_image_args=(
+    "-H:Name=${TARGET_EXE}"
+    --no-server
+    --no-fallback
+    -cp "$(clojure ${ALIAS} -Spath):classes"
+    --initialize-at-build-time
+    --report-unsupported-elements-at-runtime
+    -H:+ReportExceptionStackTraces
+    --verbose
+#    -H:+PrintAnalysisCallTree
+    "-J-Xmx${NATIVE_IMAGE_XMX}"
     clj_graal.test_runner
+)
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    TIME_CMD="command time -l"
+else
+    TIME_CMD="command time -v"
+fi
 
+${TIME_CMD} ${NATIVE_IMAGE} "${native_image_args[@]}"
 echo "--running tests compiled under graal--"
+
+ls -lh ${TARGET_EXE}
+
 ${TARGET_EXE}

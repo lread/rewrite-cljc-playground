@@ -1,4 +1,4 @@
-(ns clj-graal.gen-test-runner
+(ns clj-graal.gen-by-discovery-test-runner
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.pprint :as pprint]
