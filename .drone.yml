@@ -4,7 +4,7 @@ name: graalvm-test
 
 steps:
 - name: test
-  image: clojure
+  image: oracle/graalvm-ce:19.3.0
   commands:
-  - lein --version
+  - java -version
   - uname -a
