@@ -1,31 +1,45 @@
 #!/usr/bin/env bash
 
-set -eoux pipefail
+set -eou pipefail
 
 NATIVE_IMAGE_XMX="16g"
 
-echo "--[running Clojure tests natively compiled via GraalVM]--"
-
-# support both sdkman installation (graalvm on path) and simple download (GRAALVM_HOME set)
-if (set +xu; test -n "${GRAALVM_HOME}"); then
-    echo "GRAALVM_HOME is: ${GRAALVM_HOME}"
-elif (set +x; hash gu > /dev/null 2>&1); then
-    GRAALVM_HOME=$(dirname "$(dirname "$(command -v gu)")")
-    echo "assuming GRAALVM_HOME is: ${GRAALVM_HOME}"
-else
-    echo "* error: either set GRAALVM_HOME or ensure it is on path"
-    exit 1
-fi
-
-NATIVE_IMAGE="$GRAALVM_HOME/bin/native-image"
-if ! [ -x "${NATIVE_IMAGE}" ]; then
-    "$GRAALVM_HOME/bin/gu" install native-image
-fi
-
+echo "--[check GraalVM clojure deps]--"
 ./script/graal-deps.sh
 
-TARGET_EXE=target/native-test-runner
+echo "--[running Clojure tests natively compiled via GraalVM]--"
 
+find-graal-prog() {
+    local prog_name=$1
+    if (set +x; hash "$prog_name" > /dev/null 2>&1); then
+        command -v "$prog_name"
+    elif (set +xu; test -f "${JAVA_HOME}/bin/${prog_name}"); then
+        echo "${JAVA_HOME}/bin/${prog_name}"
+    elif (set +xu; test -f "${GRAALVM_HOME}/bin/${prog_name}"); then
+        echo "${GRAALVM_HOME}/bin/${prog_name}"
+    else
+        echo "!not-found!"
+    fi
+}
+
+GRAAL_NATIVE_IMAGE=$(find-graal-prog native-image)
+if [ "${GRAAL_NATIVE_IMAGE}" == "!not-found!" ]; then
+    GRAAL_GU=$(find-graal-prog gu)
+    if [ "$GRAAL_GU" == "!not-found!" ]; then
+        echo "* error: did not find GraalVM native-image nor GraalVM gu to install it."
+        echo "         ensure progs are on PATH or set GRAALVM_HOME / JAVA_HOME"
+        exit 1
+    fi
+    ${GRAAL_GU} install native-image
+    GRAAL_NATIVE_IMAGE=$(find-graal-prog native-image)
+    if [ "${GRAAL_NATIVE_IMAGE}" == "!not-found!" ]; then
+        echo "* error: odd, I just installed GraalVM native-image but cannot find it."
+        exit 1
+    fi
+fi
+echo "GraalVM native-image program: ${GRAAL_NATIVE_IMAGE}"
+
+TARGET_EXE=target/native-test-runner
 TARGET_RUNNER_DIR=target/clj-graal/generated
 ALIAS="-A:graal:test-common"
 
@@ -69,7 +83,7 @@ else
     TIME_CMD="command time -v"
 fi
 
-${TIME_CMD} ${NATIVE_IMAGE} "${native_image_args[@]}"
+${TIME_CMD} ${GRAAL_NATIVE_IMAGE} "${native_image_args[@]}"
 echo "--running tests compiled under graal--"
 
 ls -lh ${TARGET_EXE}
