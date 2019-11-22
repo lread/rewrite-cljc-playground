@@ -52,7 +52,7 @@ echo "--generate test runner--"
 rm -rf "${TARGET_RUNNER_DIR}"
 mkdir -p "${TARGET_RUNNER_DIR}"
 clojure "${ALIAS}" \
-        -m clj-graal.gen-by-discovery-test-runner "${TARGET_RUNNER_DIR}"
+        -m clj-graal.gen-vars-run-directly "${TARGET_RUNNER_DIR}"
 
 echo "--aot compile tests--"
 java -cp "$(clojure ${ALIAS} -Spath):${TARGET_RUNNER_DIR}" \

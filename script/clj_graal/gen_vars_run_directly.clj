@@ -1,4 +1,4 @@
-(ns clj-graal.gen-by-var-test-runner
+(ns clj-graal.gen-vars-run-directly
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.tools.namespace.find :as find]))
@@ -17,9 +17,14 @@
                       (filter #(:test (meta %))))))))
 
 (defn- content[nses vars]
-  (-> (slurp (io/resource "clj_graal/test_runner.clj.template"))
+  (-> (slurp (io/resource "clj_graal/direct_runner.clj.template"))
       (.replace "#_@TEST_NSES_HERE" (string/join "\n" nses))
-      (.replace "#_@TEST_VARS_HERE" (string/join "\n" vars))))
+      (.replace "#_@TEST_FNS_HERE" (string/join "\n"
+                                                (map (fn [ns]
+                                                       (str
+                                                        "(println \"running: " (symbol ns) " \")\n"
+                                                        "(" (symbol ns) ")"))
+                                                     vars)))))
 
 (defn generate-test-runner[dest-src-dir]
   (let [dir (io/file dest-src-dir "clj_graal")
@@ -34,4 +39,6 @@
   (generate-test-runner dest-dir))
 
 (comment
+  (symbol #'io/file)
+
   (find-test-vars (find-test-nses)))
