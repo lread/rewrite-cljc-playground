@@ -3,10 +3,10 @@
 set -eou pipefail
 
 # constants
-CLJ_GRAAL_DOCS_SHA=84640f670c4d2f206c9e4b702fd546fadd4fe85c
+CLJ_GRAAL_DOCS_SHA=08c911d8fb688b259ba14c001d21277f2e62c50a
 
 is-patch-installed() {
-    (set +e; mvn -q dependency:get -Dartifact=org.clojure:clojure:1.10.1-patch_38bafca9_clj_1472_3 -o)
+    (set +e; mvn --batch-mode -q dependency:get -Dartifact=org.clojure:clojure:1.10.1-patch_38bafca9_clj_1472_3 -o)
 }
 
 echo "--validate maven installed--"
