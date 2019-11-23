@@ -511,7 +511,7 @@
       positions (->> (p/parse-string-all s)
                      (nodes-with-meta))]
   (deftest t-rowcolumn-metadata
-    (are [?pos ?end ?t ?s ?sexpr]
+    (are [?pos _?end ?t ?s ?sexpr]
          (let [{:keys [node _end-pos]} (positions ?pos)]
            (is (= ?t (node/tag node)))
            (is (= ?s (node/string node)))

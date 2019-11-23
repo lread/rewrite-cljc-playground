@@ -3,8 +3,7 @@
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.editz :as e]
             [rewrite-clj.zip.seqz :as sq]
-            [rewrite-clj.custom-zipper.core :as z])
-  #?(:clj (:import clojure.lang.ExceptionInfo)))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 (let [v (base/of-string "[1 2 3]")
       m (base/of-string "{:a 0, :b 1}")
