@@ -25,8 +25,8 @@
      summary)))
 
 (defn -main [& _args]
-  (println "clojure version" (clojure-version))
-  (println "java version" (System/getProperty "java.version"))
-  (println "running native?" (= "executable" (System/getProperty "org.graalvm.nativeimage.kind")))
+  #_(println "clojure version" (clojure-version))
+  #_(println "java version" (System/getProperty "java.version"))
+  #_(println "running native?" (= "executable" (System/getProperty "org.graalvm.nativeimage.kind")))
   (let [summary (run-test-vars #_@TEST_VARS_HERE)]
     (if (t/successful? summary) 0 1)))
