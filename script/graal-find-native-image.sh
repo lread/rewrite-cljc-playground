@@ -26,7 +26,7 @@ if [ "${GRAAL_NATIVE_IMAGE}" == "!not-found!" ]; then
         >&2 echo "         ensure progs are on PATH or set GRAALVM_HOME / JAVA_HOME"
         exit 1
     fi
-    ${GRAAL_GU} install native-image
+    >&2 ${GRAAL_GU} install native-image
     GRAAL_NATIVE_IMAGE=$(find-graal-prog native-image)
     if [ "${GRAAL_NATIVE_IMAGE}" == "!not-found!" ]; then
         >&2 echo "* error: odd, I just installed GraalVM native-image but cannot find it."
