@@ -18,9 +18,12 @@ Warning: Very much a work in progress.
 👋 Want to chat? Say hi on http://clojurians.net/[Clojurians Slack] in https://clojurians.slack.com/messages/CHB5Q2XUJ[#rewrite-clj].
 
 == Docs
-Documentation is best viewed on cljdoc.org.
 
-TODO: Point to docs hosted on cljdoc - once we publish.
+* link:doc/01-introduction.adoc[Introduction]
+* link:doc/02-developer-guide.adoc[Developer Guide]
+* Design
+** link:doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs]
+* link:doc/03-faq.adoc[FAQ]
 
 == Versioning
 

@@ -12,7 +12,15 @@ rewrite-cljc is a library that reads and writes Clojure, ClojureScript and https
 
 @rundis created rewrite-cljs in 2015 to match the features of rewrite-clj for ClojureScript developers. It was originally used for refactoring support in https://github.com/LightTable/LightTable[Light Table]. In January of 2019, @rundis graciously https://github.com/clj-commons/rewrite-cljs[transferred rewrite-cljs to clj-commons].
 
-Seeing an opportunity to give back to the Clojure community, in 2019 @lread, with guidance and help from many friendly Clojurians, created rewrite-cljc under clj-commons. The goal is to provide a thoughtfully maintained feature-complete library that can be used from either Clojure or ClojureScript. While the merge was not trivial the real hard work over the years was done under the leadership of @xsc and @rundis (thanks guys!). Read link:merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs] for details on the merge.
+Seeing an opportunity to give back to the Clojure community, in 2019 @lread, with guidance and help from many friendly Clojurians, created rewrite-cljc under clj-commons. The goal is to provide a thoughtfully maintained feature-complete library that can be used from either Clojure or ClojureScript. While the merge was not trivial the real hard work over the years was done under the leadership of @xsc and @rundis (thanks guys!). Read link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs] for details on the merge.
+
+== Upgrading from rewrite-clj and/or rewrite-cljs
+
+Both rewrite-clj and rewrite-cljs have a root namespace of `rewrite-clj`. 
+The rewrite-cljc library has a root namespace of `rewrite-cljc`.
+
+To upgrade to rewrite-cljc, update your project dependencies, and rename
+your `ns` `:requires` from `rewrite-clj` to `rewrite-cljc` in your source files.
 
 == Usage
 
