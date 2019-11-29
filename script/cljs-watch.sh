@@ -2,6 +2,10 @@
 
 set -eou pipefail
 
-echo "--[launching figwheel main clojurescript sources]--"
+status-line() {
+    script/status-line "$1" "$2"
+}
+
+status-line info "launching figwheel main clojurescript sources"
 echo "after initialized, point your browser at: http://localhost:9500/figwheel-extra-main/auto-testing"
 clojure -A:test-common:fig-test

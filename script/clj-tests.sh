@@ -2,6 +2,10 @@
 
 set -eou pipefail
 
+status-line() {
+    script/status-line "$1" "$2"
+}
+
 if [ $# -eq 1 ]; then
     CLOJURE_VERSION=$1
 else
@@ -9,6 +13,7 @@ else
 fi
 
 if [ ! $CLOJURE_VERSION == "1.9" ] && [ ! ${CLOJURE_VERSION} == "1.10" ]; then
+    status-line error "usage"
     echo "Usage $0 <clojure version>"
     echo ""
     echo "Where <clojure version> is one of:"
@@ -18,7 +23,7 @@ if [ ! $CLOJURE_VERSION == "1.9" ] && [ ! ${CLOJURE_VERSION} == "1.10" ]; then
     exit 1
 fi
 
-echo "--[testing clojure source against clojure v${CLOJURE_VERSION}]--"
+status-line info "testing clojure source against clojure v${CLOJURE_VERSION}"
 
 clojure -A:test-common:kaocha:${CLOJURE_VERSION} \
         --reporter documentation \

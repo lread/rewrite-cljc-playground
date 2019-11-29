@@ -2,5 +2,9 @@
 
 set -eou pipefail
 
-echo "--[launching koacha watch on clojure sources]--"
+status-line() {
+    script/status-line "$1" "$2"
+}
+
+status-line info "launching koacha watch on clojure sources"
 clojure -A:test-common:kaocha --watch $@

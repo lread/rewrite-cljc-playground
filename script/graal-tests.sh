@@ -16,12 +16,16 @@ TARGET_EXE=target/native-test-runner
 TARGET_RUNNER_DIR=target/clj-graal/generated
 ALIAS="-A:graal:test-common"
 
+status-line() {
+    script/status-line "$1" "$2"
+}
+
 rm -rf .cpcache
 rm -rf classes
 mkdir -p classes
 mkdir -p target
 
-echo "--generate test runner--"
+status-line info "generate test runner"
 rm -rf "${TARGET_RUNNER_DIR}"
 mkdir -p "${TARGET_RUNNER_DIR}"
 clojure "${ALIAS}" \
@@ -29,12 +33,12 @@ clojure "${ALIAS}" \
         --dest-dir "${TARGET_RUNNER_DIR}" \
         test-by-var
 
-echo "--aot compile tests--"
+status-line info "aot compile tests"
 java -cp "$(clojure ${ALIAS} -Spath):${TARGET_RUNNER_DIR}" \
      clojure.main \
      -e "(compile 'clj-graal.test-runner)"
 
-echo "--native compile tests--"
+status-line info "native compile tests"
 rm -f "${TARGET_EXE}"
 
 # an array for args makes fiddling with args easier (can comment out a line during testing)
@@ -61,7 +65,7 @@ fi
 # shellcheck disable=SC2086
 ${TIME_CMD} \
     ${GRAAL_NATIVE_IMAGE} "${native_image_args[@]}"
-echo "--running tests compiled under graal--"
+status-line info "running tests compiled under graal"
 
 ls -lh ${TARGET_EXE}
 

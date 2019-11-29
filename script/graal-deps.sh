@@ -2,6 +2,10 @@
 
 set -eou pipefail
 
+status-line() {
+    script/status-line "$1" "$2"
+}
+
 # constants
 CLJ_GRAAL_DOCS_SHA=08c911d8fb688b259ba14c001d21277f2e62c50a
 
@@ -9,10 +13,10 @@ is-patch-installed() {
     (set +e; mvn --batch-mode -q dependency:get -Dartifact=org.clojure:clojure:1.10.1-patch_38bafca9_clj_1472_3 -o)
 }
 
-echo "--validate maven installed--"
+status-line info "validate maven installed"
 mvn --version
 
-echo "--checking if patched clojure installed--"
+status-line info "checking if patched clojure installed"
 if is-patch-installed; then
    echo "- patched clojure found"
 else

@@ -4,8 +4,12 @@
 
 set -euo pipefail
 
-if [[ ! -z "$(git status --porcelain)" ]]; then
-    echo "Repo is not clean."
+status-line() {
+    script/status-line "$1" "$2"
+}
+
+if [[ -n "$(git status --porcelain)" ]]; then
+    status-line error "Repo is not clean."
     exit 1
 fi
 
@@ -13,19 +17,19 @@ bin/prep_release
 
 VERSION=$(script/get-version)
 
-echo "--[tagging git repo]--"
-git tag v${VERSION}
+status-line info "tagging git repo"
+git tag "v${VERSION}"
 git push --tags
 
 echo "Deploying to clojars"
 mvn deploy
 
-echo "--[updating pom.xml in git repo]--"
+status-line info "updating pom.xml in git repo"
 git add pom.xml
 git commit -m "Update versions in pom.xml"
 git push
 
-echo "--[triggering build on cljdoc]--"
+status-line info "triggering build on cljdoc"
 GROUP_ID=$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout)
 ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
-curl -X POST -d project=${GROUP_ID}/${ARTIFACT_ID} -d version=${VERSION} https://cljdoc.org/api/request-build2
+curl -X POST -d project="${GROUP_ID}/${ARTIFACT_ID}" -d version="${VERSION}" https://cljdoc.org/api/request-build2

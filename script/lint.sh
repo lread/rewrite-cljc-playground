@@ -7,23 +7,28 @@
 
 set -eou pipefail
 
+status-line() {
+    script/status-line "$1" "$2"
+}
+
 function lint() {
     local lint_args
     if [ ! -d .clj-kondo/.cache ]; then
-        echo "--[linting and building cache]--"
+        status-line info "linting and building cache"
         # classpath with tests paths
-        local classpath="$(clojure -R:test -C:test -Spath) script"
+        local classpath;classpath="$(clojure -R:test -C:test -Spath) script"
         lint_args="$classpath --cache"
     else
-        echo "--[linting]--"
+        status-line info "linting"
         lint_args="src test script"
     fi
     set +e
+    # shellcheck disable=SC2086
     clojure -A:clj-kondo --lint ${lint_args}
     local exit_code=$?
     set -e
     if [ ${exit_code} -ne 0 ] && [ ${exit_code} -ne 2 ] && [ ${exit_code} -ne 3 ]; then
-        echo "** clj-kondo exited with unexpected exit code: ${exit_code}"
+        status-line error "clj-kondo exited with unexpected exit code: ${exit_code}"
     fi
     exit ${exit_code}
 }

@@ -2,6 +2,10 @@
 
 set -eou pipefail
 
+status-line() {
+    script/status-line "$1" "$2"
+}
+
 function usage() {
     echo "Usage: $0 <options>"
     echo ""
@@ -26,22 +30,22 @@ do case $1 in
        -e|--env) TEST_ENV="$2"; shift;;
        -o|--optimizations) CLJS_OPTIMIZATIONS="$2"; shift;;
        -h|--help) usage; exit 0;;
-       *) echo -e "* invalid option: $1\n"; usage; exit 1;;
+       *) status-line error "invalid option: $1\n"; usage; exit 1;;
    esac; shift; done
 
 if [[ ! "${TEST_ENV}" =~ ^(node|chrome-headless|planck)$ ]]; then
-    echo -e "* invalid env: ${TEST_ENV}\n"
+    status-line error "invalid env: ${TEST_ENV}\n"
     usage
     exit 1
 fi
 
 if [[ ! "${CLJS_OPTIMIZATIONS}" =~ ^(none|advanced)$ ]]; then
-    echo -e "* invalid optimizations: ${CLJS_OPTIMIZATIONS}\n"
+    status-line error "invalid optimizations: ${CLJS_OPTIMIZATIONS}\n"
     usage
     exit 1
 fi
 
-echo "--[testing ClojureScript source under ${TEST_ENV}, cljs optimizations: ${CLJS_OPTIMIZATIONS}]--"
+status-line info "testing ClojureScript source under ${TEST_ENV}, cljs optimizations: ${CLJS_OPTIMIZATIONS}"
 TEST_COMBO=${TEST_ENV}-${CLJS_OPTIMIZATIONS}
 OUT_DIR=target/cljsbuild/test/${TEST_COMBO}
 

@@ -13,5 +13,5 @@ set -eou pipefail
 if [[ ${OSTYPE} =~ ^darwin* ]] || [ "${OSTYPE}" == "linux-gnu" ];then
     ./script/cljs-tests.sh --env planck --optimizations none
 else
-    echo "* WARNING: skipping planck tests, can only run on linux or macos"
+    echo "* WARNING: skipping planck tests, they can only run on linux or macos"
 fi
