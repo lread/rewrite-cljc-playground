@@ -19,7 +19,7 @@ l|:arglists-by
 l|:arity-only
 
 l|:exclude-namespaces
-l|["rewrite-clj.potemkin.clojure"]
+l|["rewrite-cljc.potemkin.clojure"]
 
 l|:include
 l|:changed-publics
@@ -74,7 +74,7 @@ TODO:
 **Table of diffs:**
 
 toc::[]
-== [black]`*≠*` [black]#pass:c[rewrite-clj.node.protocols]#
+== [black]`*≠*` [black]#pass:c[rewrite-cljc.node.protocols]#
 
 [unstyled]
 * *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
@@ -120,7 +120,7 @@ a|
 
 
 
-== [green]`*+*` [green]#pass:c[rewrite-clj.node.string]#
+== [green]`*+*` [green]#pass:c[rewrite-cljc.node.string]#
 
 [unstyled]
 * *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
@@ -139,7 +139,7 @@ a|
 
 
 
-== [black]`*≠*` [black]#pass:c[rewrite-clj.parser]#
+== [black]`*≠*` [black]#pass:c[rewrite-cljc.parser]#
 
 [unstyled]
 
@@ -169,7 +169,7 @@ a|
 
 
 
-== [black]`*≠*` [black]#pass:c[rewrite-clj.reader]#
+== [black]`*≠*` [black]#pass:c[rewrite-cljc.reader]#
 
 [unstyled]
 * *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
@@ -188,7 +188,7 @@ a|
 
 
 
-== [black]`*≠*` [black]#pass:c[rewrite-clj.zip]#
+== [black]`*≠*` [black]#pass:c[rewrite-cljc.zip]#
 
 [unstyled]
 
@@ -207,7 +207,7 @@ a|
 
 
 
-== [black]`*≠*` [black]#pass:c[rewrite-clj.zip.base]#
+== [black]`*≠*` [black]#pass:c[rewrite-cljc.zip.base]#
 
 [unstyled]
 * *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
@@ -227,7 +227,7 @@ a|
 
 
 
-== [green]`*+*` [green]#pass:c[rewrite-clj.zip.edit]#
+== [green]`*+*` [green]#pass:c[rewrite-cljc.zip.edit]#
 
 [unstyled]
 * *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
@@ -294,7 +294,7 @@ a|
 
 
 
-== [green]`*+*` [green]#pass:c[rewrite-clj.zip.find]#
+== [green]`*+*` [green]#pass:c[rewrite-cljc.zip.find]#
 
 [unstyled]
 * *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
@@ -454,7 +454,7 @@ a|
 
 
 
-== [green]`*+*` [green]#pass:c[rewrite-clj.zip.remove]#
+== [green]`*+*` [green]#pass:c[rewrite-cljc.zip.remove]#
 
 [unstyled]
 * *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
@@ -485,7 +485,7 @@ a|
 
 
 
-== [green]`*+*` [green]#pass:c[rewrite-clj.zip.seq]#
+== [green]`*+*` [green]#pass:c[rewrite-cljc.zip.seq]#
 
 [unstyled]
 * *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
@@ -609,6 +609,5 @@ a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
 |===
-
 
 

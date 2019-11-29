@@ -25,9 +25,7 @@
                     :main-opts ["-m" "kaocha.runner"]}
 
            ;; figwheel for clojurescript testing during dev
-           :fig-test {;; note that rebel readline uses rewrite-clj internally and for that
-                      ;; reason we do not include it.
-                      :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}
+           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.3"}}
                       :extra-paths ["target" "test"]
                       :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
 
@@ -57,17 +55,15 @@
            ;;
            ;; Document rewrite-clj* differences
            ;;
-           :diff-apis {:extra-deps {lread/diff-apis {:git/url "https://github.com/lread/diff-apis"
-                                                     :sha "7a99206476cb8b9a97d0b2a3db0cb73fbab0f354"}}
+           :diff-apis {:extra-paths ["script/resources"]
+                       :extra-deps {lread/diff-apis {:git/url "https://github.com/lread/diff-apis"
+                                                     :sha "193c3621aa972cc51ad7f6c0357843a4f237a2fd"}}
                        :main-opts ["-m" "diff-apis.main" "projects"]}
 
            ;;
            ;; Maintenance support
            ;;
-           :outdated {;; note that depot uses rewrite-clj internally which can get trippy
-                      ;; I think I would exclude this project's src paths if I could do so easily, but I instead
-                      ;; exclude rewrite-clj dep in depot
-                      :extra-deps {olical/depot {:mvn/version "1.8.4" :exclusions [rewrite-clj/rewrite-clj]}}
+           :outdated {:extra-deps {olical/depot {:mvn/version "1.8.4"}}
                       ;; when checking for updates, depot requires that you specify aliases, next version
                       ;; might fix this
                       :main-opts ["-m" "depot.outdated.main" "-a" "clj-kondo,test-common,kaocha,fig-test,cljs-test,update-readme,outdated,graal"]}}}

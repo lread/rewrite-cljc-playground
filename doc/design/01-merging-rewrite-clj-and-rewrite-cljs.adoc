@@ -5,8 +5,8 @@
 rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] with https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] giving us a one stop rewrite-clj shop for Clojure and ClojureScript developers.
 
 == Goals
-1. *Minimize API breakage*. Within reason, maintain API compatability with both rewrite-clj and rewrite-cljs. I'd like rewrite-cljc to potentially be a drop-in replacement for `rundis/rewrite-cljs` (actually now living at `clj-commons/rewrite-cljs`) and `xsc/rewrite-clj`.
-2. *Feature parity*. rewrite-cljs has lagged behind rewrite-clj. Bring rewrite-cljs up to parity with rewrite-clj. Bring any rewrite-cljs specific features over to rewrite-clj.
+1. *Minimize API breakage*. Within reason, maintain API compatability with both rewrite-clj and rewrite-cljs. I'd like rewrite-cljc to be an low friction replacement for `rundis/rewrite-cljs` (actually now living at `clj-commons/rewrite-cljs`) and `xsc/rewrite-clj`.
+2. *Feature parity*. rewrite-cljs has lagged behind rewrite-cljc. Bring rewrite-cljs up to parity with rewrite-cljc. Bring any rewrite-cljs specific features over to rewrite-cljc.
 3. *Preserve type hints*. I will respect and carry over existing type hinting in rewrite-clj and rewrite-cljs. I will not, at this time, evaluate if existing type hinting has value.
 4. *Improve documentation*. I think that rewrite-clj documentation is good, but as I dig deeper into using the library and get feedback on Slack, I see places where guidance could be improved.
 5. *Document design decisions*. I'm not sure what form this will take, but I do like projects that include histories of architectural and design decisions. Perhaps I'll adopt https://github.com/cljdoc/cljdoc/tree/master/doc/adr[adr ala cljdoc]. For now you can think of this document as I kind of sloppy-mega adr for my merge work.
@@ -21,12 +21,13 @@ rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] with 
 
 == Changes
 === Breaking
-1. Minimum versions
+. Root namespace is `rewrite-cljc` instead of `rewrite-clj`
+. Minimum versions
 ** Clojure v1.9
 ** Java v1.8
 ** ClojureScript v10
-4. Now using `ex-info` for exceptions
-5. Base positional support for rewrite-cljs has been migrated over to rewrite-clj implementation
+. Now using `ex-info` for exceptions
+. Base positional support for rewrite-cljs has been migrated over to rewrite-clj implementation
 
 === Potentially breaking
 1. Switched to `clojure.tools.reader.edn`
@@ -52,37 +53,37 @@ From what I perceive as public APIs, rewrite-clj has gained:
 |===
 | public | description
 
-| rewrite-clj.paredit
+| rewrite-cljc.paredit
 | structured editing of S-expression data formerly in rewrite-cljs only
 
-| rewrite-clj.zip/append-child*
+| rewrite-cljc.zip/append-child*
 | formerly internal only and omitted, I assume, by accident
 
-| rewrite-clj.zip/find-last-by-pos
+| rewrite-cljc.zip/find-last-by-pos
 | positional search support formerly in rewrite-cljs only
 
-| rewrite-clj.zip/find-tag-by-pos
+| rewrite-cljc.zip/find-tag-by-pos
 | positional search support formerly in rewrite-cljs only
 
-| rewrite-clj.zip/insert-newline-left
+| rewrite-cljc.zip/insert-newline-left
 | formerly internal only and omitted, I assume, by accident
 
-| rewrite-clj.zip/insert-newline-right
+| rewrite-cljc.zip/insert-newline-right
 | formerly omitted, I assume, by accident
 
-| rewrite-clj.zip/insert-space-left
+| rewrite-cljc.zip/insert-space-left
 | formerly internal only and omitted, I assume, by accident
 
-| rewrite-clj.zip/insert-space-right
+| rewrite-cljc.zip/insert-space-right
 | formerly internal only and omitted, I assume, by accident
 
-| rewrite-clj.zip/position-span
+| rewrite-cljc.zip/position-span
 | positional search support formerly in rewrite-cljs only
 
-| rewrite-clj.zip/remove-preserve-newline
+| rewrite-cljc.zip/remove-preserve-newline
 | formerly in rewrite-cljs only
 
-| rewrite-clj.zip/subzip
+| rewrite-cljc.zip/subzip
 | formerly internal only, found useful to expose
 |===
 
@@ -105,51 +106,37 @@ report contains some observations under the "Notes" header.
 === Feature Differences
 No ability to read from files when using rewrite-cljc from ClojureScript.
 
-== * Not a drop in replacement? [red]*in progress*
+== Root namespace of `rewrite-cljc`
 
-I was thinking of rewrite-cljc as a drop in replacement for rewrite-clj and
-rewrite-cljs but there is an issue.
+Both rewrite-clj and rewite-cljs share the same root namespace of `rewrite-clj`.
 
-The maven coordinates for rewrite-cljc will likely be `clj-commons/rewrite-cljc`.
+I decided against reusing the same root namespace for rewrite-cljc. It will have
+`rewrite-cljc` as its root namespace.
 
-If rewrite-clj or rewrite-cljs are being used directly or indirectly by a
-project, and rewrite-cljc is added, there will be a `rewrite-clj` namespace
-collision. Basically, things won't work.
+Rationale:
 
-=== overcoming direct usage
+* Ideally rewrite-cljc work would have been merged into the current rewrite-clj
+repo, but that did not work out, so rewrite-cljc will have different maven
+coordinates than rewrite-clj, most likely `clj-commons/rewrite-cljc`.
 
-The easy case: an author can simply replace his direct usage of rewrite-cljs or
-rewrite-clj with rewrite-cljc.
-
-=== overcoming indirect usage
-
-The more confusing case: the indirect usages of rewrite-cljs or rewrite-clj must
-be excluded from deps.
-
-In deps.edn, for example:
-
+* Having to rename namespace requires to `rewrite-cljc` in one's project to
+upgrade to rewrite-cljc is much less of a burden than the burden of the
+confusion of introducing colliding namespaces into the community.
++
+Colliding namespaces would likely first confuse, then require exclusions -
+a deps.edn example:
++
 [source,clojure]
 ----
 {olical/depot {:mvn/version "1.8.4" :exclusions [rewrite-clj/rewrite-clj]}}
 ----
 
-Maybe that's not too bad? But maybe it gets more confusing when you are using
-multiple libraries - some of which are using rewrite-clj, others are using
-rewrite-cljc.
-
-=== alternatives
-
-* rewrite-cljc could switch to a `rewrite-cljc` namespace. This would mean
-  source edits to upgrade to rewrite-cljc.
-* carry on with rewrite-clj maven coordinates - this is a no go as multiple
-  attempts to contact original author have gone unanswered
-* carry on with rewrite-cljs maven coordinates - this is less attractive and of
-  little value because the audience for rewrite-cljs was much smaller than
-  rewrite-clj.
+* A different root namespace means upgrading to rewrite-cljc will be a
+  deliberate choice.
 
 == Observations
 === Wow, a lot of libraries use rewrite-clj
-During this work, I noticed how pervasive rewrite-clj usage is. This discovery often took the form of "Why isn't x working? Oh, it uses rewrite-clj and my work in progress on rewrite-cljc is getting confused." Examples of x:
+During this work, I noticed how pervasive rewrite-clj usage is. Some prominent examples:
 
 . https://github.com/bhauman/figwheel-main[figwheel-main] which uses https://github.com/bhauman/rebel-readline[rebel-readline] which uses rewrite-clj
 . https://github.com/Olical/depot[depot] uses rewrite-clj
@@ -224,27 +211,27 @@ When I first started to experiment with a cljc version of rewrite-clj, my direct
 ....
 |-src
 | |-clj
-| | '-rewrite-clj
+| | '-rewrite-cljc
 | |-cljs
-| | '-rewrite-clj
+| | '-rewrite-cljc
 | '-cljc
-|   '-rewrite-clj
+|   '-rewrite-cljc
 |-test
 | |-clj
-| | '-rewrite-clj
+| | '-rewrite-cljc
 | |-cljs
-| | '-rewrite-clj
+| | '-rewrite-cljc
 | '-cljc
-|   '-rewrite-clj
+|   '-rewrite-cljc
 ....
 
 After a certain amount of work, I realized the majority of the code was cljc so opted for the much simpler:
 [svgbob]
 ....
 |-src
-| '-rewrite-clj
+| '-rewrite-cljc
 |-test
-| '-rewrite-clj
+| '-rewrite-cljc
 ....
 
 === * Graalvm support - [red]*in progress*
@@ -323,51 +310,90 @@ The original rewrite-cljs author worked around this problem by renaming namespac
 
 [%autowidth]
 |===
-|library|namespace
+
+.2+h|library .2+h|namespace 3+h|in rewrite-cljc
+h|namespace h|clj? h|cljs?
 
 |rewrite-clj
 |rewrite-clj.node.coerce
+|rewrite-cljc.node.coerce
+|yes
+|no
 
 |rewrite-cljs
 |rewrite-clj.node.coerce[yellow-background]**r**
+|rewrite-cljc.node.coercer
+|yes
+|yes
 
 |rewrite-clj
 |rewrite-clj.node.string
+|rewrite-cljc.node.string
+|yes
+|no
 
 |rewrite-cljs
 |rewrite-clj.node.string[yellow-background]**z**
+|rewrite-cljc.node.stringz
+|yes
+|yes
 
 |rewrite-clj
 |rewrite-clj.zip.edit
+|rewrite-cljc.zip.edit
+|yes
+|no
 
 |rewrite-cljs
 |rewrite-clj.zip.edit[yellow-background]**z**
+|rewrite-cljc.zip.editz
+|yes
+|yes
 
 |rewrite-clj
 |rewrite-clj.zip.find
+|rewrite-cljc.zip.find
+|yes
+|no
 
 |rewrite-cljs
 |rewrite-clj.zip.find[yellow-background]**z**
+|rewrite-cljc.zip.findz
+|yes
+|yes
 
 |rewrite-clj
 |rewrite-clj.zip.remove
+|rewrite-cljc.zip.remove
+|yes
+|no
 
 |rewrite-cljs
 |rewrite-clj.zip.remove[yellow-background]**z**
+|rewrite-cljc.zip.removez
+|yes
+|yes
 
 |rewrite-clj
 |rewrite-clj.zip.seq
+|rewrite-cljc.zip.seq
+|yes
+|no
 
 |rewrite-cljs
 |rewrite-clj.zip.seq[yellow-background]**z**
+|rewrite-cljc.zip.seqz
+|yes
+|yes
 |===
 
-None of these namespaces are part of public APIs, but because I see a lot of code that uses these internal namespaces, I decided to preserve the existing naming for both Clojure and ClojureScript. ClojureScript will continue to use the `rewrite-cljs` renames, and Clojure will get both versions.
-
+None of these namespaces are part of public APIs, but because I see a lot of
+code that uses these internal namespaces, I decided to preserve the existing
+rewrite-clj and rewrite-cljs naming for rewrite-cljc.
 
 === Clojure/ClojureScript interop
 
-* Where I felt I could get away with it, I localized Clojure/ClojureScript differences in the `rewrite-clj.interop` namespace.
+* Where I felt I could get away with it, I localized Clojure/ClojureScript differences in the `rewrite-cljc.interop` namespace.
 * Although technically an API breakage, I made a choice to switch all rewrite-cljc thrown exceptions to the Clojure/ClojureScript compatible ex-info.
 * Some notes on differences between Clojure and ClojureScript
 ** throws and catches, if not using ex-info are different
@@ -401,7 +427,7 @@ rewrite-clj allows parsed Clojure/ClojureScript/EDN to be converted back and for
 
 [source,clojure]
 ----
-user=> (require '[rewrite-clj.zip :as z])
+user=> (require '[rewrite-cljc.zip :as z])
 nil
 user=> (def zipper (z/of-string "[1 2 3]"))  // <1>
 #'user/zipper
@@ -411,7 +437,7 @@ user=> (def s (z/sexpr zipper)) // <2>
 #'user/s
 user=> s
 [1 2 3]
-user=> (require '[rewrite-clj.node :as n])
+user=> (require '[rewrite-cljc.node :as n])
 nil
 user=> (n/coerce s) // <3>
 <vector: [1 2 3]>
@@ -420,7 +446,7 @@ user=> (n/coerce s) // <3>
 <2> convert rewrite-clj node at current location in zipper to s-expression
 <3> convert s-expression to rewrite-clj node
 
-While I expect this can be quite convenient, it does come with caveats which were not stressed in the original documentation.
+While I expect this can be quite convenient, it does come with caveats:
 
 1. What happens when we try to `sexpr` Clojure specific features from ClojureScript? For example, ratios are available in Clojure but not ClojureScript.
 2. If you try to `sexpr` something that cannot be converted into an s-epxression an exception will be thrown.
@@ -483,7 +509,7 @@ We:
 
 1. continue to support both rewrite-clj vector rewrite-cljs map notations for positions on function parameters.
 2. use vector notation for position on function returns. I personally prefer the map notation, but, as a rule, favor rewrite-clj over rewrite-cljs because rewrite-clj is the more widely used library and thus changes affect more users.
-3. include rewrite-cljs's positional functions: `rewrite-clj.zip/find-last-by-pos` and `rewrite-clj.zip/find-tag-by-pos` .
+3. include rewrite-cljs's positional functions: `rewrite-cljc.zip/find-last-by-pos` and `rewrite-cljc.zip/find-tag-by-pos` .
 
 The most glaring breaking change for ClojureScript is that it must now create the zipper with positional support enabled, for example: `(z/of-string "[1 2 3]" {:track-position true})`
 
@@ -491,7 +517,7 @@ The most glaring breaking change for ClojureScript is that it must now create th
 
 At the time of this writing, rewrite-clj had released partial support for
 namespaced maps. I attempted to complete this support in a pull request which
-was never merged into rewrite-clj.
+was never merged into rewrite-cljc.
 
 As part of this merge I decided to include full namespaced map support which meant:
 

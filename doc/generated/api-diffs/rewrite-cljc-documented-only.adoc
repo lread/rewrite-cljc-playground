@@ -19,7 +19,7 @@ l|:arglists-by
 l|:arity-only
 
 l|:exclude-namespaces
-l|["rewrite-clj.potemkin.clojure"]
+l|["rewrite-cljc.potemkin.clojure"]
 
 l|:exclude-with
 l|[:no-doc :skip-wiki]
@@ -65,7 +65,7 @@ feature differences between cljs and clj versions, namely: file support.
 **Table of diffs:**
 
 toc::[]
-== [black]`*≠*` [black]#pass:c[rewrite-clj.parser]#
+== [black]`*≠*` [black]#pass:c[rewrite-cljc.parser]#
 
 [unstyled]
 
@@ -95,7 +95,7 @@ a|
 
 
 
-== [black]`*≠*` [black]#pass:c[rewrite-clj.zip]#
+== [black]`*≠*` [black]#pass:c[rewrite-cljc.zip]#
 
 [unstyled]
 
@@ -111,6 +111,5 @@ a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
 |===
-
 
 

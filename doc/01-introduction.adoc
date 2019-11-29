@@ -15,12 +15,15 @@ rewrite-cljc is a library that reads and writes Clojure, ClojureScript and https
 Seeing an opportunity to give back to the Clojure community, in 2019 @lread, with guidance and help from many friendly Clojurians, created rewrite-cljc under clj-commons. The goal is to provide a thoughtfully maintained feature-complete library that can be used from either Clojure or ClojureScript. While the merge was not trivial the real hard work over the years was done under the leadership of @xsc and @rundis (thanks guys!). Read link:merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs] for details on the merge.
 
 == Usage
-rewrite-cljc is intended to be a drop-in replacement for rewrite-clj or rewrite-cljs. There are 4 public apis:
 
-. rewrite-clj.parser
-. rewrite-clj.node
-. rewrite-clj.zip
-. rewrite-clj.paredit
+With the exception of the root namespace of `rewrite-cljc`, rewrite-cljc is
+intended to be an API compatible replacement for rewrite-clj and/or
+rewrite-cljs. There are 4 public apis:
+
+. rewrite-cljc.parser
+. rewrite-cljc.node
+. rewrite-cljc.zip
+. rewrite-cljc.paredit
 
 === Parser API
 Parses Clojure/ClojureScript/EDN to custom node types. It takes advantage of https://github.com/clojure/tools.reader[clojure.tools.reader] for simple forms.
@@ -31,7 +34,7 @@ Here we parse a single form from a string:
 .REPL session
 [source, clojure-repl]
 ----
-user=> (require '[rewrite-clj.parser :as p])
+user=> (require '[rewrite-cljc.parser :as p])
 nil
 user=> (def form (p/parse-string "(defn my-function [a]\n  (* a 3))"))
 #'user/form
@@ -44,7 +47,7 @@ user=> form
 
 TIP: Depending on your needs, you can opt to skip the parser api and instead use zip api `of-string` or `of-file`.
 
-See link:{cljdoc-api-url}/rewrite-clj.parser[parser API docs].
+See link:{cljdoc-api-url}/rewrite-cljc.parser[parser API docs].
 
 === Node API
 Inspect and analyse parsed nodes.
@@ -54,7 +57,7 @@ Continueing from the form we parsed above:
 .REPL session continued
 [source, clojure]
 ----
-user=> (require '[rewrite-clj.node :as n])
+user=> (require '[rewrite-cljc.node :as n])
 nil
 user=> (n/tag form) // <1>
 :list
@@ -81,7 +84,7 @@ user=> (n/meta-node  // <4>
 <3> create a node from nearly any value using `coerce`
 <4> nodes can be created by hand
 
-See link:{cljdoc-api-url}/rewrite-clj.node[node API docs].
+See link:{cljdoc-api-url}/rewrite-cljc.node[node API docs].
 
 === Zip API
 Traverse and modify Clojure/ClojureScript/EDN.
@@ -98,7 +101,7 @@ rewrite-clj uses a customized version of the https://clojure.github.io/clojure/c
 .REPL session
 [source, clojure-repl]
 ----
-user=> (require '[rewrite-clj.zip :as z])
+user=> (require '[rewrite-cljc.zip :as z])
 nil
 user=> (def data-string
 "(defn my-function [a]
@@ -125,7 +128,7 @@ user=> (-> data z/down z/right (z/edit (comp symbol str) "2") z/print-root)
 ----
 <1> use `of-string` to parse and zip in one step
 <2> explore a bit
-<3> make some changes. `rewrite-clj.zip/edit` and `rewrite-clj.zip/replace` transparently coerce between the node representation (`<token: my-function>`) and its corresponding s-expression (`my-function`).
+<3> make some changes. `rewrite-cljc.zip/edit` and `rewrite-cljc.zip/replace` transparently coerce between the node representation (`<token: my-function>`) and its corresponding s-expression (`my-function`).
 
 TIP: The zip location movement functions (`right`, `left`, `up`, `down`, etc) skip over whitespace nodes. If you want to see all nodes, use the * counterparts (`right*`, `left*`, `up*`, `down*`, etc).
 
@@ -137,11 +140,11 @@ Use rewrite.zip/sexpr with care:
 * Be mindful of language differences between Clojure and ClojureScript.
 ====
 
-See link:{cljdoc-api-url}/rewrite-clj.zip[zip API docs].
+See link:{cljdoc-api-url}/rewrite-cljc.zip[zip API docs].
 
 ==== Sweet Code Traversal with the Zip API
 
-rewrite-clj.zip includes find operations to navigate to locations of interest. Let's assume you want to modify the following `project.clj` by replacing the `:description` placeholder text with something more meaningful:
+rewrite-cljc.zip includes find operations to navigate to locations of interest. Let's assume you want to modify the following `project.clj` by replacing the `:description` placeholder text with something more meaningful:
 
 .project.clj snippet
 [source, clojure]
@@ -151,12 +154,12 @@ rewrite-clj.zip includes find operations to navigate to locations of interest. L
   ...)
 ----
 
-Most find functions accept an optional location movement function. To perform a depth-first search use `rewrite-clj.zip/next`, to search sibling nodes to the right, use `rewrite-clj.zip/right` (the default), to search siblings to left, use `rewrite-clj.zip/left`.
+Most find functions accept an optional location movement function. To perform a depth-first search use `rewrite-cljc.zip/next`, to search sibling nodes to the right, use `rewrite-cljc.zip/right` (the default), to search siblings to left, use `rewrite-cljc.zip/left`.
 
 .REPL session
 [source, clojure-repl]
 ----
-user=> (require '[rewrite-clj.zip :as z])
+user=> (require '[rewrite-cljc.zip :as z])
 nil
 user=> (def data (z/of-file "project.clj")) // <1>
 #'user/data
@@ -187,7 +190,7 @@ The zip api provides familiar ways to work with Clojure data structures. It offe
 .REPL session
 [source, clojure-repl]
 ----
-user=> (require '[rewrite-clj.zip :as z])
+user=> (require '[rewrite-cljc.zip :as z])
 nil
 user=> (def data (z/of-string "[1\n2\n3]"))
 #'user/data
@@ -210,4 +213,4 @@ TODO: an example
 === Paredit API
 Structured editing was introduce by rewrite-cljs.
 
-See link:{cljdoc-api-url}/rewrite-clj.paredit[current paredit API docs].
+See link:{cljdoc-api-url}/rewrite-cljc.paredit[current paredit API docs].

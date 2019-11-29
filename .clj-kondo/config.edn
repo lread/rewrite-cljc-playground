@@ -1,24 +1,24 @@
 {:lint-as
- {rewrite-clj.potemkin.cljs/defprotocol+ clojure.core/defprotocol
-  rewrite-clj.potemkin.clojure/defprotocol+ clojure.core/defprotocol
+ {rewrite-cljc.potemkin.cljs/defprotocol+ clojure.core/defprotocol
+  rewrite-cljc.potemkin.clojure/defprotocol+ clojure.core/defprotocol
   clojure.test.check.clojure-test/defspec clojure.core/def
   clojure.test.check.properties/for-all clojure.core/let
-  rewrite-clj.zip/subedit-> clojure.core/->
-  rewrite-clj.zip.subedit/subedit-> clojure.core/->
-  rewrite-clj.zip/subedit->> clojure.core/->>
-  rewrite-clj.zip.subedit/subedit->> clojure.core/->>
-  rewrite-clj.zip/edit-> clojure.core/->
-  rewrite-clj.zip.subedit/edit-> clojure.core/->
-  rewrite-clj.zip/edit->> clojure.core/->>
-  rewrite-clj.zip.subedit/edit->> clojure.core/->>
-  rewrite-clj.custom-zipper.switchable/defn-switchable clojure.core/defn
-  rewrite-clj.potemkin.clojure/import-vars potemkin/import-vars
-  rewrite-clj.potemkin.cljs/import-varfs potemkin/import-vars}
+  rewrite-cljc.zip/subedit-> clojure.core/->
+  rewrite-cljc.zip.subedit/subedit-> clojure.core/->
+  rewrite-cljc.zip/subedit->> clojure.core/->>
+  rewrite-cljc.zip.subedit/subedit->> clojure.core/->>
+  rewrite-cljc.zip/edit-> clojure.core/->
+  rewrite-cljc.zip.subedit/edit-> clojure.core/->
+  rewrite-cljc.zip/edit->> clojure.core/->>
+  rewrite-cljc.zip.subedit/edit->> clojure.core/->>
+  rewrite-cljc.custom-zipper.switchable/defn-switchable clojure.core/defn
+  rewrite-cljc.potemkin.clojure/import-vars potemkin/import-vars
+  rewrite-cljc.potemkin.cljs/import-varfs potemkin/import-vars}
  :linters
  {:unresolved-symbol
   {:level :warning
-   :exclude [(rewrite-clj.potemkin.cljs/import-vars-with-mods)
-             (rewrite-clj.potemkin.clojure/import-vars-with-mods)
+   :exclude [(rewrite-cljc.potemkin.cljs/import-vars-with-mods)
+             (rewrite-cljc.potemkin.clojure/import-vars-with-mods)
              ;; clj-kondo has no concept of import-vars-with-mods so we compensate here
              mod-t-def mod-t-def-doc mod-t-fn mod-t-fn-doc mod-t-macro mod-t-macro-doc]}
   :unused-namespace
@@ -26,20 +26,20 @@
   :unused-referred-var
   {:exclude {clojure.test.check [quick-check]}}
   :deprecated-var
-  {:exclude {rewrite-clj.zip.base/value
-             {:namespaces [rewrite-clj.zip]}
-             rewrite-clj.zip/->root-string
-             {:namespaces [rewrite-clj.regression-test]}
-             rewrite-clj.zip/->string
-             {:namespaces [rewrite-clj.regression-test]}
-             rewrite-clj.zip.whitespace/append-space
-             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
-             rewrite-clj.zip.whitespace/prepend-space
-             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
-             rewrite-clj.zip.whitespace/append-newline
-             {:namespaces  [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
-             rewrite-clj.zip.whitespace/prepend-newline
-             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
-             rewrite-clj.node/value
-             {:defs [rewrite-clj.zip.base/value]}}}}
+  {:exclude {rewrite-cljc.zip.base/value
+             {:namespaces [rewrite-cljc.zip]}
+             rewrite-cljc.zip/->root-string
+             {:namespaces [rewrite-cljc.regression-test]}
+             rewrite-cljc.zip/->string
+             {:namespaces [rewrite-cljc.regression-test]}
+             rewrite-cljc.zip.whitespace/append-space
+             {:namespaces [rewrite-cljc.zip.whitespace-test rewrite-cljc.zip]}
+             rewrite-cljc.zip.whitespace/prepend-space
+             {:namespaces [rewrite-cljc.zip.whitespace-test rewrite-cljc.zip]}
+             rewrite-cljc.zip.whitespace/append-newline
+             {:namespaces  [rewrite-cljc.zip.whitespace-test rewrite-cljc.zip]}
+             rewrite-cljc.zip.whitespace/prepend-newline
+             {:namespaces [rewrite-cljc.zip.whitespace-test rewrite-cljc.zip]}
+             rewrite-cljc.node/value
+             {:defs [rewrite-cljc.zip.base/value]}}}}
  :output {:include-files ["^src" "^test" "script"]}}

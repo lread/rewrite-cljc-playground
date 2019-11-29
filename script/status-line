@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+TYPE=$1
+MSG=$2
+
+case "$TYPE" in
+    "info")
+        FMT="\n\e[42m \e[30;46m %s \e[42m \e[0m\n"
+        ;;
+    "error")
+        FMT="\n\e[30;43m*\e[41m error: %s \e[43m*\e[0m\n"
+        ;;
+    *)  echo "unrecognized type: $TYPE for status msg: $MSG"
+        exit 1
+        ;;
+esac
+
+printf "$FMT" "$MSG"
