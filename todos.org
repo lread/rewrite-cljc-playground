@@ -24,107 +24,6 @@
     - node_test.cljs
     - zip_tests.cljs
 ** Docs & API
-*** TODO give guidance on the limitations of sexpr
-    from discussion with @sogaiu and @borkdude on slack
-
-    sogaiu [7:34 AM]
-    not always easy to be brief but clear :slightly_smiling_face:
-    @lread btw, i encountered a problem processing clojure's core.clj:
-
-    ```(require
-    '[rewrite-clj.zip :as rz]
-    :reload-all)
-
-    (def source-str
-    (slurp "../clojure/src/clj/clojure/core.clj"))
-
-    (def root-zloc
-    (rz/of-string ;;(subs source-str 0 26232) ; no problem
-    (subs source-str 0 26981) ; exception below
-    {:track-position? true}))
-
-    ;; ExceptionInfo unsupported operation for uneval-node ...
-    (def strings
-    (loop [zloc root-zloc
-    results []]
-    (if (rz/end? zloc)
-    results
-    (let [sexpr (rz/sexpr zloc)]
-    (recur (rz/next zloc)
-    (if (string? sexpr)
-    (conj results zloc)
-    results))))))```
-
-    not sure, but i think the section of difficulty in core.clj is:
-
-    ```;equals-based
-    #_(defn =
-    "Equality. Returns true if x equals y, false if not. Same as Java
-    x.equals(y) except it also works for nil. Boxed numbers must have
-    same type. Clojure's immutable data structures define equals() (and
-    thus =) as a value, not an identity, comparison."
-    {:inline (fn [x y] `(. clojure.lang.Util equals ~x ~y))
-    :inline-arities #{2}
-    :added "1.0"}
-    ([x] true)
-    ([x y] (clojure.lang.Util/equals x y))
-    ([x y & more]
-    (if (= x y)
-    (if (next more)
-    (recur y (first more) (next more))
-    (= y (first more)))
-    false)))```
-    (edited)
-
-    borkdude [7:47 AM]
-    I think that makes sense, you can’t turn an uneval into a sexpr:
-    ```$ clj
-    Clojure 1.10.0
-    user=> (require '[rewrite-clj.parser :as p])
-    nil
-    user=> (p/parse-string "#_foo")
-    <uneval: "#_foo">
-    user=> (require '[rewrite-clj.node :as n])
-    nil
-    user=> (n/sexpr (p/parse-string "#_foo"))
-    Execution error (UnsupportedOperationException) at rewrite_clj.node.uneval.UnevalNode/sexpr (uneval.clj:6).
-    null```
-
-    borkdude [7:48 AM]
-    or it should return `nil` maybe, but then you can’t distinguish between a token that represents nil
-
-    borkdude [7:49 AM]
-    ```$ clj
-    Clojure 1.10.0
-    user=> (require '[rewrite-clj.node :as n])
-    nil
-    user=> (require '[rewrite-clj.parser :as p])
-    nil
-    user=> (n/sexpr (p/parse-string "nil"))
-    nil```
-
-    borkdude [7:49 AM]
-    same for comments:
-    ```user=> (n/sexpr (p/parse-string ";; hello"))
-    Execution error (UnsupportedOperationException) at rewrite_clj.node.comment.CommentNode/sexpr (comment.clj:6).
-    null```
-
-    lread [7:58 AM]
-    Thinking about rewrite-clj sexpr feature is on my todo list. I guess it might be convenient but comes with limitation that should be documented.  I’m thinking that I should probably remove internal uses of sexpr because of these limitations. I’ll also have to think about cljs vs clj differences and how sexpr handles them - like ratio is only available in clj, differences in max integers, no char in cljs etc.
-
-    lread [8:02 AM]
-    My current thinking is rewrite-clj sexpr should be used cautiously if at all. What do you folks think?
-
-    borkdude [8:07 AM]
-    yeah, I try to avoid calling sexpr in clj-kondo as much as I can
-    although I already filter out every uneval and comment before
-
-    lread [8:14 AM]
-    I guess if you are quite certain of what you are trying to sexpr you’ll probably be ok, but if you are sexpr-ing an unknown then maybe stay away from sexpr.
-
-    borkdude [8:36 AM]
-    yeah, exactly (edited)
-    I have also made a few predicates like `symbol-token?` so I don’t need to sexpr to check if it’s a symbol
 *** TODO push along my PR to support import-vars in cljs for cljdoc
 *** TODO push along my PR to support asciidoc formatting for cljdoc
      My docs kind of look horrible in cljdoc right now.
@@ -136,23 +35,14 @@
    rewrite-clj should be able to parse and rewrite clojure and clojurescript from clojure or clojurescript.
    But there are differences between the languages.
    If I read in a clj/cljs file, make no changes, and spit it out, I should get the same result.
-**** TODO what happens when we try to parse a ratio from ClojureScript
-     from cljs repl:
-     3/4
-     Compile Exception: failed compiling constant: 3/4; clojure.lang.Ratio is not a valid ClojureScript constant.
-
-     This is interesting:
-     (edn/read-string "3/4")
-     0.75
 **** TODO test handling a very large int in cljs
      cljs.user=> 1234567890123456789012345678901234567890
      1.2345678901234568e+39
 
      (edn/read-string "1234567890123456789012345678901234567890")
      1.2345678901234568e+39
-*** TODO experiment with sexprs across lang differences
 *** TODO experiment with coerce across lang differences
-*** TODO consider not using sepxr internally - I expect it will be an interop problemo
+*** TODO verify not using sepxr internally - it can lead to exceptions
 ** Deployment
 *** TODO deploy scripts
     Am moving away form lein to tools deps.  For cldoc-exerciser, I tried using maven to package and deploy.
@@ -164,118 +54,5 @@
     Git issues - Also be nice to preserve git issues. I think I can transfer over any git issues I created here to clj-commons/rewrite-cljs.
 
 * Later
-** TODO add some more support for sepxr
-   of interest to sogaiu
-
-   sogaiu [11:15 PM]
-   two additional approach ideas for dealing with sexpr
-   1) same as earlier idea of a new protocol, but name its method something like sexpr2, and don't remove sexpr from the Node protocol -- this is a change, but it doesn't break existing code?
-   2) add a sexprable? method to the Node protocol -- all it does is tell you if it's safe to call sexpr
-   in approach 1, may be existing sexpr implementations can be moved to external functions and those functions can be called from the protocol methods.  both the Node protocol sexpr and the new protocol sexpr2 can call these externalized functions.  newer code can use sexpr2 and other code can migrate to sexpr2 gradually.  satisfies? can be used to check whether it's safe to call sexpr2 before use.
-   the earlier idea of just having sexprable? has the downside of maintainers having to remember to update it appropriately if node implementation details change in certain ways over time.
-
-   sogaiu [11:41 PM]
-   here is some scratch work for sexprable?
-
-   ```(require '[rewrite-clj.node :as rn])
-
-   (defn uneval?
-   "Check whether a node represents an uneval."
-   [node]
-   (= (rn/tag node) :uneval))
-
-   ;; following things will throw when sexpr is called:
-   ;;
-   ;;   comma,
-   ;;   newline,
-   ;;   whitespace
-   ;;
-   ;;   comment
-   ;;
-   ;;   uneval
-   ;;
-   ;; this could throw:
-   ;;
-   ;;   some reader nodes
-   ;;
-   ;; however, afaict, all currently implemented reader nodes (:var and :eval) don't throw by default
-   (defn sexprable?
-   "Check whether sexpr can be safely called on node."
-   [node]
-   (not (or (uneval? node)
-   (rn/whitespace? node)
-   (rn/comment? node))))```
-
-   lread [12:29 AM]
-   so, I don’t know @sogaiu. There are other reasons to stay away from sexpr. :grimacing: For example, let’s say your cljs app is sexpr-ing clj code that is not cljs compatible.  Like a ratio for example.  Looking at these kind of sexpr language incompatibilities is on my todo list.
-
-   lread [12:35 AM]
-   I would not go so far a deprecating sexpr but I’m thinking I’ll give strong guidance in docs on only using it in specific cases where you have a very good idea of what you are sexpr-ing. For that reason, I am wondering if further work on sexpr is prudent. Whadya think?
-   but the extra predicates seem fine to me.
-
-   sogaiu [2:17 AM]
-   the case you described about a cljs app working with clj code is understandable, but it seems like the kind of thing where a warning would do.  not sure yet -- need to digest it more fully.
-
-   i'm interested in hearing about other reasons to stay away from sexpr.  please share any further thoughts.
-
-   i need to go through all the places i used sexpr in more detail -- perhaps i can manage that in the next day or so :slightly_smiling_face:
-
-   may be you know this already, but for reference, all of the following rewrite-clj-using projects use sexpr (some much more than others):
-
-   https://github.com/benedekfazekas/trin
-   https://github.com/borkdude/clj-kondo
-   https://github.com/clojure-emacs/refactor-nrepl
-   https://github.com/kkinnear/zprint
-   https://github.com/Olical/depot
-   https://github.com/snoe/clojure-lsp
-   https://github.com/weavejester/cljfmt
-
-   i haven't looked in detail how it's used though.
-
-   sogaiu [4:31 AM]
-   @lread regarding extra predicates, borkdude has the following in clj-kondo's impl/utils.clj:
-
-   ```(defn boolean-token? [node]
-   (boolean? (:value node)))
-
-   (defn char-token? [node]
-   (char? (:value node)))
-
-   (defn string-token? [node]
-   (boolean (:lines node)))
-
-   (defn number-token? [node]
-   (number? (:value node)))
-
-   (defn symbol-token? [node]
-   (symbol? (:value node)))```
-
-   i'm not sure about the naming (e.g. in some rewrite-clj/node/*.cljc there are comment?, comma?, etc.), but it'd be nice to have at least the string and symbol predicates -- may be having "-token" helps prevent collisions w/ clojure's built-in predicates?  having those would help with some of the usages of sexpr i'm finding.
-
-   also, there are zip versions of list?, vector?, set?, map?, whitespace?, comment?, ... -- any thoughts on these and/or more of these types?  i know i use list?, vector?, and map?.  it would be nice to have something for string? and symbol? too -- though i also wonder about appropriate names for these.
-
-
-   borkdude [4:32 AM]
-   yeah, I’m not sure about the naming either, but since these are not part of my API I didn’t worry about it :slightly_smiling_face:
-   also these predicates already assume that the node is a token. for efficiency
-
-   sogaiu [4:33 AM]
-   thanks for the clarifications :slightly_smiling_face:
-
-   sogaiu [5:00 AM]
-   one other usage of sexpr i appear to have repeatedly is for getting at values of things, e.g. string, symbol, first item in list.
-
-   i noticed in clj-kondo's impl/util.clj the following:
-
-   ```(defn symbol-call
-   "Returns symbol of call"
-   [expr]
-   (when (= :list (node/tag expr))
-   (let [first-child (-> expr :children first)
-   ?sym (:value first-child)]
-   (when (symbol? ?sym)
-   ?sym))))```
-
-   for string and symbol, i guess the guts of the -token predicates (e.g. (:value token)) above might work.  may be those guts, after being externalized into functions, can be called from the predicates?
 ** TODO consider speculative kaocha plugin
 ** TODO consider spec
