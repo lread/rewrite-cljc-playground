@@ -266,7 +266,20 @@ GraalVM's native-image command needs a significant amount of RAM to compile rewr
 * 8g ~11 minutes
 * 4g - failed with java.lang.OutOfMemoryError: Java heap space after ~1 hour
 
-This means running these tests on the free tier of a service such as circleci, which has a limit of 4gb, is not currently an option.
+This means running these tests in one swoop on the free tier of CircleCI, which has a limit of 4gb, is not currently an option.
+
+GitHub Actions offers 7gb of RAM, but that is still not enough to run tests in one swoop.
+
+Drone Cloud, a service with a very generous 64gb of RAM available, has no problem handling these
+tests. Unfortunately it is Linux only so would not offer multi-platform verification.
+
+==== Options
+
+1. Run tests on Drone Cloud only.
+2. Run tests in multiple passes on GitHub Actions - more experimentation needed to find a set
+of splits that would work.
+3. Hold off until GraalVM v20.x is released. Work is being doing to reduce the memory
+footprint of the `native-image` program. Be mindful that this a plan and not a promise.
 
 == Questionable Decisions
 
