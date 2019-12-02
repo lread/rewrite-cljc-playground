@@ -1,6 +1,7 @@
 = Merging rewrite-clj and rewrite-cljs
 :toc:
 :toclevels: 6
+
 == Introduction
 rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] with https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] giving us a one stop rewrite-clj shop for Clojure and ClojureScript developers.
 
