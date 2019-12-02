@@ -207,32 +207,32 @@ Our first version will be `1.0.42-alpha` where `42` is just a wild guess right n
 
 === Source directory layout
 When I first started to experiment with a cljc version of rewrite-clj, my directory layout looked like:
-[svgbob]
-....
-|-src
-| |-clj
-| | '-rewrite-cljc
-| |-cljs
-| | '-rewrite-cljc
-| '-cljc
-|   '-rewrite-cljc
-|-test
-| |-clj
-| | '-rewrite-cljc
-| |-cljs
-| | '-rewrite-cljc
-| '-cljc
-|   '-rewrite-cljc
-....
+
+----
+src/
+  clj/
+    rewrite-cljc/
+  cljs/
+    rewrite-cljc/
+  cljc/
+    rewrite-cljc/
+test/
+  clj/
+    rewrite-cljc/
+  cljs/
+    rewrite-cljc/
+  cljc/
+    rewrite-cljc/
+----
 
 After a certain amount of work, I realized the majority of the code was cljc so opted for the much simpler:
-[svgbob]
-....
-|-src
-| '-rewrite-cljc
-|-test
-| '-rewrite-cljc
-....
+
+----
+src/
+  rewrite-cljc/
+test/
+  rewrite-cljc/
+----
 
 === * Graalvm support - [red]*in progress*
 
