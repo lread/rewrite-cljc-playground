@@ -10,13 +10,13 @@
          (is (string? (node/string n)))
          (is (= ?sexpr (node/sexpr n)))
          (is (= (type ?sexpr) (type (node/sexpr n)))))
-;; numbers
+  ;; numbers
     3
     3N
     3.14
     3.14M
     3e14
-    ;;TODO: ratios are not valid in cljs, but cljs should be able to parse them, then again this is a coerce test.
+    ;; ratios are not valid in cljs
     #?(:clj 3/4)
 
   ;; symbol/keyword/string/...
