@@ -68,16 +68,13 @@
 (defn- edit-multi-line
   [zloc line-fn]
   (let [n (-> (z/node zloc)
-              ;; TODO: seems stale, don't think rewrite-clj uses :lines anymore?
               (update-in [:lines] (comp line-fn vec)))]
     (z/replace zloc n)))
 
 (defn prefix
   "Return zipper with the current node in `zloc` prefixed with string `s`.
    Operates on token node or a multi-line node, else exception is thrown.
-   When multi-line, all lines are prefixed.
-
-   TODO: either multi-line handling is broken or I don't understand intent of code."
+   When multi-line, first line is prefixed."
   [zloc s]
   (case (base/tag zloc)
     :token      (edit-token zloc #(str s %))
@@ -85,19 +82,17 @@
                        (if (empty? lines)
                          [s]
                          (update-in lines [0] #(str s %))))
-                     (edit-multi-line zloc ))))
+                     (edit-multi-line zloc))))
 
 (defn suffix
   "Return zipper with the current node in `zloc` suffixed with string `s`.
    Operates on token node or a multi-line node, else exception is thrown.
-   When multi-line, all lines are suffixed.
-
-   TODO: either multi-line handling is broken or I don't understand intent of code."
+   When multi-line, last line is suffixed."
   [zloc s]
   (case (base/tag zloc)
     :token      (edit-token zloc #(str % s))
     :multi-line (->> (fn [lines]
                        (if (empty? lines)
                          [s]
-                         (concat (butlast lines) (str (last lines) s))))
+                         (concat (butlast lines) [(str (last lines) s)])))
                      (edit-multi-line zloc))))
