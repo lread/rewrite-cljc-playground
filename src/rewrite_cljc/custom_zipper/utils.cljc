@@ -100,7 +100,6 @@
                          (assoc :changed? true))]
           (meta loc))))))
 
-;; TODO: this was in cljs only.. added custom zipper portion
 (defn remove-and-move-up
   "Remove the current node and move up.
     `[a [b |c d]] -> [a |[b d]]`
