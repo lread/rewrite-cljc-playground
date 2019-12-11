@@ -65,22 +65,31 @@
   [m]
   (reader-macro-node
    [(token-node #?(:clj (symbol (.getName ^Class (class m)))
-                   :cljs ;; this is a bit hacky, but is one way of preserving original name under advanced cljs optimizations
+                   :cljs ;; this is a bit hacky, but is one way of preserving original name
+                         ;; under advanced cljs optimizations
                    (let [s (pr-str m)]
                      (symbol (subs s 1 (clojure.string/index-of s "{"))))))
     (map-node (map->children m))]))
 
 ;; ## Tokens
 
-(extend-protocol NodeCoerceable
-  #?(:clj Object :cljs default)
-  (coerce [v]
-    (node-with-meta
-     ;; TODO: might be misleading, should never be a record for clj
-     (if (record? v)
-       (record-node v)
-       (token-node v))
-     v)))
+#?(:clj
+   (extend-protocol NodeCoerceable
+     #?(:clj Object :cljs default)
+     (coerce [v]
+       (node-with-meta
+        (token-node v)
+        v)))
+   :cljs
+   (extend-protocol NodeCoerceable
+     #?(:clj Object :cljs default)
+     (coerce [v]
+       (node-with-meta
+        ;; in cljs, this is where we check for a record, in clj it happens under map handling
+        (if (record? v)
+          (record-node v)
+          (token-node v))
+        v))))
 
 (extend-protocol NodeCoerceable
   nil
@@ -127,15 +136,22 @@
 
 ;; ## Maps
 
-(extend-protocol NodeCoerceable
-  #?(:clj clojure.lang.IPersistentMap :cljs PersistentHashMap)
-  (coerce [m]
-    (node-with-meta
-     ;; TODO: might be misleading, will never be a record here for cljs
-     (if (record? m)
-       (record-node m)
-       (map-node (map->children m)))
-     m)))
+#?(:clj
+   (extend-protocol NodeCoerceable
+     clojure.lang.IPersistentMap
+     (coerce [m]
+       (node-with-meta
+        ;; in clj a record is a persistent map
+        (if (record? m)
+          (record-node m)
+          (map-node (map->children m)))
+        m)))
+   :cljs
+   (extend-protocol NodeCoerceable
+     PersistentHashMap
+     (coerce [m]
+       (map-node (map->children m))
+       m)))
 
 ;; ## Vars
 
