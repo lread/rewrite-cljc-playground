@@ -1,6 +1,6 @@
 ;; figwheel main config
 ^{:watch-dirs ["test" "src"]
   :auto-testing true}
-{:main rewrite-clj.hello-figwheel
+{:main rewrite-cljc.hello-figwheel
  :warnings {:fn-deprecated false
             :single-segment-namespace false}}
