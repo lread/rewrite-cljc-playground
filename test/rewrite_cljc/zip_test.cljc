@@ -1,8 +1,8 @@
 (ns rewrite-cljc.zip-test
+  "This test namespace originated from rewrite-cljs."
   (:require [clojure.test :refer [deftest is]]
             [rewrite-cljc.zip :as z]))
 
-;; TODO: this was only in rewrite-cljs
 (deftest of-string-simple-sexpr
   (let [sexpr "(+ 1 2)"]
    (is (= sexpr (-> sexpr z/of-string z/root-string)))))

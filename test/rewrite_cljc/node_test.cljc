@@ -1,9 +1,8 @@
 (ns rewrite-cljc.node-test
+  "This test namespace originated from rewrite-cljs."
   (:require [clojure.test :refer [deftest is testing]]
             [rewrite-cljc.node :as n]
             [rewrite-cljc.parser :as p]))
-
-;; TODO this was only in rewrite-cljs
 
 (deftest namespaced-keyword
   (is (= ":dill/dall"
