@@ -16,7 +16,7 @@
         [rewrite-cljc.node.integer :refer [IntNode]]
         [rewrite-cljc.node.keyword :refer [KeywordNode]]
         [rewrite-cljc.node.quote :refer [QuoteNode]]
-        [rewrite-cljc.node.stringz :refer [StringNode string-node]]
+        [rewrite-cljc.node.stringz :refer [StringNode]]
         [rewrite-cljc.node.uneval :refer [UnevalNode]]
         [rewrite-cljc.node.meta :refer [MetaNode meta-node]]
         [rewrite-cljc.node.protocols :refer [NodeCoerceable coerce]]
@@ -95,22 +95,6 @@
   nil
   (coerce [v]
     (token-node nil)))
-
-;; TODO: rewrite-cljs only - is this needed?
-#?(:cljs (extend-protocol NodeCoerceable
-           number
-           (coerce [n]
-             (node-with-meta
-              (token-node n)
-              n))))
-
-;; TODO: rewrite-cljs only - is this needed?
-#?(:cljs (extend-protocol NodeCoerceable
-           string
-           (coerce [n]
-             (node-with-meta
-              (string-node n)
-              n))))
 
 ;; ## Seqs
 
