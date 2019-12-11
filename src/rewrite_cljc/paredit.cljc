@@ -28,14 +28,11 @@
        (take-while identity)
        last))
 
-;; TODO : not very efficent ...
 (defn- ^{:no-doc true} global-find-by-node
   [zloc n]
   (-> zloc
       top
       (z/find z/next* #(= (meta (z/node %)) (meta n)))))
-
-
 
 (defn- ^{:no-doc true} nodes-by-dir
   ([zloc f] (nodes-by-dir zloc f constantly))
