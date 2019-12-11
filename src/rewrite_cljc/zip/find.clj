@@ -3,7 +3,6 @@
   (:require [rewrite-cljc.zip.findz]
             [rewrite-cljc.potemkin.clojure :refer [import-vars]]))
 
-;; TODO: error prone, can we implement an import-publics, at least for clj version?
 (import-vars
  [rewrite-cljc.zip.findz
   find
