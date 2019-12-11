@@ -4,7 +4,7 @@
   All nodes represent Clojure/ClojureScript/EDN."
   ^{:added "0.4.0"}
   (:refer-clojure :exclude [string coerce])
-  (:require [rewrite-cljc.node.coercer] ;; <-- TODO: needed implicitly?
+  (:require [rewrite-cljc.node.coercer]
             [rewrite-cljc.node.comment]
             [rewrite-cljc.node.fn]
             [rewrite-cljc.node.forms]
