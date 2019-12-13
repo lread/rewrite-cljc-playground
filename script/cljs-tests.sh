@@ -9,14 +9,18 @@ status-line() {
 function usage() {
     echo "Usage: $0 <options>"
     echo ""
-    echo "-e --env           JavaScript environment, specify one of:"
-    echo "                    node            (default)"
-    echo "                    chrome-headless"
-    echo "                    planck"
-    echo "-o --optimizations clojurescript compiler optimizations, specify one of:"
-    echo "                    none            (default)"
-    echo "                    advanced"
-    echo "-h --help          print usage and exit"
+    echo "-e --env             JavaScript environment, specify one of:"
+    echo "                      node            (default)"
+    echo "                      chrome-headless"
+    echo "                      planck"
+    echo "-o --optimizations   ClojureScript compiler optimizations, specify one of:"
+    echo "                      none            (default)"
+    echo "                      advanced"
+    echo "-g --run-granularity Troubleshoot by running separate runs for each..., specify one of:"
+    echo "                      all (default)"
+    echo "                      namespace"
+    echo "                      test"
+    echo "-h --help            Print usage and exit"
     echo ""
 }
 
@@ -24,23 +28,31 @@ DEP_ALIASES=:test-common:cljs-test
 # default options
 TEST_ENV=node
 CLJS_OPTIMIZATIONS=none
+RUN_GRANULARITY=all
 
 while [[ "$#" -gt 0 ]]
 do case $1 in
        -e|--env) TEST_ENV="$2"; shift;;
        -o|--optimizations) CLJS_OPTIMIZATIONS="$2"; shift;;
+       -r|--run-granularity) RUN_GRANULARITY="$2"; shift;;
        -h|--help) usage; exit 0;;
-       *) status-line error "invalid option: $1\n"; usage; exit 1;;
+       *) status-line error "invalid option: $1"; usage; exit 1;;
    esac; shift; done
 
 if [[ ! "${TEST_ENV}" =~ ^(node|chrome-headless|planck)$ ]]; then
-    status-line error "invalid env: ${TEST_ENV}\n"
+    status-line error "invalid env: ${TEST_ENV}"
     usage
     exit 1
 fi
 
 if [[ ! "${CLJS_OPTIMIZATIONS}" =~ ^(none|advanced)$ ]]; then
-    status-line error "invalid optimizations: ${CLJS_OPTIMIZATIONS}\n"
+    status-line error "invalid optimizations: ${CLJS_OPTIMIZATIONS}"
+    usage
+    exit 1
+fi
+
+if [[ ! "${RUN_GRANULARITY}" =~ ^(all|namespace|test)$ ]]; then
+    status-line error "invalid run-granularity: ${RUN_GRANULARITY}"
     usage
     exit 1
 fi
@@ -88,8 +100,31 @@ cat <<EOF > ${DOO_OPTS_FILENAME}
                   "junitReporter" {"outputDir" "target/out/test-results/cljs-${TEST_COMBO}"}}}}
 EOF
 
-clojure -A${DEP_ALIASES} \
-        --out ${OUT_DIR} \
-        --env ${TEST_ENV} \
-        --compile-opts ${CLJS_OPTS_FILENAME} \
-        --doo-opts ${DOO_OPTS_FILENAME}
+case $RUN_GRANULARITY in
+    all)
+        status-line info "one run for entire set of tests"
+        clojure -A${DEP_ALIASES} \
+                --out ${OUT_DIR} \
+                --env ${TEST_ENV} \
+                --compile-opts ${CLJS_OPTS_FILENAME} \
+                --doo-opts ${DOO_OPTS_FILENAME};;
+    namespace)
+        status-line info "one run for each namespace"
+        NSES=$(clojure -A:test-common:code-info -m code-info.ns-lister --lang cljs find-all-namespaces)
+        TOTAL_NSES=$(echo "${NSES}" | wc -w | tr -d "[:blank:]")
+        NS_NDX=0
+        for ns in $(clojure -A:test-common:code-info -m code-info.ns-lister --lang cljs find-all-namespaces); do
+            ((NS_NDX++))
+            status-line info "${NS_NDX} of ${TOTAL_NSES}) running tests for namespace: $ns"
+            clojure -A${DEP_ALIASES} \
+                    --namespace ${ns} \
+                    --out ${OUT_DIR} \
+                    --env ${TEST_ENV} \
+                    --compile-opts ${CLJS_OPTS_FILENAME} \
+                    --doo-opts ${DOO_OPTS_FILENAME}
+        done;;
+    test)
+        status-line info "one run for each individual test"
+        status-line error "no implemented"
+        exit 32;;
+esac
