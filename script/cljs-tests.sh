@@ -102,14 +102,13 @@ EOF
 
 case $RUN_GRANULARITY in
     all)
-        status-line info "one run for entire set of tests"
         clojure -A${DEP_ALIASES} \
                 --out ${OUT_DIR} \
                 --env ${TEST_ENV} \
                 --compile-opts ${CLJS_OPTS_FILENAME} \
                 --doo-opts ${DOO_OPTS_FILENAME};;
     namespace)
-        status-line info "one run for each namespace"
+        status-line info "+ one run for each namespace"
         NSES=$(clojure -A:test-common:code-info -m code-info.ns-lister --lang cljs find-all-namespaces)
         TOTAL_NSES=$(echo "${NSES}" | wc -w | tr -d "[:blank:]")
         NS_NDX=0
@@ -124,7 +123,7 @@ case $RUN_GRANULARITY in
                     --doo-opts ${DOO_OPTS_FILENAME}
         done;;
     test)
-        status-line info "one run for each individual test"
+        status-line info "+ one run for each individual test"
         status-line error "no implemented"
         exit 32;;
 esac
