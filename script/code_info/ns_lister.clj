@@ -9,11 +9,6 @@
 ;; java -cp "target/clj-graal/generated:$(clojure -A:test-common -Spath)" clojure.main -m clj-graal.test-runner
 ;;
 
-(defn- in?
-  "true if coll contains elm"
-  [coll elm]
-  (some #(= elm %) coll))
-
 (defn- nses[lang]
   (->> (find/find-namespaces [(io/file "test")] (if (= lang "cljs")
                                                   find/cljs
