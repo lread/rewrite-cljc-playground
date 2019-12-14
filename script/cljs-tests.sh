@@ -34,7 +34,7 @@ while [[ "$#" -gt 0 ]]
 do case $1 in
        -e|--env) TEST_ENV="$2"; shift;;
        -o|--optimizations) CLJS_OPTIMIZATIONS="$2"; shift;;
-       -r|--run-granularity) RUN_GRANULARITY="$2"; shift;;
+       -g|--run-granularity) RUN_GRANULARITY="$2"; shift;;
        -h|--help) usage; exit 0;;
        *) status-line error "invalid option: $1"; usage; exit 1;;
    esac; shift; done
@@ -113,8 +113,8 @@ case $RUN_GRANULARITY in
         NSES=$(clojure -A:test-common:code-info -m code-info.ns-lister --lang cljs find-all-namespaces)
         TOTAL_NSES=$(echo "${NSES}" | wc -w | tr -d "[:blank:]")
         NS_NDX=0
-        for ns in $(clojure -A:test-common:code-info -m code-info.ns-lister --lang cljs find-all-namespaces); do
-            ((NS_NDX++))
+        for ns in ${NSES}; do
+            NS_NDX=$((NS_NDX+1))
             status-line info "${NS_NDX} of ${TOTAL_NSES}) running tests for namespace: $ns"
             clojure -A${DEP_ALIASES} \
                     --namespace ${ns} \
