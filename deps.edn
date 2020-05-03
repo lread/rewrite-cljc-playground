@@ -48,7 +48,8 @@
            ;; see script/graal-tests.sh for usage
            ;;
            :graal {:extra-paths ["script"]
-                   :override-deps {org.clojure/clojure {:mvn/version "1.10.1-patch_38bafca9_clj_1472_3"}}
+                   :override-deps {;; this version of clojure addresses https://clojure.atlassian.net/browse/CLJ-1472
+                                   org.clojure/clojure {:mvn/version "1.10.2-alpha1"}}
                    :extra-deps {org.clojure/tools.namespace {:mvn/version "0.3.1"}
                                 cli-matic {:mvn/version "0.3.11"}}}
 

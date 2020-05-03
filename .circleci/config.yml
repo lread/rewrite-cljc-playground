@@ -13,9 +13,8 @@ executors:
     docker:
       - image: circleci/clojure:openjdk-<< parameters.jdk-version>>-tools-deps-1.10.1.502-node-browsers
     environment:
-      MAVEN_VERSION: "3.6.3"
-      GRAALVM_VERSION: "19.2.1"
-      GRAALVM_HOME: /home/circleci/graalvm-ce-19.2.1
+      GRAALVM_VERSION: "19.3.1"
+      GRAALVM_HOME: /home/circleci/graalvm-ce-java8-19.3.1
       JVM_OPTS: -Xmx3200m
     working_directory: ~/repo
 
@@ -48,26 +47,12 @@ commands:
             planck --version
 
       - run:
-          name: Install maven
-          command: |
-            curl -O https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz
-            sudo tar xf apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /opt/
-            sudo ln -s /opt/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/local/bin
-            mvn --version
-
-      - run:
-          name: Install jet
-          command: |
-            curl -s https://raw.githubusercontent.com/borkdude/jet/master/install | sudo bash
-            jet --version
-
-      - run:
           name: Install GraalVM
           command: |
             cd ~
-            if ! [ -d "graalvm-ce-${GRAALVM_VERSION}" ]; then
-              curl -O -L "https://github.com/oracle/graal/releases/download/vm-${GRAALVM_VERSION}/graalvm-ce-linux-amd64-${GRAALVM_VERSION}.tar.gz"
-              tar -xvf "graalvm-ce-linux-amd64-${GRAALVM_VERSION}.tar.gz"
+            if ! [ -d "graalvm-ce-java8-${GRAALVM_VERSION}" ]; then
+              curl -O -L "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${GRAALVM_VERSION}/graalvm-ce-java8-linux-amd64-${GRAALVM_VERSION}.tar.gz"
+              tar -xvf graalvm-ce-java8-linux-amd64-${GRAALVM_VERSION}.tar.gz
             fi
             "${GRAALVM_HOME}/bin/gu" install native-image
             "${GRAALVM_HOME}/bin/native-image" --version
@@ -94,9 +79,6 @@ commands:
           name: Bring down the deps
           command: |
             clojure -Spath
-            git config --global user.email "lee@dlread.com"
-            git config --global user.name "lread"
-            ./script/graal-deps.sh
 
       - run:
           name: Run ci tests
@@ -105,7 +87,7 @@ commands:
       - save_cache:
           paths:
             - ~/.m2
-            - ~/graalvm-ce-19.2.1
+            - ~/graalvm-ce-java8-19.3.1
           key: v1-dependencies-{{ checksum "deps.edn" }}
 
       - save_cache:

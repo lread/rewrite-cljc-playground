@@ -4,9 +4,6 @@ set -eou pipefail
 
 NATIVE_IMAGE_XMX="16g"
 
-echo "--[check GraalVM clojure deps]--"
-./script/graal-deps.sh
-
 echo "--[running Clojure tests natively compiled via GraalVM]--"
 
 GRAAL_NATIVE_IMAGE="$(script/graal-find-native-image.sh)"
