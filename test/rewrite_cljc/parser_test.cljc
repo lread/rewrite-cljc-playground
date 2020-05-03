@@ -91,16 +91,16 @@
     "::key"                      ::key
     "::xyz/key"                  :xyz/key))
 
-;; TODO: no ratios in cljs; they will be evaluated on sexpr, need to add notes in docs
 (deftest t-ratios
   (are [?s ?r]
        (let [n (p/parse-string ?s)]
          (is (= :token (node/tag n)))
          (is (= ?s (node/string n)))
          (is (= ?r (node/sexpr n))))
-    "3/4"                                      #?(:clj 3/4 :cljs 0.75)))
+    "3/4" #?(:clj 3/4
+             ;; no ratios in cljs; they are evaluated on sexpr
+             :cljs 0.75)))
 
-;; TODO: what to check here? this test is not checking anything
 (deftest t-big-integers
   (are [?s ?r]
       (let [n (p/parse-string ?s)]
@@ -245,7 +245,7 @@
              [mta ws n'] (node/children n)
              ;; TODO: verify sym?
              [mta2 ws2 _sym] (node/children n')]
-          ;; outer meta
+         ;; outer meta
          (is (= ?t (node/tag n)))
          (is (= s (node/string n)))
          (is (= 's (node/sexpr n)))
@@ -253,7 +253,7 @@
          (is (= ?mt (node/tag mta)))
          (is (= :whitespace (node/tag ws)))
 
-          ;; inner meta
+         ;; inner meta
          (is (= ?t (node/tag n')))
          (is (= {:awe true} (meta (node/sexpr n'))))
          (is (= ?mt (node/tag mta2)))
