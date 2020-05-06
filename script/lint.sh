@@ -24,7 +24,9 @@ function lint() {
     fi
     set +e
     # shellcheck disable=SC2086
-    clojure -A:clj-kondo --lint ${lint_args}
+    clojure -A:clj-kondo \
+            --lint ${lint_args} \
+            --config '{:output {:include-files ["^src" "^test" "^script"]}}'
     local exit_code=$?
     set -e
     if [ ${exit_code} -ne 0 ] && [ ${exit_code} -ne 2 ] && [ ${exit_code} -ne 3 ]; then
