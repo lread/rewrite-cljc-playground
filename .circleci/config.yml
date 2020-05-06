@@ -40,9 +40,9 @@ commands:
       - run:
           name: Install planck
           command: |
-            curl -O https://planck-repl.org/releases/2.24.0-debian-9.0-x86_64/planck
+            curl -O https://planck-repl.org/releases/2.25.0-debian-9.0-x86_64/planck
             chmod +x planck
-            echo e19e28efb00733912c8cf114e56da10b  planck | md5sum --check
+            echo c33571b2a798cdc623ad16be29ef7ff7 planck | md5sum --check
             sudo mv planck /usr/local/bin
             planck --version
 
