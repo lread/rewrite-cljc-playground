@@ -42,4 +42,4 @@
              {:namespaces [rewrite-cljc.zip.whitespace-test rewrite-cljc.zip]}
              rewrite-cljc.node/value
              {:defs [rewrite-cljc.zip.base/value]}}}}
- :output {:include-files ["^src" "^test" "script"]}}
+ :output {:include-files ["<stdin>" "^src" "^test" "^script"]}}

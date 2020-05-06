@@ -33,10 +33,8 @@
                 "  :keyword 0")
            (-> root m/next m/down r/remove base/root-string)))))
 
-(comment
-  ;; future-fact
-  (deftest t-removing-after-comment
-    (let [loc (-> (base/of-string "; comment\nx")
-                  (z/rightmost)
-                  (r/remove))]
-      (is (= "; comment" (base/root-string loc))))))
+(deftest t-removing-after-comment
+  (let [loc (-> (base/of-string "; comment\nx")
+                (m/rightmost)
+                (r/remove))]
+    (is (= "; comment\n" (base/root-string loc)))))

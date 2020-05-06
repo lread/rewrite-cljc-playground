@@ -45,7 +45,7 @@
     (some->> (f n0)
              (iterate
                (fn [loc]
-                 (if-let [n (m/right loc)]
+                 (when-let [n (m/right loc)]
                    (f n))))
              (take-while identity)
              (last)
