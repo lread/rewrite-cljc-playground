@@ -2,12 +2,12 @@
 :toc:
 
 == Supported Environments
-All rewrite-cljc development has been done on macOS and we use linux for our builds up on circleci.
+All rewrite-cljc development has been done on macOS. We use linux for our builds up on CircleCI.
 
-If circleci or GitHub Actions start to offer Windows as free build tool for open source projects
+If CircleCI or GitHub Actions start to offer Windows as free build tool for open source projects
 we will likely take advantage of that using Git Bash or equivalent.
 
-We make use of planck for cljs bootstrap (aka self-hosted) testing. Planck is currently not available for Windows.
+We make use of planck for cljs bootstrap (aka cljs self-hosted) testing. Planck is currently not available for Windows.
 We'll test cljs bootstrap on Windows through some other mechanism when the time comes.
 
 == Setup
@@ -70,9 +70,13 @@ https://github.com/borkdude/clj-kondo/blob/master/doc/editor-integration.md[Inte
 == API diffs
 
 To generate reports on differences between rewrite-clj, rewrite-cljs and
-rewrite-cljc APIs, run `script/gen-api-diffs.sh`.
+rewrite-cljc APIs, run:
 
-Ru this script manually on an as-needed basis. Generated reports are checked in
+----
+./script/gen-api-diffs.sh
+----
+
+Run this script manually on an as-needed basis. Generated reports are to be checked in
 to version control.
 
 Reports are generated to `doc/generated/api-diffs/` and include manually written
@@ -87,4 +91,8 @@ Makes use of https://github.com/lread/diff-apis[diff-apis]. Delete
 == Contributors
 We honor current and past contributors to rewrite-cljc in our README file.
 
-To update contributors, update `doc/contributors.edn` then run `clojure -A:update-readme`.
+To update contributors, update `doc/contributors.edn` then run:
+
+----
+clojure -A:update-readme
+----

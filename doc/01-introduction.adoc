@@ -6,14 +6,14 @@
 :toc:
 
 == Introduction
-rewrite-cljc is a library that reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] source code from Clojure and ClojureScript in a whitespace and comment preserving way.
+The rewrite-cljc library reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] source code while preserving whitespace and comments.
 
 == History
 @xsc created https://github.com/xsc/rewrite-clj[rewrite-clj] in 2013. Its original use was to upgrade dependencies in https://leiningen.org[lein] project.clj files. The library quickly took off in popularity and is the default choice for modifying Clojure/EDN from Clojure.
 
 @rundis created rewrite-cljs in 2015 to match the features of rewrite-clj for ClojureScript developers. It was originally used for refactoring support in https://github.com/LightTable/LightTable[Light Table]. In January of 2019, @rundis graciously https://github.com/clj-commons/rewrite-cljs[transferred rewrite-cljs to clj-commons].
 
-Seeing an opportunity to give back to the Clojure community, in 2019 @lread, with guidance and help from many friendly Clojurians, created rewrite-cljc under clj-commons. The goal is to provide a thoughtfully maintained feature-complete library that can be used from either Clojure or ClojureScript. While the merge was not trivial the real hard work over the years was done under the leadership of @xsc and @rundis (thanks guys!). Read link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs] for details on the merge.
+Seeing an opportunity to give back to the Clojure community, in 2019 @lread, with guidance and help from many friendly Clojurians, created rewrite-cljc under clj-commons. The goal is to provide a thoughtfully maintained feature-complete library that can be used from either Clojure or ClojureScript. While the merge was not trivial the real hard work was done over many years under the leadership of @xsc and @rundis (thanks guys!). Read link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs] for details on the merge.
 
 == Upgrading from rewrite-clj and/or rewrite-cljs
 
@@ -37,7 +37,7 @@ rewrite-cljs. There are 4 public API namespaces:
 . `rewrite-cljc.paredit`
 
 === Parser API
-Parses Clojure/ClojureScript/EDN to custom node types. It takes advantage of https://github.com/clojure/tools.reader[clojure.tools.reader] for simple forms.
+Parses Clojure/ClojureScript/EDN to rewrite-cljc nodes. It takes advantage of https://github.com/clojure/tools.reader[clojure.tools.reader] for simple forms.
 You can choose to parse one or all https://www.braveclojure.com/do-things/#Forms[forms] from a string or a file.footnote:file[reading from a file is only available from Clojure.]
 
 Here we parse a single form from a string:
@@ -56,7 +56,7 @@ user=> form
 >
 ----
 
-TIP: Depending on your needs, you can opt to skip the parser API and instead use zip API's `of-string` or `of-file`.
+TIP: Depending on your needs, you can opt to skip the parser API and instead use the rewrite-cljc zip API's `of-string` or `of-file`.
 
 See link:{cljdoc-api-url}/rewrite-cljc.parser[parser API docs].
 
@@ -122,17 +122,17 @@ user=> (def data-string
   ;; a comment
   (* a 3))")
 #'user/data-string
-user=> (def data (z/of-string data-string))  // <1>
+user=> (def data (z/of-string data-string))  ;; <1>
 #'user/data
 
-user=> (z/sexpr data)  // <2>
+user=> (z/sexpr data)  ;; <2>
 (defn my-function [a] (* a 3))
 user=> (-> data z/down z/right z/node)
 <token: my-function>
 user=> (-> data z/down z/right z/sexpr)
 my-function
 
-user=> (-> data z/down z/right (z/edit (comp symbol str) "2") z/up z/sexpr) // <3>
+user=> (-> data z/down z/right (z/edit (comp symbol str) "2") z/up z/sexpr) ;; <3>
 (defn my-function2 [a] (* a 3))
 
 user=> (-> data z/down z/right (z/edit (comp symbol str) "2") z/print-root)
@@ -149,7 +149,7 @@ transparently coerce between the node representation (`<token: my-function>`)
 and its corresponding s-expression (`my-function`).
 
 TIP: The zip location movement functions (`right`, `left`, `up`, `down`, etc)
-skip over whitespace nodes. If you want to see all nodes, use the `+*+`
+skip over whitespace nodes. If you want to see all nodes, use their `+*+`
 counterparts (`right*`, `left*`, `up*`, `down*`, etc).
 
 See link:{cljdoc-api-url}/rewrite-cljc.zip[zip API docs].
@@ -170,7 +170,7 @@ replacing the `:description` placeholder text with something more meaningful:
 
 Most find functions accept an optional location movement function. To perform a
 depth-first search use `rewrite-cljc.zip/next`, to search sibling nodes to the
-right, use `rewrite-cljc.zip/right` (the default), to search siblings to left,
+right, use `rewrite-cljc.zip/right` (the default), and to search siblings to left,
 use `rewrite-cljc.zip/left`.
 
 .REPL session
@@ -178,17 +178,17 @@ use `rewrite-cljc.zip/left`.
 ----
 user=> (require '[rewrite-cljc.zip :as z])
 nil
-user=> (def data (z/of-file "project.clj")) // <1>
+user=> (def data (z/of-file "project.clj")) ;; <1>
 #'user/data
-user=> (def prj-map (z/find-value data z/next 'defproject)) // <2>
+user=> (def prj-map (z/find-value data z/next 'defproject)) ;; <2>
 #'user/prj-map
 
-user=> (def descr (-> prj-map (z/find-value :description) z/right)) // <3>
+user=> (def descr (-> prj-map (z/find-value :description) z/right)) ;; <3>
 #'user/descr
 user=> (z/sexpr descr)
 "Enter description"
 
-user=> (-> descr (z/replace "My first Project.") z/print-root) // <4>
+user=> (-> descr (z/replace "My first Project.") z/print-root) ;; <4>
 (defproject my-project "0.1.0-SNAPSHOT"
   :description "My first Project."
   ...)
@@ -307,7 +307,7 @@ Illustrations of some of the limitations of `sexpr`:
 2+m| => (require '[rewrite-cljc.zip :as z])
 
 // Reader discard
-2+h| The reader discard `#_` fails
+2+h| The reader's ignore/discard `#_` fails:
 2+m| => (z/sexpr (z/of-string "#_42"))
 m|Execution error (ExceptionInfo) at rewrite_cljc.node.uneval.UnevalNode/sexpr (uneval.cljc:11).
 
@@ -317,25 +317,25 @@ m|Execution error (ExceptionInfo) at (<cljs repl>:1).
 unsupported operation for uneval-node
 
 // Comment
-2+h| Comments return nil
+2+h| Comments return nil:
 2+m| => (z/sexpr (z/of-string ";; can't sexpr me!"))
 m|nil
 m|nil
 
 // Whitespace
-2+h| Whitespace returns nil
+2+h| Whitespace returns nil:
 2+m| => (z/sexpr (z/of-string "   "))
 m|nil
 m|nil
 
 // Ratios
-2+h| Clojure and ClojureScript have differences; ClojureScript has no Ratio.
+2+h| Clojure and ClojureScript have differences; ClojureScript has no Ratio:
 2+m| => (z/sexpr (z/of-string "3/4"))
 m|3/4
 m|0.75
 
 // Max integers
-2+h| Clojure and ClojureScript have differences; they inherit integral types from their host platforms.
+2+h| Clojure and ClojureScript have differences; they inherit integral types from their host platforms:
 2+m| => (+ 10 (z/sexpr (z/of-string "9007199254740991")))
 m|9007199254741001
 m|9007199254741000

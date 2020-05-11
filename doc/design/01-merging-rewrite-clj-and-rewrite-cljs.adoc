@@ -3,7 +3,7 @@
 :toclevels: 6
 
 == Introduction
-rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] with https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] giving us a one stop rewrite-clj shop for Clojure and ClojureScript developers.
+rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] and https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] giving us a one stop rewrite-cljc shop for Clojure and ClojureScript developers.
 
 == Goals
 1. *Minimize API breakage*. Within reason, maintain API compatability with both rewrite-clj and rewrite-cljs. I'd like rewrite-cljc to be an low friction replacement for `rundis/rewrite-cljs` (actually now living at `clj-commons/rewrite-cljs`) and `xsc/rewrite-clj`.
@@ -100,8 +100,8 @@ report contains some observations under the "Notes" header.
 
 * link:../generated/api-diffs/rewrite-clj-and-rewrite-cljs.adoc[rewrite-clj vs rewrite-cljs] API differences between the projects on which rewrite-cljc is based.
 * link:../generated/api-diffs/rewrite-clj-and-rewrite-cljc-clj.adoc[rewrite-clj vs rewrite-cljc] how different is rewrite-cljc from rewrite-clj?
-* link:../generated/api-diffs/rewrite-cljs-and-rewrite-cljc-cljs.adoc[rewrite-cljs vs rewrite-cljc] same question for rewrite-cljs.
-* link:../generated/api-diffs/rewrite-cljc.adoc[rewrite-cljc] a look at how cljs and clj sides fof rewrite-cljc differ
+* link:../generated/api-diffs/rewrite-cljs-and-rewrite-cljc-cljs.adoc[rewrite-cljs vs rewrite-cljc] how different is rewrite-cljc from rewrite-cljs?
+* link:../generated/api-diffs/rewrite-cljc.adoc[rewrite-cljc] a look at how cljs and clj sides of rewrite-cljc differ
 * link:../generated/api-diffs/rewrite-cljc-documented-only.adoc[rewrite-cljc documented apis only] a look at how cljs and clj sides of rewrite-cljc differ for documented apis.
 
 === Feature Differences
@@ -120,9 +120,10 @@ Rationale:
 repo, but that did not work out, so rewrite-cljc will have different maven
 coordinates than rewrite-clj, most likely `clj-commons/rewrite-cljc`.
 
-* Having to rename namespace requires to `rewrite-cljc` in one's project to
-upgrade to rewrite-cljc is much less of a burden than the burden of the
-confusion of introducing colliding namespaces into the community.
+* Having to update namespace `:require` references from `rewrite-clj` to `rewrite-cljc`
+in one's project sources to upgrade to rewrite-cljc is much less of a burden than
+the burden of the confusion of introducing colliding namespaces to the Clojure
+community.
 +
 Colliding namespaces would likely first confuse, then require exclusions -
 a deps.edn example:
@@ -133,7 +134,7 @@ a deps.edn example:
 ----
 
 * A different root namespace means upgrading to rewrite-cljc will be a
-  deliberate choice.
+clear and deliberate choice.
 
 == Observations
 === Wow, a lot of libraries use rewrite-clj
@@ -150,19 +151,19 @@ During this work, I noticed how pervasive rewrite-clj usage is. Some prominent e
 I have moved from leiningen to tools cli and `deps.edn`. Like everything, this change has pros and cons. Overall, I like the simplicity and control it brings. Bash scripts take the place of lein aliases where I can have the build do exactly what I want it to. One current, but likely temporary, downside is the jar and deploy support for tools cli is fragmented with many young libraries. I have opted, for now to employ the tried and true maven for jar and deploy.
 
 === Continuous integration
-The future of https://travis-ci.org/[Travis CI] looked a bit tenuous when I started this work, so I switched over to https://circleci.com/[circleci].
+The future of https://travis-ci.org/[Travis CI] looked a bit tenuous when I started this work, so I switched over to https://circleci.com/[CircleCI].
 
 === Testing and linting tools
 After looking around, I settled on the following for continuous integration:
 
 . https://github.com/lambdaisland/kaocha[Kaocha] for running Clojure unit tests.
 . moved from lein-doo to https://github.com/Olical/cljs-test-runner[cljs-test-runner] (which still uses https://github.com/bensu/doo[doo] under the hood) for running ClojureScript unit tests under node and chrome headless. I considered Koacha's cljs support and will reconsider when it matures a bit.
-. I fail the build when a lint with https://github.com/borkdude/clj-kondo[clj-kondo] produces any warnings
+. I fail the build when a lint with https://github.com/borkdude/clj-kondo[clj-kondo] produces any warnings and/or errors.
 
 During development, I found the following helpful:
 
-. kaocha in watch mode for clojure
-. figwheel main for clojurescript
+. kaocha in watch mode for Clojure
+. figwheel main for ClojureScript
 
 == General Decisions
 
@@ -195,6 +196,11 @@ I see plenty of version scheme variations out there these days. Here are a few e
 |meander/<release> 0.0.<commit count>
 |`meander/delta` `0.0.137`
 |This scheme changes the artifact-id (for example gamma to delta) every time a potentially breaking change is introduced effectively releasing a new product for every breaking change.
+
+|https://github.com/clojure/spec.alpha[spec.alpha]
+|unimportant
+|unimportant
+|The alpha state is burnt into the project name and library namespace.
 |====
 
 rewrite-clj is not a new project. I feel the version should reflect at least some familiarity with its current scheme.
@@ -205,6 +211,21 @@ rewrite-cljc is going to switch to a ClojureScript-ish scheme. +
 It will use a `major.minor.<commit count since major.minor>-<qualifier>` scheme. +
 Our first version will be `1.0.42-alpha` where `42` is just a wild guess right now.
 
+=== * Release Strategy - [red]*in progress*
+
+TODO: think about the following...
+
+We'll opt not to make SNAPSHOT releases and assume the community is good with testing pre-releases via
+github coordinates. That said, I suppose opting out of SNAPSHOT releases means option out of testing
+our release flow on successful pushes.
+
+Our releases notes will be managed under GitHub releases.  I'll have a look at how @borkdude does this for his
+various projects.
+
+Not sure about release cadence yet. I expect to cut a release when I feel a pre-release has been tested enough.
+
+TODO: Consider some sort of canary testing for a set of projects that make use of rewrite-clj. Examples that
+come to mind: cljfmt, zprint, carve.
 
 === Source directory layout
 When I first started to experiment with a cljc version of rewrite-clj, my directory layout looked like:
