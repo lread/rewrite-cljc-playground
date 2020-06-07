@@ -1,7 +1,7 @@
 = Introduction
 // TODO update these to real values
-:cljdoc-host: http://localhost:8000
-:cljdoc-api-url: {cljdoc-host}/d/lread/rewrite-cljs-playground/CURRENT/api
+:cljdoc-host: https://cljdoc.org
+:cljdoc-api-url: {cljdoc-host}/d/lread/rewrite-cljc-playground/CURRENT/api
 :toclevels: 5
 :toc:
 
@@ -27,78 +27,17 @@ Need to know more? link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc#_cha
 
 == Usage
 
-With the exception of the root namespace of `rewrite-cljc`, rewrite-cljc is
+With the exception of the different root namespace of `rewrite-cljc`, rewrite-cljc is
 intended to be an API compatible replacement for rewrite-clj and/or
 rewrite-cljs. There are 4 public API namespaces:
 
+. `rewrite-cljc.zip`
 . `rewrite-cljc.parser`
 . `rewrite-cljc.node`
-. `rewrite-cljc.zip`
 . `rewrite-cljc.paredit`
 
-=== Parser API
-Parses Clojure/ClojureScript/EDN to rewrite-cljc nodes. It takes advantage of https://github.com/clojure/tools.reader[clojure.tools.reader] for simple forms.
-You can choose to parse one or all https://www.braveclojure.com/do-things/#Forms[forms] from a string or a file.footnote:file[reading from a file is only available from Clojure.]
-
-Here we parse a single form from a string:
-
-.REPL session
-[source, clojure-repl]
-----
-user=> (require '[rewrite-cljc.parser :as p])
-nil
-user=> (def form (p/parse-string "(defn my-function [a]\n  (* a 3))"))
-#'user/form
-user=> form
-<list:
-  (defn my-function [a]
-    (* a 3))
->
-----
-
-TIP: Depending on your needs, you can opt to skip the parser API and instead use the rewrite-cljc zip API's `of-string` or `of-file`.
-
-See link:{cljdoc-api-url}/rewrite-cljc.parser[parser API docs].
-
-=== Node API
-Inspect and analyse parsed nodes.
-
-Continueing from the form we parsed above:
-
-.REPL session continued
-[source, clojure]
-----
-user=> (require '[rewrite-cljc.node :as n])
-nil
-user=> (n/tag form) ;; <1>
-:list
-user=> (n/children form)
-(<token: defn> <whitespace: " "> <token: my-function> <whitespace: " "> <vector: [a]> <newline: "\n"> <whitespace: "  "> <list: (* a 3)>)
-user=> (n/sexpr form)
-(defn my-function [a] (* a 3))
-user=> (n/child-sexprs form)
-(defn my-function [a] (* a 3))
-
-user=> (n/string form) ;; <2>
-"(defn my-function [a]\n  (* a 3))"
-
-user=> (n/coerce '[a b c]) ;; <3>
-<vector: [a b c]>
-
-user=> (n/meta-node  ;; <4>
-  (n/token-node :private)
-  (n/token-node 'sym))
-<meta: ^:private sym>
-----
-<1> explore what we've parsed
-<2> convert the parsed nodes back to a printable string
-<3> create a node from nearly any value using `coerce`
-<4> nodes can also be created by hand
-
-See link:{cljdoc-api-url}/rewrite-cljc.node[node API docs].
-
 === Zip API
-Traverse and modify Clojure/ClojureScript/EDN.
+Traverse and modify Clojure/ClojureScript/EDN. This is the main rewrite-cljc API and might very well be all you need.
 
 [TIP]
 ====
@@ -117,25 +56,36 @@ helpful:
 ----
 user=> (require '[rewrite-cljc.zip :as z])
 nil
+
 user=> (def data-string
 "(defn my-function [a]
   ;; a comment
   (* a 3))")
 #'user/data-string
-user=> (def data (z/of-string data-string))  ;; <1>
-#'user/data
 
-user=> (z/sexpr data)  ;; <2>
+user=> (def zloc (z/of-string data-string))  ;; <1>
+#'user/zloc
+
+user=> (z/sexpr zloc)  ;; <2>
 (defn my-function [a] (* a 3))
-user=> (-> data z/down z/right z/node)
+user=> (-> zloc z/down z/right z/node)
 <token: my-function>
-user=> (-> data z/down z/right z/sexpr)
+user=> (-> zloc z/down z/right z/sexpr)
 my-function
 
-user=> (-> data z/down z/right (z/edit (comp symbol str) "2") z/up z/sexpr) ;; <3>
-(defn my-function2 [a] (* a 3))
+user=> (-> zloc
+           z/down
+           z/right
+           (z/edit (comp symbol str) "2")
+           z/up
+           z/sexpr) ;; <3>
+(defn my-function2 [a] (* a 3)) fs
 
-user=> (-> data z/down z/right (z/edit (comp symbol str) "2") z/print-root)
+user=> (-> zloc
+           z/down
+           z/right
+           (z/edit (comp symbol str) "2")
+           z/print-root) ;; <4>
 (defn my-function2 [a]
   ;; a comment
   (* a 3))nil
@@ -144,28 +94,30 @@ user=> (-> data z/down z/right (z/edit (comp symbol str) "2") z/print-root)
 
 <2> explore what we've parsed into our zipper
 
-<3> make some changes. `rewrite-cljc.zip/edit` and `rewrite-cljc.zip/replace`
+<3> rename my-function to my-function2 and return resulting s-expression.
+`rewrite-cljc.zip/edit` and `rewrite-cljc.zip/replace`
 transparently coerce between the node representation (`<token: my-function>`)
 and its corresponding s-expression (`my-function`).
 
+<4> rename my-function to my-function2 and print from root node. Original whitespace is preserved.
+
 TIP: The zip location movement functions (`right`, `left`, `up`, `down`, etc)
-skip over whitespace nodes. If you want to see all nodes, use their `+*+`
+skip over whitespace nodes. If you want to see all nodes, use the `+*+`
 counterparts (`right*`, `left*`, `up*`, `down*`, etc).
 
 See link:{cljdoc-api-url}/rewrite-cljc.zip[zip API docs].
 
-==== Code Traversal with the Zip API
+==== Finding Elements with the Zip API
 
 `rewrite-cljc.zip` includes find operations to navigate to locations of interest
-in your zipper. Let's assume you want to modify the following `project.clj` by
+in your zipper. Let's assume you want to modify the following minimal `project.clj` by
 replacing the `:description` placeholder text with something more meaningful:
 
 .project.clj snippet
 [source, clojure]
 ----
 (defproject my-project "0.1.0-SNAPSHOT"
-  :description "Enter description"
-  ...)
+  :description "Enter description")
 ----
 
 Most find functions accept an optional location movement function. To perform a
@@ -178,29 +130,31 @@ use `rewrite-cljc.zip/left`.
 ----
 user=> (require '[rewrite-cljc.zip :as z])
 nil
+
 user=> (def data (z/of-file "project.clj")) ;; <1>
 #'user/data
-user=> (def prj-map (z/find-value data z/next 'defproject)) ;; <2>
-#'user/prj-map
 
-user=> (def descr (-> prj-map (z/find-value :description) z/right)) ;; <3>
-#'user/descr
-user=> (z/sexpr descr)
+user=> (def zloc-prj-map (z/find-value data z/next 'defproject)) ;; <2>
+#'user/zloc-prj-map
+
+user=> (def zloc-desc (-> zloc-prj-map (z/find-value :description) z/right)) ;; <3>
+#'user/zloc-descr
+
+user=> (z/sexpr zloc-desc)
 "Enter description"
 
-user=> (-> descr (z/replace "My first Project.") z/print-root) ;; <4>
+user=> (-> zloc-desc (z/replace "My first Project.") z/print-root) ;; <4>
 (defproject my-project "0.1.0-SNAPSHOT"
-  :description "My first Project."
-  ...)
+  :description "My first Project.")
 nil
 
 ----
-<1> load the `project.clj` file.footnote:file[]
+<1> load the `project.clj` file.footnote:file[reading from a file is only available from Clojure.]
 
 <2> navigate depth-first to the project map by searching for `'defproject`.
 
 <3> navigate to the description text by searching right for `:description` and
-then moving one node to the right. Remember that while whitespace is preserved
+then moving one node to the right. Remember that while whitespace is preserved,
 it is automatically skipped during navigation.
 
 <4> replace the description, zip up and print the result.
@@ -215,17 +169,23 @@ offers functions that correspond to the standard seq functions, for example:
 ----
 user=> (require '[rewrite-cljc.zip :as z])
 nil
-user=> (def data (z/of-string "[1\n2\n3]"))
-#'user/data
-user=> (z/vector? data)
+
+user=> (def zloc (z/of-string "[1\n2\n3]"))
+#'user/zloc
+
+user=> (z/vector? zloc)
 true
-user=> (z/sexpr data)
+
+user=> (z/sexpr zloc)
 [1 2 3]
-user=> (-> data (z/get 1) z/node)
+
+user=> (-> zloc (z/get 1) z/node)
 <token: 2>
-user=> (-> data (z/assoc 1 5) z/sexpr)
+
+user=> (-> zloc (z/assoc 1 5) z/sexpr)
 [1 5 3]
-user=> (->> data (z/map #(z/edit % + 4)) z/->root-string)
+
+user=> (->> zloc (z/map #(z/edit % + 4)) z/->root-string)
 "[5\n6\n7]"
 ----
 
@@ -238,25 +198,40 @@ If you need to track the source row and column while reading and manipulating yo
 ----
 user=> (require '[rewrite-cljc.zip :as z])
 nil
-user=> (def zdata (z/of-string "(defn sum-me\n  \"Add 'em up!\"\n  [a b c]\n  (+ a\n     c))" {:track-position? true})) ;; <1>
-#'user/zdata
-user=> (println (z/root-string zdata)) ;; <2>
+
+user=> (def zloc (z/of-string
+                  "(defn sum-me\n  \"Add 'em up!\"\n  [a b c]\n  (+ a\n     c))"
+                  {:track-position? true})) ;; <1>
+#'user/zloc
+
+user=> (println (z/root-string zloc)) ;; <2>
 (defn sum-me
   "Add 'em up!"
   [a b c]
   (+ a
      c))
 nil
-user=> (def zc (-> zdata (z/find-value z/next '+) (z/find-value z/next 'c))) ;; <3>
+
+user=> (def zc (-> zloc
+                   (z/find-value z/next '+)
+                   (z/find-value z/next 'c))) ;; <3>
 #'user/zc
+
 user=> (z/string zc) ;; <4>
 "c"
+
 user=> (z/position zc) ;; <5>
 [5 6]
-user=> (def zc2 (-> zc (z/insert-left 'b) (z/insert-newline-left) (z/insert-space-left 5))) ;; <6>
+
+user=> (def zc2 (-> zc
+                   (z/insert-left 'b)
+                   (z/insert-newline-left)
+                   (z/insert-space-left 5))) ;; <6>
 #'user/zc2
+
 user=> (z/string zc2)
 "c"
+
 user=> (println (z/root-string zc2)) ;; <7>
 (defn sum-me
   "Add 'em up!"
@@ -265,6 +240,7 @@ user=> (println (z/root-string zc2)) ;; <7>
      b
      c))
 nil
+
 user=> (z/position zc2) ;; <8>
 [6 6]
 ----
@@ -301,14 +277,14 @@ Illustrations of some of the limitations of `sexpr`:
 
 [cols="50,50"]
 |===
-|Clojure |ClojureScript
 
 // Require
 2+m| => (require '[rewrite-cljc.zip :as z])
 
 // Reader discard
-2+h| The reader's ignore/discard `#_` fails:
+2+h| ; The reader's ignore/discard `#_` fails:
 2+m| => (z/sexpr (z/of-string "#_42"))
+h|; Clojure result: h|; ClojureScript result:
 m|Execution error (ExceptionInfo) at rewrite_cljc.node.uneval.UnevalNode/sexpr (uneval.cljc:11).
 
 unsupported operation for uneval-node
@@ -317,31 +293,100 @@ m|Execution error (ExceptionInfo) at (<cljs repl>:1).
 unsupported operation for uneval-node
 
 // Comment
-2+h| Comments return nil:
+2+h| ; Comments return nil:
 2+m| => (z/sexpr (z/of-string ";; can't sexpr me!"))
-m|nil
-m|nil
+2+m|nil
 
 // Whitespace
-2+h| Whitespace returns nil:
+2+h| ; Whitespace returns nil:
 2+m| => (z/sexpr (z/of-string "   "))
-m|nil
-m|nil
+2+m|nil
 
 // Ratios
-2+h| Clojure and ClojureScript have differences; ClojureScript has no Ratio:
+2+h| ; Clojure and ClojureScript have differences - ClojureScript has no Ratio:
 2+m| => (z/sexpr (z/of-string "3/4"))
+h|; Clojure result: h|; ClojureScript result:
 m|3/4
 m|0.75
 
 // Max integers
-2+h| Clojure and ClojureScript have differences; they inherit integral types from their host platforms:
+2+h| ; Clojure and ClojureScript have differences - they inherit integral types and type behavior from their host platforms:
 2+m| => (+ 10 (z/sexpr (z/of-string "9007199254740991")))
+h|; Clojure result: h|; ClojureScript result:
 m|9007199254741001
 m|9007199254741000
 |===
 
+=== Parser API
+Parses Clojure/ClojureScript/EDN to rewrite-cljc nodes.
+The Zip API makes use of the Parser API to parse Clojure.
+If your focus is parsing instead of rewriting, you might find this lower level API useful.
+You can choose to parse one or all https://www.braveclojure.com/do-things/#Forms[forms] from a string or a file.footnote:file[]
+
+The Parser API takes advantage of https://github.com/clojure/tools.reader[clojure.tools.reader] for simple forms.
+
+Here we parse a single form from a string:
+
+.REPL session
+[source, clojure-repl]
+----
+user=> (require '[rewrite-cljc.parser :as p])
+nil
+
+user=> (def form-nodes (p/parse-string "(defn my-function [a]\n  (* a 3))"))
+#'user/form-nodes
+
+user=> form-nodes
+<list:
+  (defn my-function [a]
+    (* a 3))
+>
+----
+
+See link:{cljdoc-api-url}/rewrite-cljc.parser[parser API docs].
+
+=== Node API
+Inspect, analyze and create rewrite-cljc nodes.
+
+Continueing from the form we parsed above:
+
+.REPL session continued
+[source, clojure]
+----
+user=> (require '[rewrite-cljc.node :as n])
+nil
+
+user=> (n/tag form) ;; <1>
+:list
+
+user=> (n/children form)
+(<token: defn> <whitespace: " "> <token: my-function> <whitespace: " "> <vector: [a]> <newline: "\n"> <whitespace: "  "> <list: (* a 3)>)
+
+user=> (n/sexpr form)
+(defn my-function [a] (* a 3))
+
+user=> (n/child-sexprs form)
+(defn my-function [a] (* a 3))
+
+user=> (n/string form) ;; <2>
+"(defn my-function [a]\n  (* a 3))"
+
+user=> (n/coerce '[a b c]) ;; <3>
+<vector: [a b c]>
+
+user=> (n/meta-node  ;; <4>
+  (n/token-node :private)
+  (n/token-node 'sym))
+<meta: ^:private sym>
+----
+<1> explore what we've parsed
+<2> convert the parsed nodes back to a printable string
+<3> create a node from nearly any value using `coerce`
+<4> nodes can also be created by hand
+
+See link:{cljdoc-api-url}/rewrite-cljc.node[node API docs].
+
 === Paredit API
-Structured editing was introduce by rewrite-cljs.
+Structured editing was introduce by rewrite-cljs and carried over to rewrite-cljc.
 
 See link:{cljdoc-api-url}/rewrite-cljc.paredit[current paredit API docs].
