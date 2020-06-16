@@ -351,7 +351,7 @@ Inspect, analyze and create rewrite-cljc nodes.
 Continueing from the form we parsed above:
 
 .REPL session continued
-[source, clojure]
+[source, clojure-repl]
 ----
 user=> (require '[rewrite-cljc.node :as n])
 nil
