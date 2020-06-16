@@ -114,6 +114,7 @@
   [[edit*]]
   [[insert-left*]]
   [[insert-right*]]
+  [[insert-child*]]
   [[append-child*]]
   [[remove*]]
 
@@ -237,6 +238,7 @@
   rightmost leftmost
   replace edit remove
   insert-left insert-right
+  insert-child
   append-child])
 
 ;; ## DEPRECATED
