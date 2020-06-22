@@ -1,4 +1,10 @@
-{:lint-as
+{
+ :hooks {:analyze-call {rewrite-cljc.potemkin.clojure/import-vars-with-mods
+                        hooks.rewrite-cljc.potemkin.import-vars-with-mods/import-vars-with-mods
+
+                        rewrite-cljc.potemkin.cljs/import-vars-with-mods
+                        hooks.rewrite-cljc.potemkin.import-vars-with-mods/import-vars-with-mods}}
+ :lint-as
  {rewrite-cljc.potemkin.cljs/defprotocol+ clojure.core/defprotocol
   rewrite-cljc.potemkin.clojure/defprotocol+ clojure.core/defprotocol
   clojure.test.check.clojure-test/defspec clojure.core/def
@@ -15,13 +21,7 @@
   rewrite-cljc.potemkin.clojure/import-vars potemkin/import-vars
   rewrite-cljc.potemkin.cljs/import-varfs potemkin/import-vars}
  :linters
- {:unresolved-symbol
-  {:level :warning
-   :exclude [(rewrite-cljc.potemkin.cljs/import-vars-with-mods)
-             (rewrite-cljc.potemkin.clojure/import-vars-with-mods)
-             ;; clj-kondo has no concept of import-vars-with-mods so we compensate here
-             mod-t-def mod-t-def-doc mod-t-fn mod-t-fn-doc mod-t-macro mod-t-macro-doc]}
-  :unused-namespace
+ {:unused-namespace
   {:exclude [clojure.test.check]}
   :unused-referred-var
   {:exclude {clojure.test.check [quick-check]}}
