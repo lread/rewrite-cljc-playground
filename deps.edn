@@ -41,7 +41,7 @@
            ;;
            :update-readme {:extra-paths ["script"]
                            :extra-deps {hiccup {:mvn/version "1.0.5"}
-                                        commons-io/commons-io {:mvn/version "2.6"}}
+                                        commons-io/commons-io {:mvn/version "2.7"}}
                            :main-opts ["-m" "update-readme"]}
 
            ;;
