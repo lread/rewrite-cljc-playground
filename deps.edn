@@ -20,7 +20,7 @@
                          :extra-paths ["test"]}
 
            ;; koacha for clojure testing
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.629"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.632"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0-70"}}
                     :main-opts ["-m" "kaocha.runner"]}
 
