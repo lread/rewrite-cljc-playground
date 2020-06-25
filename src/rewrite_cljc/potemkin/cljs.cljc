@@ -35,11 +35,17 @@
 (defn- meta-from-resolved
   "mimic what meta would return on a resolved sym in clj"
   [sym-analysis]
-  (assoc (:meta sym-analysis)
-         ;; name is not present under meta, add it to mimic meta
-         :name (symbol (name (:name sym-analysis)))
-         ;; doc is not always under meta (ex. for def)
-         :doc (get-in sym-analysis [:meta :doc] (:doc sym-analysis))))
+  (let [sym-meta (:meta sym-analysis)
+        macro (:macro sym-analysis)
+        new-meta (assoc sym-meta
+             ;; name is not present under meta, add it to mimic clj meta
+             :name (symbol (name (:name sym-analysis)))
+             ;; doc is not always under meta (ex. for def)
+             :doc (get-in sym-analysis [:meta :doc] (:doc sym-analysis)))]
+    ;; shadow-cljs does not include :meta for macros, but everyone includes :macro at root
+    (if (and (not sym-meta) macro)
+      (assoc new-meta :macro macro)
+      new-meta)))
 
 (defn- resolve-sym [sym]
   (or (ana-api/resolve @env/*compiler* sym)

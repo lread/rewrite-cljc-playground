@@ -6,6 +6,7 @@
 /dumps
 /.clj-kondo/.cache
 /.cpcache
+/.shadow-cljs
 *.jar
 *.class
 .cljs_node_repl
