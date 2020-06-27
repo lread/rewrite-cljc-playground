@@ -274,7 +274,7 @@ give some confidence that rewrite-cljc works after compiled with Graal.
 
 ==== Technical approach
 
-1. create a custom version of Clojure by applying a patch from CLJ-1472 to Clojure 1.10.1
+1. reference Clojure v1.10.2-alpha1 which includes fixes for Graal (notably CLJ-1472)
 2. generate a test-runner in Clojure that explicitly references and runs all my tests
 3. aot compile the test-runner (aot compilation automatically compiles all referenced source)
 4. compile the aot compiled test-runner to native binary with Graal
@@ -296,12 +296,64 @@ Drone Cloud, a service with a very generous 64gb of RAM available, has no proble
 tests. Unfortunately it is Linux only so would not offer multi-platform verification.
 
 ==== Options
+[cols="5%,15%,30%,25%,25%"]
+|===
+| Ref | Option | Description | Pros | Cons
 
-1. Run tests on Drone Cloud only.
-2. Run tests in multiple passes on GitHub Actions - more experimentation needed to find a set
-of splits that would work.
-3. Hold off until GraalVM v20.x is released. Work is being doing to reduce the memory
-footprint of the `native-image` program. Be mindful that this a plan and not a promise.
+| 1
+| Drone Cloud Only
+| Run tests on Drone Cloud only
+a| * Easiest
+* Tests and source are natively compiled
+a| * Linux only
+* Drone Cloud seems a bit obscure?
+* Solves problem of running tests, but not general problem of running on constrained CI service (does not help community)
+
+| 2
+| Split tests into multiple runs
+| Split tests into sets where each set can run under RAM constraints of CI service. Would involve figuring
+which how to break up tests. Would likely use GitHub Actions because it is more generous with available RAM.
+a| * Tests and source are natively compiled
+a| * Long running local process to figure out test split
+* Natively compiling multiple sets makes for more work during CI
+
+| 3
+| Wait for GraalVM to reduce RAM usage
+| The Graal team is working to reduce the memory footprint of `native-image` sometime in the v20.x version.
+a| * Ideally would allow us to run on any popular free tier CI service
+a| * Might wait a looong time!
+* Might never happen
+
+| 4
+| bb-rewrite-cljc
+| This idea is from @borkdude.
+
+Fork https://github.com/borkdude/babashka[babashka], include rewrite-cljc src (but not tests) then build a custom bb-rewrite-cljc.
+
+Interpret rewrite-cljc tests with bb-rewrite-cljc.
+
+To reduce memory footprint further could disable all optional babashka features.
+
+Note that CircleCI bumped up RAM on CircleCI at @borkdude's request so this
+idea would likely be executed on the more RAM generous GitHub Actions.
+
+a| * TBD, but will reduce memory footprint
+a| * Complexity of figuring out bb-rewrite-cljc
+
+| 5
+| sci-rewrite-cljc
+| Another idea from the always helpful @borkdude.
+
+Use babashka's intepreter, https://github.com/borkdude/sci[sci], to run tests. Same concept as bb-rewrite-cljc but leaner.
+
+This would be creating a native-image from sci + any test libraries I need + test runner support + rewrite-cljc sources,
+then interpreting rewrite-cljc tests use sci-rewrite-cljc
+
+a| * TBD, but will reduce memory footprint
+* Might be able to come up with something that is useful to community
+a| * Complexity of figuring out sci-rewrite-cljc
+
+|===
 
 == Questionable Decisions
 
