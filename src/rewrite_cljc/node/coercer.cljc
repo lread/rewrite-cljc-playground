@@ -118,6 +118,12 @@
   (coerce [sq]
     (seq-node set-node sq)))
 
+#?(:cljs
+   (extend-protocol NodeCoerceable
+     EmptyList
+     (coerce [sq]
+       (seq-node list-node sq))))
+
 ;; ## Maps
 
 #?(:clj
@@ -134,8 +140,9 @@
    (extend-protocol NodeCoerceable
      PersistentHashMap
      (coerce [m]
-       (map-node (map->children m))
-       m)))
+       (node-with-meta
+        (map-node (map->children m))
+        m))))
 
 ;; ## Vars
 

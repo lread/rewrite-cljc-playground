@@ -264,6 +264,29 @@ user=> (z/position zc2) ;; <8>
 <9> examine updated position of c. It is on the 6th row and 6th column.
 
 
+==== Some `coerce` Guidance for Lists
+
+Rewrite-cljc offers, where it can, transparent coercion from Clojure to rewrite-cljc nodes.
+
+Coercion is complete in that it also includes any attached metadata. This can lead to confusion if you are not
+aware that, in some cases, Clojure automatically adds metadata.
+
+For example, you might not be aware of the metadata Clojure attaches to a quoted list:
+
+.REPL session
+[source,clojure-repl]
+----
+Clojure 1.10.1
+user=> ;; a quoted list has :line and :column metadata
+user=> (meta '(1 2 3))
+{:line 1, :column 8}
+----
+
+To avoid this metadata, an easy alternative is to use the longer form `(list 1 2 3)` instead of the short form `'(1 2 3)`.
+
+This metadata is not added by ClojureScript, but to avoid confusion, we recommend using the longer form in all cases.
+
+
 ==== Some `sexpr` Guidance
 
 Parsing arbitrary valid Clojure/ClojureScript code should work fine (please let
