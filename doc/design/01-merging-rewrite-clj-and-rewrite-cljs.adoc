@@ -296,11 +296,12 @@ Drone Cloud, a service with a very generous 64gb of RAM available, has no proble
 tests. Unfortunately it is Linux only so would not offer multi-platform verification.
 
 ==== Options
-[cols="5%,15%,30%,25%,25%"]
+[cols="5%,5%,15%,30%,25%,25%"]
 |===
-| Ref | Option | Description | Pros | Cons
+| Ref | Status | Option | Description | Pros | Cons
 
 | 1
+| candidate
 | Drone Cloud Only
 | Run tests on Drone Cloud only
 a| * Easiest
@@ -310,6 +311,7 @@ a| * Linux only
 * Solves problem of running tests, but not general problem of running on constrained CI service (does not help community)
 
 | 2
+| experimentation paused
 | Split tests into multiple runs
 | Split tests into sets where each set can run under RAM constraints of CI service. Would involve figuring
 which how to break up tests. Would likely use GitHub Actions because it is more generous with available RAM.
@@ -318,6 +320,7 @@ a| * Long running local process to figure out test split
 * Natively compiling multiple sets makes for more work during CI
 
 | 3
+| rejected
 | Wait for GraalVM to reduce RAM usage
 | The Graal team is working to reduce the memory footprint of `native-image` sometime in the v20.x version.
 a| * Ideally would allow us to run on any popular free tier CI service
@@ -325,6 +328,16 @@ a| * Might wait a looong time!
 * Might never happen
 
 | 4
+| rejected
+| Command line test harness
+| Create a command line test harness, compile it to native-image, then run tests from the command line.
+
+This approach is a natural fit for command line tools and has been employed successfully by @borkdude for clj-kondo.
+a|* Reduces memory footprint of native-image
+a|* Overhead of creating and maintaining a command line test harness
+
+| 5
+| candidate
 | bb-rewrite-cljc
 | This idea is from @borkdude.
 
@@ -337,10 +350,11 @@ To reduce memory footprint further could disable all optional babashka features.
 Note that CircleCI bumped up RAM on CircleCI at @borkdude's request so this
 idea would likely be executed on the more RAM generous GitHub Actions.
 
-a| * TBD, but will reduce memory footprint
+a| * TBD, but will reduce memory footprint of native-image
 a| * Complexity of figuring out bb-rewrite-cljc
 
-| 5
+| 6
+| experimenting
 | sci-rewrite-cljc
 | Another idea from the always helpful @borkdude.
 
@@ -349,11 +363,17 @@ Use babashka's intepreter, https://github.com/borkdude/sci[sci], to run tests. S
 This would be creating a native-image from sci + any test libraries I need + test runner support + rewrite-cljc sources,
 then interpreting rewrite-cljc tests use sci-rewrite-cljc
 
-a| * TBD, but will reduce memory footprint
+a| * TBD, but will reduce memory footprint of native-image
 * Might be able to come up with something that is useful to community
 a| * Complexity of figuring out sci-rewrite-cljc
 
 |===
+
+Thinking about the above options has helped me to understand what we want to test: we want to verify that our library's public
+API function as expected when natively compiled by Graal. We don't necessarily need to test internal mechanisms.
+
+One of rewrite-cljc's internal mechanisms is its version of import-vars, for which it has tests.
+These tests need not be exercised under Graal to prove that the public API functions under Graal.
 
 == Questionable Decisions
 
