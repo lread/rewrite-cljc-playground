@@ -1,7 +1,6 @@
 (ns rewrite-cljc.paredit-test
   (:require [clojure.test :refer [deftest is]]
             [rewrite-cljc.zip :as z]
-            [clojure.zip :as zz]
             [rewrite-cljc.paredit :as pe]))
 
 ;; helper
@@ -12,7 +11,7 @@
 (deftest kill-to-end-of-sexpr
   (let [res (-> "[1 2 3 4]"
                 z/of-string
-                z/down zz/right
+                z/down z/right*
                 pe/kill)]
     (is (= "[1]" (-> res z/root-string)))
     (is (= "1" (-> res z/string)))))
@@ -20,7 +19,7 @@
 (deftest kill-to-end-of-line
   (let [res (-> "[1 2] ; useless comment"
                 z/of-string
-                zz/right
+                z/right*
                 pe/kill)]
     (is (= "[1 2]" (-> res z/root-string)))
     (is (= "[1 2]" (-> res z/string)))))
@@ -44,7 +43,7 @@
 (deftest kill-when-left-is-sexpr
   (let [res (-> "[1 2 3 4] 2"
                 z/of-string
-                zz/right
+                z/right*
                 pe/kill)]
     (is (= "[1 2 3 4]" (-> res z/root-string)))
     (is (= "[1 2 3 4]" (-> res z/string)))))
@@ -206,7 +205,7 @@ First line
 (deftest slurp-forward-from-whitespace-node
   (let [res (-> "[[1 2] 3 4]"
                 z/of-string
-                z/down z/down zz/right
+                z/down z/down z/right*
                 pe/slurp-forward)]
     (is (= "[[1 2 3] 4]" (-> res z/root-string)))
     (is (= " " (-> res z/string)))))
@@ -339,7 +338,7 @@ First line
 (deftest barf-forward-at-rightmost-which-is-a-whitespace-haha
   (let [res (-> "[[1 2 3 ] 4]"
                 z/of-string
-                z/down z/down zz/rightmost; position at space at the end
+                z/down z/down z/rightmost*; position at space at the end
                 pe/barf-forward)]
 
     (is (= "[[1 2] 3 4]" (-> res z/root-string)))
@@ -449,7 +448,7 @@ First line
 (deftest split-at-whitespace
   (let [res (-> "[1 2 3 4]"
                 z/of-string
-                z/down z/right zz/right
+                z/down z/right z/right*
                 pe/split)]
     (is (= "[1 2] [3 4]" (-> res z/root-string)))
     (is (= "2" (-> res z/string)))))
@@ -497,7 +496,7 @@ First line
   (let [res (-> "[1 2] [3 4]"
                 z/of-string
                 ;z/down
-                zz/right
+                z/right*
                 pe/join)]
     (is (= "[1 2 3 4]" (-> res z/root-string)))
     (is (= "3" (-> res z/string)))))
@@ -512,7 +511,7 @@ First line
 ]"
         res (-> sexpr
                 z/of-string
-                z/down zz/right
+                z/down z/right*
                 pe/join)]
     (is (= expected (-> res z/root-string)))))
 
