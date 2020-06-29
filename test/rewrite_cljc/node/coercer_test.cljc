@@ -48,11 +48,24 @@
     #{1 2 3}               :set
 
     ;; date
-    #inst "2014-11-26T00:05:23" :token
+    #inst "2014-11-26T00:05:23" :token))
 
-    ;; map
-    (hash-map)             :map
-    (hash-map :a 0, :b 1)  :map))
+(deftest t-maps
+  (are [?sexpr]
+      (let [n (coerce ?sexpr)]
+        (is (satisfies? node/Node n))
+        (is (= :map (node/tag n)))
+        (is (string? (node/string n)))
+        (is (= ?sexpr (node/sexpr n)))
+        ;; we do not restore to original map (hash-map or array-map),
+        ;; checking if we convert to any map is sufficient
+        (is (map? (node/sexpr n))))
+    {}
+    {:a 1 :b 2}
+    (hash-map)
+    (hash-map :a 0 :b 1)
+    (array-map)
+    (array-map :d 4 :e 5)))
 
 (deftest t-sexpr->node->sexpr-roundtrip-for-regex
   (let [sexpr #"abc"

@@ -137,12 +137,16 @@
           (map-node (map->children m)))
         m)))
    :cljs
-   (extend-protocol NodeCoerceable
-     PersistentHashMap
-     (coerce [m]
-       (node-with-meta
-        (map-node (map->children m))
-        m))))
+   (let [create-map-node (fn [m]
+                           (node-with-meta
+                            (map-node (map->children m))
+                            m))]
+     (extend-protocol NodeCoerceable
+       PersistentHashMap
+       (coerce [m] (create-map-node m)))
+     (extend-protocol NodeCoerceable
+       PersistentArrayMap
+       (coerce [m] (create-map-node m)))))
 
 ;; ## Vars
 
