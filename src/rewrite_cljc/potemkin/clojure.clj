@@ -68,7 +68,7 @@
      (when-not (:macro m)
        (throw (ex-info "potemkin clj can only import-macro on macro" {:symbol src-sym})))
      `(do
-        (def ~target-name ~(resolve src-sym))
+        (def ~target-name (deref ~vr))
         (alter-meta! (var ~target-name) merge '~new-meta)
         (.setMacro (var ~target-name))
         ~vr)))
