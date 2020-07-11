@@ -163,3 +163,6 @@
   [[row col] [row-extent col-extent]]
   [(+ row row-extent)
    (cond-> col-extent (zero? row-extent) (+ col))])
+
+(defn ^:no-doc node? [ x ]
+  (satisfies? Node x))

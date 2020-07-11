@@ -6,7 +6,7 @@
 (deftest t-sexpr->node->sexpr-roundtrip
   (are [?sexpr expected-tag]
       (let [n (coerce ?sexpr)]
-        (is (satisfies? node/Node n))
+        (is (node/node? n))
         (is (= expected-tag (node/tag n)))
         (is (string? (node/string n)))
         (is (= ?sexpr (node/sexpr n)))
@@ -53,7 +53,7 @@
 (deftest t-maps
   (are [?sexpr]
       (let [n (coerce ?sexpr)]
-        (is (satisfies? node/Node n))
+        (is (node/node? n))
         (is (= :map (node/tag n)))
         (is (string? (node/string n)))
         (is (= ?sexpr (node/sexpr n)))
@@ -70,19 +70,19 @@
 (deftest t-sexpr->node->sexpr-roundtrip-for-regex
   (let [sexpr #"abc"
         n (coerce sexpr)]
-    (is (satisfies? node/Node n))
+    (is (node/node? n))
     (is (string? (node/string n)))
     (is (= (str sexpr) (str (node/sexpr n))))
     (is (= (type sexpr) (type (node/sexpr n))))))
 
 (deftest t-vars
   (let [n (coerce #'identity)]
-    (is (satisfies? node/Node n))
+    (is (node/node? n))
     (is (= '(var #?(:clj clojure.core/identity :cljs cljs.core/identity)) (node/sexpr n)))))
 
 (deftest t-nil
   (let [n (coerce nil)]
-    (is (satisfies? node/Node n))
+    (is (node/node? n))
     (is (= nil (node/sexpr n)))
     (is (= n (p/parse-string "nil")))))
 
@@ -91,6 +91,6 @@
 (deftest t-records
   (let [v (Foo-Bar. 0)
         n (coerce v)]
-    (is (satisfies? node/Node n))
+    (is (node/node? n))
     (is (= :reader-macro (node/tag n)))
     (is (= (pr-str v) (node/string n)))))
