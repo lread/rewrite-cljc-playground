@@ -160,7 +160,7 @@
         (vector)
         (var-node))))
 
-;; ## Existing Nodes
+;; ## rewrite-cljc nodes coerce to themselves
 
 (extend-protocol NodeCoerceable
   CommentNode     (coerce [v] v)
