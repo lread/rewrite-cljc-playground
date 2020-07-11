@@ -9,17 +9,17 @@
       elements (iterate m/next root)]
   (deftest t-edit-operations
     (are [?n ?f ?s]
-         (let [loc (nth elements ?n)
-               loc' (e/edit loc ?f)]
-           (is (= ?s (base/root-string loc'))))
-      0  #(subvec % 1)    "[\"2\" :3]"
-      1  #(str % "_x")    "[\"1_x\" \"2\" :3]"
-      2  #(keyword % "k") "[1 :2/k :3]"))
+        (let [loc (nth elements ?n)
+              loc' (e/edit loc ?f)]
+          (is (= ?s (base/root-string loc'))))
+      0 #(subvec % 1) "[\"2\" :3]"
+      1 #(str % "_x") "[\"1_x\" \"2\" :3]"
+      2 #(keyword % "k") "[1 :2/k :3]"))
   (deftest t-replace-operations
     (are [?n ?v ?s]
-         (let [loc (nth elements ?n)
-               loc' (e/replace loc ?v)]
-           (is (= ?s (base/root-string loc'))))
+        (let [loc (nth elements ?n)
+              loc' (e/replace loc ?v)]
+          (is (= ?s (base/root-string loc'))))
       0  [1]           "[1]"
       1  #{0}          "[#{0} \"2\" :3]")))
 
