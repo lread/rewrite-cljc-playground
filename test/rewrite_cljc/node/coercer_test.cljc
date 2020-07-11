@@ -92,5 +92,6 @@
   (let [v (Foo-Bar. 0)
         n (coerce v)]
     (is (node/node? n))
+    ;; TODO: why is a record tagged as a :reader-macro?
     (is (= :reader-macro (node/tag n)))
     (is (= (pr-str v) (node/string n)))))
