@@ -39,16 +39,28 @@
     [1 2 3]                :vector
     ()                     :list
     '()                    :list
-    '(1 2 3)               #?(:clj ;; clojure includes :line and :column metadata for non-empty quoted lists
-                              :meta
-                              :cljs ;; cljs does not include metadata for quoted lists
-                              :list)
     (list 1 2 3)           :list
     #{}                    :set
     #{1 2 3}               :set
 
     ;; date
     #inst "2014-11-26T00:05:23" :token))
+
+(deftest
+  ^:skip-for-sci ;; sci has its own positional metadata which I strip - so let's just skip this one for sci
+  t-quoted-list-has-meta
+  (are [?sexpr expected-tag]
+      (let [n (coerce ?sexpr)]
+        (is (node/node? n))
+        (is (= expected-tag (node/tag n)))
+        (is (string? (node/string n)))
+        (is (= ?sexpr (node/sexpr n)))
+        (is (not (meta n)))
+        (is (= (type ?sexpr) (type (node/sexpr n)))))
+    '(1 2 3)  #?(:clj ;; clojure includes :line and :column metadata for non-empty quoted lists
+                 :meta
+                 :cljs ;; cljs does not include metadata for quoted lists
+                 :list)))
 
 (deftest t-maps
   (are [?sexpr]
@@ -75,7 +87,9 @@
     (is (= (str sexpr) (str (node/sexpr n))))
     (is (= (type sexpr) (type (node/sexpr n))))))
 
-(deftest t-vars
+(deftest
+  ^:skip-for-sci ;; sci, by design has its own var type, so skip this one for sci
+  t-vars
   (let [n (coerce #'identity)]
     (is (node/node? n))
     (is (= '(var #?(:clj clojure.core/identity :cljs cljs.core/identity)) (node/sexpr n)))))
@@ -88,7 +102,9 @@
 
 (defrecord Foo-Bar [a])
 
-(deftest t-records
+(deftest
+  ^:skip-for-sci ;; records have metadata in sci, so skip this one for sci
+  t-records
   (let [v (Foo-Bar. 0)
         n (coerce v)]
     (is (node/node? n))

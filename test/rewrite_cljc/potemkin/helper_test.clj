@@ -1,4 +1,5 @@
-(ns rewrite-cljc.potemkin.helper-test
+(ns ^:skip-for-sci ;; internal API
+    rewrite-cljc.potemkin.helper-test
   (:require [clojure.test :refer [deftest is]]
             [rewrite-cljc.potemkin.helper :as helper]))
 

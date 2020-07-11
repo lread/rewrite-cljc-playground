@@ -1,4 +1,5 @@
-(ns rewrite-cljc.potemkin-test
+(ns ^:skip-for-sci ;; internal API
+    rewrite-cljc.potemkin-test
   (:require [clojure.test :refer [deftest is are]]
             [rewrite-cljc.potemkin-t1 #?@(:cljs [:include-macros true])]
             [rewrite-cljc.potemkin-t2 #?@(:cljs [:include-macros true])] )
