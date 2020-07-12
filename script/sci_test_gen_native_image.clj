@@ -54,15 +54,23 @@
 
 (defn shell-command
   "Executes shell command. Exits script when the shell-command has a non-zero exit code, propagating it.
+
+  Returns map of:
+  :exit => sub-process exit code, will be 0 unless non-fatal option used
+  :err  => sub-process stdout, will be nil unless stdout-to-string option used
+  :out  => sub-process stderr, will be nil unless stderr-to-string option used
+
   Accepts the following options:
   `:input`: instead of reading from stdin, read from this string.
-  `:to-string?`: instead of writing to stdout, write to a string and return it."
+  `:non-fatal?`: instead of exiting on non-zero return exit code.
+  `:out-to-string?`: instead of writing to stdout, write to a string and return it.
+  `:err-to-string?`: instead of writing to stderr, write to a string and return in"
   ([args] (shell-command args nil))
-  ([args {:keys [:input :to-string?]}]
+  ([args {:keys [:input :non-fatal? :out-to-string? :err-to-string?]}]
    (let [args (mapv str args)
-         pb (cond-> (-> (ProcessBuilder. ^java.util.List args)
-                        (.redirectError ProcessBuilder$Redirect/INHERIT))
-              (not to-string?) (.redirectOutput ProcessBuilder$Redirect/INHERIT)
+         pb (cond-> (ProcessBuilder. ^java.util.List args)
+              (not err-to-string?) (.redirectError ProcessBuilder$Redirect/INHERIT)
+              (not out-to-string?) (.redirectOutput ProcessBuilder$Redirect/INHERIT)
               (not input) (.redirectInput ProcessBuilder$Redirect/INHERIT))
          proc (.start pb)]
      (when input
@@ -71,15 +79,37 @@
            (print input)
            (flush))))
      (let [string-out
-           (when to-string?
+           (when out-to-string?
              (let [sw (java.io.StringWriter.)]
                (with-open [w (io/reader (.getInputStream proc))]
                  (io/copy w sw))
                (str sw)))
+           string-err
+           (when err-to-string?
+             (let [sw (java.io.StringWriter.)]
+               (with-open [w (io/reader (.getErrorStream proc))]
+                 (io/copy w sw))
+               (str sw)))
            exit-code (.waitFor proc)]
-       (when-not (zero? exit-code)
+       (when-not (and (not non-fatal?)
+                      (zero? exit-code))
          (fatal-error (format "shell exited with %d for:\n %s" exit-code args)))
-       string-out))))
+       {:exit exit-code
+        :out string-out
+        :err string-err}))))
+
+(defn get-jdk-major-version
+  "Returns jdk major version converting old style appropriately. (ex 1.8 returns 8)"
+  []
+  (let [version
+        (->> (shell-command ["java" "-version"] {:err-to-string? true})
+             :err
+             (re-find #"version \"(\d+)\.(\d+)\.\d+.*\"")
+             rest
+             (map #(Integer/parseInt %)))]
+    (if (= (first version) 1)
+      (second version)
+      (first version))))
 
 (defn find-graal-prog [prog-name]
   (or (on-path prog-name)
@@ -119,10 +149,18 @@
 
 (defn compute-classpath []
   (status-line :info "Compute classpath")
-  (let [classpath (-> (shell-command ["clojure" "-A:sci-test:native-image:jdk11-reflect" "-Spath"] {:to-string? true})
-                      string/trim)]
-    (println (str "- " (string/join "\n- " (split-path-list classpath))))
-    classpath))
+  (let [jdk-major-version (get-jdk-major-version)
+        reflection-fix? (>= jdk-major-version 11)]
+    (status-line :detail (str "JDK major version seems to be " jdk-major-version "; "
+                              (if reflection-fix? "including" "excluding") " reflection fixes." ))
+    (let [alias "-A:sci-test:native-image"
+          alias (if reflection-fix? (str alias ":jdk11-reflect") alias)
+          classpath (-> (shell-command ["clojure" alias "-Spath"] {:out-to-string? true})
+                        :out
+                        string/trim)]
+      (println "\nClasspath:")
+      (println (str "- " (string/join "\n- " (split-path-list classpath))))
+      classpath)))
 
 (defn aot-compile-sources [classpath]
   (status-line :info "AOT compile sources")
@@ -171,8 +209,8 @@
         graal-reflection-fname "target/native-image/reflection.json"
         target-exe "target/sci-test-rewrite-cljc"]
     (status-line :info "Creating native image")
-    (status-line :detail "java --version" )
-    (shell-command ["java" "--version"])
+    (status-line :detail "java -version" )
+    (shell-command ["java" "-version"])
     (status-line :detail (str "\nnative-image max memory: " native-image-xmx))
     (let [graal-native-image (find-graal-native-image)]
       (clean)
