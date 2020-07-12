@@ -127,6 +127,7 @@
 (defn aot-compile-sources [classpath]
   (status-line :info "AOT compile sources")
   (shell-command ["java"
+                  "-Dclojure.compiler.direct-linking=true"
                   "-cp" classpath
                   "clojure.main"
                   "-e" "(compile 'sci-test.main)"]))
@@ -166,7 +167,7 @@
     (shell-command (concat time-cmd native-image-cmd))))
 
 (defn -main [ & _args ]
-  (let [native-image-xmx "7g"
+  (let [native-image-xmx "3500m"
         graal-reflection-fname "target/native-image/reflection.json"
         target-exe "target/sci-test-rewrite-cljc"]
     (status-line :info "Creating native image")
