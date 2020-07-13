@@ -72,6 +72,10 @@ fi
 
 if [ ${TEST_ENV} == "planck" ]; then
     DEP_ALIASES=${DEP_ALIASES}:planck-test
+    EXCLUDE_OPT=""
+else
+    # under non-bootstrap ClojureScript we skip
+    EXCLUDE_OPT="--exclude :skip-for-cljs"
 fi
 
 if [ ${CLJS_OPTIMIZATIONS} == "none" ]; then
@@ -95,14 +99,15 @@ EOF
 # junit reporting is shared with our ci server, is ignored for node testing
 DOO_OPTS_FILENAME=${OUT_DIR}-doo-opts.edn
 cat <<EOF > ${DOO_OPTS_FILENAME}
-{:karma {:config {"plugins" ["karma-junit-reporter"]
-                  "reporters" ["progress" "junit"]
+{:karma {:config {"plugins" ["karma-spec-reporter" "karma-junit-reporter"]
+                  "reporters" ["spec" "junit"]
                   "junitReporter" {"outputDir" "target/out/test-results/cljs-${TEST_COMBO}"}}}}
 EOF
 
 case $RUN_GRANULARITY in
     all)
         clojure -A${DEP_ALIASES} \
+                ${EXCLUDE_OPT} \
                 --out ${OUT_DIR} \
                 --env ${TEST_ENV} \
                 --compile-opts ${CLJS_OPTS_FILENAME} \
@@ -116,6 +121,7 @@ case $RUN_GRANULARITY in
             NS_NDX=$((NS_NDX+1))
             status-line info "${NS_NDX} of ${TOTAL_NSES}) running tests for namespace: $ns"
             clojure -A${DEP_ALIASES} \
+                    ${EXCLUDE_OPT} \
                     --namespace ${ns} \
                     --out ${OUT_DIR} \
                     --env ${TEST_ENV} \

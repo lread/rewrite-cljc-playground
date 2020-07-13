@@ -6,7 +6,7 @@
             [rewrite-cljc.node :as node]
             [rewrite-cljc.parser :as p]))
 
-(deftest t-parsing-auto-resolves
+(deftest ^:skip-for-cljs t-parsing-auto-resolves
   (are [?s ?r]
       (binding [*ns* (create-ns 'rewrite-cljc.parser-ns-test)]
         (let [n (p/parse-string ?s)]
@@ -17,7 +17,7 @@
     "::key"                      ::key
     "::xyz/key"                  :xyz/key))
 
-(deftest t-parsing-auto-resolve-namespaced-maps
+(deftest ^:skip-for-cljs t-parsing-auto-resolve-namespaced-maps
   (are [?s ?children ?sexpr]
       (binding [*ns* (create-ns 'rewrite-cljc.parser-ns-test)]
         (let [n (p/parse-string ?s)]
@@ -81,7 +81,7 @@
      (binding [*ns* (find-ns 'rewrite-cljc.parser-ns-test)]
        (parsing-auto-resolve-alias-namespaced-maps))))
 
-(deftest
+(deftest ^:skip-for-cljs
   t-parsing-auto-resolve-alias-namespaced-maps-cljs-style
   (binding [*alias-map* '{node rewrite-cljc.node}]
     (parsing-auto-resolve-alias-namespaced-maps)))
