@@ -47,9 +47,9 @@
            ;;
            ;; Running tests under graal
            ;;
-           :sci-test-gen-publics {:extra-paths ["script"]
-                                  :extra-deps {org.clojure/tools.namespace {:mvn/version "1.0.0"}}
-                                  :main-opts ["-m" "sci-test-gen-publics" ]}
+           :script {:extra-paths ["script"]
+                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.0.0"}
+                                 cli-matic {:mvn/version "0.3.11"}}}
 
            ;; deps only see usage below
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
@@ -57,6 +57,8 @@
                                                    :sha "345e904ccff060e6aad7d630e0002a6f1a707947"
                                                    ;; TODO: awkward we only need cheshire to generate reflection json
                                                    :exclusions [cheshire]}}}
+
+           :native-test {:extra-paths ["target/generated/graal"]}
 
            ;; usage -A:sci-test:gen-reflection
            :gen-reflection {:main-opts ["-m" "sci-test.generate-reflection-file"]
@@ -70,9 +72,10 @@
 
            ;; for jdk11 native image
            ;; usage -A:sci-test:native-image:jdk11-reflect
-           :jdk11-reflect {:extra-deps {borkdude/sci.impl.reflector {:mvn/version "0.0.1-java11"}
-                                        borkdude/clj-reflector-graal-java11-fix {:mvn/version "0.0.1-graalvm-20.1.0"
+           :jdk11-reflect {:extra-deps {borkdude/clj-reflector-graal-java11-fix {:mvn/version "0.0.1-graalvm-20.1.0"
                                                                                  :exclusions [org.graalvm.nativeimage/svm]}}}
+
+           :jdk11-reflect-sci {:extra-deps {borkdude/sci.impl.reflector {:mvn/version "0.0.1-java11"}}}
 
            ;; TODO: this will likely get deleted if sci-test works out
            ;; see script/graal-tests.sh for usage
@@ -82,6 +85,7 @@
                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.0.0"}
                                 cli-matic {:mvn/version "0.3.11"}}}
 
+           ;; TODO: script alias might do for this one instead
            :code-info {:extra-paths ["script"]
                        :extra-deps {org.clojure/tools.namespace {:mvn/version "1.0.0"}
                                     cli-matic {:mvn/version "0.3.11"}}}

@@ -1,9 +1,10 @@
 (ns helper.shell
-  (:require [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]
+            [helper.status :as status]))
 
 (import '[java.lang ProcessBuilder$Redirect])
 
-(defn command
+(defn command-no-exit
   "Executes shell command. Exits script when the shell-command has a non-zero exit code, propagating it.
 
   Returns map of:
@@ -15,7 +16,7 @@
   `:input`: instead of reading from stdin, read from this string.
   `:out-to-string?`: instead of writing to stdout, write to a string and return it.
   `:err-to-string?`: instead of writing to stderr, write to a string and return in"
-  ([args] (command args nil))
+  ([args] (command-no-exit args nil))
   ([args {:keys [:input :out-to-string? :err-to-string?]}]
    (let [args (mapv str args)
          pb (cond-> (ProcessBuilder. ^java.util.List args)
@@ -44,3 +45,11 @@
        {:exit exit-code
         :out string-out
         :err string-err}))))
+
+(defn command
+  ([args] (command-no-exit args nil))
+  ([args opts]
+   (let [{:keys [exit] :as res} (command-no-exit args opts)]
+     (if (not (zero? exit))
+       (status/fatal (format "shell exited with %d for:\n %s" exit args) exit)
+       res))))
