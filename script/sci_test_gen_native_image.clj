@@ -2,183 +2,76 @@
 
 (ns sci-test-gen-native-image
   (:require
+   [babashka.classpath :as cp]
    [clojure.java.io :as io]
    [clojure.string :as string]))
 
-(import '[java.lang ProcessBuilder$Redirect])
+(cp/add-classpath "./script")
+(require '[helper.status :as status]
+         '[helper.env :as env]
+         '[helper.fs :as fs]
+         '[helper.shell :as shell]
+         '[helper.graal :as graal])
 
-(defn get-os []
-  (let [os-name (string/lower-case (System/getProperty "os.name"))]
-    (condp #(re-find %1 %2) os-name
-      #"win" :win
-      #"mac" :mac
-      #"(nix|nux|aix)" :unix
-      #"sunos" :solaris
-      :unknown)))
+(def os (env/get-os))
 
-(def os (get-os))
-
-(defn status-line [type msg]
-  (let [fmt (case type
-              :info "\n\u001B[42m \u001B[30;46m %s \u001B[42m \u001B[0m"
-              :detail "%s"
-              :error "\n\u001B[30;43m*\u001B[41m error: %s \u001B[43m*\u001B[0m"
-              (throw (ex-info (format "unrecognized type: %s for status msg: %s" type msg) {})))]
-    (println (format fmt msg))))
-
-(defn fatal-error [msg]
-  (status-line :error msg)
-  (System/exit 1))
-
-(defn at-path [path prog-name]
-  (let [f (io/file path prog-name)]
-    (when (and (.isFile f) (.canExecute f))
-      (str (.getAbsolutePath f)))))
-
-(defn delete-file-recursively
-  [f & [silently]]
-  (let [f (io/file f)]
-    (when (.isDirectory f)
-      (doseq [child (.listFiles f)]
-        (delete-file-recursively child silently)))
-    (io/delete-file f silently)))
-
-(defn split-path-list [path-list]
-  (string/split path-list
-                (re-pattern (str "\\" java.io.File/pathSeparator))) )
-
-(defn on-path [prog-name]
-  (first (keep identity
-               (map #(at-path % prog-name)
-                    (split-path-list (System/getenv "PATH"))))))
-
-(defn shell-command
-  "Executes shell command. Exits script when the shell-command has a non-zero exit code, propagating it.
-
-  Returns map of:
-  :exit => sub-process exit code, will be 0 unless non-fatal option used
-  :err  => sub-process stdout, will be nil unless stdout-to-string option used
-  :out  => sub-process stderr, will be nil unless stderr-to-string option used
-
-  Accepts the following options:
-  `:input`: instead of reading from stdin, read from this string.
-  `:non-fatal?`: instead of exiting on non-zero return exit code.
-  `:out-to-string?`: instead of writing to stdout, write to a string and return it.
-  `:err-to-string?`: instead of writing to stderr, write to a string and return in"
-  ([args] (shell-command args nil))
-  ([args {:keys [:input :non-fatal? :out-to-string? :err-to-string?]}]
-   (let [args (mapv str args)
-         pb (cond-> (ProcessBuilder. ^java.util.List args)
-              (not err-to-string?) (.redirectError ProcessBuilder$Redirect/INHERIT)
-              (not out-to-string?) (.redirectOutput ProcessBuilder$Redirect/INHERIT)
-              (not input) (.redirectInput ProcessBuilder$Redirect/INHERIT))
-         proc (.start pb)]
-     (when input
-       (with-open [w (io/writer (.getOutputStream proc))]
-         (binding [*out* w]
-           (print input)
-           (flush))))
-     (let [string-out
-           (when out-to-string?
-             (let [sw (java.io.StringWriter.)]
-               (with-open [w (io/reader (.getInputStream proc))]
-                 (io/copy w sw))
-               (str sw)))
-           string-err
-           (when err-to-string?
-             (let [sw (java.io.StringWriter.)]
-               (with-open [w (io/reader (.getErrorStream proc))]
-                 (io/copy w sw))
-               (str sw)))
-           exit-code (.waitFor proc)]
-       (when-not (and (not non-fatal?)
-                      (zero? exit-code))
-         (fatal-error (format "shell exited with %d for:\n %s" exit-code args)))
-       {:exit exit-code
-        :out string-out
-        :err string-err}))))
-
-(defn get-jdk-major-version
-  "Returns jdk major version converting old style appropriately. (ex 1.8 returns 8)"
-  []
-  (let [version
-        (->> (shell-command ["java" "-version"] {:err-to-string? true})
-             :err
-             (re-find #"version \"(\d+)\.(\d+)\.\d+.*\"")
-             rest
-             (map #(Integer/parseInt %)))]
-    (if (= (first version) 1)
-      (second version)
-      (first version))))
-
-(defn find-graal-prog [prog-name]
-  (or (on-path prog-name)
-      (at-path (str (io/file (System/getenv "JAVA_HOME") "bin")) prog-name)
-      (at-path (str (io/file (System/getenv "GRAALVM_HOME") "bin")) prog-name)))
+(defn command
+  ([args] (command args nil))
+  ([args opts]
+   (let [{:keys [exit] :as res} (shell/command args opts)]
+     (if (not (zero? exit))
+       (status/fatal (format "shell exited with %d for:\n %s" exit args) exit)
+       res))))
 
 ;;
 ;; Tasks
 ;;
 
-(defn find-graal-native-image []
-  (status-line :info "Locate GraalVM native-image")
-  (let [res
-        (or (find-graal-prog "native-image")
-            (if-let [gu (find-graal-prog "gu")]
-              (do
-                (status-line :detail "GraalVM native-image not found, attempting install")
-                (shell-command [gu "install" "native-image"])
-                (or (find-graal-prog "native-image")
-                    (fatal-error "failed to install GraalVM native-image, check your GraalVM installation")))
-              (fatal-error "GraalVM native image not found nor its installer, check your GraalVM installation")))]
-    (status-line :detail res)
-    res))
-
 (defn clean []
-  (status-line :info "Clean")
-  (delete-file-recursively ".cpcache" true)
-  (delete-file-recursively "classes" true)
+  (status/line :info "Clean")
+  (fs/delete-file-recursively ".cpcache" true)
+  (fs/delete-file-recursively "classes" true)
 
   (.mkdirs (io/file "classes"))
   (.mkdirs (io/file "target"))
-  (status-line :detail "all clean"))
+  (status/line :detail "all clean"))
 
 (defn expose-api-to-sci []
-  (status-line :info "Expose rewrite-cljc API to sci")
-  (shell-command ["clojure" "-A:sci-test-gen-publics"]))
+  (status/line :info "Expose rewrite-cljc API to sci")
+  (command ["clojure" "-A:sci-test-gen-publics"]))
 
 (defn compute-classpath []
-  (status-line :info "Compute classpath")
-  (let [jdk-major-version (get-jdk-major-version)
+  (status/line :info "Compute classpath")
+  (let [jdk-major-version (env/get-jdk-major-version)
         reflection-fix? (>= jdk-major-version 11)]
-    (status-line :detail (str "JDK major version seems to be " jdk-major-version "; "
+    (status/line :detail (str "JDK major version seems to be " jdk-major-version "; "
                               (if reflection-fix? "including" "excluding") " reflection fixes." ))
     (let [alias "-A:sci-test:native-image"
           alias (if reflection-fix? (str alias ":jdk11-reflect") alias)
-          classpath (-> (shell-command ["clojure" alias "-Spath"] {:out-to-string? true})
+          classpath (-> (command ["clojure" alias "-Spath"] {:out-to-string? true})
                         :out
                         string/trim)]
       (println "\nClasspath:")
-      (println (str "- " (string/join "\n- " (split-path-list classpath))))
+      (println (str "- " (string/join "\n- " (fs/split-path-list classpath))))
       classpath)))
 
 (defn aot-compile-sources [classpath]
-  (status-line :info "AOT compile sources")
-  (shell-command ["java"
+  (status/line :info "AOT compile sources")
+  (shell/command ["java"
                   "-Dclojure.compiler.direct-linking=true"
                   "-cp" classpath
                   "clojure.main"
                   "-e" "(compile 'sci-test.main)"]))
 
 (defn generate-reflection-file [fname]
-  (status-line :info "Generate reflection file for Graal native-image")
+  (status/line :info "Generate reflection file for Graal native-image")
   (io/make-parents fname)
-  (shell-command ["clojure" "-A:sci-test:gen-reflection" fname])
-  (status-line :detail fname))
+  (shell/command ["clojure" "-A:sci-test:gen-reflection" fname])
+  (status/line :detail fname))
 
 (defn run-native-image [{:keys [ :graal-native-image :graal-reflection-fname :target-exe :classpath :native-image-xmx]}]
-  (status-line :info "Graal native-image compile AOT")
-  (delete-file-recursively target-exe true)
+  (status/line :info "Graal native-image compile AOT")
+  (fs/delete-file-recursively target-exe true)
   (let [native-image-cmd
         [graal-native-image
          (str "-H:Name=" target-exe)
@@ -200,19 +93,19 @@
         time-cmd (case os
                    :mac ["command" "time" "-l"]
                    :unix ["command" "time" "-v"]
-                   (fatal-error (str "I don't know how to time a command on " os)))]
+                   (status/fatal (str "I don't know how to time a command on " os) 1))]
 
-    (shell-command (concat time-cmd native-image-cmd))))
+    (command (concat time-cmd native-image-cmd))))
 
 (defn -main [ & _args ]
   (let [native-image-xmx "3500m"
         graal-reflection-fname "target/native-image/reflection.json"
         target-exe "target/sci-test-rewrite-cljc"]
-    (status-line :info "Creating native image")
-    (status-line :detail "java -version" )
-    (shell-command ["java" "-version"])
-    (status-line :detail (str "\nnative-image max memory: " native-image-xmx))
-    (let [graal-native-image (find-graal-native-image)]
+    (status/line :info "Creating native image for testing via sci")
+    (status/line :detail "java -version" )
+    (command ["java" "-version"])
+    (status/line :detail (str "\nnative-image max memory: " native-image-xmx))
+    (let [graal-native-image (graal/find-graal-native-image)]
       (clean)
       (expose-api-to-sci)
       (let [classpath (compute-classpath)]
@@ -223,7 +116,7 @@
                            :target-exe target-exe
                            :classpath classpath
                            :native-image-xmx native-image-xmx})))
-    (status-line :info "All done")
-    (status-line :detail (format "built: %s, %d bytes" target-exe (.length (io/file target-exe))))))
+    (status/line :info "All done")
+    (status/line :detail (format "built: %s, %d bytes" target-exe (.length (io/file target-exe))))))
 
 (-main)
