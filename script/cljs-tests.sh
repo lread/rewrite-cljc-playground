@@ -114,7 +114,7 @@ case $RUN_GRANULARITY in
                 --doo-opts ${DOO_OPTS_FILENAME};;
     namespace)
         status-line info "+ one run for each namespace"
-        NSES=$(clojure -A:test-common:code-info -m code-info.ns-lister --lang cljs find-all-namespaces)
+        NSES=$(clojure -A:test-common:script -m code-info.ns-lister --lang cljs find-all-namespaces)
         TOTAL_NSES=$(echo "${NSES}" | wc -w | tr -d "[:blank:]")
         NS_NDX=0
         for ns in ${NSES}; do

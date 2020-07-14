@@ -45,11 +45,18 @@
                            :main-opts ["-m" "update-readme"]}
 
            ;;
-           ;; Running tests under graal
+           ;; General script deps
            ;;
            :script {:extra-paths ["script"]
                     :extra-deps {org.clojure/tools.namespace {:mvn/version "1.0.0"}
                                  cli-matic {:mvn/version "0.3.11"}}}
+
+           ;;
+           ;; Running tests under graal
+           ;;
+           ;; We have two main graal scenarios:
+           ;; sci-test - interpret tests via sci over natively compiled rewrite-cljc
+           ;; native-test - natively compile src and tests and run
 
            ;; deps only see usage below
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
@@ -68,27 +75,14 @@
 
            ;; for native-image
            ;; usage -A:sci-test:native-image
+           ;; or    -A:native-test:native-image
            :native-image {:override-deps {org.clojure/clojure {:mvn/version "1.10.2-alpha1"}}}
 
-           ;; for jdk11 native image
-           ;; usage -A:sci-test:native-image:jdk11-reflect
+           ;; add ins if running on jdk11
            :jdk11-reflect {:extra-deps {borkdude/clj-reflector-graal-java11-fix {:mvn/version "0.0.1-graalvm-20.1.0"
                                                                                  :exclusions [org.graalvm.nativeimage/svm]}}}
 
            :jdk11-reflect-sci {:extra-deps {borkdude/sci.impl.reflector {:mvn/version "0.0.1-java11"}}}
-
-           ;; TODO: this will likely get deleted if sci-test works out
-           ;; see script/graal-tests.sh for usage
-           :graal {:extra-paths ["script"]
-                   :override-deps {;; this version of clojure addresses https://clojure.atlassian.net/browse/CLJ-1472
-                                   org.clojure/clojure {:mvn/version "1.10.2-alpha1"}}
-                   :extra-deps {org.clojure/tools.namespace {:mvn/version "1.0.0"}
-                                cli-matic {:mvn/version "0.3.11"}}}
-
-           ;; TODO: script alias might do for this one instead
-           :code-info {:extra-paths ["script"]
-                       :extra-deps {org.clojure/tools.namespace {:mvn/version "1.0.0"}
-                                    cli-matic {:mvn/version "0.3.11"}}}
 
            ;;
            ;; Document rewrite-clj* differences

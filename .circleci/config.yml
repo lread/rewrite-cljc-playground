@@ -11,11 +11,7 @@ executors:
         type: enum
         enum: ["8", "11"]
     docker:
-      - image: circleci/clojure:openjdk-<< parameters.jdk-version>>-tools-deps-1.10.1.502-node-browsers
-    environment:
-      GRAALVM_VERSION: "19.3.1"
-      GRAALVM_HOME: /home/circleci/graalvm-ce-java8-19.3.1
-      JVM_OPTS: -Xmx3200m
+      - image: circleci/clojure:openjdk-<< parameters.jdk-version>>-tools-deps-1.10.1.547-node-browsers
     working_directory: ~/repo
 
 commands:
@@ -32,30 +28,17 @@ commands:
           name: Update linux packages
           command: |
             sudo apt-get update
-            # packages needed for planck & graalvm
-            sudo apt-get install -y javascriptcoregtk-4.0 libglib2.0-dev libzip-dev libcurl4-gnutls-dev \
-              git-extras \
-              gcc
+            # packages needed for planck
+            sudo apt-get install -y \
+              libzip-dev \
+              javascriptcoregtk-4.0
 
       - run:
           name: Install planck
           command: |
-            curl -O https://planck-repl.org/releases/2.25.0-debian-9.0-x86_64/planck
-            chmod +x planck
-            echo c33571b2a798cdc623ad16be29ef7ff7 planck | md5sum --check
-            sudo mv planck /usr/local/bin
+            # At this time, there is pre-built binary for planck for debian-10, so use one I built manually
+            sudo cp bin/planck/debian-10/planck /usr/local/bin
             planck --version
-
-      - run:
-          name: Install GraalVM
-          command: |
-            cd ~
-            if ! [ -d "graalvm-ce-java8-${GRAALVM_VERSION}" ]; then
-              curl -O -L "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${GRAALVM_VERSION}/graalvm-ce-java8-linux-amd64-${GRAALVM_VERSION}.tar.gz"
-              tar -xvf graalvm-ce-java8-linux-amd64-${GRAALVM_VERSION}.tar.gz
-            fi
-            "${GRAALVM_HOME}/bin/gu" install native-image
-            "${GRAALVM_HOME}/bin/native-image" --version
 
       - restore_cache:
           keys:
