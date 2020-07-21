@@ -148,7 +148,7 @@ During this work, I noticed how pervasive rewrite-clj usage is. Some prominent e
 == Tooling
 
 === Build tools
-I have moved from leiningen to tools cli and `deps.edn`. Like everything, this change has pros and cons. Overall, I like the simplicity and control it brings. Bash scripts take the place of lein aliases where I can have the build do exactly what I want it to. One current, but likely temporary, downside is the jar and deploy support for tools cli is fragmented with many young libraries. I have opted, for now to employ the tried and true maven for jar and deploy.
+I have moved from leiningen to tools cli and `deps.edn`. Like everything, this change has pros and cons. Overall, I like the simplicity and control it brings. Babashka scripts take the place of lein aliases where I can have the build do exactly what I want it to. One current, but likely temporary, downside is the jar and deploy support for tools cli is fragmented with many young libraries. I have opted, for now to employ the tried and true maven for jar and deploy.
 
 === Continuous integration
 The future of https://travis-ci.org/[Travis CI] looked a bit tenuous when I started this work, so I switched over to https://circleci.com/[CircleCI].

@@ -20,7 +20,7 @@
                   "--dest-dir" dir "test-by-namespace"]))
 
 (defn -main [ & _args ]
-  (let [native-image-xmx "16g"
+  (let [native-image-xmx "6g"
         target-exe "target/rewrite-cljc-test"]
     (status/line :info "Creating native image for test")
     (status/line :detail "java -version")

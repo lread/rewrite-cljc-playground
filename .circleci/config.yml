@@ -34,6 +34,12 @@ commands:
               javascriptcoregtk-4.0
 
       - run:
+          name: Install babashka
+          command: |
+              curl -s curl -s https://raw.githubusercontent.com/borkdude/babashka/master/install | sudo bash
+              bb --version
+
+      - run:
           name: Install planck
           command: |
             # At this time, there is pre-built binary for planck for debian-10, so use one I built manually
@@ -65,7 +71,7 @@ commands:
 
       - run:
           name: Run ci tests
-          command: ./script/ci-tests.sh
+          command: bb ./script/ci_tests.clj
 
       - save_cache:
           paths:

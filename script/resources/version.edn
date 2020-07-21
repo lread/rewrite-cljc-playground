@@ -1,0 +1,3 @@
+;; Source of truth for major.minor - change them here manually when it makes sense
+;; patch is calculated automatically by release.clj script
+{:major "1" :minor "0" :qualifier "alpha"}

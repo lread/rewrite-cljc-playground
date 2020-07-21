@@ -3,6 +3,7 @@
             [helper.status :as status]
             [helper.shell :as shell]
             [helper.env :as env]
+            [helper.jdk :as jdk]
             [clojure.string :as string]
             [clojure.java.io :as io]))
 
@@ -14,8 +15,8 @@
 (defn find-graal-native-image []
   (status/line :info "Locate GraalVM native-image")
   (let [res
-        (or (find-prog "native-image")
-            (if-let [gu (find-prog "gu")]
+        (or (find-prog (if (= :win (env/get-os)) "native-image.cmd" "native-image"))
+            (if-let [gu (find-prog (if (= :win (env/get-os)) "gu.cmd" "gu"))]
               (do
                 (status/line :detail "GraalVM native-image not found, attempting install")
                 (shell/command [gu "install" "native-image"])
@@ -44,7 +45,7 @@
 
 (defn compute-classpath [alias jdk11-alias]
   (status/line :info "Compute classpath")
-  (let [jdk-major-version (env/get-jdk-major-version)
+  (let [jdk-major-version (jdk/get-jdk-major-version)
         reflection-fix? (>= jdk-major-version 11)]
     (status/line :detail (str "JDK major version seems to be " jdk-major-version "; "
                               (if reflection-fix? "including" "excluding") " reflection fixes." ))
@@ -76,7 +77,7 @@
                                "--no-fallback"
                                "--no-server"
                                "--report-unsupported-elements-at-runtime"
-                               "-cp" (str classpath ":classes")
+                               "-cp" (str classpath java.io.File/pathSeparator "classes")
                                (str "-J-Xmx" native-image-xmx)
                                entry-class]
                               (remove nil?))
@@ -84,6 +85,6 @@
                     (case os
                         :mac ["command" "time" "-l"]
                         :unix ["command" "time" "-v"]
-                        (status/fatal (str "I don't know how to time a command on " os) 1)))]
+                        (status/line :warn (str "I don't know how to get run stats (user/real/sys CPU, RAM use, etc) for a command on " os))))]
 
     (shell/command (concat time-cmd native-image-cmd))))

@@ -25,3 +25,4 @@ nashorn_code_cache
 .rebl
 .DS_Store
 .diff-apis/.cache
+.rebel_readline_history

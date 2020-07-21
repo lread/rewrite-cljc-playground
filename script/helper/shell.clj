@@ -1,8 +1,29 @@
 (ns helper.shell
   (:require [clojure.java.io :as io]
+            [clojure.string :as string]
+            [clojure.pprint :as pprint]
             [helper.status :as status]))
 
 (import '[java.lang ProcessBuilder$Redirect])
+
+(defn get-os []
+  (let [os-name (string/lower-case (System/getProperty "os.name"))]
+    (condp #(re-find %1 %2) os-name
+      #"win" :win
+      #"mac" :mac
+      #"(nix|nux|aix)" :unix
+      #"sunos" :solaris
+      :unknown)))
+
+(defn- escape-double-quote [s]
+  (string/replace s "\"" "\\\\\\\""))
+
+(defn- escape-args
+  "Escape rules are, to me, confusing for Windows: https://stackoverflow.com/a/20009602"
+  [args]
+  (if (= :win (get-os))
+    (map escape-double-quote args)
+    args))
 
 (defn command-no-exit
   "Executes shell command. Exits script when the shell-command has a non-zero exit code, propagating it.
@@ -19,6 +40,7 @@
   ([args] (command-no-exit args nil))
   ([args {:keys [:input :out-to-string? :err-to-string?]}]
    (let [args (mapv str args)
+         args (escape-args args)
          pb (cond-> (ProcessBuilder. ^java.util.List args)
               (not err-to-string?) (.redirectError ProcessBuilder$Redirect/INHERIT)
               (not out-to-string?) (.redirectOutput ProcessBuilder$Redirect/INHERIT)
@@ -47,9 +69,12 @@
         :err string-err}))))
 
 (defn command
-  ([args] (command-no-exit args nil))
+  ([args] (command args nil))
   ([args opts]
    (let [{:keys [exit] :as res} (command-no-exit args opts)]
      (if (not (zero? exit))
-       (status/fatal (format "shell exited with %d for:\n %s" exit args) exit)
+       (status/fatal (format "shell exited with %d for:\n %s"
+                             exit
+                             (with-out-str (pprint/pprint args)))
+                     exit)
        res))))

@@ -2,13 +2,39 @@
 :toc:
 
 == Supported Environments
-All rewrite-cljc development has been done on macOS. We use linux for our builds up on CircleCI.
+All rewrite-cljc development has been done on macOS with some manual testing done on Windows. We use linux for our builds up on CircleCI.
 
-If CircleCI or GitHub Actions start to offer Windows as free build tool for open source projects
-we will likely take advantage of that using Git Bash or equivalent.
+All scripts are written in Clojure and most invoked via https://github.com/borkdude/babashka[babashka]. This gives us a cross platform
+scripting language that is familiar, fun and consistent. These docs will show babashka scripts invoked explicitly via babashka's `bb`; on
+macOS and linux feel free to leave out `bb`.
 
 We make use of planck for cljs bootstrap (aka cljs self-hosted) testing. Planck is currently not available for Windows.
 We'll test cljs bootstrap on Windows through some other mechanism when the time comes.
+
+== Prerequisites
+- Java JDK 1.8 or above
+- NodeJs v12 or above
+- Clojure v9 or above
+- ClojureScript v10
+- Babashka
+- Optionally: GraalVM v19.3 or above
+
+=== Windows Notes
+The Clojure story on Windows is still in the early chapters. For me, https://scoop.sh/[scoop] offered an easy way to install the tools I needed.
+@littleli is doing a great job maintaining https://github.com/littleli/scoop-clojure[scoop apps for Clojure, Babashka and other tools].
+
+We all choose our own paths, but for me, using https://github.com/borkdude/deps.clj[deps.clj] (also installable by scoop thanks to @littleli)
+instead of Clojure's PowerShell Module offered me no fuss no muss Clojure on Windows. After installation, I made a `clojure` alias (of sorts)
+for `deps.exe` by running the following in an PowerShell with Administrator privileges:
+
+----
+New-Item -Path "$HOME\bin\clojure.exe" -ItemType SymbolicLink `
+         -Value "$HOME\scoop\shims\deps.exe"
+New-Item -Path "$HOME\bin\clojure.shim" -ItemType SymbolicLink `
+         -Value "$HOME\scoop\shims\deps.shim"
+----
+
+Ensure that your home dir's `bin` is in your PATH.
 
 == Setup
 After checking out this project from github,
@@ -24,7 +50,7 @@ npm install
 3. initialize cache for clj-kondo so it can lint against your dependencies
 +
 ----
-./script/lint.sh
+bb ./script/lint.clj
 ----
 
 == Testing During Development
@@ -34,7 +60,7 @@ Your personal preference will likely be different, but during maintenance and re
 For Clojure, I open a shell terminal window and run:
 
 ----
-./script/clj-watch.sh
+bb ./script/clj_watch.clj
 ----
 
 This launches https://github.com/lambdaisland/kaocha[kaocha] in watch mode.
@@ -44,16 +70,16 @@ This launches https://github.com/lambdaisland/kaocha[kaocha] in watch mode.
 For Clojurescript, I open a shell terminal window and run:
 
 ----
-./script/cljs-watch.sh
+./script/cljs_watch.clj
 ----
 
-This launches https://figwheel.org/[fighweel main]. After the REPL is initialized navigate to http://localhost:9500/figwheel-extra-main/auto-testing to view auto-updating test results.
+This launches https://figwheel.org/[fighweel main]. After initialization, your default web browser will automatically be opened with the figwheel auto-testing page.
 
 == Testing Before a Push
 Before pushing, you likely want to mimic what we do up on https://circleci.com/[circleci].
 
 ----
-./script/ci-tests.sh
+bb ./script/ci_tests.clj
 ----
 
 == Linting
@@ -61,7 +87,7 @@ We use https://github.com/borkdude/clj-kondo[clj-kondo] for linting rewrite-cljc
 
 We fail the build on any lint violations. The ci server runs:
 ----
-./script/lint.sh
+bb ./script/lint.clj
 ----
 and you can too.
 
@@ -73,7 +99,7 @@ To generate reports on differences between rewrite-clj, rewrite-cljs and
 rewrite-cljc APIs, run:
 
 ----
-./script/gen-api-diffs.sh
+bb ./script/gen_api_diffs.clj
 ----
 
 Run this script manually on an as-needed basis. Generated reports are to be checked in
