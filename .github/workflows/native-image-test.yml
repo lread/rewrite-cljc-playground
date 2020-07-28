@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Native Image Tests
 
 on: push
 
@@ -8,9 +8,13 @@ jobs:
     strategy:
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
-        java: [ 8, 11 ]
+        graal: [ 20.1.0.java8, 20.1.0.java11 ]
+        test: [ pure, sci ]
+        exclude:
+          - os: windows-latest
+            graal: 20.1.0.java8
 
-    name: ${{ matrix.os }},jdk ${{ matrix.java }}
+    name: ${{ matrix.os }},${{ matrix.graal }},${{ matrix.test }}
 
     steps:
     - uses: actions/checkout@v2
@@ -27,36 +31,22 @@ jobs:
         key: $${ runner.os }}-cljdeps-${{ hashFiles('deps.edn') }}
         restore-keys: $${ runner.os }}-cljdeps-
 
-    - name: Node modules cache
-      uses: actions/cache@v2
-      with:
-        path: ./node_modules
-        key: $${ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-        restore-keys: $${ runner.os }}-node-
-
     #
-    # Setup Java
+    # Time command
     #
-    - name: "Setup Java"
-      uses: actions/setup-java@v1
-      with:
-        java-version: ${{ matrix.java }}
-
-    #
-    # Install Planck
-    #
-    - name: Install planck (macOS)
-      run: brew install planck
-      if: matrix.os == 'macos-latest'
-    - name: Install planck (linux)
+    - name: Install time command (linux)
       run: |
-        sudo add-apt-repository -y ppa:mfikes/planck
         sudo apt-get update
-        sudo apt-get install -y planck
+        sudo apt-get install -y time
       if: matrix.os == 'ubuntu-latest'
-    - name: Install planck (macOS)
-      run: brew install planck
-      if: matrix.os == 'macos-latest'
+
+    #
+    # Install GraalVM
+    #
+    - name: Install GraalVM
+      uses: DeLaGuardo/setup-graalvm@3
+      with:
+        graalvm-version: ${{ matrix.graal }}
 
     #
     # Install Babashka
@@ -103,30 +93,10 @@ jobs:
       run: |
         echo "bb --version"
         bb --version
-        echo "node --version"
-        node --version
         echo "java -version"
         java -version
         echo "clojure -Sdescribe"
         clojure -Sdescribe
-    - name: Tools versions (macos, linux)
-      run: |
-        echo "planck --version"
-        planck --version
-      if: matrix.os != 'windows-latest'
-
-    #
-    # Node modules
-    #
-    - name: Install karma command line (windows)
-      run: npm install karma-cli -g
-      if: matrix.os == 'windows-latest'
-    - name: Install karma command line (macos, linux)
-      run: sudo npm install karma-cli -g
-      if: matrix.os != 'windows-latest'
-
-    - name: Install node modules
-      run: npm install
 
     #
     # Prep Clojure
@@ -135,7 +105,16 @@ jobs:
       run: clojure -Spath
 
     #
-    # Run tests
+    # SCI native image tests
     #
-    - name: Run CI tests
-      run: bb ./script/ci_tests.clj
+    - name: Execute ${{ matrix.test }} native test (windows)
+      run: |
+        # it is overly awkward to get vcvars64.bat loaded into powershell, so we use cmd shell instead
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        bb script\${{ matrix.test }}_native_test.clj
+      shell: cmd
+      if: matrix.os == 'windows-latest'
+    - name: Execute $${{ matrix.test }} native test (macos, linux)
+      run: bb script/${{ matrix.test }}_native_test.clj
+      if: matrix.os != 'windows-latest'
+

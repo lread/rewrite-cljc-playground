@@ -7,6 +7,7 @@
 
 (cp/add-classpath "./script")
 (require '[helper.status :as status]
+         '[helper.env :as env]
          '[helper.shell :as shell]
          '[helper.graal :as graal])
 
@@ -20,8 +21,17 @@
   (shell/command ["clojure" "-A:sci-test:gen-reflection" fname])
   (status/line :detail fname))
 
+(defn interpret-tests []
+  (status/line :info "Interpreting tests with sci using natively compiled binary")
+  (let [exe-fname (if (= :win (env/get-os))
+                    "target/sci-test-rewrite-cljc.exe"
+                    "target/sci-test-rewrite-cljc")]
+    (when (not (.exists (io/file exe-fname)))
+      (status/fatal (str "native image " exe-fname " not found.") 1))
+    (shell/command [exe-fname "--file" "script/sci_test_runner.clj" "--classpath" "test"])))
+
 (defn -main [ & _args ]
-  (let [native-image-xmx "3500m"
+  (let [native-image-xmx "6g"
         graal-reflection-fname "target/native-image/reflection.json"
         target-exe "target/sci-test-rewrite-cljc"]
     (status/line :info "Creating native image for testing via sci")
@@ -41,7 +51,9 @@
                                  :classpath classpath
                                  :native-image-xmx native-image-xmx
                                  :entry-class "sci_test.main"})))
-    (status/line :info "All done")
+    (status/line :info "build done")
     (status/line :detail (format "built: %s, %d bytes"
-                                 target-exe (.length (io/file target-exe))))))
+                                 target-exe (.length (io/file target-exe)))))
+  (interpret-tests))
+
 (-main)

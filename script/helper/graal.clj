@@ -7,24 +7,28 @@
             [clojure.string :as string]
             [clojure.java.io :as io]))
 
-(defn find-prog [prog-name]
+
+(defn find-graal-prog [prog-name]
   (or (fs/on-path prog-name)
       (fs/at-path (str (io/file (System/getenv "JAVA_HOME") "bin")) prog-name)
       (fs/at-path (str (io/file (System/getenv "GRAALVM_HOME") "bin")) prog-name)))
 
+(defn find-native-image-prog []
+  (find-graal-prog (if (= :win (env/get-os)) "native-image.cmd" "native-image")))
+
+(defn find-gu-prog []
+  (find-graal-prog (if (= :win (env/get-os)) "gu.cmd" "gu")))
+
 (defn find-graal-native-image []
   (status/line :info "Locate GraalVM native-image")
-  (let [res
-        (or (find-prog (if (= :win (env/get-os)) "native-image.cmd" "native-image"))
-            (if-let [gu (find-prog (if (= :win (env/get-os)) "gu.cmd" "gu"))]
-              (do
-                (status/line :detail "GraalVM native-image not found, attempting install")
-                (shell/command [gu "install" "native-image"])
-                (or (find-prog "native-image")
-                    (status/fatal "failed to install GraalVM native-image, check your GraalVM installation" 1)))
-              (status/fatal "GraalVM native image not found nor its installer, check your GraalVM installation" 1)))]
-    (status/line :detail res)
-    res))
+  (if-let [gu (find-gu-prog)]
+    ;; its ok (and simpler and safer) to request an install of native-image when it is already installed
+    (do (shell/command [gu "install" "native-image"])
+        (let [native-image (or (find-native-image-prog)
+                               (status/fatal "failed to install GraalVM native-image, check your GraalVM installation" 1))]
+          (status/line :detail (str "found: " native-image))
+          native-image))
+    (status/fatal "GraalVM native image not found nor its installer, check your GraalVM installation" 1)))
 
 (defn clean []
   (status/line :info "Clean")
@@ -83,8 +87,8 @@
                               (remove nil?))
          time-cmd (let [os (env/get-os)]
                     (case os
-                        :mac ["command" "time" "-l"]
-                        :unix ["command" "time" "-v"]
+                        :mac ["/usr/bin/time" "-l"]
+                        :unix ["/usr/bin/time" "-v"]
                         (status/line :warn (str "I don't know how to get run stats (user/real/sys CPU, RAM use, etc) for a command on " os))))]
 
     (shell/command (concat time-cmd native-image-cmd))))
