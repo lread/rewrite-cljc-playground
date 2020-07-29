@@ -56,12 +56,12 @@ l|"^rewrite-cljc/rewrite-clj"
 | publics
 | 103
 | 22
-| 143
+| 145
 
 | arglists
 | 0
 | 23
-| 266
+| 268
 
 |===
 **Notes:**
@@ -1606,6 +1606,19 @@ a|
 
 |===
 
+=== [green]`*+*`[green]#pass:c[node?]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+x+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
+* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
+|===
+
 === [black]`*=*`[black]#pass:c[NodeCoerceable]#
 |===
 .2+h| attributes 3+h| members
@@ -3045,6 +3058,18 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [black]`*=*` [black]`+:var+`
+|===
+
+=== [green]`*+*`[green]#pass:c[insert-child*]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+zloc+` [green]`+item+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
 |===
 
 === [black]`*≠*`[black]#pass:c[insert-left]#
