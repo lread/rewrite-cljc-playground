@@ -3,11 +3,11 @@
 :toclevels: 6
 
 == Introduction
-rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] and https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] giving us a one stop rewrite-cljc shop for Clojure and ClojureScript developers.
+Rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] and https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] giving us a one stop rewrite-cljc shop for Clojure and ClojureScript developers.
 
 == Goals
 1. *Minimize API breakage*. Within reason, maintain API compatability with both rewrite-clj and rewrite-cljs. I'd like rewrite-cljc to be an low friction replacement for `rundis/rewrite-cljs` (actually now living at `clj-commons/rewrite-cljs`) and `xsc/rewrite-clj`.
-2. *Feature parity*. rewrite-cljs has lagged behind rewrite-cljc. Bring rewrite-cljs up to parity with rewrite-cljc. Bring any rewrite-cljs specific features over to rewrite-cljc.
+2. *Feature parity*. Rewrite-cljs has lagged behind rewrite-cljc. Bring rewrite-cljs up to parity with rewrite-cljc. Bring any rewrite-cljs specific features over to rewrite-cljc.
 3. *Preserve type hints*. I will respect and carry over existing type hinting in rewrite-clj and rewrite-cljs. I will not, at this time, evaluate if existing type hinting has value.
 4. *Improve documentation*. I think that rewrite-clj documentation is good, but as I dig deeper into using the library and get feedback on Slack, I see places where guidance could be improved.
 5. *Document design decisions*. I'm not sure what form this will take, but I do like projects that include histories of architectural and design decisions. Perhaps I'll adopt https://github.com/cljdoc/cljdoc/tree/master/doc/adr[adr ala cljdoc]. For now you can think of this document as I kind of sloppy-mega adr for my merge work.
@@ -40,7 +40,9 @@ rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] and h
 ** ``import-var``ed protocol functions now point to correct source code
 ** now using asciidoc
 ** now using markdown in docstrings
-2. Continuous integration is now handled by circleci
+2. Continuous integration is now handled via GitHub Actions and adds testing
+** on macOS and Windows operating systems
+** for a GraalVM natively compiled rewrite-cljc
 3. Test tooling now uses:
 ** figwheel main for development cljs testing
 ** kaocha for clj testing
@@ -151,7 +153,11 @@ During this work, I noticed how pervasive rewrite-clj usage is. Some prominent e
 I have moved from leiningen to tools cli and `deps.edn`. Like everything, this change has pros and cons. Overall, I like the simplicity and control it brings. Babashka scripts take the place of lein aliases where I can have the build do exactly what I want it to. One current, but likely temporary, downside is the jar and deploy support for tools cli is fragmented with many young libraries. I have opted, for now to employ the tried and true maven for jar and deploy.
 
 === Continuous integration
-The future of https://travis-ci.org/[Travis CI] looked a bit tenuous when I started this work, so I switched over to https://circleci.com/[CircleCI].
+The future of https://travis-ci.org/[Travis CI] looked a bit tenuous when I started this work.
+I initially switched over to https://circleci.com/[CircleCI], but then when GitHub Actions became available decided it was a better fit:
+
+* in addition to Linux, offers macOS and Windows testing in its free tier
+* 7gb of RAM satisfies GraalVM's memory hungry `native-image`
 
 === Testing and linting tools
 After looking around, I settled on the following for continuous integration:
@@ -260,7 +266,7 @@ test/
   rewrite-cljc/
 ----
 
-=== * Graalvm support - [red]*in progress*
+===  Graalvm Support
 
 Some command line tools written in Clojure are using Graal to compile to native
 executables for fast startup times.
@@ -276,108 +282,34 @@ to develop and share scripts and tips.
 My goal is to run the rewrite-cljc test suite from a graalvm native image to
 give some confidence that rewrite-cljc works after compiled with Graal.
 
-==== Technical approach
+=== Technical Issues
 
-1. reference Clojure v1.10.2-alpha1 which includes fixes for Graal (notably CLJ-1472)
-2. generate a test-runner in Clojure that explicitly references and runs all my tests
-3. aot compile the test-runner (aot compilation automatically compiles all referenced source)
-4. compile the aot compiled test-runner to native binary with Graal
-5. run test-runner binary
+. Windows tooling requirements. Setup for running GraalVM jdk8 on Windows relies on old Microsoft tooling making setup
+challenging.
+. RAM requirements. GraalVM's `native-image` which creates the target executable, can consume a significant
+amount of RAM.
 
-==== Issues
+==== Windows Tooling Requirements
+I've decided that, for now, figuring out how to setup the proper tooling for Windows for GraalVM jdk8 is not worth my effort.
+We'll continue to test on Windows but only for GraalVM jdk11.
 
-GraalVM's native-image command needs a significant amount of RAM to compile rewrite-cljc tests in a reasonable amount of time, and still a significant amount of RAM to run at all. A few ad hoc tests on a 3.5 GHz Quad-Core i7 iMac with "-J-Xmx" at:
+==== Ram Requirements
+I spent quite a bit of time trying to figure out how to overcome the RAM limitations of free tiers of continuous
+integration services. Drone Cloud is the most generous with 64gb of RAM available but only supports Linux. CircleCI
+offers 3.5gb of RAM and is also Linux only in its free tier. GitHub Actions, offers 7gb of RAM and offers
+macOS, Linux and Windows.
 
-* 16g ~3 minutes
-* 8g ~11 minutes
-* 4g - failed with java.lang.OutOfMemoryError: Java heap space after ~1 hour
+I seriously explored two approaches:
 
-This means running these tests in one swoop on the free tier of CircleCI, which has a limit of 4gb, is not currently an option.
+. natively compile tests and library
+. interpret tests via sci over natively compile library
 
-GitHub Actions offers 7gb of RAM, but that is still not enough to run tests in one swoop.
+If I had applied https://github.com/lread/clj-graal-docs#native-image-compilation-time[Clojure direct linking]
+earlier in my tests, I might have stopped at the first approach. For me, direct linking made approach 1 viable.
 
-Drone Cloud, a service with a very generous 64gb of RAM available, has no problem handling these
-tests. Unfortunately it is Linux only so would not offer multi-platform verification.
+For now, I am testing using both approaches. Overviews can be found at
+https://github.com/lread/clj-graal-docs/blob/master/doc/testing-strategies.md[clj-graal-doc's testing strategies page].
 
-==== Options
-[cols="5%,5%,15%,30%,25%,25%"]
-|===
-| Ref | Status | Option | Description | Pros | Cons
-
-| 1
-| candidate
-| Drone Cloud Only
-| Run tests on Drone Cloud only
-a| * Easiest
-* Tests and source are natively compiled
-a| * Linux only
-* Drone Cloud seems a bit obscure?
-* Solves problem of running tests, but not general problem of running on constrained CI service (does not help community)
-
-| 2
-| experimentation paused
-| Split tests into multiple runs
-| Split tests into sets where each set can run under RAM constraints of CI service. Would involve figuring
-which how to break up tests. Would likely use GitHub Actions because it is more generous with available RAM.
-a| * Tests and source are natively compiled
-a| * Long running local process to figure out test split
-* Natively compiling multiple sets makes for more work during CI
-
-| 3
-| rejected
-| Wait for GraalVM to reduce RAM usage
-| The Graal team is working to reduce the memory footprint of `native-image` sometime in the v20.x version.
-a| * Ideally would allow us to run on any popular free tier CI service
-a| * Might wait a looong time!
-* Might never happen
-
-| 4
-| rejected
-| Command line test harness
-| Create a command line test harness, compile it to native-image, then run tests from the command line.
-
-This approach is a natural fit for command line tools and has been employed successfully by @borkdude for clj-kondo.
-a|* Reduces memory footprint of native-image
-a|* Overhead of creating and maintaining a command line test harness
-
-| 5
-| candidate
-| bb-rewrite-cljc
-| This idea is from @borkdude.
-
-Fork https://github.com/borkdude/babashka[babashka], include rewrite-cljc src (but not tests) then build a custom bb-rewrite-cljc.
-
-Interpret rewrite-cljc tests with bb-rewrite-cljc.
-
-To reduce memory footprint further could disable all optional babashka features.
-
-Note that CircleCI bumped up RAM on CircleCI at @borkdude's request so this
-idea would likely be executed on the more RAM generous GitHub Actions.
-
-a| * TBD, but will reduce memory footprint of native-image
-a| * Complexity of figuring out bb-rewrite-cljc
-
-| 6
-| experimenting
-| sci-rewrite-cljc
-| Another idea from the always helpful @borkdude.
-
-Use babashka's intepreter, https://github.com/borkdude/sci[sci], to run tests. Same concept as bb-rewrite-cljc but leaner.
-
-This would be creating a native-image from sci + any test libraries I need + test runner support + rewrite-cljc sources,
-then interpreting rewrite-cljc tests use sci-rewrite-cljc
-
-a| * TBD, but will reduce memory footprint of native-image
-* Might be able to come up with something that is useful to community
-a| * Complexity of figuring out sci-rewrite-cljc
-
-|===
-
-Thinking about the above options has helped me to understand what we want to test: we want to verify that our library's public
-API function as expected when natively compiled by Graal. We don't necessarily need to test internal mechanisms.
-
-One of rewrite-cljc's internal mechanisms is its version of import-vars, for which it has tests.
-These tests need not be exercised under Graal to prove that the public API functions under Graal.
 
 == Questionable Decisions
 

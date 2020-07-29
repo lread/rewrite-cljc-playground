@@ -2,52 +2,51 @@
 :toc:
 
 == Supported Environments
-All rewrite-cljc development has been done on macOS with some manual testing done on Windows. We use linux for our builds up on CircleCI.
+Rewrite-cljc is verified on each push on macOS, Ubuntu and Windows via GitHub Actions.
 
 All scripts are written in Clojure and most invoked via https://github.com/borkdude/babashka[babashka]. This gives us a cross platform
 scripting language that is familiar, fun and consistent. These docs will show babashka scripts invoked explicitly via babashka's `bb`; on
 macOS and linux feel free to leave out `bb`.
 
 We make use of planck for cljs bootstrap (aka cljs self-hosted) testing. Planck is currently not available for Windows.
-We'll test cljs bootstrap on Windows through some other mechanism when the time comes.
+
+We test that rewrite-clj operates as expected when natively compile via GraalVM. Automated testing is setup using GraalVMN v20.1.0 for
+both jdk8 and jdk11. On Windows we only test against jdk11 as tool setup for jdk8 on Windows seemed overly arduous.
 
 == Prerequisites
 - Java JDK 1.8 or above
 - NodeJs v12 or above
 - Clojure v9 or above
-- ClojureScript v10
 - Babashka
-- Optionally: GraalVM v19.3 or above
+- GraalVM v20.1.0
 
 === Windows Notes
-The Clojure story on Windows is still in the early chapters. For me, https://scoop.sh/[scoop] offered an easy way to install the tools I needed.
-@littleli is doing a great job maintaining https://github.com/littleli/scoop-clojure[scoop apps for Clojure, Babashka and other tools].
+The Clojure story on Windows is still in the early chapters. https://scoop.sh/[Scoop] offers an easy way to install tools.
+@littleli is doing a great job maintaining https://github.com/littleli/scoop-clojure[scoop apps for Clojure, Babashka and other tools] and
+this is how I installed Babashka.
 
-We all choose our own paths, but for me, using https://github.com/borkdude/deps.clj[deps.clj] (also installable by scoop thanks to @littleli)
-instead of Clojure's PowerShell Module offered me no fuss no muss Clojure on Windows. After installation, I made a `clojure` alias (of sorts)
-for `deps.exe` by running the following in an PowerShell with Administrator privileges:
+We all choose our own paths, but for me, using https://github.com/borkdude/deps.clj[deps.clj] instead of
+https://github.com/clojure/tools.deps.alpha/wiki/clj-on-Windows[Clojure's PowerShell Module] offered me no
+fuss no muss Clojure on Windows and GitHub Actions on Windows. I decided to install deps.clj not through scoop but through
+https://github.com/borkdude/deps.clj#windows[the deps.clj `install.ps1` script].
+This makes it simple to treat `deps.exe` as if it were the official `clojure` via a simple rename:
 
 ----
-New-Item -Path "$HOME\bin\clojure.exe" -ItemType SymbolicLink `
-         -Value "$HOME\scoop\shims\deps.exe"
-New-Item -Path "$HOME\bin\clojure.shim" -ItemType SymbolicLink `
-         -Value "$HOME\scoop\shims\deps.shim"
+Rename-Item $HOME\deps.clj\deps.exe clojure.exe
 ----
-
-Ensure that your home dir's `bin` is in your PATH.
 
 == Setup
 After checking out this project from github,
 
-1. install JavaScript libraries and tools required by https://github.com/bensu/doo[doo]:
+1. Install JavaScript libraries and tools required by https://github.com/bensu/doo[doo]:
 +
 ----
 sudo npm install karma-cli -g
 npm install
 ----
-2. https://github.com/planck-repl/planck#installing[install planck].
+2. If you are on macOS or linux, https://github.com/planck-repl/planck#installing[install planck].
 
-3. initialize cache for clj-kondo so it can lint against your dependencies
+3. Initialize cache for clj-kondo so it can lint against your dependencies
 +
 ----
 bb ./script/lint.clj
@@ -70,16 +69,29 @@ This launches https://github.com/lambdaisland/kaocha[kaocha] in watch mode.
 For Clojurescript, I open a shell terminal window and run:
 
 ----
-./script/cljs_watch.clj
+bb ./script/cljs_watch.clj
 ----
 
 This launches https://figwheel.org/[fighweel main]. After initialization, your default web browser will automatically be opened with the figwheel auto-testing page.
 
 == Testing Before a Push
-Before pushing, you likely want to mimic what we do up on https://circleci.com/[circleci].
+Before pushing, you likely want to mimic what is run on each push via GitHub Actions.
 
+Unit tests are run via:
 ----
 bb ./script/ci_tests.clj
+----
+We also verify that rewrite-cljc functions as expected when compiled via Graal's `native-image`.
+
+1. Tests and library natively compiled:
++
+----
+bb ./script/pure_native_test.clj
+----
+2. Library natively compiled and tests interpreted via sci
++
+----
+bb ./script/sci_native_test.clj
 ----
 
 == Linting
@@ -94,6 +106,7 @@ and you can too.
 https://github.com/borkdude/clj-kondo/blob/master/doc/editor-integration.md[Integrate clj-kondo into your editor] to catch mistakes as they happen.
 
 == API diffs
+Rewrite-cljc's primary goals include remaining compatible with rewrite-clj and rewrite-cljs and avoiding breaking changes.
 
 To generate reports on differences between rewrite-clj, rewrite-cljs and
 rewrite-cljc APIs, run:
