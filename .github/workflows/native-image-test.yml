@@ -72,7 +72,7 @@ jobs:
     - name: Install clojure (windows)
       # On windows, deps.clj's deps.exe is used in place of clojure to avoid complexities of official clojure install
       run: |
-       PowerShell -Command "iwr -useb https://raw.githubusercontent.com/lread/deps.clj/master/install.ps1 | iex"
+       PowerShell -Command "iwr -useb https://raw.githubusercontent.com/borkdude/deps.clj/master/install.ps1 | iex"
        Rename-Item $HOME\deps.clj\deps.exe clojure.exe
        echo "::add-path::$HOME\deps.clj"
       if: matrix.os == 'windows-latest'
