@@ -211,6 +211,10 @@ rewrite-cljc is going to switch to a ClojureScript-ish scheme. +
 It will use a `major.minor.<commit count since major.minor>-<qualifier>` scheme. +
 Our first version will be `1.0.42-alpha` where `42` is just a wild guess right now.
 
+An small awkwardness with this scheme is the change log. The change log should be part of the release
+but it does reference a git commit count. This, I suppose will be addressed locally with amended
+commits.
+
 === * Release Strategy - [red]*in progress*
 
 TODO: think about the following...
