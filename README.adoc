@@ -4,8 +4,9 @@
 
 image:rewrite-cljc-logo.png[rewrite-cljc,234,60]
 
-image:https://github.com/lread/rewrite-cljc-playground/workflows/Unit%20Tests/badge.svg[Unit Tests]
-image:https://github.com/lread/rewrite-cljc-playground/workflows/Native%20Image%20Tests/badge.svg[Native Image Tests]
+image:https://github.com/lread/rewrite-cljc-playground/workflows/Unit%20Tests/badge.svg[unit tests, link=https://github.com/lread/rewrite-cljc-playground/actions?query=workflow%3A%22Unit+Tests%22]
+image:https://github.com/lread/rewrite-cljc-playground/workflows/Native%20Image%20Tests/badge.svg[native image tests, link=https://github.com/lread/rewrite-cljc-playground/actions?query=workflow%3A%22Native+Image+Tests%22]
+image:https://img.shields.io/badge/slack-join_chat-brightgreen.svg[join chat, link=https://clojurians.slack.com/messages/CHB5Q2XUJ]
 
 TODO: more badges here... cljdoc, clojars
 
@@ -15,10 +16,6 @@ A library that reads and writes Clojure, ClojureScript and https://github.com/ed
 ====
 Warning: Very much a work in progress.
 ====
-
-## Need help?
-
-👋 Want to chat? Say hi on http://clojurians.net/[Clojurians Slack] in https://clojurians.slack.com/messages/CHB5Q2XUJ[#rewrite-clj].
 
 == Docs
 
