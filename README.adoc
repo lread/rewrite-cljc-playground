@@ -4,7 +4,10 @@
 
 image:rewrite-cljc-logo.png[rewrite-cljc,234,60]
 
-TODO: badges here... circleci, cljdoc, clojars
+image:https://github.com/lread/rewrite-cljc-playground/workflows/Unit%20Tests/badge.svg[Unit Tests]
+image:https://github.com/lread/rewrite-cljc-playground/workflows/Native%20Image%20Tests/badge.svg[Native Image Tests]
+
+TODO: more badges here... cljdoc, clojars
 
 A library that reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] from Clojure and ClojureScript in a whitespace and comment preserving way.
 
