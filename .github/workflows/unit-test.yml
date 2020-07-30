@@ -87,7 +87,7 @@ jobs:
        echo "::add-path::$HOME\deps.clj"
       if: matrix.os == 'windows-latest'
     - name: Install clojure (macos)
-      run: brew install clojure
+      run: brew install clojure/tools/clojure
       if: matrix.os == 'macos-latest'
     - name: Install clojure (linux)
       run: curl -s https://download.clojure.org/install/linux-install-1.10.1.561.sh | sudo bash
