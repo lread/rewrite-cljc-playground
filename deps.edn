@@ -16,7 +16,7 @@
            :clj-kondo {:extra-deps {clj-kondo {:mvn/version "2020.07.29"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
-           :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.0.0"}}
+           :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
                          :extra-paths ["test"]}
 
            ;; koacha for clojure testing
