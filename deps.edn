@@ -98,4 +98,4 @@
            :outdated {:extra-deps {olical/depot {:mvn/version "1.8.4"}}
                       ;; when checking for updates, depot requires that you specify aliases, next version
                       ;; might fix this
-                      :main-opts ["-m" "depot.outdated.main" "-a" "clj-kondo,test-common,kaocha,fig-test,cljs-test,update-readme,outdated,graal,code-info"]}}}
+                      :main-opts ["-m" "depot.outdated.main" "-a" "clj-kondo,test-common,kaocha,fig-test,cljs-test,update-readme,outdated,script,sci-test"]}}}
