@@ -4,6 +4,8 @@
             [cljs.analyzer :as ana]
             [rewrite-cljc.potemkin.helper :as helper]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; Strongly based on code from:
 ;;
 ;; --- copied from ztellman/potemkin

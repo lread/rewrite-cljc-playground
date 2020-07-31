@@ -7,6 +7,8 @@
             [rewrite-cljc.custom-zipper.core :as z]
             [rewrite-cljc.custom-zipper.utils :as u]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## In-Place Modification
 
 (defn replace

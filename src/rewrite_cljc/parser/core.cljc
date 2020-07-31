@@ -7,6 +7,8 @@
             [rewrite-cljc.parser.namespaced-map :refer [parse-namespaced-map]]
             [rewrite-cljc.parser.whitespace :refer [parse-whitespace]]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Base Parser
 
 (def ^:dynamic ^:private *delimiter*

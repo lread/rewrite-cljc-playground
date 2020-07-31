@@ -2,6 +2,8 @@
   (:require [rewrite-cljc.zip.subedit :refer [subedit-node]]
             [rewrite-cljc.zip.move :as m]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn- prewalk-subtree
   [p? f zloc]
   (loop [loc zloc]

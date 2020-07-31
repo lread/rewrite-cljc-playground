@@ -3,6 +3,8 @@
             [rewrite-cljc.reader :as reader]
             [rewrite-cljc.parser.utils :as u]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn- specifies-aliased?
   [reader]
   (case (reader/peek reader)

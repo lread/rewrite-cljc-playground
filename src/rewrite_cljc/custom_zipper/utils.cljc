@@ -1,6 +1,8 @@
 (ns ^:no-doc rewrite-cljc.custom-zipper.utils
   (:require [rewrite-cljc.custom-zipper.core :as z]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Remove
 
 (defn- update-in-path

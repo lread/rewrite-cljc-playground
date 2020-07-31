@@ -24,6 +24,8 @@
             #?(:clj [rewrite-cljc.potemkin.clojure :refer [import-vars]]))
   #?(:cljs (:require-macros [rewrite-cljc.potemkin.cljs :refer [import-vars]])))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (import-vars
  [rewrite-cljc.node.protocols
   coerce

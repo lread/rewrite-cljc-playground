@@ -1,6 +1,8 @@
 (ns ^:no-doc rewrite-cljc.node.forms
   (:require [rewrite-cljc.node.protocols :as node]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 (defrecord FormsNode [children]

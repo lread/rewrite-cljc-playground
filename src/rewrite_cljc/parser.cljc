@@ -8,6 +8,8 @@
             [rewrite-cljc.node :as node]
             [rewrite-cljc.reader :as reader]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Parser Core
 
 (defn ^:no-doc parse

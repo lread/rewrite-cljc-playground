@@ -1,5 +1,6 @@
 (ns ^:no-doc rewrite-cljc.custom-zipper.switchable)
 
+#?(:clj (set! *warn-on-reflection* true))
 
 (defn ^:no-doc custom-zipper?
   [value]

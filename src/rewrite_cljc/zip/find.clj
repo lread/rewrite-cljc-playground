@@ -3,6 +3,8 @@
   (:require [rewrite-cljc.zip.findz]
             [rewrite-cljc.potemkin.clojure :refer [import-vars]]))
 
+(set! *warn-on-reflection* true)
+
 (import-vars
  [rewrite-cljc.zip.findz
   find

@@ -1,6 +1,8 @@
 (ns ^:no-doc rewrite-cljc.potemkin.helper
   (:require [clojure.string :as string]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn new-name [orig-name opts]
   (if-let [sym-pattern (:sym-to-pattern opts)]
     (symbol (string/replace sym-pattern #"@@orig-name@@" (str orig-name)))

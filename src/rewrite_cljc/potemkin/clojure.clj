@@ -1,6 +1,8 @@
 (ns ^:no-doc rewrite-cljc.potemkin.clojure
   (:require [rewrite-cljc.potemkin.helper :as helper]))
 
+(set! *warn-on-reflection* true)
+
 ;; Strongly based on code from:
 ;;
 ;; --- copied from ztellman/potemkin

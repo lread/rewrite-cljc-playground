@@ -1,6 +1,8 @@
 (ns ^:no-doc rewrite-cljc.node.keyword
   (:require [rewrite-cljc.node.protocols :as node]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 ;; :foo - plain old

@@ -20,6 +20,8 @@
             [rewrite-cljc.custom-zipper.switchable :refer [defn-switchable]])
   #?(:cljs (:require-macros [rewrite-cljc.custom-zipper.switchable :refer [defn-switchable]])))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Switch
 ;;
 ;; To not force users into using this custom zipper, the following flag

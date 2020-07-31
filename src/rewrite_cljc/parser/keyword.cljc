@@ -8,6 +8,8 @@
             [clojure.tools.reader.impl.errors :as reader-impl-errors]
             [clojure.tools.reader.impl.utils :as reader-impl-utils]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn- read-keyword
   "This customized version of clojure.tools.reader.edn's read-keyword allows for
   an embedded `::` in a keyword to to support [garden-style keywords](https://github.com/noprompt/garden)

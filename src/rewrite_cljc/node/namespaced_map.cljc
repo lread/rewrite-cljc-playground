@@ -3,6 +3,8 @@
    [clojure.tools.reader :refer [*alias-map*]]
    [rewrite-cljc.node.protocols :as node]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 (defn- assert-namespaced-map-children

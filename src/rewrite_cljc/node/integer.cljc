@@ -2,6 +2,8 @@
   (:require [rewrite-cljc.node.protocols :as node]
             [rewrite-cljc.interop :as interop]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 (defrecord IntNode [value base]

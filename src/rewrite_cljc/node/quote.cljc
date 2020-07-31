@@ -1,6 +1,8 @@
 (ns ^:no-doc rewrite-cljc.node.quote
   (:require [rewrite-cljc.node.protocols :as node]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 (defrecord QuoteNode [tag prefix sym children]

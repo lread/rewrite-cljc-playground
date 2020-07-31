@@ -5,6 +5,8 @@
             [rewrite-cljc.zip.whitespace :as ws]
             [rewrite-cljc.custom-zipper.core :as z]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Zipper
 (defn edn*
   "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-cljc.parse]]).

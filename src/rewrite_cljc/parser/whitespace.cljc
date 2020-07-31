@@ -2,6 +2,8 @@
   (:require [rewrite-cljc.node :as node]
             [rewrite-cljc.reader :as reader]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn parse-whitespace
   "Parse as much whitespace as possible. The created node can either contain
    only linebreaks or only space/tabs."

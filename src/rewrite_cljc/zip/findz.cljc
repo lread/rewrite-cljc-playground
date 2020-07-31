@@ -4,6 +4,8 @@
             [rewrite-cljc.zip.move :as m]
             [rewrite-cljc.custom-zipper.core :as z]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Helpers
 
 (defn- tag-predicate

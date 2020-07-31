@@ -7,6 +7,7 @@
             [rewrite-cljc.custom-zipper.utils :as u]
             [rewrite-cljc.node :as nd]))
 
+#?(:clj (set! *warn-on-reflection* true))
 
 ;;*****************************
 ;; Helpers

@@ -3,6 +3,8 @@
             [rewrite-cljc.node :as node]
             [rewrite-cljc.custom-zipper.core :as z]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (def ^:private space
   (node/spaces 1))
 

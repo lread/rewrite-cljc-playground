@@ -3,6 +3,8 @@
             [rewrite-cljc.node.whitespace :as ws #?@(:cljs [:include-macros true])]
             [clojure.string :as string]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Helpers
 
 (defn- add-to-lines

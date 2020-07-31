@@ -3,6 +3,8 @@
             [rewrite-cljc.reader :as r])
   #?(:cljs (:require-macros rewrite-cljc.node.whitespace)))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Newline Modifiers
 
 (def ^:dynamic *newline-fn*

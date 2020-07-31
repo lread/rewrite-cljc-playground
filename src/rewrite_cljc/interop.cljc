@@ -2,6 +2,8 @@
   #?(:cljs (:require [goog.string :as gstring]
                      goog.string.format)))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn simple-format
   "Interop version of string format
   Note that there a big differences between Java's format and Google Closure's format - we don't address them.

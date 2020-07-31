@@ -5,6 +5,8 @@
             [rewrite-cljc.custom-zipper.core :as z]
             [rewrite-cljc.custom-zipper.utils :as u]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn- remove-trailing-while
   "Remove all whitespace following a given node."
   [zloc p?]

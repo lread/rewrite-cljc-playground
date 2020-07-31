@@ -1,6 +1,8 @@
 (ns ^:no-doc rewrite-cljc.node.uneval
   (:require [rewrite-cljc.node.protocols :as node]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 (defrecord UnevalNode [children]

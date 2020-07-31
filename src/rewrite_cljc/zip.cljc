@@ -161,6 +161,8 @@
   #?(:cljs (:require-macros [rewrite-cljc.zip]
                             [rewrite-cljc.potemkin.cljs :refer [import-vars import-vars-with-mods]])))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (import-vars
  [rewrite-cljc.custom-zipper.core
   node position position-span root]

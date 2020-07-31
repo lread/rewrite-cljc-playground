@@ -2,6 +2,8 @@
   (:require [rewrite-cljc.node.protocols :as node]
             [rewrite-cljc.node.whitespace :as ws]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 (defrecord ReaderNode [tag prefix suffix
