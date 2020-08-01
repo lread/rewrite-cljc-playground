@@ -1,7 +1,6 @@
 {:paths ["src"]
 
  :deps {org.clojure/clojure {:mvn/version "1.10.1"}
-        ;;org.clojure/clojurescript {:mvn/version "1.10.773"}
         org.clojure/tools.reader {:mvn/version "1.3.2"}}
 
  :aliases {;;
@@ -9,6 +8,11 @@
            ;;
            :1.9 {:override-deps {org.clojure {:mvn/version "1.9.0"}}}
            :1.10 {:override-deps {org.clojure {:mvn/version "1.10.1"}}}
+
+           ;;
+           ;; ClojureScript version we test with (and support)
+           ;;
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.773"}}}
 
            ;;
            ;; Test support
@@ -35,6 +39,9 @@
                        :main-opts ["-m" "cljs-test-runner.main"]}
 
            :planck-test {:extra-paths [ "target/cljsbuild/test/planck-none/gen"]}
+
+           :shadow-cljs-test {:extra-deps {thheller/shadow-cljs {:mvn/version "2.10.19" }}
+                              :main-opts ["-m" "shadow.cljs.devtools.cli"]}
 
            ;;
            ;; Update contributors in readme.
@@ -98,4 +105,4 @@
            :outdated {:extra-deps {olical/depot {:mvn/version "1.8.4"}}
                       ;; when checking for updates, depot requires that you specify aliases, next version
                       ;; might fix this
-                      :main-opts ["-m" "depot.outdated.main" "-a" "clj-kondo,test-common,kaocha,fig-test,cljs-test,update-readme,outdated,script,sci-test"]}}}
+                      :main-opts ["-m" "depot.outdated.main" "-a" "cljs,clj-kondo,test-common,kaocha,fig-test,cljs-test,shadow-cljs-test,update-readme,outdated,script,sci-test"]}}}

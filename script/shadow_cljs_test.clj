@@ -5,10 +5,21 @@
 
 (cp/add-classpath "./script")
 (require '[helper.status :as status]
-         '[helper.env :as env]
+         '[helper.fs :as fs]
          '[helper.shell :as shell])
+
+(def shadow-cljs-cfg {:deps true
+                      :builds {:test {:target :node-test
+                                      :output-to "target/shadow-cljs/node-test.js"
+                                      :compiler-options {:warnings
+                                                         ;; clj-kondo handles deprecation warnings for us
+                                                         {:fn-deprecated false}}
+                                      :autorun true}}})
 
 ;; Just one sanity test for now
 (status/line :info "testing ClojureScript source with Shadow CLJS, node, optimizations: none")
-(shell/command [(if (= :win (env/get-os)) "npx.cmd" "npx")
-                "shadow-cljs" "compile" "test"])
+(try
+  (spit "shadow-cljs.edn" shadow-cljs-cfg)
+  (shell/command ["clojure" "-A:cljs:test-common:shadow-cljs-test" "compile" "test"])
+  (finally
+    (fs/delete-file-recursively "shadow-cljs.edn" true)))

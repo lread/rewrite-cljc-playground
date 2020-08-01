@@ -1,9 +1,0 @@
-;; configuration for running tests under shadow-cljs
-{:source-paths ["src" "test"]
-
- :builds {:test {:target :node-test
-                 :output-to "target/shadow-cljs/node-test.js"
-                 :compiler-options {:warnings
-                                    ;; clj-kondo handles deprecation warnings for us
-                                    {:fn-deprecated false}}
-                 :autorun true}}}

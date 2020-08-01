@@ -90,9 +90,8 @@
         out-dir (str "target/cljsbuild/test/" test-combo)
         compile-opts-fname (str out-dir "-cljs-opts.edn")
         doo-opts-fname (str out-dir "-doo-opts.edn")
-        dep-aliases (if (= "planck" env)
-                      ":test-common:cljs-test:planck-test"
-                      ":test-common:cljs-test")
+        dep-aliases (cond-> ":test-common:cljs:cljs-test"
+                      (= "planck" env) (str ":planck-test"))
         cmd (concat ["clojure"
                      (str "-A" dep-aliases)]
                     (when (not= "planck" env)
@@ -118,7 +117,6 @@
                                                            (inc ndx) total-nses ns))
                                 (shell/command (concat cmd ["--namespace" ns])))
                               nses)))))))
-
 
 (defn main [args]
   (let [{:keys [options exit-message exit-code]} (validate-args args)]
