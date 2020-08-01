@@ -1,5 +1,0 @@
-{:known-macros
- [rewrite-clj.potemkin.cljs/defprotocol+
-  rewrite-clj.potemkin.clojure/defprotocol+
-  rewrite-clj.potemkin.cljs/import-vars
-  rewrite-clj.potemkin.clojure/import-vars]}
