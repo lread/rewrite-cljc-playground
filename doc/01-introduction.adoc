@@ -8,6 +8,11 @@
 == Introduction
 The rewrite-cljc library reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] source code while preserving whitespace and comments.
 
+== Interesting Alternatives
+If rewrite-cljc is not your cup of tea, consider following alternatives:
+
+- https://github.com/carocad/parcera[parcera] - A grammar based Clojure(script) parser
+
 == History
 @xsc created https://github.com/xsc/rewrite-clj[rewrite-clj] in 2013. Its original use was to upgrade dependencies in https://leiningen.org[lein] project.clj files. The library quickly took off in popularity and is the default choice for modifying Clojure/EDN from Clojure.
 
