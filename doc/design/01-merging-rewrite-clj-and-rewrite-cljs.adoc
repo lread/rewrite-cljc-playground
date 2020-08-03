@@ -556,16 +556,39 @@ We:
 
 The most glaring breaking change for ClojureScript is that it must now create the zipper with positional support enabled, for example: `(z/of-string "[1 2 3]" {:track-position true})`
 
-=== * Namespaced maps - [red]*in progress*
+=== * Namespaced maps and keywords - [red]*in progress*
 
 At the time of this writing, rewrite-clj had released partial support for
 namespaced maps. I attempted to complete this support in a pull request which
-was never merged into rewrite-cljc.
+was never merged into rewrite-clj. I have since canceled the pull request.
 
-As part of this merge I decided to include full namespaced map support which meant:
+Rewrite-cljs throws an exception on namespaced keywords and includes no support for namespaced maps.
 
-1. including a refined version of my rewrite-clj pull request
-2. adding namespaced maps support for ClojureScript
+As part of this merge I decided to:
+
+1. review namespace keyword support for both clj and cljs
+2. include a refined version of my rewrite-clj pull request work
+3. add namespaced maps support for ClojureScript
+
+
+[NOTE]
+====
+Refresher on keywords:
+A good refresher on keywords can be found at https://blog.jeaye.com/2017/10/31/clojure-keywords/[Jeaye's blog]. He lists:
+
+----
+:foo ;; <1>
+::foo ;; <2>
+:prefix-ns/foo ;; <3>
+::ns-alias/foo ;; <4>
+:whatever/foo ;; <5>
+----
+<1> plain old keyword
+<2> namespaced to current namespace
+<3> namespaced to namespace `prefix-ns`
+<4> namespaced to namespace aliased as `ns-alias`
+<5> namespaced to arbitrary `whatever` which is not a valid namespace
+====
 
 [NOTE]
 ====
@@ -581,12 +604,107 @@ Refresher on namespaced maps:
 <3> current namespace is applied to map keys
 
 Namespace is only applied to direct children. +
-You might find the examples in https://clojure.atlassian.net/browse/CLJ-1910[CLJ-1910] helpful.
+The examples and details in https://clojure.atlassian.net/browse/CLJ-1910[CLJ-1910] are helpful.
 ====
 
-The rewrite-clj namespaced map support tried to resolve namespaces. Resolution is really only necessary for `sexpr` and I have adjusted the code accordingly.
+==== small tweaks
+The existing rewrite-clj namespaced map support tries to resolve namespaces. Resolving namespaces can be problematic. Resolution is really only necessary for `sexpr` and I have adjusted the code accordingly. This tweak might be suplanted by other changes. TBD.
 
-TODO: I'm not sure resolution is necessary for prefix and alias resolve namespace maps at all. If we assume we are not in job of validating source code, we
-can simply apply the prefix-ns or the ns-alias to the keys.
+==== use of `\*ns*`
 
-TODO: Where things get interesting is the auto-resolve namespace. It resolves to the current namespace. Would some tooling want to `sexpr` an auto-resolve namespaced map, but not want to bother with binding the current *ns*? I am thinking maybe?
+Rewrite-clj's keyword node makes use of `\*ns*` when `sexpr` is requested of a current-ns auto-resolve keyword.
+
+[source, clojure]
+----
+(binding [*ns* (create-ns 'hey-ho)]
+  (n/sexpr (p/parse-string "::foo"))) ;; => :hey-ho/foo
+----
+
+It punted on the complexities of ns-alias keywords when it comes to `sexpr`.
+[source, clojure]
+----
+(binding [*ns* (create-ns 'hey-ho)]
+  (n/sexpr (p/parse-string "::xyz/foo"))) ;; => :xyz/foo
+----
+Binding to a `\*ns*` does not make a great deal of sense in ClojureScript as this dynamic var is only used for bootstrapping in ClojureScript.
+
+==== sepxr
+Sexpr is problematic for namespaced elements because it sometimes requires the current ns, e.g. `::foo`, and sometimes requires the loaded namespace aliases, e.g. `::ns-alias/foo`.
+
+What is `sexpr` used for in rewrite-clj?
+
+- Debugging? - it is nice to see a representation of your node. But frankly, I think `node/string` is more useful in this regard because it gives a textual representation of exactly what will be written, not an evaluation.
+- Internally for automatic coercion in fns like `find-value`, `find-next-value` and `edit` and some paredit fns.
+
+I don't think find-value works for namespaced keywords. Let's say we want to find `::foo/bar` by value.
+Well that's going to be a bit tricky, because even if we quote `'::foo/bar'` it will still be evaluated by the reader and
+the foo namespace alias is not going to be in the context of the rewrite-cljc parser.
+
+I think this would be a viable alternative using existing functionality:
+[source,clojure]
+----
+(zip/find-next zloc zip/next #(and (= :token (zip/tag %))
+                                   (= "::foo/bar" (zip/string %))))
+----
+
+TODO: side note: document that sets can be specified for v for find-value and find-next-value.
+
+Should calling an sexpr on `::foo/bar` require rewrite-cljc to have knowledge on how to expand ::foo? This seems that it would be a burden on the rewrite-cljc user.
+
+I remembered that cljfmt parses namespace declarations. It then uses the ns aliases to support formatting options. Would that be of interest?
+If we took this approach, any ns declaration could automatically be parsed and used, but like cljfmt should be overrideable for
+special cases. Using this technique would potentially solve the sexpr side of the equation for namespaced keywords and maps, but does not look at how express these
+elements as nodes and how to search for them.
+
+TODO: Cljfmt does not make use of `\*ns*` which is interesting. Maybe it only needs ns aliases?
+
+TODO: side note: Does the act of using find-value sometimes blow up if hitting an element that is not sexpressable?
+
+==== node creation
+
+The current way to create namespaced keywords works, but is awkward:
+[source,clojure]
+----
+(node/string (node/keyword-node :foo true)) ;; => "::foo"
+(node/string (node/keyword-node :ns-alias/foo true)) ;; => "::ns-alias/foo"
+(node/string (node/keyword-node :foo false)) ;; => ":foo"
+(node/string (node/keyword-node :prefix-ns/foo false)) ;; => ":prefix-ns/foo"
+----
+
+I could create a new constructors, maybe use strings instead?:
+
+[source,clojure]
+----
+(node/keyword-node "::foo")
+(node/keyword-node "::ns-alias/foo")
+(node/keyword-node ":foo")
+(node/keyword-node ":prefix-ns/foo")
+----
+
+Or maybe be descriptive, but this would require RTFMing:
+
+[source,clojure]
+----
+(node/auto-namespaced-keyword-node :foo)
+(node/auto-namespaced-keyword-node :foo 'ns-alias)
+(node/keyword-node :foo)
+(node/keyword-node :ns-prefix/foo)
+----
+
+Or:
+[source,clojure]
+----
+(node/keyword-node :foo {:auto-namespaced :current-ns})
+(node/keyword-node :foo {:auto-namespaced 'ns-alias})
+(node/keyword :foo)
+(node/keyword :ns-prefix/foo)
+----
+
+Or:
+
+
+==== coercion
+
+rewrite-clj supports automatic coercion, how does this look in the context of namespaced keywords?
+
+TODO: dig in and write down thoughts
