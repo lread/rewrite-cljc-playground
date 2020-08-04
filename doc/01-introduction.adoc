@@ -296,54 +296,30 @@ This metadata is not added by ClojureScript, but to avoid confusion, we recommen
 
 Parsing arbitrary valid Clojure/ClojureScript code should work fine (please let
 us know of any cases where it does not), but converting parsed code to
-s-expressions should be used with care.
-
-As a general rule of thumb, only use `sexpr` in specific cases where you have a
-very good idea of what you are sexpr-ing.
+s-expressions via rewrite-cljc's `sexpr` should be used with care.
 
 Illustrations of some of the limitations of `sexpr`:
 
+[source, clojure]
+----
+(require '[rewrite-cljc.zip :as z])
+
+(-> (z/of-string "#_42") z/sexpr) ;; <1>
+(-> (z/of-string ";; can’t sexpr me!") z/next* z/sexpr) ;; <1>
+(-> (z/of-string " ") z/next* z/sexpr) ;; <1>
+
+(-> (z/sexpr (z/of-string "3/4"))) ;; <2>
+(+ 10 (z/sexpr (z/of-string "9007199254740991"))) ;; <3>
+
+----
+<1> Reader ignore/discard `#_`, comment and whitespace all throw an "unsupported operation" exception. +
+Notice the use of `*next` to include normally skipped nodes.
+<2> Clojure returns Ratio `3/4`, +
+ClojureScript has no Ratio and returns `0.75`
+<3> Clojure and ClojureScript inherit integral types and behavior from their host platforms. +
+Clojure returns `9007199254741001` +
+ClojureScript returns `9007199254741000`
 [cols="50,50"]
-|===
-
-// Require
-2+m| => (require '[rewrite-cljc.zip :as z])
-
-// Reader discard
-2+h| ; The reader's ignore/discard `#_` fails:
-2+m| => (z/sexpr (z/of-string "#_42"))
-h|; Clojure result: h|; ClojureScript result:
-m|Execution error (ExceptionInfo) at rewrite_cljc.node.uneval.UnevalNode/sexpr (uneval.cljc:11).
-
-unsupported operation for uneval-node
-m|Execution error (ExceptionInfo) at (<cljs repl>:1).
-
-unsupported operation for uneval-node
-
-// Comment
-2+h| ; Comments return nil:
-2+m| => (z/sexpr (z/of-string ";; can't sexpr me!"))
-2+m|nil
-
-// Whitespace
-2+h| ; Whitespace returns nil:
-2+m| => (z/sexpr (z/of-string "   "))
-2+m|nil
-
-// Ratios
-2+h| ; Clojure and ClojureScript have differences - ClojureScript has no Ratio:
-2+m| => (z/sexpr (z/of-string "3/4"))
-h|; Clojure result: h|; ClojureScript result:
-m|3/4
-m|0.75
-
-// Max integers
-2+h| ; Clojure and ClojureScript have differences - they inherit integral types and type behavior from their host platforms:
-2+m| => (+ 10 (z/sexpr (z/of-string "9007199254740991")))
-h|; Clojure result: h|; ClojureScript result:
-m|9007199254741001
-m|9007199254741000
-|===
 
 === Parser API
 Parses Clojure/ClojureScript/EDN to rewrite-cljc nodes.

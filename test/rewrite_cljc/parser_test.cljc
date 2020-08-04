@@ -377,6 +377,14 @@
     "#::alias [a]"          #".*:namespaced-map expects a map.*"
     "#:prefix [a]"          #".*:namespaced-map expects a map.*"))
 
+(deftest t-sexpr-exceptions
+  (are [?s]
+      (is (thrown-with-msg? ExceptionInfo #"unsupported operation.*" (node/sexpr (p/parse-string ?s))))
+    "#_42"                 ;; reader ignore/discard
+    ";; can't sexpr me!"   ;; comment
+    " "                    ;; whitespace
+    ))
+
 (deftest t-parsing-multiple-forms
   (let [s "1 2 3"
         n (p/parse-string-all s)
