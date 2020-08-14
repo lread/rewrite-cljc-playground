@@ -138,14 +138,113 @@ a deps.edn example:
 * A different root namespace means upgrading to rewrite-cljc will be a
 clear and deliberate choice.
 
-== Observations
-=== Wow, a lot of libraries use rewrite-clj
-During this work, I noticed how pervasive rewrite-clj usage is. Some prominent examples:
+== Projects Using rewrite-clj and/or rewrite-cljs
+I've tried to make note of popular/active projects that make use of rewrite-clj and rewrite-cljs. I've linked where I've explicitly verified a migration to rewrite-cljc.
 
-. https://github.com/bhauman/figwheel-main[figwheel-main] which uses https://github.com/bhauman/rebel-readline[rebel-readline] which uses rewrite-clj
-. https://github.com/Olical/depot[depot] uses rewrite-clj
-. https://github.com/clojure-emacs/cider[cider] which can optionally enable https://github.com/clojure-emacs/clj-refactor.el[clj-refactor] which brings in rewrite-clj
-. https://github.com/cognitect-labs/REBL-distro[REBL] which uses cljfmt which uses rewrite-clj
+[cols="15%,15%,15%,15%,40%"]
+|===
+| Project | rewrite-clj? | rewrite-cljs? | Migration Verification | Notes
+
+| https://github.com/borkdude/clj-kondo[clj-kondo]
+| custom version
+| no
+| -
+| uses an internal custom version of rewrite-clj
+
+| https://github.com/weavejester/cljfmt[cljfmt]
+| yes
+| yes
+| https://github.com/lread/cljfmt/commits/lread-rewrite-cljc-test[fork]
+| source code formatter
+
+| https://github.com/greglook/cljstyle[cljstyle]
+| yes
+| no
+| -
+| source code formatter based on cljfmt
+
+| https://github.com/snoe/clojure-lsp[clojure-lsp]
+| yes
+| no
+| https://github.com/lread/clojure-lsp/commits/lread-rewrite-cljc-test[fork]
+| language server for Clojure
+
+| https://github.com/Olical/depot[depot]
+| yes
+| no
+| -
+| find newer versions of your deps.edn dependencies
+
+| https://github.com/jonase/kibit[kibit]
+| yes
+| no
+| -
+| Finds non-idiomatic Clojure code
+
+| https://github.com/xsc/lein-ancient[lein-ancient]
+| yes
+| no
+| -
+| find newer versions of your lein dependencies
+
+| https://github.com/benedekfazekas/mranderson[MrAnderson]
+| yes
+| no
+| -
+| Dependency inliner
+
+| https://github.com/jstepien/mutant[mutant]
+| yes
+| no
+| -
+| Source code mutator
+
+| https://github.com/juxt/pack.alpha[pack (alpha)]
+| yes
+| no
+| -
+| Clojure project packager
+
+| https://github.com/bhauman/rebel-readline[rebel-readline]
+| indirectly via cljfmt
+| no
+| -
+| smart editing at at the REPL terminal, optionally used in conjunction with https://github.com/bhauman/figwheel-main[figwheel-main]
+
+| https://github.com/cognitect-labs/REBL-distro[REBL]
+| indirectly via cljfmt
+| no
+| -
+| graphical interactive tool for browsing Clojure data
+
+| https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl]
+| yes
+| no
+| https://github.com/lread/refactor-nrepl/commits/lread-rewrite-cljc-test[fork]
+| refactoring support used in conjunction with https://github.com/clojure-emacs/cider[cider]
+
+| https://github.com/mauricioszabo/repl-tooling[repl-tooling]
+| no
+| yes
+| -
+| base package for Clojure editor tooling. Interesting: uses rewrite-clj.reader directly.
+
+| https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill]
+| no
+| yes
+| https://github.com/lread/update-leiningen-dependencies-skill/commits/lread-rewrite-cljc-test[fork]
+| dependency version tracker, great for a migration test of a project that uses shadow-cljs
+
+| https://github.com/kkinnear/zprint[zprint]
+| yes
+| yes
+| https://github.com/lread/zprint/commits/lread-rewrite-cljc-test[fork]
+| source code formatter
+
+|===
+
+== Projects Using rewrite-cljc
+We have one early adopter!: https://github.com/borkdude/carve[carve]
 
 == Tooling
 
