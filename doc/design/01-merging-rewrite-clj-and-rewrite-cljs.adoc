@@ -143,7 +143,7 @@ I've tried to make note of popular/active projects that make use of rewrite-clj 
 
 [cols="15%,20%,20%,15%,30%"]
 |===
-| Project | rewrite-clj? | rewrite-cljs? | Migration Verification | Notes
+| Project | rewrite&#8209;clj? | rewrite&#8209;cljs? | Migration Verification | Notes
 
 | https://github.com/mauricioszabo/atom-chlorine[chlorine]
 | no
