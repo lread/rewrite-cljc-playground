@@ -141,9 +141,15 @@ clear and deliberate choice.
 == Projects Using rewrite-clj and/or rewrite-cljs
 I've tried to make note of popular/active projects that make use of rewrite-clj and rewrite-cljs. I've linked where I've explicitly verified a migration to rewrite-cljc.
 
-[cols="15%,15%,15%,15%,40%"]
+[cols="15%,20%,20%,15%,30%"]
 |===
 | Project | rewrite-clj? | rewrite-cljs? | Migration Verification | Notes
+
+| https://github.com/mauricioszabo/atom-chlorine[chlorine]
+| no
+| yes
+| -
+| REPL support for Atom editor
 
 | https://github.com/borkdude/clj-kondo[clj-kondo]
 | custom version
