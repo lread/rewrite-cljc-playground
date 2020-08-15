@@ -18,7 +18,7 @@ If rewrite-cljc is not your cup of tea, consider following alternatives:
 | yes
 | yes
 | yes
-| no
+| yes
 
 | https://github.com/borkdude/edamame[edamame]
 | yes
