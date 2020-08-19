@@ -12,7 +12,7 @@ jobs:
         test: [ pure, sci ]
         exclude:
           - os: windows-latest
-            graal: 20.1.0.java8
+            graal: 20.2.0.java8
 
     name: ${{ matrix.os }},${{ matrix.graal }},${{ matrix.test }}
 
