@@ -86,7 +86,7 @@
            :native-image {:override-deps {org.clojure/clojure {:mvn/version "1.10.2-alpha1"}}}
 
            ;; add ins if running on jdk11
-           :jdk11-reflect {:extra-deps {borkdude/clj-reflector-graal-java11-fix {:mvn/version "0.0.1-graalvm-20.1.0"
+           :jdk11-reflect {:extra-deps {borkdude/clj-reflector-graal-java11-fix {:mvn/version "0.0.1-graalvm-20.2.0"
                                                                                  :exclusions [org.graalvm.nativeimage/svm]}}}
 
            :jdk11-reflect-sci {:extra-deps {borkdude/sci.impl.reflector {:mvn/version "0.0.1-java11"}}}
