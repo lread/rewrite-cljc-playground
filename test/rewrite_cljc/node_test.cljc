@@ -52,3 +52,11 @@
                       [cljs-time.format :as tf]]))"
           res (p/parse-string sample)]
       (is (= sample (n/string res))))))
+
+(deftest t-node?
+  (is (not (n/node? 42)))
+  (is (not (n/node? "just a string")))
+  (is (not (n/node? {:a 1})))
+  (is (not (n/node? (first {:a 1}))))
+  (is (n/node? (n/list-node (list 1 2 3))))
+  (is (n/node? (n/string-node "123"))))

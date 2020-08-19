@@ -75,6 +75,12 @@
   (when (inner? node)
     (sexprs (children node))))
 
+
+(defn node?
+  "Returns true if `x` is a rewrite-cljc created node."
+  [ x ]
+  (not= :unknown (tag x)))
+
 ;; ## Coerceable
 
 (defprotocol+ NodeCoerceable
@@ -165,6 +171,3 @@
   [[row col] [row-extent col-extent]]
   [(+ row row-extent)
    (cond-> col-extent (zero? row-extent) (+ col))])
-
-(defn ^:no-doc node? [ x ]
-  (satisfies? Node x))

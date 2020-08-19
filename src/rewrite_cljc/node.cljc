@@ -35,6 +35,7 @@
   inner?
   leader-length
   length
+  node?
   printable-only?
   replace-children
   sexpr
