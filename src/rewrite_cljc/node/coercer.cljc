@@ -88,6 +88,7 @@
      (coerce [v]
        (node-with-meta
         ;; in cljs, this is where we check for a record, in clj it happens under map handling
+        ;; TODO: Check if this can't be done by coercing an IRecord instead
         (if (record? v)
           (record-node v)
           (token-node v))
