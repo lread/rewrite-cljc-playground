@@ -52,42 +52,57 @@ Rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] and h
 
 From what I perceive as public APIs, rewrite-clj has gained:
 
-[cols="2,3"]
+[cols="3,1,3"]
 |===
-| public | description
+| public | origin | description
+
+| rewrite-cljc.node/node?
+| new
+| returns true if element is a rewrite-cljc created node
 
 | rewrite-cljc.paredit
-| structured editing of S-expression data formerly in rewrite-cljs only
+| rewrite-cljs
+| API for structured editing of S-expression data
 
 | rewrite-cljc.zip/append-child*
-| formerly internal only and omitted, I assume, by accident
+| internal
+| accidental omission from public API
 
 | rewrite-cljc.zip/find-last-by-pos
-| positional search support formerly in rewrite-cljs only
+| rewrite-cljs
+| positional search support
 
 | rewrite-cljc.zip/find-tag-by-pos
-| positional search support formerly in rewrite-cljs only
+| rewrite-cljs
+| positional search support
 
 | rewrite-cljc.zip/insert-newline-left
-| formerly internal only and omitted, I assume, by accident
+| internal
+| accidental omission from public API
 
 | rewrite-cljc.zip/insert-newline-right
-| formerly omitted, I assume, by accident
+| internal
+| accidental omission from public API
 
 | rewrite-cljc.zip/insert-space-left
-| formerly internal only and omitted, I assume, by accident
+| internal
+| accidental omission from public API
 
 | rewrite-cljc.zip/insert-space-right
-| formerly internal only and omitted, I assume, by accident
+| internal
+| accidental omission from public API
 
 | rewrite-cljc.zip/position-span
-| positional search support formerly in rewrite-cljs only
+| rewrite-cljs
+| positional search support
 
 | rewrite-cljc.zip/remove-preserve-newline
-| formerly in rewrite-cljs only
+| rewrite-cljs
+| same as remove but preserves newlines
 
 | rewrite-cljc.zip/subzip
-| formerly internal only, found useful to expose
+| internal
+| operate on a sub tree without affecting location
 |===
 
 And rewrite-cljs has gained all of rewrite-clj's features except for the ability to read from files.
