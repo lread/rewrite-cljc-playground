@@ -54,7 +54,7 @@
   (let [opts {:notes-dir "doc/diff-notes"
               :report-dir "doc/generated/api-diffs"}
         rewrite-clj      {:coords "rewrite-clj" :version "0.6.1" :lang "clj"}
-        rewrite-cljs     {:coords "rewrite-cljs" :version "0.4.4" :lang "cljs"}
+        rewrite-cljs     {:coords "rewrite-cljs" :version "0.4.5" :lang "cljs"}
         ;; TODO: rewrite-cljc coords will become real on first release
         rewrite-cljc-clj {:coords "lread/rewrite-cljs-playground" :as-coords "rewrite-cljc" :version "1.0.0-alpha" :lang "clj"}
         rewrite-cljc-cljs (assoc rewrite-cljc-clj :lang "cljs")
