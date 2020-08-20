@@ -21,6 +21,15 @@
    Function `f` is called on the zipper locations satisfying predicate `p?`, or all locations when `p?` is absent,
    and must return a valid zipper - modified or not.
 
+   Note that by default a newly created zipper automatically navigates to the first non-whitespace
+   node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:
+
+   ```Clojure
+   (-> (zip/of-string \"my clojure forms\")
+       zip/up
+       (zip/prewalk ...))
+   ```
+
    WARNING: when function `f` changes the location in the zipper, normal traversal will be affected."
   ([zloc f] (prewalk zloc (constantly true) f))
   ([zloc p? f]
@@ -42,6 +51,15 @@
    Traversal starts at the current node in `zloc` and continues to the end of the isolated sub-tree.
    Function `f` is called on the zipper locations satisfying predicate `p?`, or all locations when `p?` is absent,
    and must return a valid zipper - modified or not.
+
+   Note that by default a newly created zipper automatically navigates to the first non-whitespace
+   node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:
+
+   ```Clojure
+   (-> (zip/of-string \"my clojure forms\")
+       zip/up
+       (zip/postwalk ...))
+   ```
 
    WARNING: when function `f` changes the location in the zipper, normal traversal will be affected."
   ([zloc f] (postwalk zloc (constantly true) f))
