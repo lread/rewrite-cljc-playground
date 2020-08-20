@@ -131,6 +131,8 @@
   "Return the first token node with value `v` searching one movement `f` from the current node in `zloc` traversing
    by function `f`.
 
+   `v` can be a single value or a set. When `v` is a set matches on any value in set.
+
    `f` defaults to [[rewrite-cljc.zip/right]]"
   ([zloc v]
    (find-value zloc m/right v))
@@ -143,6 +145,8 @@
 (defn find-next-value
   "Return the first token node with value `v` searching one movement `f` from the current node in `zloc` traversing
    by function `f`.
+
+   `v` can be a single value or a set. When `v` is a set matches on any value in set.
 
    `f` defaults to [[rewrite-cljc.zip/right]]"
   ([zloc v]
