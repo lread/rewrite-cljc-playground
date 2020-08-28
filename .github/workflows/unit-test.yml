@@ -66,7 +66,7 @@ jobs:
        iwr -useb get.scoop.sh | iex
        scoop bucket add scoop-clojure https://github.com/littleli/scoop-clojure
        scoop bucket add extras
-       scoop install babashka@0.1.3 --independent
+       scoop install babashka --independent
        echo "::add-path::$HOME\scoop\shims"
       if: matrix.os == 'windows-latest'
     - name: Install babashka (macOS)
