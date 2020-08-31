@@ -102,7 +102,9 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {olical/depot {:mvn/version "1.8.4"}}
-                      ;; when checking for updates, depot requires that you specify aliases, next version
-                      ;; might fix this
-                      :main-opts ["-m" "depot.outdated.main" "-a" "cljs,clj-kondo,test-common,kaocha,fig-test,cljs-test,shadow-cljs-test,update-readme,outdated,script,sci-test"]}}}
+           :outdated {:extra-deps {antq/antq {:mvn/version "0.7.1"}
+                                   org.slf4j/slf4j-simple {:mvn/version "1.7.30"} ;; to rid ourselves of logger warnings
+                                   }
+                      :main-opts ["-m" "antq.core"
+                                  "--exclude=borkdude/sci.impl.reflector" ;; does not follow normal versioning conventions at this time
+                                  ]}}}

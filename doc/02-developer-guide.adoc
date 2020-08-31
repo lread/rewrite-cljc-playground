@@ -94,6 +94,26 @@ bb ./script/pure_native_test.clj
 bb ./script/sci_native_test.clj
 ----
 
+== Checking for Outdated Dependencies
+
+To see what new dependencies are available, run:
+----
+clojure -Aoutdated
+----
+
+Note that we use https://github.com/liquidz/antq[antq] which also checks `pom.xml`.
+There should never be a need to manually update dependencies in `pom.xml` as all dependencies
+are carried over from `deps.edn` during the release process.
+
+To avoid confusion, if you see an outdated dependency reported for `pom.xml` after updating `deps.edn`,
+run the following:
+
+----
+clojure -Spom
+----
+
+And then check in the updated `pom.xml`.
+
 == Linting
 We use https://github.com/borkdude/clj-kondo[clj-kondo] for linting rewrite-cljc source code.
 

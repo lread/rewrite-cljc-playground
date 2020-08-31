@@ -13,31 +13,31 @@
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
-      <artifactId>clojurescript</artifactId>
-      <version>1.10.520</version>
-    </dependency>
-    <dependency>
-      <groupId>org.clojure</groupId>
       <artifactId>tools.reader</artifactId>
       <version>1.3.2</version>
     </dependency>
   </dependencies>
   <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <build>
-    <sourceDirectory>src</sourceDirectory>
+    <build>
+      <sourceDirectory>src</sourceDirectory>
+    </build>
     <resources>
-        <resource>
-            <directory>src</directory>
-        </resource>
+      <resource>
+        <directory>src</directory>
+      </resource>
     </resources>
+    <build>
+      <sourceDirectory>src</sourceDirectory>
+    </build>
   </build>
   <scm>
-      <connection>scm:git:git@github.com:lread/rewrite-cljs-playground.git</connection>
-      <developerConnection>scm:git:git@github.com:lread/rewrite-cljs-playground.git</developerConnection>
-      <tag>16e294ae4da565e8cb14261def2ee9af4d82c4d1</tag>
-      <url>git@github.com:lread/rewrite-cljs-playground</url>
+    <connection>scm:git:git@github.com:lread/rewrite-cljs-playground.git</connection>
+    <developerConnection>scm:git:git@github.com:lread/rewrite-cljs-playground.git</developerConnection>
+    <tag>16e294ae4da565e8cb14261def2ee9af4d82c4d1</tag>
+    <url>git@github.com:lread/rewrite-cljs-playground</url>
   </scm>
   <repositories>
     <repository>
@@ -46,10 +46,10 @@
     </repository>
   </repositories>
   <distributionManagement>
-      <repository>
-          <id>clojars</id>
-          <name>Clojars repository</name>
-          <url>https://clojars.org/repo</url>
-      </repository>
+    <repository>
+      <id>clojars</id>
+      <name>Clojars repository</name>
+      <url>https://clojars.org/repo</url>
+    </repository>
   </distributionManagement>
 </project>
