@@ -24,8 +24,8 @@
                          :extra-paths ["test"]}
 
            ;; koacha for clojure testing
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.641"}
-                                 lambdaisland/kaocha-junit-xml {:mvn/version "0.0-70"}}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.672"}
+                                 lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}}
                     :main-opts ["-m" "kaocha.runner"]}
 
            ;; figwheel for clojurescript testing during dev
@@ -40,7 +40,7 @@
 
            :planck-test {:extra-paths [ "target/cljsbuild/test/planck-none/gen"]}
 
-           :shadow-cljs-test {:extra-deps {thheller/shadow-cljs {:mvn/version "2.10.19" }}
+           :shadow-cljs-test {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.1" }}
                               :main-opts ["-m" "shadow.cljs.devtools.cli"]}
 
            ;;
@@ -56,7 +56,7 @@
            ;;
            :script {:extra-paths ["script"]
                     :extra-deps {org.clojure/tools.namespace {:mvn/version "1.0.0"}
-                                 cli-matic {:mvn/version "0.3.11"}}}
+                                 cli-matic {:mvn/version "0.4.3"}}}
 
            ;;
            ;; Running tests under graal
