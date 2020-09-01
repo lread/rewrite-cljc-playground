@@ -59,6 +59,8 @@
                         string/trim)]
       (println "\nClasspath:")
       (println (str "- " (string/join "\n- " (fs/split-path-list classpath))))
+      (println "\nDeps tree:")
+      (shell/command ["clojure" alias-opt "-Stree"])
       classpath)))
 
 (defn run-native-image [{:keys [:graal-native-image :graal-reflection-fname
