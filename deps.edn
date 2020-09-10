@@ -6,8 +6,8 @@
  :aliases {;;
            ;; Clojure versions we support
            ;;
-           :1.9 {:override-deps {org.clojure {:mvn/version "1.9.0"}}}
-           :1.10 {:override-deps {org.clojure {:mvn/version "1.10.1"}}}
+           :1.9 {:override-deps {org.clojure/clojure {:mvn/version "1.9.0"}}}
+           :1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.1"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -17,7 +17,7 @@
            ;;
            ;; Test support
            ;;
-           :clj-kondo {:extra-deps {clj-kondo {:mvn/version "2020.07.29"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2020.07.29"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
@@ -47,7 +47,7 @@
            ;; Update contributors in readme.
            ;;
            :update-readme {:extra-paths ["script"]
-                           :extra-deps {hiccup {:mvn/version "1.0.5"}
+                           :extra-deps {hiccup/hiccup {:mvn/version "1.0.5"}
                                         commons-io/commons-io {:mvn/version "2.7"}}
                            :main-opts ["-m" "update-readme"]}
 
@@ -56,7 +56,7 @@
            ;;
            :script {:extra-paths ["script"]
                     :extra-deps {org.clojure/tools.namespace {:mvn/version "1.0.0"}
-                                 cli-matic {:mvn/version "0.4.3"}}}
+                                 cli-matic/cli-matic {:mvn/version "0.4.3"}}}
 
            ;;
            ;; Running tests under graal
@@ -70,7 +70,7 @@
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
                                                    :sha "345e904ccff060e6aad7d630e0002a6f1a707947"
                                                    ;; TODO: awkward we only need cheshire to generate reflection json
-                                                   :exclusions [cheshire]}}}
+                                                   :exclusions [checshire/cheshire]}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
