@@ -11,7 +11,7 @@
          '[helper.shell :as shell])
 
 (defn install-locally []
-  ;; TODO: maybe this should change after dev is over
+  ;; TODO: maybe this should change after dev is over?
   ;; TODO: but for now working on local copy of rewrite-cljc
   (status/line :info "installing rewrite-cljc locally")
   (shell/command ["mvn" "install"]))
@@ -56,7 +56,7 @@
         rewrite-clj      {:coords "rewrite-clj" :version "0.6.1" :lang "clj"}
         rewrite-cljs     {:coords "rewrite-cljs" :version "0.4.5" :lang "cljs"}
         ;; TODO: rewrite-cljc coords will become real on first release
-        rewrite-cljc-clj {:coords "lread/rewrite-cljs-playground" :as-coords "rewrite-cljc" :version "1.0.0-alpha" :lang "clj"}
+        rewrite-cljc-clj {:coords "lread/rewrite-cljc-playground" :as-coords "rewrite-cljc" :version "1.0.0-alpha" :lang "clj"}
         rewrite-cljc-cljs (assoc rewrite-cljc-clj :lang "cljs")
         existing-to-cljc-args ["--exclude-namespace" "rewrite-cljc"
                                "--exclude-namespace" "rewrite-clj.potemkin"

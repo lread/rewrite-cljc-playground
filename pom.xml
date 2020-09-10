@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>lread</groupId>
-  <artifactId>rewrite-cljs-playground</artifactId>
+  <artifactId>rewrite-cljc-playground</artifactId>
   <version>1.0.0-alpha</version>
-  <name>rewrite-cljs-playground</name>
+  <name>rewrite-cljc-playground</name>
   <dependencies>
     <dependency>
       <groupId>org.clojure</groupId>
@@ -21,23 +21,18 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <build>
-    <build>
-      <sourceDirectory>src</sourceDirectory>
-    </build>
+    <sourceDirectory>src</sourceDirectory>
     <resources>
       <resource>
         <directory>src</directory>
       </resource>
     </resources>
-    <build>
-      <sourceDirectory>src</sourceDirectory>
-    </build>
   </build>
   <scm>
-    <connection>scm:git:git@github.com:lread/rewrite-cljs-playground.git</connection>
-    <developerConnection>scm:git:git@github.com:lread/rewrite-cljs-playground.git</developerConnection>
-    <tag>16e294ae4da565e8cb14261def2ee9af4d82c4d1</tag>
-    <url>git@github.com:lread/rewrite-cljs-playground</url>
+    <connection>scm:git:git@github.com:lread/rewrite-cljc-playground.git</connection>
+    <developerConnection>scm:git:git@github.com:lread/rewrite-cljc-playground.git</developerConnection>
+    <tag>fbcd5de7e1a40b3d90e28e0e62aa5d3351b96a74</tag>
+    <url>git@github.com:lread/rewrite-cljc-playground</url>
   </scm>
   <repositories>
     <repository>
