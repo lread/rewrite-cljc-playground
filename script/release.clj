@@ -7,22 +7,23 @@
 
 (cp/add-classpath "./script")
 (require '[helper.status :as status]
-         '[helper.shell :as shell]
-         'version)
+         '[helper.shell :as shell])
 
 (defn usage[]
   (->> ["Usage release <action>"
         ""
         "Where action is one of:"
         " version - calculate and display version"
-        " prep    - prepare for publication by updating pom.xml with current deps and version info"
+        " prep    - prepare for publication by updating pom.xml with current deps and"
+        "           version info"
+        " local   - prep and install to local maven repository for local testing"
         " publish - does a prep then publishes to clojars"]
        (string/join "\n")))
 
 (defn validate-args [args]
   (let [action (first args)]
     (if (and (= 1 (count args))
-             (some #{action} '("version" "prep" "publish")))
+             (some #{action} '("version" "prep" "local" "publish")))
       {:action action}
       {:exit-message (usage) :exit-code 1})))
 
@@ -57,7 +58,7 @@
                                {:out-to-string? true})
                 :out
                 string/trim)
-        version (version/calculate)]
+        version (calculate-version)]
     (status/line :info "1 of 3) reflecting deps.edn to pom.xml")
     (shell/command ["clojure" "-Spom"])
     (status/line :info (str "2 of 3) setting pom.xml tag to " tag))
@@ -73,6 +74,11 @@
                      {:out-to-string? true})
       :out
       string/trim))
+
+(defn local-install []
+  (prepare-for-publish)
+  (status/line :info "Installing to local maven repository")
+  (shell/command ["mvn" "install"]))
 
 (defn publish []
   (status/line :info "Publishing to clojars")
@@ -110,6 +116,7 @@
       (case action
         "version" (println (calculate-version))
         "prep"    (prepare-for-publish)
+        "local"   (local-install)
         "publish" (publish)))))
 
 (main *command-line-args*)
