@@ -1,6 +1,8 @@
 (ns rewrite-cljc.parser
   "Parse Clojure/ClojureScript/EDN source code to nodes.
 
+  Parsing includes all source code elements including whitespace.
+
   After parsing, the typical next step is [[rewrite-cljc.zip/edn]] to create zipper.
 
   Alternatively consider parsing and zipping in one step from [[rewrite-cljc.zip/of-string]] or [[rewrite-cljc.zip/of-file]]."
@@ -30,18 +32,18 @@
 ;; ## Specialized Parsers
 
 (defn parse-string
-  "Parse first form in the given string."
+  "Return a node for first source code element in string `s`."
   [s]
   (parse (reader/string-reader s)))
 
 (defn parse-string-all
-  "Parse all forms in the given string."
+  "Return forms node for all source code elements in string `s`."
   [s]
   (parse-all (reader/string-reader s)))
 
 #?(:clj
    (defn parse-file
-     "Parse first form from the given file."
+     "Return node for first source code element in file `f`."
      [f]
      (let [r (reader/file-reader f)]
        (with-open [_ ^java.io.Closeable (.-rdr r)]
@@ -49,7 +51,7 @@
 
 #?(:clj
    (defn parse-file-all
-     "Parse all forms from the given file."
+     "Return forms node for all source code elements in file `f`."
      [f]
      (let [r (reader/file-reader f)]
        (with-open [_ ^java.io.Closeable (.-rdr r)]
