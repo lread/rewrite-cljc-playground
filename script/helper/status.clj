@@ -75,7 +75,7 @@
   (let [max-len (->> lines
                      (map count)
                      (filter #(<= % format-to-column))
-                     (apply max)
+                     (reduce max 0)
                      inc)]
     (block-lines lines color max-len)))
 
