@@ -14,7 +14,8 @@ A library that reads and writes Clojure, ClojureScript and https://github.com/ed
 
 [WARNING]
 ====
-Warning: Very much a work in progress.
+Status: Solid, but still conservatively pre-alpha, will release on clojars after moving to clj-commons. +
+See: https://github.com/lread/rewrite-cljc-playground/projects/1[GitHub project page for current priorities].
 ====
 
 == Docs
