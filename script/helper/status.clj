@@ -121,6 +121,8 @@
                                               :color-msg (ansi-esc :bg-yellow :fg-black)})
              (throw (ex-info (format "scripting error: unrecognized type: %s for status msg: %s" type msg) {})))))
 
-(defn fatal [msg exit-code]
-  (line :error msg)
-  (System/exit exit-code))
+(defn fatal
+  ([msg] (fatal msg 1))
+  ([msg exit-code]
+   (line :error msg)
+   (System/exit exit-code)))
