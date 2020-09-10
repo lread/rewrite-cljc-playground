@@ -135,8 +135,8 @@ rewrite-cljc APIs, run:
 bb ./script/gen_api_diffs.clj
 ----
 
-Run this script manually on an as-needed basis. Generated reports are to be checked in
-to version control.
+Run this script manually on an as-needed basis, and certainly before any official release.
+Generated reports are to be checked in to version control.
 
 Reports are generated to `doc/generated/api-diffs/` and include manually written
 notes from `doc/diff-notes/`.
@@ -146,6 +146,71 @@ search for links.
 
 Makes use of https://github.com/lread/diff-apis[diff-apis]. Delete
 `.diff-apis/.cache` if you need a clean run.
+
+
+== Cljdoc Preview
+Before a release, it can be comforting to preview what docs will look like on https://cljdoc.org/[cljdoc].
+
+Limitations
+
+* This script should be considered experimental, I have only tested running on macOS, but am fairly confident it will work on Linux.
+Not sure about Windows at this time.
+* You have to push your changes to GitHub to preview them.
+This allows for a full preview that includes any links (source, images, etc) to GitHub.
+This works fine from branches and forks - in case you don't want to affect your main development branch for a preview.
+
+**Start Local Services**
+
+To start the local cljdoc docker container:
+----
+bb ./script/cljdoc_preview.clj start
+----
+
+The local cljdoc server allows your ingested docs to be viewed in your web browser.
+
+The start command also automatically checks docker hub for any updates so that our cljdoc preview matches the
+current production version of cljdoc.
+
+**Ingest Docs**
+
+To ingest rewrite-cljc API and docs into the local cljdoc database:
+----
+bb ./script/cljdoc_preview.clj ingest
+----
+
+The ingest command automatically publishes rewrite-cljc to your local maven repository
+(cljdoc only works with published jars), but you'll have to remember to git commit and git push
+your changes before ingesting.
+
+Repeat these steps any time you want to preview changes.
+
+**Preview Docs**
+
+To open a view to the ingested docs in your default web browser:
+----
+bb ./script/cljdoc_preview.clj view
+----
+
+If you have just run the start command, be a bit patient, the cljdoc server can take a few moments to start up.
+
+**Stop Local Services**
+
+When you are done, you'll want to stop your docker container:
+----
+bb ./script/cljdoc_preview.clj stop
+----
+
+This will also delete temporary files created to support your preview session, most notably the local
+cljdoc database.
+
+Note that NO cleanup is done for any rewrite-cljc artifacts published to your local maven repository.
+
+**Container Status**
+
+If you forget where you are at with your docker containers, run:
+----
+bb ./script/cljdoc_preview.clj status
+----
 
 == Contributors
 We honor current and past contributors to rewrite-cljc in our README file.
