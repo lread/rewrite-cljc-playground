@@ -1,14 +1,14 @@
 #!/usr/bin/env bb
 
 (ns gen-api-diffs
-  (:require [clojure.java.io :as io]
-            [clojure.string :as string]
-            [babashka.classpath :as cp]))
+  (:require [babashka.classpath :as cp]
+            [clojure.java.io :as io]
+            [clojure.string :as string]))
 
 (cp/add-classpath "./script")
-(require '[helper.status :as status]
-         '[helper.fs :as fs]
-         '[helper.shell :as shell])
+(require '[helper.fs :as fs]
+         '[helper.shell :as shell]
+         '[helper.status :as status])
 
 (defn install-locally []
   ;; TODO: maybe this should change after dev is over?

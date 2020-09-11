@@ -1,7 +1,7 @@
 (ns rewrite-cljc.transform-test
-  (:require [clojure.test :refer [deftest is]]
-            [rewrite-cljc.zip :as z]
-            [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [clojure.test :refer [deftest is]]
+            [rewrite-cljc.zip :as z]))
 
 (def data-string
   (str ";; This is a Project File.\n"

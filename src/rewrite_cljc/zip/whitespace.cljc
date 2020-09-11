@@ -1,6 +1,6 @@
 (ns  ^:no-doc rewrite-cljc.zip.whitespace
-  (:require [rewrite-cljc.node :as node]
-            [rewrite-cljc.custom-zipper.core :as z]))
+  (:require [rewrite-cljc.custom-zipper.core :as z]
+            [rewrite-cljc.node :as node]))
 
 #?(:clj (set! *warn-on-reflection* true))
 

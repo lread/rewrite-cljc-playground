@@ -1,9 +1,9 @@
 (ns rewrite-cljc.zip.seqz-test
   (:require [clojure.test :refer [deftest is]]
+            [rewrite-cljc.custom-zipper.core :as z]
             [rewrite-cljc.zip.base :as base]
             [rewrite-cljc.zip.editz :as e]
-            [rewrite-cljc.zip.seqz :as sq]
-            [rewrite-cljc.custom-zipper.core :as z]))
+            [rewrite-cljc.zip.seqz :as sq]))
 
 (let [v (base/of-string "[1 2 3]")
       m (base/of-string "{:a 0, :b 1}")

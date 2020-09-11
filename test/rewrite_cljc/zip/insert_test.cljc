@@ -1,10 +1,10 @@
 (ns rewrite-cljc.zip.insert-test
   (:require [clojure.test :refer [deftest is are]]
-            [rewrite-cljc.zip.base :as base]
-            [rewrite-cljc.zip.move :as m]
-            [rewrite-cljc.zip.insert :refer [insert-right insert-left insert-child append-child]]
             [rewrite-cljc.custom-zipper.core :as z]
-            [rewrite-cljc.interop :as interop]))
+            [rewrite-cljc.interop :as interop]
+            [rewrite-cljc.zip.base :as base]
+            [rewrite-cljc.zip.insert :refer [insert-right insert-left insert-child append-child]]
+            [rewrite-cljc.zip.move :as m]))
 
 (deftest t-whitespace-aware-insertion
   (are [?fmt ?m ?n ?f ?s]

@@ -1,8 +1,8 @@
 (ns ^:no-doc rewrite-cljc.node.fn
-  (:require [clojure.walk :as w]
-            [clojure.string :as string]
-            [rewrite-cljc.node.protocols :as node]
-            [rewrite-cljc.interop :as interop]))
+  (:require [clojure.string :as string]
+            [clojure.walk :as w]
+            [rewrite-cljc.interop :as interop]
+            [rewrite-cljc.node.protocols :as node]))
 
 #?(:clj (set! *warn-on-reflection* true))
 

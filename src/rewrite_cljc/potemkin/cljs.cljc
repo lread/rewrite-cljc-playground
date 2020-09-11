@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-cljc.potemkin.cljs
-  (:require [cljs.analyzer.api :as ana-api]
+  (:require [cljs.analyzer :as ana]
+            [cljs.analyzer.api :as ana-api]
             [cljs.env :as env]
-            [cljs.analyzer :as ana]
             [rewrite-cljc.potemkin.helper :as helper]))
 
 #?(:clj (set! *warn-on-reflection* true))

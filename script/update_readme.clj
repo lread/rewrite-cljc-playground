@@ -2,15 +2,14 @@
   "Script to update README.adoc to credit contributors
   Run manually as needed.
   This is a bit of an experiment using clojure instead of bash."
-  (:require [clojure.string :as string]
-            [clojure.edn :as edn]
-            [hiccup.page :refer [html5 include-css]]
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
             [clojure.java.shell :as shell]
-            [clojure.java.io :as io])
+            [clojure.string :as string]
+            [hiccup.page :refer [html5 include-css]])
   (:import (java.nio.file Files Paths CopyOption StandardCopyOption)
            (java.nio.file.attribute FileAttribute)
            (org.apache.commons.io FileUtils)))
-
 
 (def contributions-lookup
   {:code-rewrite-cljc "💻 rewrite-cljc"

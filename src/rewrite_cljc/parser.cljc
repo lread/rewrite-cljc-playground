@@ -6,8 +6,8 @@
   After parsing, the typical next step is [[rewrite-cljc.zip/edn]] to create zipper.
 
   Alternatively consider parsing and zipping in one step from [[rewrite-cljc.zip/of-string]] or [[rewrite-cljc.zip/of-file]]."
-  (:require [rewrite-cljc.parser.core :as p]
-            [rewrite-cljc.node :as node]
+  (:require [rewrite-cljc.node :as node]
+            [rewrite-cljc.parser.core :as p]
             [rewrite-cljc.reader :as reader]))
 
 #?(:clj (set! *warn-on-reflection* true))

@@ -1,11 +1,11 @@
 (ns ^:no-doc rewrite-cljc.parser.core
   (:require [rewrite-cljc.node :as node]
-            [rewrite-cljc.reader :as reader]
             [rewrite-cljc.parser.keyword :refer [parse-keyword]]
+            [rewrite-cljc.parser.namespaced-map :refer [parse-namespaced-map]]
             [rewrite-cljc.parser.string :refer [parse-string parse-regex]]
             [rewrite-cljc.parser.token :refer [parse-token]]
-            [rewrite-cljc.parser.namespaced-map :refer [parse-namespaced-map]]
-            [rewrite-cljc.parser.whitespace :refer [parse-whitespace]]))
+            [rewrite-cljc.parser.whitespace :refer [parse-whitespace]]
+            [rewrite-cljc.reader :as reader] ))
 
 #?(:clj (set! *warn-on-reflection* true))
 

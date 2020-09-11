@@ -4,8 +4,8 @@
   (:require [babashka.classpath :as cp]))
 
 (cp/add-classpath "./script")
-(require '[helper.status :as status]
-         '[helper.shell :as shell])
+(require '[helper.shell :as shell]
+         '[helper.status :as status])
 
 (status/line :info "launching figwheel main clojurescript sources")
 (status/line :detail "compiling code, then opening repl, afterwich your web browser will automatically open to figwheel test run summary")

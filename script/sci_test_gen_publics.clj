@@ -1,8 +1,8 @@
 (ns sci-test-gen-publics
-  (:require [clojure.tools.namespace.find :as find]
-            [clojure.java.io :as io]
+  (:require [clojure.java.io :as io]
+            [clojure.pprint :as pprint]
             [clojure.string :as string]
-            [clojure.pprint :as pprint]))
+            [clojure.tools.namespace.find :as find]))
 
 (defn matches-some-pat [spats s]
   (let [pats (map re-pattern spats)]

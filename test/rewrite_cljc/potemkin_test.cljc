@@ -4,9 +4,9 @@
             [rewrite-cljc.potemkin-t1 #?@(:cljs [:include-macros true])]
             [rewrite-cljc.potemkin-t2 #?@(:cljs [:include-macros true])] )
   #?(:clj (:require [rewrite-cljc.potemkin.clojure :refer [import-vars import-vars-with-mods]])
-     :cljs (:require-macros [rewrite-cljc.potemkin.cljs :refer [import-vars import-vars-with-mods]]
-                            ;; macros need to be required for cljs
-                            [rewrite-cljc.potemkin-test :refer [t-macro t-macro-doc mod-t-macro mod-t-macro-doc]])))
+     :cljs (:require-macros ;; macros need to be required for cljs
+                            [rewrite-cljc.potemkin-test :refer [t-macro t-macro-doc mod-t-macro mod-t-macro-doc]]
+                            [rewrite-cljc.potemkin.cljs :refer [import-vars import-vars-with-mods]])))
 
 (import-vars
  [rewrite-cljc.potemkin-t1 t-macro t-macro-doc]

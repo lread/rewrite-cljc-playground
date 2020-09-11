@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-cljc.zip.subedit
-  (:require [rewrite-cljc.zip.base :as base]
-            [rewrite-cljc.custom-zipper.core :as z])
+  (:require [rewrite-cljc.custom-zipper.core :as z]
+            [rewrite-cljc.zip.base :as base])
   #?(:cljs (:require-macros [rewrite-cljc.zip.subedit])))
 
 ;; ## Edit Scope

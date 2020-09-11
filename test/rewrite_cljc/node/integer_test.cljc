@@ -1,6 +1,6 @@
 (ns rewrite-cljc.node.integer-test
-  (:require [clojure.test.check.properties :as prop #?@(:cljs [:include-macros true])]
-            [clojure.test.check.clojure-test :refer [defspec]]
+  (:require [clojure.test.check.clojure-test :refer [defspec]]
+            [clojure.test.check.properties :as prop #?@(:cljs [:include-macros true])]
             [clojure.tools.reader.edn :as edn]
             [rewrite-cljc.node :as node]
             [rewrite-cljc.node.generators :as g]))

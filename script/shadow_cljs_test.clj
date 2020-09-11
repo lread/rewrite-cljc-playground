@@ -4,9 +4,9 @@
   (:require [babashka.classpath :as cp]))
 
 (cp/add-classpath "./script")
-(require '[helper.status :as status]
-         '[helper.fs :as fs]
-         '[helper.shell :as shell])
+(require '[helper.fs :as fs]
+         '[helper.shell :as shell]
+         '[helper.status :as status])
 
 (def shadow-cljs-cfg {:deps true
                       :builds {:test {:target :node-test

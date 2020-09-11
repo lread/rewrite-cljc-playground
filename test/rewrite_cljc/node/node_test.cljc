@@ -1,7 +1,7 @@
 (ns rewrite-cljc.node.node-test
-  (:require [clojure.test.check.properties :as prop #?@(:cljs [:include-macros true])]
-            [clojure.test.check.clojure-test #?(:clj :refer :cljs :refer-macros) [defspec]]
+  (:require [clojure.test.check.clojure-test #?(:clj :refer :cljs :refer-macros) [defspec]]
             #?(:cljs [clojure.test.check :refer-macros [quick-check]])
+            [clojure.test.check.properties :as prop #?@(:cljs [:include-macros true])]
             [rewrite-cljc.node :as node]
             [rewrite-cljc.node.generators :as g]))
 

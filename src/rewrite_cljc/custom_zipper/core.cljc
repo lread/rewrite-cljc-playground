@@ -15,9 +15,9 @@
        :author "Rich Hickey"}
   rewrite-cljc.custom-zipper.core
   (:refer-clojure :exclude (replace remove next))
-  (:require [rewrite-cljc.node.protocols :as node]
-            [clojure.zip :as clj-zip]
-            [rewrite-cljc.custom-zipper.switchable :refer [defn-switchable]])
+  (:require [clojure.zip :as clj-zip]
+            [rewrite-cljc.custom-zipper.switchable :refer [defn-switchable]]
+            [rewrite-cljc.node.protocols :as node])
   #?(:cljs (:require-macros [rewrite-cljc.custom-zipper.switchable :refer [defn-switchable]])))
 
 #?(:clj (set! *warn-on-reflection* true))

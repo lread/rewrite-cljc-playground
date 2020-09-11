@@ -1,13 +1,13 @@
 #!/usr/bin/env bb
 ;; TODO: needs some testing
 (ns release
-  (:require [clojure.string :as string]
+  (:require [babashka.classpath :as cp]
             [clojure.edn :as edn]
-            [babashka.classpath :as cp]))
+            [clojure.string :as string]))
 
 (cp/add-classpath "./script")
-(require '[helper.status :as status]
-         '[helper.shell :as shell])
+(require '[helper.shell :as shell]
+         '[helper.status :as status])
 
 (defn usage[]
   (->> ["Usage release <action>"

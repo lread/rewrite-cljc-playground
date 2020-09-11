@@ -146,20 +146,20 @@
   (:refer-clojure :exclude [next find replace remove
                             seq? map? vector? list? set?
                             print map get assoc])
-  (:require [rewrite-cljc.zip.base]
-            [rewrite-cljc.zip.move]
-            [rewrite-cljc.zip.findz]
+  (:require [rewrite-cljc.custom-zipper.core]
+            #?(:clj [rewrite-cljc.potemkin.clojure :refer [import-vars import-vars-with-mods]])
+            [rewrite-cljc.zip.base]
             [rewrite-cljc.zip.editz]
+            [rewrite-cljc.zip.findz]
             [rewrite-cljc.zip.insert]
+            [rewrite-cljc.zip.move]
             [rewrite-cljc.zip.removez]
             [rewrite-cljc.zip.seqz]
             [rewrite-cljc.zip.subedit #?@(:cljs [:include-macros true])]
             [rewrite-cljc.zip.walk]
-            [rewrite-cljc.zip.whitespace]
-            [rewrite-cljc.custom-zipper.core]
-            #?(:clj [rewrite-cljc.potemkin.clojure :refer [import-vars import-vars-with-mods]]))
-  #?(:cljs (:require-macros [rewrite-cljc.zip]
-                            [rewrite-cljc.potemkin.cljs :refer [import-vars import-vars-with-mods]])))
+            [rewrite-cljc.zip.whitespace])
+  #?(:cljs (:require-macros [rewrite-cljc.potemkin.cljs :refer [import-vars import-vars-with-mods]]
+                            [rewrite-cljc.zip])))
 
 #?(:clj (set! *warn-on-reflection* true))
 

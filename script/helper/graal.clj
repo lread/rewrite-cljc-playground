@@ -1,12 +1,11 @@
 (ns helper.graal
-  (:require [helper.fs :as fs]
-            [helper.status :as status]
-            [helper.shell :as shell]
-            [helper.env :as env]
-            [helper.jdk :as jdk]
+  (:require [clojure.java.io :as io]
             [clojure.string :as string]
-            [clojure.java.io :as io]))
-
+            [helper.env :as env]
+            [helper.fs :as fs]
+            [helper.jdk :as jdk]
+            [helper.shell :as shell]
+            [helper.status :as status]))
 
 (defn find-graal-prog [prog-name]
   (or (fs/on-path prog-name)

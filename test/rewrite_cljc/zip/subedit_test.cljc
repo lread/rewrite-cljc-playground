@@ -1,9 +1,9 @@
 (ns rewrite-cljc.zip.subedit-test
   (:require [clojure.test :refer [deftest is]]
+            [rewrite-cljc.custom-zipper.core :as z]
             [rewrite-cljc.zip.base :as base]
             [rewrite-cljc.zip.move :as m]
-            [rewrite-cljc.zip.subedit :refer [subedit-> edit->]]
-            [rewrite-cljc.custom-zipper.core :as z]))
+            [rewrite-cljc.zip.subedit :refer [subedit-> edit->]]))
 
 (let [root (base/of-string "[1 #{2 [3 4] 5} 6]")]
   (deftest t-modifying-subtrees

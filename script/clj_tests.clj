@@ -5,8 +5,8 @@
             [clojure.string :as string]))
 
 (cp/add-classpath "./script")
-(require '[helper.status :as status]
-         '[helper.shell :as shell])
+(require '[helper.shell :as shell]
+         '[helper.status :as status])
 
 (def allowed-versions '("1.9" "1.10"))
 (def default-version "1.10")

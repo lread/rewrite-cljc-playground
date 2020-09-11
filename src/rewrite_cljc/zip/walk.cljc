@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-cljc.zip.walk
-  (:require [rewrite-cljc.zip.subedit :refer [subedit-node]]
-            [rewrite-cljc.zip.move :as m]))
+  (:require [rewrite-cljc.zip.move :as m]
+            [rewrite-cljc.zip.subedit :refer [subedit-node]]))
 
 #?(:clj (set! *warn-on-reflection* true))
 

@@ -1,7 +1,7 @@
 (ns helper.shell
   (:require [clojure.java.io :as io]
-            [clojure.string :as string]
             [clojure.pprint :as pprint]
+            [clojure.string :as string]
             [helper.status :as status]))
 
 (import '[java.lang ProcessBuilder$Redirect])

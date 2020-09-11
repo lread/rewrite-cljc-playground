@@ -2,14 +2,14 @@
 
 (ns cljs-tests
   (:require [babashka.classpath :as cp]
-            [clojure.string :as string]
             [clojure.java.io :as io]
+            [clojure.string :as string]
             [clojure.tools.cli :as cli]))
 
 (cp/add-classpath "./script")
-(require '[helper.status :as status]
+(require '[helper.fs :as fs]
          '[helper.shell :as shell]
-         '[helper.fs :as fs])
+         '[helper.status :as status])
 
 (def valid-envs '("node" "chrome-headless" "planck"))
 (def valid-optimizations '("none" "advanced"))

@@ -6,10 +6,10 @@
 
 (cp/add-classpath "./script")
 
-(require '[helper.status :as status]
-         '[helper.fs :as fs]
+(require '[helper.fs :as fs]
+         '[helper.graal :as graal]
          '[helper.shell :as shell]
-         '[helper.graal :as graal])
+         '[helper.status :as status] )
 
 (defn generate-test-runner [dir]
   (status/line :info "Generate test runner")

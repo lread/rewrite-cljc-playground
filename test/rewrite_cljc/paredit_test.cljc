@@ -1,7 +1,7 @@
 (ns rewrite-cljc.paredit-test
   (:require [clojure.test :refer [deftest is]]
-            [rewrite-cljc.zip :as z]
-            [rewrite-cljc.paredit :as pe]))
+            [rewrite-cljc.paredit :as pe]
+            [rewrite-cljc.zip :as z]))
 
 ;; helper
 (defn move-n [loc f n]

@@ -1,8 +1,8 @@
 (ns ^:no-doc rewrite-cljc.zip.findz
   (:refer-clojure :exclude [find])
-  (:require [rewrite-cljc.zip.base :as base]
-            [rewrite-cljc.zip.move :as m]
-            [rewrite-cljc.custom-zipper.core :as z]))
+  (:require [rewrite-cljc.custom-zipper.core :as z]
+            [rewrite-cljc.zip.base :as base]
+            [rewrite-cljc.zip.move :as m]))
 
 #?(:clj (set! *warn-on-reflection* true))
 

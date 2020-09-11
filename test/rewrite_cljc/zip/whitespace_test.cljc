@@ -1,8 +1,8 @@
 (ns rewrite-cljc.zip.whitespace-test
   (:require [clojure.test :refer [deftest is are]]
-            [rewrite-cljc.zip.base :as base]
             [rewrite-cljc.custom-zipper.core :as z]
             [rewrite-cljc.node :as node]
+            [rewrite-cljc.zip.base :as base]
             [rewrite-cljc.zip.whitespace :as ws]))
 
 (let [space (node/spaces 1)

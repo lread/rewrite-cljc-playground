@@ -6,10 +6,10 @@
    [clojure.java.io :as io]))
 
 (cp/add-classpath "./script")
-(require '[helper.status :as status]
-         '[helper.env :as env]
+(require '[helper.env :as env]
+         '[helper.graal :as graal]
          '[helper.shell :as shell]
-         '[helper.graal :as graal])
+         '[helper.status :as status])
 
 (defn expose-api-to-sci []
   (status/line :info "Expose rewrite-cljc API to sci")

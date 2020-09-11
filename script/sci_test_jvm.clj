@@ -4,8 +4,8 @@
   (:require [babashka.classpath :as cp]))
 
 (cp/add-classpath "./script")
-(require '[helper.status :as status]
-         '[helper.shell :as shell])
+(require '[helper.shell :as shell]
+         '[helper.status :as status])
 
 (status/line :info "Exposing rewrite-cljc API to sci")
 (shell/command ["clojure" "-A:script" "-m" "sci-test-gen-publics"])

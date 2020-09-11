@@ -3,13 +3,13 @@
 (ns cljdoc-docker-preview
   (:require [babashka.classpath :as cp]
             [babashka.curl :as curl]
-            [clojure.string :as string]
-            [clojure.java.browse :as browse]))
+            [clojure.java.browse :as browse]
+            [clojure.string :as string]))
 
 (cp/add-classpath "./script")
-(require '[helper.status :as status]
+(require '[helper.fs :as fs]
          '[helper.shell :as shell]
-         '[helper.fs :as fs])
+         '[helper.status :as status])
 
 ;;
 ;; constants

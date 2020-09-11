@@ -21,7 +21,8 @@
   rewrite-cljc.potemkin.clojure/import-vars potemkin/import-vars
   rewrite-cljc.potemkin.cljs/import-varfs potemkin/import-vars}
  :linters
- {:unused-namespace
+ {:unsorted-required-namespaces {:level :warning}
+  :unused-namespace
   {:exclude [clojure.test.check]}
   :unused-referred-var
   {:exclude {clojure.test.check [quick-check]}}

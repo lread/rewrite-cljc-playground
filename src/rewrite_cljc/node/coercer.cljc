@@ -1,28 +1,33 @@
 (ns ^:no-doc rewrite-cljc.node.coercer
   (:require
    #?@(:clj
-       [[rewrite-cljc.node
-         comment forms integer keyword quote string uneval
-         [meta :refer [meta-node]]
-         [protocols :as node :refer [NodeCoerceable coerce]]
-         [reader-macro :refer [reader-macro-node var-node]]
-         [seq :refer [vector-node list-node set-node map-node]]
-         [token :refer [token-node]]
-         [whitespace :as ws]]]
+       [[rewrite-cljc.node.comment]
+        [rewrite-cljc.node.forms]
+        [rewrite-cljc.node.integer]
+        [rewrite-cljc.node.keyword]
+        [rewrite-cljc.node.meta :refer [meta-node]]
+        [rewrite-cljc.node.protocols :as node :refer [NodeCoerceable coerce]]
+        [rewrite-cljc.node.quote]
+        [rewrite-cljc.node.reader-macro :refer [reader-macro-node var-node]]
+        [rewrite-cljc.node.seq :refer [vector-node list-node set-node map-node]]
+        [rewrite-cljc.node.string]
+        [rewrite-cljc.node.token :refer [token-node]]
+        [rewrite-cljc.node.uneval]
+        [rewrite-cljc.node.whitespace :as ws]]
        :cljs
        [[clojure.string :as string]
         [rewrite-cljc.node.comment :refer [CommentNode]]
         [rewrite-cljc.node.forms :refer [FormsNode]]
         [rewrite-cljc.node.integer :refer [IntNode]]
         [rewrite-cljc.node.keyword :refer [KeywordNode]]
-        [rewrite-cljc.node.quote :refer [QuoteNode]]
-        [rewrite-cljc.node.stringz :refer [StringNode]]
-        [rewrite-cljc.node.uneval :refer [UnevalNode]]
         [rewrite-cljc.node.meta :refer [MetaNode meta-node]]
         [rewrite-cljc.node.protocols :refer [NodeCoerceable coerce]]
+        [rewrite-cljc.node.quote :refer [QuoteNode]]
         [rewrite-cljc.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
         [rewrite-cljc.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
+        [rewrite-cljc.node.stringz :refer [StringNode]]
         [rewrite-cljc.node.token :refer [TokenNode token-node]]
+        [rewrite-cljc.node.uneval :refer [UnevalNode]]
         [rewrite-cljc.node.whitespace :refer [WhitespaceNode NewlineNode] :as ws]]))
    #?(:clj
       (:import [rewrite_cljc.node.comment CommentNode]

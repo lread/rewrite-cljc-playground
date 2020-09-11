@@ -1,9 +1,9 @@
 (ns ^:no-doc rewrite-cljc.zip.removez
   (:refer-clojure :exclude [remove])
-  (:require [rewrite-cljc.zip.move :as m]
-            [rewrite-cljc.zip.whitespace :as ws]
-            [rewrite-cljc.custom-zipper.core :as z]
-            [rewrite-cljc.custom-zipper.utils :as u]))
+  (:require [rewrite-cljc.custom-zipper.core :as z]
+            [rewrite-cljc.custom-zipper.utils :as u]
+            [rewrite-cljc.zip.move :as m]
+            [rewrite-cljc.zip.whitespace :as ws]))
 
 #?(:clj (set! *warn-on-reflection* true))
 

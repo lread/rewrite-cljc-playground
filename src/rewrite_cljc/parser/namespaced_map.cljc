@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-cljc.parser.namespaced-map
   (:require [rewrite-cljc.node :as node]
-            [rewrite-cljc.reader :as reader]
-            [rewrite-cljc.parser.utils :as u]))
+            [rewrite-cljc.parser.utils :as u]
+            [rewrite-cljc.reader :as reader] ))
 
 #?(:clj (set! *warn-on-reflection* true))
 

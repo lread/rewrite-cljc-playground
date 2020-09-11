@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-cljc.node.stringz
-  (:require [rewrite-cljc.node.protocols :as node]
+  (:require [clojure.string :as string]
             [clojure.tools.reader.edn :as edn]
-            [clojure.string :as string]))
+            [rewrite-cljc.node.protocols :as node] ))
 
 #?(:clj (set! *warn-on-reflection* true))
 

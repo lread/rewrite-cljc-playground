@@ -1,11 +1,11 @@
 (ns ^:no-doc rewrite-cljc.zip.seqz
   (:refer-clojure :exclude [map get assoc seq? vector? list? map? set?])
-  (:require [rewrite-cljc.zip.base :as base]
+  (:require [rewrite-cljc.custom-zipper.core :as z]
+            [rewrite-cljc.zip.base :as base]
             [rewrite-cljc.zip.editz :as e]
             [rewrite-cljc.zip.findz :as f]
             [rewrite-cljc.zip.insert :as i]
-            [rewrite-cljc.zip.move :as m]
-            [rewrite-cljc.custom-zipper.core :as z]))
+            [rewrite-cljc.zip.move :as m]))
 
 #?(:clj (set! *warn-on-reflection* true))
 

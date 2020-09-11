@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-cljc.zip.seq
   (:refer-clojure :exclude [map get assoc seq? vector? list? map? set?])
-  (:require [rewrite-cljc.zip.seqz]
-            [rewrite-cljc.potemkin.clojure :refer [import-vars]]))
+  (:require [rewrite-cljc.potemkin.clojure :refer [import-vars]]
+            [rewrite-cljc.zip.seqz] ))
 
 (set! *warn-on-reflection* true)
 

@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-cljc.parser.string
-  (:require [clojure.tools.reader.reader-types :as r]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
+            [clojure.tools.reader.reader-types :as r]
             [rewrite-cljc.node :as node]
             [rewrite-cljc.parser.utils :as u])
   #?(:cljs (:import [goog.string StringBuffer])))

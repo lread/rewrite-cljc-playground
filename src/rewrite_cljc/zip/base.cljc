@@ -1,9 +1,9 @@
 (ns ^:no-doc rewrite-cljc.zip.base
   (:refer-clojure :exclude [print])
-  (:require [rewrite-cljc.node :as node]
+  (:require [rewrite-cljc.custom-zipper.core :as z]
+            [rewrite-cljc.node :as node]
             [rewrite-cljc.parser :as p]
-            [rewrite-cljc.zip.whitespace :as ws]
-            [rewrite-cljc.custom-zipper.core :as z]))
+            [rewrite-cljc.zip.whitespace :as ws]))
 
 #?(:clj (set! *warn-on-reflection* true))
 

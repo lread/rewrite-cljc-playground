@@ -1,9 +1,9 @@
 (ns ^:no-doc rewrite-cljc.reader
   (:refer-clojure :exclude [peek next])
-  (:require [clojure.tools.reader.edn :as edn]
+  (:require #?@(:clj [[clojure.java.io :as io]])
+            [clojure.tools.reader.edn :as edn]
             [clojure.tools.reader.reader-types :as r]
-            [rewrite-cljc.interop :as interop]
-            #?@(:clj [[clojure.java.io :as io]]))
+            [rewrite-cljc.interop :as interop])
   #?(:cljs (:import [goog.string StringBuffer])
      :clj (:import [java.io PushbackReader])))
 

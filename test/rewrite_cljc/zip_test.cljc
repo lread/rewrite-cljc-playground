@@ -1,7 +1,7 @@
 (ns rewrite-cljc.zip-test
   "This test namespace originated from rewrite-cljs."
-  (:require [clojure.test :refer [deftest is]]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
+            [clojure.test :refer [deftest is]]
             [rewrite-cljc.zip :as z]))
 
 (deftest of-string-simple-sexpr

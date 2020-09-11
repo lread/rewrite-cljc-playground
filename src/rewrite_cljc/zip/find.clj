@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-cljc.zip.find
   (:refer-clojure :exclude [find])
-  (:require [rewrite-cljc.zip.findz]
-            [rewrite-cljc.potemkin.clojure :refer [import-vars]]))
+  (:require [rewrite-cljc.potemkin.clojure :refer [import-vars]]
+            [rewrite-cljc.zip.findz]))
 
 (set! *warn-on-reflection* true)
 

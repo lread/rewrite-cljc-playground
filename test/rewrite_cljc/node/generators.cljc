@@ -1,8 +1,8 @@
 (ns rewrite-cljc.node.generators
   (:require [clojure.set :as set]
             [clojure.test.check.generators :as gen]
-            [rewrite-cljc.node :as node]
-            [rewrite-cljc.interop :as interop]))
+            [rewrite-cljc.interop :as interop]
+            [rewrite-cljc.node :as node]))
 
 ;; Leaf nodes
 

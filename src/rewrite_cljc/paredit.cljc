@@ -2,10 +2,10 @@
   "Paredit zipper operations for Clojure/ClojureScript/EDN.
 
   You might find inspiration from examples here: http://pub.gajendra.net/src/paredit-refcard.pdf"
-  (:require [rewrite-cljc.zip :as z]
-            [rewrite-cljc.zip.whitespace :as ws]
-            [rewrite-cljc.custom-zipper.utils :as u]
-            [rewrite-cljc.node :as nd]))
+  (:require [rewrite-cljc.custom-zipper.utils :as u]
+            [rewrite-cljc.node :as nd]
+            [rewrite-cljc.zip :as z]
+            [rewrite-cljc.zip.whitespace :as ws]))
 
 #?(:clj (set! *warn-on-reflection* true))
 

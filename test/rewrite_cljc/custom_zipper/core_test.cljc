@@ -1,14 +1,14 @@
 (ns rewrite-cljc.custom-zipper.core-test
-  (:require [clojure.test.check.generators :as gen]
-            [clojure.test.check.properties :as prop #?@(:cljs [:include-macros true])]
-            [clojure.test :refer [deftest is are]]
+  (:require [clojure.test :refer [deftest is are]]
             #?(:cljs [clojure.test.check :refer-macros [quick-check]])
             [clojure.test.check.clojure-test :refer [defspec]]
+            [clojure.test.check.generators :as gen]
+            [clojure.test.check.properties :as prop #?@(:cljs [:include-macros true])]
+            [rewrite-cljc.custom-zipper.core :as z]
+            [rewrite-cljc.custom-zipper.utils :as u]
             [rewrite-cljc.node :as node]
             [rewrite-cljc.node.generators :as g]
-            [rewrite-cljc.zip.base :as base]
-            [rewrite-cljc.custom-zipper.core :as z]
-            [rewrite-cljc.custom-zipper.utils :as u]))
+            [rewrite-cljc.zip.base :as base] ))
 
 (deftest t-zipper-starts-with-position-1-1
   (is (= [1 1] (z/position (z/custom-zipper (node/comment-node "hello"))))))

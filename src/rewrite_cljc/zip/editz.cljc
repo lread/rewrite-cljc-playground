@@ -1,11 +1,11 @@
 (ns ^:no-doc rewrite-cljc.zip.editz
   (:refer-clojure :exclude [replace])
-  (:require [rewrite-cljc.zip.base :as base]
-            [rewrite-cljc.zip.removez :as r]
-            [rewrite-cljc.zip.whitespace :as ws]
+  (:require [rewrite-cljc.custom-zipper.core :as z]
+            [rewrite-cljc.custom-zipper.utils :as u]
             [rewrite-cljc.node :as node]
-            [rewrite-cljc.custom-zipper.core :as z]
-            [rewrite-cljc.custom-zipper.utils :as u]))
+            [rewrite-cljc.zip.base :as base]
+            [rewrite-cljc.zip.removez :as r]
+            [rewrite-cljc.zip.whitespace :as ws]))
 
 #?(:clj (set! *warn-on-reflection* true))
 

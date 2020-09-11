@@ -1,8 +1,8 @@
 (ns rewrite-cljc.zip.findz-test
   (:require [clojure.test :refer [deftest is are]]
             [rewrite-cljc.custom-zipper.core :as z]
-            [rewrite-cljc.zip.findz :as f]
-            [rewrite-cljc.zip.base :as base])
+            [rewrite-cljc.zip.base :as base]
+            [rewrite-cljc.zip.findz :as f])
   #?(:clj (:import clojure.lang.ExceptionInfo)))
 
 ;; ## Fixture

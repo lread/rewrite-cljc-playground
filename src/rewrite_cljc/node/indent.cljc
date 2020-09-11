@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-cljc.node.indent
-  (:require [rewrite-cljc.node.protocols :as node]
-            [rewrite-cljc.node.whitespace :as ws #?@(:cljs [:include-macros true])]
-            [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [rewrite-cljc.node.protocols :as node]
+            [rewrite-cljc.node.whitespace :as ws #?@(:cljs [:include-macros true])]))
 
 #?(:clj (set! *warn-on-reflection* true))
 

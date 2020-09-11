@@ -1,9 +1,9 @@
 (ns rewrite-cljc.custom-zipper.utils-test
   (:require [clojure.test :refer [deftest is are]]
-            [rewrite-cljc.node :as node]
-            [rewrite-cljc.zip.base :as base]
             [rewrite-cljc.custom-zipper.core :as z]
-            [rewrite-cljc.custom-zipper.utils :as u])
+            [rewrite-cljc.custom-zipper.utils :as u]
+            [rewrite-cljc.node :as node]
+            [rewrite-cljc.zip.base :as base])
   #?(:clj (:import clojure.lang.ExceptionInfo)))
 
 (let [a (node/token-node 'a)

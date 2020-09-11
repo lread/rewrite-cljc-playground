@@ -4,9 +4,9 @@
   (:require [babashka.classpath :as cp]))
 
 (cp/add-classpath "./script")
-(require '[helper.fs :as fs]
+(require '[helper.env :as env]
+         '[helper.fs :as fs]
          '[helper.shell :as shell]
-         '[helper.env :as env]
          '[helper.status :as status])
 
 (defn clean []

@@ -1,12 +1,12 @@
 (ns ^:no-doc rewrite-cljc.parser.keyword
-  (:require [rewrite-cljc.node :as node]
-            [rewrite-cljc.parser.utils :as u]
-            [clojure.tools.reader.reader-types :as r]
-            [clojure.tools.reader.edn :as edn]
+  (:require [clojure.tools.reader.edn :as edn]
             ;; internal tools reader namespaces to support read-keyword override work
             [clojure.tools.reader.impl.commons :as reader-impl-commons]
             [clojure.tools.reader.impl.errors :as reader-impl-errors]
-            [clojure.tools.reader.impl.utils :as reader-impl-utils]))
+            [clojure.tools.reader.impl.utils :as reader-impl-utils]
+            [clojure.tools.reader.reader-types :as r]
+            [rewrite-cljc.node :as node]
+            [rewrite-cljc.parser.utils :as u] ))
 
 #?(:clj (set! *warn-on-reflection* true))
 

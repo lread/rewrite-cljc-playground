@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-cljc.node.meta
-  (:require [rewrite-cljc.node.whitespace :as ws]
+  (:require [rewrite-cljc.interop :as interop]
             [rewrite-cljc.node.protocols :as node]
-            [rewrite-cljc.interop :as interop]))
+            [rewrite-cljc.node.whitespace :as ws]))
 
 #?(:clj (set! *warn-on-reflection* true))
 

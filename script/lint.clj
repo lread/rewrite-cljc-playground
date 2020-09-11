@@ -5,8 +5,8 @@
             [clojure.java.io :as io]))
 
 (cp/add-classpath "./script")
-(require '[helper.status :as status]
-         '[helper.shell :as shell])
+(require '[helper.shell :as shell]
+         '[helper.status :as status])
 
 (defn cache-exists? []
   (.exists (io/file ".clj-kondo/.cache")))
