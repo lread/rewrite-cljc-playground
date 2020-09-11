@@ -35,58 +35,58 @@
   (or (resolve sym)
       (throw (ex-info (str "potemkin clj does not recognize symbol: " sym) {:symbol sym}))))
 
-(defn- resolve-fn-location[var-meta]
-  (if-let [p (:protocol var-meta)]
-    (-> (meta p)
-        (select-keys [:file :line])
-        (merge var-meta))
-    var-meta))
+(defn- meta-with-fixes [var]
+  (let [m (meta var)]
+    (if-let [p (:protocol m)]
+      (-> (meta p)
+          (select-keys [:file :line])
+          (merge m))
+      m)))
 
 (defmacro import-fn
   "Given a function in another namespace, defines a function with the
    same name in the current namespace.  Argument lists, doc-strings,
    and original line-numbers are preserved."
   [src-sym target-name target-meta]
-  (let [vr (resolve-sym src-sym)
-        m (meta vr)
-        m (resolve-fn-location m)
+  (let [src-var (resolve-sym src-sym)
+        src-meta (meta src-var)
         new-meta (dissoc target-meta :name)
-        protocol (:protocol m)]
-    (when (:macro m)
+        protocol (:protocol src-meta)]
+    (when (:macro src-meta)
       (throw (ex-info "potemkin clj cannot import-fn on a macro" {:symbol src-sym})))
     `(do
-       (def ~(with-meta target-name (if protocol {:protocol protocol} {})) (deref ~vr))
+       (def ~(with-meta target-name (if protocol {:protocol protocol} {})) (deref ~src-var))
        (alter-meta! (var ~target-name) merge '~new-meta)
-       ~vr)))
+       ~src-var)))
 
 (defmacro import-macro
   "Given a macro in another namespace, defines a macro with the same
    name in the current namespace.  Argument lists, doc-strings, and
    original line-numbers are preserved."
   [src-sym target-name target-meta]
-  (let [vr (resolve-sym src-sym)
-        m (meta vr)
+  (let [src-var (resolve-sym src-sym)
+        src-meta (meta src-var)
         new-meta (dissoc target-meta :name)]
-     (when-not (:macro m)
+     (when-not (:macro src-meta)
        (throw (ex-info "potemkin clj can only import-macro on macro" {:symbol src-sym})))
      `(do
-        (def ~target-name (deref ~vr))
+        (def ~target-name (deref ~src-var))
         (alter-meta! (var ~target-name) merge '~new-meta)
         (.setMacro (var ~target-name))
-        ~vr)))
+        ~src-var)))
 
 (defmacro import-def
   "Given a regular def'd var from another namespace, defined a new var with the
    same name in the current namespace."
   [src-sym target-name target-meta]
-  (let [vr (resolve-sym src-sym)
-        m (meta vr)
+  (let [src-var (resolve-sym src-sym)
+        src-meta (meta src-var)
         new-meta (dissoc target-meta :name)
-        target-name (with-meta target-name (if (:dynamic m) {:dynamic true} {}))]
+        target-name (with-meta target-name (if (:dynamic src-meta) {:dynamic true} {}))]
     `(do
-       (def ~target-name @~vr)
+       (def ~target-name @~src-var)
        (alter-meta! (var ~target-name) merge '~new-meta)
-       ~vr)))
+       ~src-var)))
 
 (defmacro _import-var-data [import-data]
   (let [import-cmds (map
@@ -102,13 +102,19 @@
 (defmacro import-vars
   "Imports a list of vars from other namespaces."
   [& raw-syms]
-  (let [import-data (helper/syms->import-data raw-syms resolve-sym meta {})]
+  (let [import-data (helper/syms->import-data raw-syms
+                                              resolve-sym
+                                              meta-with-fixes
+                                              {})]
     `(_import-var-data ~import-data)))
 
 (defmacro import-vars-with-mods
   "Imports a list of vars from other namespaces modifying imports via `opts`. "
   [opts & raw-syms]
-  (let [import-data (helper/syms->import-data raw-syms resolve-sym meta opts)]
+  (let [import-data (helper/syms->import-data raw-syms
+                                              resolve-sym
+                                              meta-with-fixes
+                                              opts)]
     `(_import-var-data ~import-data)))
 
 ;; --- potemkin.types

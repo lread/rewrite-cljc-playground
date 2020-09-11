@@ -1,8 +1,8 @@
 (ns ^:skip-for-sci ;; internal API
     rewrite-cljc.potemkin-test
   (:require [clojure.test :refer [deftest is are]]
-            [rewrite-cljc.potemkin-t1 #?@(:cljs [:include-macros true])]
-            [rewrite-cljc.potemkin-t2 #?@(:cljs [:include-macros true])] )
+            [rewrite-cljc.potemkin-t1 #?@(:cljs [:include-macros true]) :refer [AProtocolt1]]
+            [rewrite-cljc.potemkin-t2 #?@(:cljs [:include-macros true])])
   #?(:clj (:require [rewrite-cljc.potemkin.clojure :refer [import-vars import-vars-with-mods]])
      :cljs (:require-macros ;; macros need to be required for cljs
                             [rewrite-cljc.potemkin-test :refer [t-macro t-macro-doc mod-t-macro mod-t-macro-doc]]
@@ -10,13 +10,13 @@
 
 (import-vars
  [rewrite-cljc.potemkin-t1 t-macro t-macro-doc]
- [rewrite-cljc.potemkin-t1 t-def t-def-doc t-fn t-fn-doc])
+ [rewrite-cljc.potemkin-t1 t-def t-def-doc t-fn t-fn-doc t-protofn1 t-protofn2])
 
 (import-vars-with-mods
  {:sym-to-pattern "mod-@@orig-name@@"
   :doc-to-pattern "Orig sym: @@orig-name@@, orig doc: @@orig-doc@@"}
  [rewrite-cljc.potemkin-t2 t-macro t-macro-doc]
- [rewrite-cljc.potemkin-t2 t-def t-def-doc t-fn t-fn-doc] )
+ [rewrite-cljc.potemkin-t2 t-def t-def-doc t-fn t-fn-doc])
 
 (defn- get-meta
   "The ns is not copied over for cljs. I *think* that is ok and probably good? Perhaps I should dupe behaviour for clj."
@@ -33,6 +33,15 @@
     #'t-fn-doc  #'rewrite-cljc.potemkin-t1/t-fn-doc
     #'t-def     #'rewrite-cljc.potemkin-t1/t-def
     #'t-def-doc #'rewrite-cljc.potemkin-t1/t-def-doc))
+
+(deftest t-straight-imports-protocolfn-meta-data
+  (are [?dest ?src ?src-protocol]
+      (is (= (-> (get-meta ?src-protocol)
+                 (select-keys [:line :column :file])
+                 (merge (get-meta ?src)))
+             (get-meta ?dest)))
+    #'t-protofn1 #'rewrite-cljc.potemkin-t1/t-protofn1 #'AProtocolt1
+    #'t-protofn2 #'rewrite-cljc.potemkin-t1/t-protofn2 #'AProtocolt1))
 
 #?(:clj
    (deftest t-straight-imports-macros-meta-data
@@ -66,15 +75,17 @@
        #'mod-t-macro-doc #'rewrite-cljc.potemkin-t2/t-macro-doc)))
 
 (deftest t-imports-evaluation-equivalent
-  (is (= 42      t-def                     rewrite-cljc.potemkin-t1/t-def))
-  (is (= 77      t-def-doc                 rewrite-cljc.potemkin-t1/t-def-doc))
-  (is (= 33      (t-fn 33)                 (rewrite-cljc.potemkin-t1/t-fn 33)))
-  (is (= 27      (t-fn-doc 27)             (rewrite-cljc.potemkin-t1/t-fn-doc 27)))
-  (is (= "ok"    (t-macro "ok")            (rewrite-cljc.potemkin-t1/t-macro "ok")))
-  (is (= "1234"  (t-macro-doc 1 2 3 4)     (rewrite-cljc.potemkin-t1/t-macro-doc 1 2 3 4)))
-  (is (= 242     mod-t-def                 rewrite-cljc.potemkin-t2/t-def))
-  (is (= 277     mod-t-def-doc             rewrite-cljc.potemkin-t2/t-def-doc 277))
-  (is (= 233     (mod-t-fn 33)             (rewrite-cljc.potemkin-t2/t-fn 33)))
-  (is (= 227     (mod-t-fn-doc 27)         (rewrite-cljc.potemkin-t2/t-fn-doc 27)))
-  (is (= "2ok"   (mod-t-macro "ok")        (rewrite-cljc.potemkin-t2/t-macro "ok")))
-  (is (= "21234" (mod-t-macro-doc 1 2 3 4) (rewrite-cljc.potemkin-t2/t-macro-doc 1 2 3 4))))
+  (is (= 42          t-def                     rewrite-cljc.potemkin-t1/t-def))
+  (is (= 77          t-def-doc                 rewrite-cljc.potemkin-t1/t-def-doc))
+  (is (= 33          (t-fn 33)                 (rewrite-cljc.potemkin-t1/t-fn 33)))
+  (is (= 27          (t-fn-doc 27)             (rewrite-cljc.potemkin-t1/t-fn-doc 27)))
+  (is (= "ok"        (t-macro "ok")            (rewrite-cljc.potemkin-t1/t-macro "ok")))
+  (is (= "1234"      (t-macro-doc 1 2 3 4)     (rewrite-cljc.potemkin-t1/t-macro-doc 1 2 3 4)))
+  (is (= "t1proto1"  (t-protofn1 1)            (rewrite-cljc.potemkin-t1/t-protofn1 1)))
+  (is (= "t1proto2"  (t-protofn2 1)            (rewrite-cljc.potemkin-t1/t-protofn2 1)))
+  (is (= 242         mod-t-def                 rewrite-cljc.potemkin-t2/t-def))
+  (is (= 277         mod-t-def-doc             rewrite-cljc.potemkin-t2/t-def-doc 277))
+  (is (= 233         (mod-t-fn 33)             (rewrite-cljc.potemkin-t2/t-fn 33)))
+  (is (= 227         (mod-t-fn-doc 27)         (rewrite-cljc.potemkin-t2/t-fn-doc 27)))
+  (is (= "2ok"       (mod-t-macro "ok")        (rewrite-cljc.potemkin-t2/t-macro "ok")))
+  (is (= "21234"     (mod-t-macro-doc 1 2 3 4) (rewrite-cljc.potemkin-t2/t-macro-doc 1 2 3 4))))

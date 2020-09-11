@@ -12,3 +12,12 @@
 (defmacro t-macro [a] a)
 
 (defmacro t-macro-doc "macro with doc" [a b c d] `(str ~a ~b ~c ~d))
+
+(defprotocol AProtocolt1
+  (t-protofn1 [this] "protocol function 1 docstring")
+  (t-protofn2 [this] "protocol function 2 docstring"))
+
+(extend-protocol AProtocolt1
+  #?(:clj Object :cljs default)
+  (t-protofn1 [_] "t1proto1")
+  (t-protofn2 [_] "t1proto2"))
