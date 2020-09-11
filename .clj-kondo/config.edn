@@ -1,4 +1,4 @@
-{
+{:config-paths ^:replace []
  :hooks {:analyze-call {rewrite-cljc.potemkin.clojure/import-vars-with-mods
                         hooks.rewrite-cljc.potemkin.import-vars-with-mods/import-vars-with-mods
 
