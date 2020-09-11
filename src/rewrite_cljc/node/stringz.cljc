@@ -42,8 +42,8 @@
 ;; ## Constructors
 
 (defn string-node
-  "Create node representing a string value of `lines`.
-   `lines` can be a seq of strings or a single one."
+  "Create node representing a string value where `lines`
+   can be a sequence of strings or a single string."
   [lines]
   (if (string? lines)
     (->StringNode [lines])

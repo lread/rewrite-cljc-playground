@@ -32,13 +32,13 @@
    is moved to the first non-whitespace node preceding removed node in a depth-first walk.
    Removes whitespace appropriately.
 
-  - `[1  2  3]   => [1  3]`
-  - `[1 2]       => [1]`
-  - `[1 2]       => [2]`
-  - `[1]         => []`
-  - `[  1  ]     => []`
-  - `[1 [2 3] 4] => [1 [2 3]]`
-  - `[1 [2 3] 4] => [[2 3] 4]`
+  - `[1 |2  3]    => [|1 3]`
+  - `[1 |2]       => [|1]`
+  - `[|1 2]       => |[2]`
+  - `[|1]         => |[]`
+  - `[  |1  ]     => |[]`
+  - `[1 [2 3] |4] => [1 [2 |3]]`
+  - `[|1 [2 3] 4] => |[[2 3] 4]`
 
    If the removed node is at the rightmost location, both preceding and trailing spaces are removed,
    otherwise only trailing spaces are removed. This means that a following element

@@ -70,7 +70,7 @@
     (throw (ex-info "unsupported operation" {}))))
 
 (defn child-sexprs
-  "Return all children converted to forms."
+  "Returns children for `node` converted to forms."
   [node]
   (when (inner? node)
     (sexprs (children node))))

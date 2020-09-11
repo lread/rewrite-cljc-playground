@@ -80,19 +80,19 @@
        (every? pred s)))
 
 (defn whitespace-node
-  "Create whitespace node of string `s`."
+  "Create whitespace node of string `s`, where `s` is one or more space characters."
   [s]
   {:pre [(string-of? s r/space?)]}
   (->WhitespaceNode s))
 
 (defn comma-node
-  "Create comma node of string `s`."
+  "Create comma node of string `s`, where `s` is one or more comma characters."
   [s]
   {:pre [(string-of? s r/comma?)]}
   (->CommaNode s))
 
 (defn newline-node
-  "Create newline node of string `s`."
+  "Create newline node of string `s`, where `s` is one or more linebreak characters."
   [s]
   {:pre [(string-of? s r/linebreak?)]}
   (->NewlineNode s))
@@ -151,7 +151,7 @@
 ;; ## Predicates
 
 (defn whitespace?
-  "Returns true if `node represents whitespace."
+  "Returns true if `node` represents Clojure whitespace."
   [node]
   (contains?
     #{:whitespace
@@ -160,11 +160,11 @@
     (node/tag node)))
 
 (defn linebreak?
-  "Returns true if `node` represents linebreak(s)."
+  "Returns true if `node` represents one or more linebreaks."
   [node]
   (= (node/tag node) :newline))
 
 (defn comma?
-  "Returns true if `node` represents a comma."
+  "Returns true if `node` represents one or more commas."
   [node]
   (= (node/tag node) :comma))

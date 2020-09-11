@@ -41,7 +41,7 @@
 
 (defn keyword-node
   "Create node representing a keyword `k`. If `namespaced?` is `true`
-   a keyword à la `::x` or `::ns/x` (i.e. namespaced/aliased) is generated."
+   a keyword à la `::x` or `::ns/x` (i.e. namespaced/aliased/auto-resolved) is generated."
   [k & [namespaced?]]
   {:pre [(keyword? k)]}
   (->KeywordNode k namespaced?))

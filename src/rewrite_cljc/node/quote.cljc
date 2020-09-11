@@ -39,8 +39,8 @@
   (->QuoteNode t prefix sym children))
 
 (defn quote-node
-  "Create node representing a quoted form with `children`.
-   Takes either a seq of nodes or a single one."
+  "Create node representing a quoted form where `children`
+   is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node
@@ -49,8 +49,8 @@
     (recur [children])))
 
 (defn syntax-quote-node
-  "Create node representing a syntax-quoted form with `children`.
-   Takes either a seq of nodes or a single one."
+  "Create node representing a syntax-quoted form where `children`
+   is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node
@@ -59,8 +59,8 @@
     (recur [children])))
 
 (defn unquote-node
-  "Create node representing an unquoted form with `children`. (`~...`)
-   Takes either a seq of nodes or a single one."
+  "Create node representing an unquoted form (i.e. `~...`) where `children`.
+   is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node
@@ -69,8 +69,8 @@
     (recur [children])))
 
 (defn unquote-splicing-node
-  "Create node representing an unquote-spliced form with `children`. (`~@...`)
-   Takes either a seq of nodes or a single one."
+  "Create node representing an unquote-spliced form (i.e. `~@...`) where `children`.
+   is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node

@@ -80,7 +80,7 @@
 (defn kill
   "Kill all sibling nodes to the right of the current node in `zloc`.
 
-  - [1 2| 3 4] => [1 2|]"
+  - `[1 2| 3 4] => [1 2|]`"
   [zloc]
   (let [left (z/left* zloc)]
      (-> zloc
@@ -128,7 +128,7 @@
   Perform kill for given position `pos` Like [[kill]], but:
 
   - if inside string kills to end of string and stops there
-  - If inside comment kills to end of line (not including linebreak!)
+  - If inside comment kills to end of line (not including linebreak)
 
   `pos` should provide `{:row :col }` which are relative to the start of the given form the zipper represents
   `zloc` must be positioned at a node previous (given depth first) to the node at given pos"
@@ -311,7 +311,7 @@
 
 
 (defn barf-forward
-  "Push out the rightmost node of the current S-expression into outer right form
+  "Push out the rightmost node of the current S-expression into outer right form.
 
   - `[1 2 [|3 4] 5] => [1 2 [|3] 4 5]`"
   [zloc]
@@ -335,7 +335,7 @@
 
 
 (defn barf-backward
-  "Push out the leftmost node of the current S-expression into outer left form
+  "Push out the leftmost node of the current S-expression into outer left form.
 
   - `[1 2 [3 |4] 5] => [1 2 3 [|4] 5]`"
   [zloc]
@@ -357,9 +357,9 @@
 
 
 (defn wrap-around
-  "Wrap current node with a given type `t` (:vector, :list, :set, :map :fn)
+  "Wrap current node with a given type `t` where `t` can be one of `:vector`, `:list`, `:set`, `:map` `:fn`.
 
-  - `|123 => [|123] ; given :vector`
+  - `|123 => [|123]` given `:vector`
   - `|[1 [2]] => [|[1 [2]]]`"
   [zloc t]
   (-> zloc
@@ -381,7 +381,7 @@
       slurp-forward-fully))
 
 (def splice
-  "See rewrite-cljc.zip/splice"
+  "See [[rewrite-cljc.zip/splice]]"
   z/splice)
 
 
@@ -498,7 +498,7 @@
   "Join S-expression to the left and right of current loc. Also works for strings.
 
   - `[[1 2] |[3 4]] => [[1 2 3 4]]`
-  - `[\"Hello \" | \"World\"] => [\"Hello World\"]"
+  - `[\"Hello \" | \"World\"] => [\"Hello World\"]`"
   [zloc]
   (let [left (some-> zloc z/left)
         right (if (some-> zloc z/node nd/whitespace?) (z/right zloc) zloc)]

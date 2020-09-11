@@ -12,8 +12,8 @@
 ;; ## In-Place Modification
 
 (defn replace
-  "Return zipper with the current node in `zloc` replaced with one representing `value`.
-   `value` will be coerced to a node if possible."
+  "Return zipper with the current node in `zloc` replaced with `value`
+   which will be coerced to a node if possible."
   [zloc value]
   (z/replace zloc (node/coerce value)))
 

@@ -104,16 +104,16 @@
     children))
 
 (defn var-node
-  "Create node representing a var with `children`.
-   Takes either a seq of nodes or a single one."
+  "Create node representing a var
+   where `children` is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node :var "'" "" #(list* 'var %) 1 children)
     (recur [children])))
 
 (defn eval-node
-  "Create node representing an inline evaluation with `children`. (`#=...`)
-   Takes either a seq of nodes or a single one."
+  "Create node representing an inline evaluation (i.e. `#=...`)
+   where `children` is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node
@@ -123,15 +123,15 @@
     (recur [children])))
 
 (defn reader-macro-node
-  "Create node representing a reader macro with `children`. (`#... ...`)"
+  "Create node representing a reader macro (i.e. `#... ...`) with `children`. "
   ([children]
    (->ReaderMacroNode children))
   ([macro-node form-node]
    (->ReaderMacroNode [macro-node (ws/spaces 1) form-node])))
 
 (defn deref-node
-  "Create node representing the dereferencing of a form with `children`. (`@...`)
-   Takes either a seq of nodes or a single one."
+  "Create node representing the dereferencing of a form (i.e. `@...`)
+   where `children` is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->DerefNode children)

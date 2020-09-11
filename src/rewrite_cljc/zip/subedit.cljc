@@ -39,14 +39,14 @@
     (move-to zloc' (path zloc))))
 
 (defmacro edit->
-  "Like `->`. Threads `zloc` through forms.
+  "Like `->`, threads `zloc` through forms.
    The resulting zipper will be located at the same path (i.e. the same
    number of downwards and right movements from the root) as incoming `zloc`."
   [zloc & body]
   `(edit-node ~zloc #(-> % ~@body)))
 
 (defmacro edit->>
-  "Like `->>`. Threads `zloc` through forms.
+  "Like `->>`, threads `zloc` through forms.
    The resulting zipper will be located at the same path (i.e. the same
    number of downwards and right movements from the root) as incoming `zloc`."
   [zloc & body]
@@ -70,7 +70,7 @@
     (z/replace zloc (z/root zloc'))))
 
 (defmacro subedit->
-  "Like `->`. Threads `zloc`, as an isolated sub-tree through forms, then zips
+  "Like `->`, threads `zloc`, as an isolated sub-tree through forms, then zips
    up to, and locates at, the root of the modified sub-tree."
   [zloc & body]
   `(subedit-node ~zloc #(-> % ~@body)))
