@@ -7,7 +7,8 @@
             [clojure.tools.cli :as cli]))
 
 (cp/add-classpath "./script")
-(require '[helper.fs :as fs]
+(require '[helper.env :as env]
+         '[helper.fs :as fs]
          '[helper.shell :as shell]
          '[helper.status :as status])
 
@@ -76,7 +77,7 @@
 
 (defn find-test-namespaces []
   (-> (shell/command ["clojure"
-                      "-A:test-common:script"
+                      "-M:test-common:script"
                       "-m" "code-info.ns-lister" "--lang" "cljs"
                       "find-all-namespaces"] {:out-to-string? true})
       :out
@@ -93,7 +94,7 @@
         dep-aliases (cond-> ":test-common:cljs:cljs-test"
                       (= "planck" env) (str ":planck-test"))
         cmd (concat ["clojure"
-                     (str "-A" dep-aliases)]
+                     (str "-M:" dep-aliases)]
                     (when (not= "planck" env)
                       ["--exclude" ":skip-for-cljs"])
                     ["--out" out-dir
@@ -119,6 +120,7 @@
                               nses)))))))
 
 (defn main [args]
+  (env/assert-min-clojure-version)
   (let [{:keys [options exit-message exit-code]} (validate-args args)]
     (if exit-message
       (exit exit-code exit-message)

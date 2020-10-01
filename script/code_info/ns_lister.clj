@@ -6,7 +6,7 @@
 
 ;;
 ;; to run generated test runner:
-;; java -cp "target/clj-graal/generated:$(clojure -A:test-common -Spath)" clojure.main -m clj-graal.test-runner
+;; java -cp "target/clj-graal/generated:$(clojure -M:test-common -Spath)" clojure.main -m clj-graal.test-runner
 ;;
 
 (defn- nses[lang]

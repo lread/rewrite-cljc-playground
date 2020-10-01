@@ -4,11 +4,13 @@
   (:require [babashka.classpath :as cp]))
 
 (cp/add-classpath "./script")
-(require '[helper.shell :as shell]
+(require '[helper.env :as env]
+         '[helper.shell :as shell]
          '[helper.status :as status])
 
+(env/assert-min-clojure-version)
 (status/line :info "Exposing rewrite-cljc API to sci")
-(shell/command ["clojure" "-A:script" "-m" "sci-test-gen-publics"])
+(shell/command ["clojure" "-M:script" "-m" "sci-test-gen-publics"])
 
 (status/line :info "Interpreting tests with sci from using JVM")
-(shell/command ["clojure" "-A:sci-test" "-m" "sci-test.main" "--file" "script/sci_test_runner.clj" "--classpath" "test"])
+(shell/command ["clojure" "-M:sci-test" "-m" "sci-test.main" "--file" "script/sci_test_runner.clj" "--classpath" "test"])

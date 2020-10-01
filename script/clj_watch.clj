@@ -4,8 +4,10 @@
   (:require [babashka.classpath :as cp]))
 
 (cp/add-classpath "./script")
-(require '[helper.shell :as shell]
+(require '[helper.env :as env]
+         '[helper.shell :as shell]
          '[helper.status :as status])
 
+(env/assert-min-clojure-version)
 (status/line :info "launching kaocha watch on clojure sources")
-(shell/command (concat ["clojure" "-A:test-common:kaocha" "--watch" ] *command-line-args*))
+(shell/command (concat ["clojure" "-M:test-common:kaocha" "--watch" ] *command-line-args*))

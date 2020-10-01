@@ -4,9 +4,10 @@
   (:require [babashka.classpath :as cp]))
 
 (cp/add-classpath "./script")
-(require '[helper.shell :as shell]
+(require '[helper.env :as env]
+         '[helper.shell :as shell]
          '[helper.status :as status])
 
-(status/line :info "launching figwheel main clojurescript sources")
+(env/assert-min-clojure-version)
 (status/line :detail "compiling code, then opening repl, afterwich your web browser will automatically open to figwheel test run summary")
-(shell/command ["clojure" "-A:test-common:cljs:fig-test"])
+(shell/command ["clojure" "-M:test-common:cljs:fig-test"])

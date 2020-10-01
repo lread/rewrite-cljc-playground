@@ -13,12 +13,12 @@
 
 (defn expose-api-to-sci []
   (status/line :info "Expose rewrite-cljc API to sci")
-  (shell/command ["clojure" "-A:script" "-m" "sci-test-gen-publics"]))
+  (shell/command ["clojure" "-M:script" "-m" "sci-test-gen-publics"]))
 
 (defn generate-reflection-file [fname]
   (status/line :info "Generate reflection file for Graal native-image")
   (io/make-parents fname)
-  (shell/command ["clojure" "-A:sci-test:gen-reflection" fname])
+  (shell/command ["clojure" "-M:sci-test:gen-reflection" fname])
   (status/line :detail fname))
 
 (defn interpret-tests []
@@ -31,6 +31,7 @@
     (shell/command [exe-fname "--file" "script/sci_test_runner.clj" "--classpath" "test"])))
 
 (defn -main [ & _args ]
+  (env/assert-min-clojure-version)
   (let [native-image-xmx "6g"
         graal-reflection-fname "target/native-image/reflection.json"
         target-exe "target/sci-test-rewrite-cljc"]

@@ -34,6 +34,7 @@
     (status/line :info "* WARNING: skipping planck tests, they can only be run on unix and macOS")) )
 
 (defn main[]
+  (env/assert-min-clojure-version)
   (clean)
   (lint)
   (clojure-tests)

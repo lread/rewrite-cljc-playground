@@ -14,11 +14,12 @@ We test that rewrite-clj operates as expected when natively compile via GraalVM.
 both jdk8 and jdk11. On Windows we only test against jdk11 as tool setup for jdk8 on Windows seemed overly arduous.
 
 == Prerequisites
-- Java JDK 1.8 or above
-- NodeJs v12 or above
-- Clojure v9 or above
-- Babashka
-- GraalVM v20.1.0
+* Java JDK 1.8 or above
+* NodeJs v12 or above
+* Clojure v1.10.1.697 for `clojure` command
+** Note that rewrite-cljc itself supports Clojure v1.9 and above
+* Babashka
+* GraalVM v20.1.0
 
 === Windows Notes
 The Clojure story on Windows is still in the early chapters. https://scoop.sh/[Scoop] offers an easy way to install tools.
@@ -98,7 +99,7 @@ bb ./script/sci_native_test.clj
 
 To see what new dependencies are available, run:
 ----
-clojure -Aoutdated
+clojure -M:outdated
 ----
 
 Note that we use https://github.com/liquidz/antq[antq] which also checks `pom.xml`.
@@ -218,5 +219,5 @@ We honor current and past contributors to rewrite-cljc in our README file.
 To update contributors, update `doc/contributors.edn` then run:
 
 ----
-clojure -A:update-readme
+clojure -M:update-readme
 ----

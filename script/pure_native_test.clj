@@ -6,7 +6,8 @@
 
 (cp/add-classpath "./script")
 
-(require '[helper.fs :as fs]
+(require '[helper.env :as env]
+         '[helper.fs :as fs]
          '[helper.graal :as graal]
          '[helper.shell :as shell]
          '[helper.status :as status] )
@@ -15,11 +16,12 @@
   (status/line :info "Generate test runner")
   (fs/delete-file-recursively dir true)
   (io/make-parents dir)
-  (shell/command ["clojure" "-A:script:test-common"
+  (shell/command ["clojure" "-M:script:test-common"
                   "-m" "clj-graal.gen-test-runner"
                   "--dest-dir" dir "test-by-namespace"]))
 
 (defn -main [ & _args ]
+  (env/assert-min-clojure-version)
   (let [native-image-xmx "6g"
         target-exe "target/rewrite-cljc-test"]
     (status/line :info "Creating native image for test")

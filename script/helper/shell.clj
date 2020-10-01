@@ -16,7 +16,7 @@
       :unknown)))
 
 (defn- escape-double-quote [s]
-  (string/replace s "\"" "\\\\\\\""))
+  (string/replace s "\"" "\\\""))
 
 (defn- escape-args
   "Escape rules are, to me, confusing for Windows: https://stackoverflow.com/a/20009602"

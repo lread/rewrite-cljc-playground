@@ -6,7 +6,8 @@
             [clojure.string :as string]))
 
 (cp/add-classpath "./script")
-(require '[helper.fs :as fs]
+(require '[helper.env :as env]
+         '[helper.fs :as fs]
          '[helper.shell :as shell]
          '[helper.status :as status])
 
@@ -41,7 +42,7 @@
 
 (defn diff-apis [{:keys [:notes-dir :report-dir]} projecta projectb report-name extra-args]
   (status/line :info (str "Diffing " (describe-proj projecta) " and " (describe-proj projectb)))
-  (shell/command (concat ["clojure" "-A:diff-apis"]
+  (shell/command (concat ["clojure" "-M:diff-apis"]
                          (map projecta [:coords :version :lang])
                          (map projectb [:coords :version :lang])
                          ["--arglists-by" ":arity-only"
@@ -51,6 +52,7 @@
                          extra-args)))
 
 (defn main []
+  (env/assert-min-clojure-version)
   (let [opts {:notes-dir "doc/diff-notes"
               :report-dir "doc/generated/api-diffs"}
         rewrite-clj      {:coords "rewrite-clj" :version "0.6.1" :lang "clj"}

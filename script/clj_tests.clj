@@ -5,7 +5,8 @@
             [clojure.string :as string]))
 
 (cp/add-classpath "./script")
-(require '[helper.shell :as shell]
+(require '[helper.env :as env]
+         '[helper.shell :as shell]
          '[helper.status :as status])
 
 (def allowed-versions '("1.9" "1.10"))
@@ -23,12 +24,13 @@
 (defn run-tests[clojure-version]
   (status/line :info (str "testing clojure source against clojure v" clojure-version))
   (shell/command ["clojure"
-                  (str "-A:test-common:kaocha:" clojure-version)
+                  (str "-M:test-common:kaocha:" clojure-version)
                   "--reporter" "documentation"
                   "--plugin" "kaocha.plugin/junit-xml"
                   "--junit-xml-file"  (str "target/out/test-results/clj-v" clojure-version "/results.xml")]))
 
 (defn main [args]
+  (env/assert-min-clojure-version)
   (let [clojure-version (or (first args) default-version)]
     (if (some #{clojure-version} allowed-versions)
       (run-tests clojure-version)
