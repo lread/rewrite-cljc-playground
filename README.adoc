@@ -6,7 +6,7 @@ image:rewrite-cljc-logo.png[rewrite-cljc,234,60]
 
 image:https://github.com/lread/rewrite-cljc-playground/workflows/Unit%20Tests/badge.svg[unit tests, link=https://github.com/lread/rewrite-cljc-playground/actions?query=workflow%3A%22Unit+Tests%22]
 image:https://github.com/lread/rewrite-cljc-playground/workflows/Native%20Image%20Tests/badge.svg[native image tests, link=https://github.com/lread/rewrite-cljc-playground/actions?query=workflow%3A%22Native+Image+Tests%22]
-image:https://codecov.io/github/lread/rewrite-cljc-playground/coverage.svg?branch=master[code coverage, link=https://codecov.io/github/codecov/example-clojure?branch=master
+image:https://codecov.io/gh/lread/rewrite-cljc-playground/branch/master/graph/badge.svg[code coverage, link=https://codecov.io/gh/lread/rewrite-cljc-playground]
 image:https://img.shields.io/badge/slack-join_chat-brightgreen.svg[join chat, link=https://clojurians.slack.com/messages/CHB5Q2XUJ]
 
 TODO: more badges here... cljdoc, clojars
