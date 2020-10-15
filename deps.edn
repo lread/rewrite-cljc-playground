@@ -17,14 +17,14 @@
            ;;
            ;; Test support
            ;;
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2020.09.09"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2020.10.10"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
                          :extra-paths ["test"]}
 
            ;; koacha for clojure testing
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.681"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.700"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.63"}}
                     :main-opts ["-m" "kaocha.runner"]}
@@ -41,7 +41,7 @@
 
            :planck-test {:extra-paths [ "target/cljsbuild/test/planck-none/gen"]}
 
-           :shadow-cljs-test {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.4" }}
+           :shadow-cljs-test {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.5" }}
                               :main-opts ["-m" "shadow.cljs.devtools.cli"]}
 
            ;;
@@ -103,7 +103,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {antq/antq {:mvn/version "0.7.2"}
+           :outdated {:extra-deps {antq/antq {:mvn/version "0.7.4"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.30"} ;; to rid ourselves of logger warnings
                                    }
                       :main-opts ["-m" "antq.core"
