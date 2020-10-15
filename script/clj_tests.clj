@@ -2,38 +2,70 @@
 
 (ns clj_tests
   (:require [babashka.classpath :as cp]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clojure.tools.cli :as cli] ))
 
 (cp/add-classpath "./script")
 (require '[helper.env :as env]
          '[helper.shell :as shell]
          '[helper.status :as status])
 
-(def allowed-versions '("1.9" "1.10"))
-(def default-version "1.10")
+(def allowed-clojure-versions '("1.9" "1.10"))
+(def default-clojure-version "1.10")
 
-(defn usage-error [ ]
-  (status/line :error "usage")
-  (println (string/join "\n" ["Usage: clj_tests.clj <clojure version>"
-                              ""
-                              "Where <clojure version> is one of: "
-                              (str " "(string/join "\n " allowed-versions))
-                              (str "Defaults to " default-version)]))
-  (System/exit 1))
+(def cli-options
+  [["-v" "--clojure-version VERSION" (str "Clojure version" " [" (string/join ", " allowed-clojure-versions) "]")
+    :default default-clojure-version
+    :validate [#(some #{%} allowed-clojure-versions)
+               (str "Must be one of: " (string/join ", " allowed-clojure-versions))]]
+   ["-c" "--coverage" "Generate code coverage report"]
+   ["-h" "--help"]])
 
-(defn run-tests[clojure-version]
-  (status/line :info (str "testing clojure source against clojure v" clojure-version))
-  (shell/command ["clojure"
-                  (str "-M:test-common:kaocha:" clojure-version)
-                  "--reporter" "documentation"
-                  "--plugin" "kaocha.plugin/junit-xml"
-                  "--junit-xml-file"  (str "target/out/test-results/clj-v" clojure-version "/results.xml")]))
+(defn usage [options-summary]
+  (->> ["Usage: cljs_test.clj <options>"
+        options-summary]
+       (string/join "\n")))
+
+(defn error-msg [errors]
+  (string/join "\n" errors))
+
+(defn validate-args [args]
+  (let [{:keys [options errors summary]} (cli/parse-opts args cli-options)]
+    (cond
+      (:help options)
+      {:exit-message (usage summary) :exit-code 0}
+
+      errors
+      {:exit-message (error-msg errors) :exit-code 1}
+
+      :else
+      {:options options})))
+
+(defn exit [code msg]
+  (if (zero? code)
+    (status/line :detail msg)
+    (status/line :error msg))
+  (System/exit code))
+
+(defn run-tests[{:keys [:clojure-version :coverage]}]
+  (let [cmd ["clojure"
+             (str "-M:test-common:kaocha:" clojure-version)
+             "--reporter" "documentation"
+             "--plugin" "kaocha.plugin/junit-xml"
+             "--junit-xml-file"  (str "target/out/test-results/clj-v" clojure-version "/results.xml")]
+        cmd (if coverage
+              (concat cmd ["--plugin" "cloverage" "--codecov" "--cov-ns-exclude-regex" "rewrite-cljc.potemkin.cljs"])
+              cmd)]
+    (if coverage
+      (status/line :info (str "generating test coverage report against clojure v" clojure-version))
+      (status/line :info (str "testing clojure source against clojure v" clojure-version)))
+    (shell/command cmd)))
 
 (defn main [args]
   (env/assert-min-clojure-version)
-  (let [clojure-version (or (first args) default-version)]
-    (if (some #{clojure-version} allowed-versions)
-      (run-tests clojure-version)
-      (usage-error))))
+  (let [{:keys [options exit-message exit-code]} (validate-args args)]
+    (if exit-message
+      (exit exit-code exit-message)
+      (run-tests options))))
 
 (main *command-line-args*)

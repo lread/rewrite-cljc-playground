@@ -18,7 +18,7 @@
 
 (defn clojure-tests []
   (doseq [version ["1.9" "1.10"]]
-    (shell/command ["bb" "./script/clj_tests.clj" version])) )
+    (shell/command ["bb" "./script/clj_tests.clj" "--clojure-version" version])) )
 
 (defn cljs-tests []
   (doseq [env ["node" "chrome-headless"]

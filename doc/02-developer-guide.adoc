@@ -213,6 +213,15 @@ If you forget where you are at with your docker containers, run:
 bb ./script/cljdoc_preview.clj status
 ----
 
+== Code Coverage
+
+We use https://github.com/cloverage/cloverage[cloverage] via https://github.com/lambdaisland/kaocha[kaocha] to generate code coverage reports.
+Our CI service is setup to automatically generate then upload reports to https://codecov.io[CodeCov].
+
+We have no specific goals for code coverage, but new code is generally expected to have tests.
+
+So why measure coverage? It simply offers us some idea of what code our test suite hits.
+
 == Contributors
 We honor current and past contributors to rewrite-cljc in our README file.
 

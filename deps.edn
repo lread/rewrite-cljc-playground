@@ -25,7 +25,8 @@
 
            ;; koacha for clojure testing
            :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.681"}
-                                 lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}}
+                                 lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
+                                 lambdaisland/kaocha-cloverage {:mvn/version "1.0.63"}}
                     :main-opts ["-m" "kaocha.runner"]}
 
            ;; figwheel for clojurescript testing during dev
