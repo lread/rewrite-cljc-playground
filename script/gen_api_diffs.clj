@@ -52,7 +52,7 @@
                          extra-args)))
 
 (defn main []
-  (env/assert-min-clojure-version)
+  (env/assert-min-versions)
   (let [opts {:notes-dir "doc/diff-notes"
               :report-dir "doc/generated/api-diffs"}
         rewrite-clj      {:coords "rewrite-clj" :version "0.6.1" :lang "clj"}

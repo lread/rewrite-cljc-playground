@@ -8,7 +8,7 @@
          '[helper.shell :as shell]
          '[helper.status :as status])
 
-(env/assert-min-clojure-version)
+(env/assert-min-versions)
 (status/line :info "Exposing rewrite-cljc API to sci")
 (shell/command ["clojure" "-M:script" "-m" "sci-test-gen-publics"])
 

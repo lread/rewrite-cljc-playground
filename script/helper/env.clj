@@ -23,7 +23,7 @@
       #"sunos" :solaris
       :unknown)))
 
-(defn assert-min-clojure-version
+(defn- assert-clojure-min-version
   "Asserts minimum version of Clojure version"
   []
   (let [min-version "1.10.1.697"
@@ -34,3 +34,16 @@
              :version)]
     (when (< (ver/version-compare version min-version) 0)
       (status/fatal (str "A minimum version of Clojure " min-version " required.\nFound version: " version)))))
+
+
+(defn- assert-babashka-min-version
+  "Asserts minimum version of Babashka"
+  []
+  (let [min-version "0.2.3"
+        version (System/getProperty "babashka.version")]
+    (when (< (ver/version-compare version min-version) 0)
+      (status/fatal (str "A minimum version of Babashka " min-version " required.\nFound version: " version)))))
+
+(defn assert-min-versions[]
+  (assert-babashka-min-version)
+  (assert-clojure-min-version))

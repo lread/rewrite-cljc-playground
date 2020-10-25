@@ -18,7 +18,7 @@
                                       :autorun true}}})
 
 ;; Just one sanity test for now
-(env/assert-min-clojure-version)
+(env/assert-min-versions)
 (status/line :info "testing ClojureScript source with Shadow CLJS, node, optimizations: none")
 (try
   (spit "shadow-cljs.edn" shadow-cljs-cfg)

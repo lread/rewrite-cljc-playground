@@ -13,7 +13,7 @@
   (.exists (io/file ".clj-kondo/.cache")))
 
 (defn lint[]
-  (env/assert-min-clojure-version)
+  (env/assert-min-versions)
   (if (not (cache-exists?))
     (status/line :info "linting and building cache")
     (status/line :info "linting"))

@@ -21,7 +21,7 @@
                   "--dest-dir" dir "test-by-namespace"]))
 
 (defn -main [ & _args ]
-  (env/assert-min-clojure-version)
+  (env/assert-min-versions)
   (let [native-image-xmx "6g"
         target-exe "target/rewrite-cljc-test"]
     (status/line :info "Creating native image for test")

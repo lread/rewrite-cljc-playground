@@ -31,7 +31,7 @@
     (shell/command [exe-fname "--file" "script/sci_test_runner.clj" "--classpath" "test"])))
 
 (defn -main [ & _args ]
-  (env/assert-min-clojure-version)
+  (env/assert-min-versions)
   (let [native-image-xmx "6g"
         graal-reflection-fname "target/native-image/reflection.json"
         target-exe "target/sci-test-rewrite-cljc"]

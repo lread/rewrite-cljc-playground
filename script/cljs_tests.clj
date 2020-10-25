@@ -120,7 +120,7 @@
                               nses)))))))
 
 (defn main [args]
-  (env/assert-min-clojure-version)
+  (env/assert-min-versions)
   (let [{:keys [options exit-message exit-code]} (validate-args args)]
     (if exit-message
       (exit exit-code exit-message)
