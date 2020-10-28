@@ -99,11 +99,11 @@
       seq))
 
 (defn unpushed-commits? []
-  (-> (shell/command ["git" "cherry" "-v"]
-                     {:out :string})
-      :out
-      string/trim
-      seq))
+  (let [{:keys [:exit :out]} (shell/command-no-exit ["git" "cherry" "-v"]
+                                                    {:out :string})]
+    (if (zero? exit)
+      (-> out string/trim seq)
+      (status/fatal "Failed to check for unpushed commits to branch, is your branch pushed?"))))
 
 ;;
 ;; docker
