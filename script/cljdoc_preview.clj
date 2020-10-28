@@ -44,7 +44,7 @@
 ;;
 (defn get-from-pom [ pom-exression ]
   (-> (shell/command ["mvn" "help:evaluate" (str "-Dexpression=" pom-exression) "-q" "-DforceStdout"]
-                     {:out-to-string? true})
+                     {:out :string})
       :out
       string/trim))
 
@@ -64,7 +64,7 @@
 
 (defn git-sha []
   (-> (shell/command ["git" "rev-parse" "HEAD"]
-                     {:out-to-string? true})
+                     {:out :string})
       :out
       string/trim))
 
@@ -86,21 +86,21 @@
 
 (defn git-origin-url-as-https []
   (-> (shell/command ["git" "config" "--get" "remote.origin.url"]
-                     {:out-to-string? true})
+                     {:out :string})
       :out
       string/trim
       https-uri))
 
 (defn uncommitted-code? []
   (-> (shell/command ["git" "status" "--porcelain"]
-                     {:out-to-string? true})
+                     {:out :string})
       :out
       string/trim
       seq))
 
 (defn unpushed-commits? []
   (-> (shell/command ["git" "cherry" "-v"]
-                     {:out-to-string? true})
+                     {:out :string})
       :out
       string/trim
       seq))
@@ -111,7 +111,7 @@
 
 (defn status-server [ container ]
   (let [container-id (-> ["docker" "ps" "-q" "-f" (str "name=" (:name container))]
-                         (shell/command {:out-to-string? true})
+                         (shell/command {:out :string})
                          :out
                          string/trim)]
     (if (string/blank? container-id) "down" "up")))

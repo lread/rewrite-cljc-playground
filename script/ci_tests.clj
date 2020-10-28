@@ -40,6 +40,7 @@
   (clojure-tests)
   (cljs-tests)
   (shadow-cljs-tests)
-  (cljs-bootstrap-tests))
+  (cljs-bootstrap-tests)
+  nil)
 
 (main)

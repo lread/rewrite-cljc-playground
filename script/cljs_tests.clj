@@ -79,7 +79,7 @@
   (-> (shell/command ["clojure"
                       "-M:test-common:script"
                       "-m" "code-info.ns-lister" "--lang" "cljs"
-                      "find-all-namespaces"] {:out-to-string? true})
+                      "find-all-namespaces"] {:out :string})
       :out
       (string/split #" ")))
 
@@ -124,7 +124,8 @@
   (let [{:keys [options exit-message exit-code]} (validate-args args)]
     (if exit-message
       (exit exit-code exit-message)
-      (run-tests options))))
+      (run-tests options)))
+  nil)
 
 (main *command-line-args*)
 

@@ -5,7 +5,7 @@
   "Returns jdk major version converting old style appropriately. (ex 1.8 returns 8)"
   []
   (let [version
-        (->> (shell/command ["java" "-version"] {:err-to-string? true})
+        (->> (shell/command ["java" "-version"] {:err :string})
              :err
              (re-find #"version \"(\d+)\.(\d+)\.\d+.*\"")
              rest

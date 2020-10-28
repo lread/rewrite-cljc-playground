@@ -2,7 +2,8 @@
 
 (ns lint
   (:require [babashka.classpath :as cp]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.string :as string]))
 
 (cp/add-classpath "./script")
 (require '[helper.env :as env]
@@ -19,8 +20,10 @@
     (status/line :info "linting"))
 
   (let [lint-args (if (not (cache-exists?))
-                    [(shell/command ["clojure" "-A:test-common:script" "-Spath"]
-                                    {:out-to-string? true}) "--cache"]
+                    [(-> (shell/command ["clojure" "-A:test-common:script" "-Spath"] {:out :string})
+                         :out
+                         string/trim)
+                     "--cache"]
                     ["src" "test" "script"])
        {:keys [:exit]} (shell/command-no-exit
                         (concat ["clojure" "-M:clj-kondo"
@@ -28,7 +31,7 @@
                                 lint-args
                                 ["--config" ".clj-kondo/ci-config.edn"]))]
     (when (not (some #{exit} '(0 2 3)))
-      (status/line :error (str "clj-kondo existed with unexpected exit code: " exit)))
+      (status/fatal (str "clj-kondo existed with unexpected exit code: " exit) exit))
     (System/exit exit)))
 
 (lint)

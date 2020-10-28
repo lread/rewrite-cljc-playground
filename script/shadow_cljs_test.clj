@@ -23,5 +23,6 @@
 (try
   (spit "shadow-cljs.edn" shadow-cljs-cfg)
   (shell/command ["clojure" "-M:cljs:test-common:shadow-cljs-test" "compile" "test"])
+  nil
   (finally
     (fs/delete-file-recursively "shadow-cljs.edn" true)))

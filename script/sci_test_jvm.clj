@@ -14,3 +14,4 @@
 
 (status/line :info "Interpreting tests with sci from using JVM")
 (shell/command ["clojure" "-M:sci-test" "-m" "sci-test.main" "--file" "script/sci_test_runner.clj" "--classpath" "test"])
+nil

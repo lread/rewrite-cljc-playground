@@ -55,6 +55,7 @@
     (status/line :info "build done")
     (status/line :detail (format "built: %s, %d bytes"
                                  target-exe (.length (io/file target-exe)))))
-  (interpret-tests))
+  (interpret-tests)
+  nil)
 
 (-main)

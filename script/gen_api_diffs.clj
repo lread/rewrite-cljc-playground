@@ -77,6 +77,7 @@
     (diff-apis opts rewrite-clj       rewrite-cljc-clj  "rewrite-clj-and-rewrite-cljc-clj"   existing-to-cljc-args)
     (diff-apis opts rewrite-cljs      rewrite-cljc-cljs "rewrite-cljs-and-rewrite-cljc-cljs" existing-to-cljc-args)
     (diff-apis opts rewrite-cljc-cljs rewrite-cljc-clj  "rewrite-cljc"                       to-self-args)
-    (diff-apis opts rewrite-cljc-cljs rewrite-cljc-clj  "rewrite-cljc-documented-only"       (concat to-self-args documented-only-args))))
+    (diff-apis opts rewrite-cljc-cljs rewrite-cljc-clj  "rewrite-cljc-documented-only"       (concat to-self-args documented-only-args)))
+  nil)
 
 (main)

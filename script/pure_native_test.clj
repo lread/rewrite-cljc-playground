@@ -43,6 +43,7 @@
     (status/line :detail (format "built: %s, %d bytes"
                                  target-exe (.length (io/file target-exe))))
     (status/line :info "Running tests natively")
-    (shell/command [target-exe])))
+    (shell/command [target-exe]))
+  nil)
 
 (-main)

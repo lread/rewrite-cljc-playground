@@ -37,7 +37,7 @@
 (defn calculate-version []
   (let [{:keys [:major :minor :qualifier]} (edn/read-string (slurp "./script/resources/version.edn"))
         tags (-> (shell/command ["git" "--no-pager" "tag" "--sort=creatordate"]
-                                {:out-to-string? true})
+                                {:out :string})
                  :out
                  (string/split-lines))
         version-pattern (re-pattern (str "v" major "\\." minor "\\..*"))
@@ -47,7 +47,7 @@
         patch (if (not earliest-tag)
                 "0"
                 (-> (shell/command ["git" "rev-list" (str earliest-tag "..") "--count"]
-                                   {:out-to-string? true})
+                                   {:out :string})
                     :out
                     (string/trim)))]
     (str major "." minor "." patch (when qualifier (str "-" qualifier)))))
@@ -55,7 +55,7 @@
 (defn prepare-for-publish []
   (status/line :info "Prepare for publish")
   (let [tag (-> (shell/command ["git" "rev-parse" "HEAD"]
-                               {:out-to-string? true})
+                               {:out :string})
                 :out
                 string/trim)
         version (calculate-version)]
@@ -67,11 +67,11 @@
     (shell/command ["mvn" "versions:set" (str "-DnewVersion=" version) "-DgenerateBackupPoms=false"])))
 
 (defn repo-clean? []
-  (string/blank? (shell/command ["git" "status" "--procelain"] {:out-to-string? true})))
+  (string/blank? (shell/command ["git" "status" "--procelain"] {:out :string})))
 
 (defn get-from-pom [ pom-exression ]
   (-> (shell/command ["mvn" "help:evaluate" (str "-Dexpression=" pom-exression) "-q" "-DforceStdout"]
-                     {:out-to-string? true})
+                     {:out :string})
       :out
       string/trim))
 

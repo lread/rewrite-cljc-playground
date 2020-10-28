@@ -53,7 +53,7 @@
     (status/line :detail (str "JDK major version seems to be " jdk-major-version "; "
                               (if reflection-fix? "including" "excluding") " reflection fixes." ))
     (let [alias-opt (str "-A:" alias (when reflection-fix? (str ":" jdk11-alias)))
-          classpath (-> (shell/command ["clojure" alias-opt "-Spath"] {:out-to-string? true})
+          classpath (-> (shell/command ["clojure" alias-opt "-Spath"] {:out :string})
                         :out
                         string/trim)]
       (println "\nClasspath:")
