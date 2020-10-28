@@ -9,13 +9,14 @@
          '[helper.shell :as shell]
          '[helper.status :as status])
 
+(def compiled-tests "target/shadow-cljs/node-test.js")
+
 (def shadow-cljs-cfg {:deps true
                       :builds {:test {:target :node-test
-                                      :output-to "target/shadow-cljs/node-test.js"
+                                      :output-to compiled-tests
                                       :compiler-options {:warnings
                                                          ;; clj-kondo handles deprecation warnings for us
-                                                         {:fn-deprecated false}}
-                                      :autorun true}}})
+                                                         {:fn-deprecated false}}}}})
 
 ;; Just one sanity test for now
 (env/assert-min-versions)
@@ -23,6 +24,7 @@
 (try
   (spit "shadow-cljs.edn" shadow-cljs-cfg)
   (shell/command ["clojure" "-M:cljs:test-common:shadow-cljs-test" "compile" "test"])
+  (shell/command ["node" compiled-tests])
   nil
   (finally
     (fs/delete-file-recursively "shadow-cljs.edn" true)))
