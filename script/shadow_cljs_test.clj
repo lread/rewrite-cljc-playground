@@ -14,6 +14,9 @@
 (def shadow-cljs-cfg {:deps true
                       :builds {:test {:target :node-test
                                       :output-to compiled-tests
+                                      ;; shadow-cljs test runner unfortunately does not have exclude
+                                      ;; nor metadata support for test selection
+                                      :ns-regexp "(?<!^rewrite-cljc\\.parser-ns)-test$"
                                       :compiler-options {:warnings
                                                          ;; clj-kondo handles deprecation warnings for us
                                                          {:fn-deprecated false}}}}})
