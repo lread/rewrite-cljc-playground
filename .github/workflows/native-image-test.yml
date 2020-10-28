@@ -44,7 +44,7 @@ jobs:
     # Install GraalVM
     #
     - name: Install GraalVM
-      uses: DeLaGuardo/setup-graalvm@3
+      uses: DeLaGuardo/setup-graalvm@master
       with:
         graalvm-version: ${{ matrix.graal }}
 
