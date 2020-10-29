@@ -31,17 +31,17 @@
 
            ;; figwheel for clojurescript testing during dev
            :fig-test {:extra-deps {com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
-                                   com.bhauman/figwheel-main {:mvn/version "0.2.11"}}
+                                   com.bhauman/figwheel-main {:mvn/version "0.2.12"}}
                       :extra-paths ["target" "test"]
                       :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
 
-           :cljs-test {:extra-deps {olical/cljs-test-runner {:mvn/version "3.7.0"}}
+           :cljs-test {:extra-deps {olical/cljs-test-runner {:mvn/version "3.8.0"}}
                        :extra-paths [ "test" ]
                        :main-opts ["-m" "cljs-test-runner.main"]}
 
            :planck-test {:extra-paths [ "target/cljsbuild/test/planck-none/gen"]}
 
-           :shadow-cljs-test {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.5" }}
+           :shadow-cljs-test {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.6" }}
                               :main-opts ["-m" "shadow.cljs.devtools.cli"]}
 
            ;;
@@ -103,7 +103,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {antq/antq {:mvn/version "0.7.4"}
+           :outdated {:extra-deps {antq/antq {:mvn/version "0.7.5"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.30"} ;; to rid ourselves of logger warnings
                                    }
                       :main-opts ["-m" "antq.core"
