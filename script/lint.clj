@@ -23,8 +23,8 @@
                     [(-> (shell/command ["clojure" "-A:test-common:script" "-Spath"] {:out :string})
                          :out
                          string/trim)
-                     "--cache"]
-                    ["src" "test" "script"])
+                     "deps.edn"]
+                    ["src" "test" "script" "deps.edn"])
        {:keys [:exit]} (shell/command-no-exit
                         (concat ["clojure" "-M:clj-kondo"
                                  "--lint"]

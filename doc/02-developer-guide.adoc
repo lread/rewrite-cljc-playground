@@ -102,7 +102,7 @@ To see what new dependencies are available, run:
 clojure -M:outdated
 ----
 
-Note that we use https://github.com/liquidz/antq[antq] which also checks `pom.xml`.
+We use https://github.com/liquidz/antq[antq] which also checks `pom.xml`.
 There should never be a need to manually update dependencies in `pom.xml` as all dependencies
 are carried over from `deps.edn` during the release process.
 
@@ -114,6 +114,11 @@ clojure -Spom
 ----
 
 And then check in the updated `pom.xml`.
+
+You may also choose to check, from time to time, for outdated node dependencies:
+----
+npm outdated
+----
 
 == Linting
 We use https://github.com/borkdude/clj-kondo[clj-kondo] for linting rewrite-cljc source code.
