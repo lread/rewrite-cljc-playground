@@ -54,23 +54,7 @@
   (let [opts {:dirs ["src"]
               :exclude-ns-regexes [".*potemkin.*" "rewrite-cljc\\.node\\.coercer" ]
               :exclude-var-regexes [".*Node.*"]
-              :fn-wrappers {'import/fn-without-sci-meta-on-args
-                            [".*/append-child"
-                             ".*/append-child\\*"
-                             ".*/edit"
-                             ".*/edit\\*"
-                             ".*/insert-child"
-                             ".*/insert-child\\*"
-                             ".*/insert-left"
-                             ".*/insert-left\\*"
-                             ".*/insert-right"
-                             ".*/insert-right\\*"
-                             ".*/replace"
-                             ".*/replace\\*"
-                             ".*/coerce"]
-                            'import/fn-out-to-sci-out
-                            [".*/print"
-                             ".*/print-root"]}}
+              :fn-wrappers {'import/fn-out-to-sci-out [".*/print" ".*/print-root"]}}
         ns-name "lib-under-sci-test"
         pubs (-> (find-nses opts)
                  (find-pubs opts))

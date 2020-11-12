@@ -56,12 +56,12 @@ l|"^rewrite-cljc/rewrite-clj"
 | publics
 | 6
 | 3
-| 77
+| 81
 
 | arglists
 | 0
 | 4
-| 95
+| 97
 
 |===
 **Notes:**
@@ -442,6 +442,28 @@ a|
 
 [unstyled]
 
+=== [green]`*+*`[green]#pass:c[*elide-metadata*]#
+|===
+| attributes
+
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
+* *pass:c[:dynamic]* [green]`*+*` [green]`+true+`
+|===
+
+=== [green]`*+*`[green]#pass:c[form-meta]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+form+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
+|===
+
 === [green]`*+*`[green]#pass:c[node?]#
 |===
 | arglists | attributes 
@@ -529,6 +551,16 @@ a|
 [unstyled]
 * *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 
+=== [green]`*+*`[green]#pass:c[*elide-metadata*]#
+|===
+| attributes
+
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
+* *pass:c[:dynamic]* [green]`*+*` [green]`+true+`
+|===
+
 === [black]`*=*`[black]#pass:c[+extent]#
 |===
 | arglists | attributes 
@@ -604,6 +636,18 @@ a|
 [unstyled]
 * *pass:c[:type]* [black]`*=*` [black]`+:var+`
 * *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
+|===
+
+=== [green]`*+*`[green]#pass:c[form-meta]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+form+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
 |===
 
 === [black]`*=*`[black]#pass:c[InnerNode]#

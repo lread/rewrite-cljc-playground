@@ -28,10 +28,12 @@
 
 (import-vars
  [rewrite-cljc.node.protocols
+  *elide-metadata*
   coerce
   children
   child-sexprs
   concat-strings
+  form-meta
   inner?
   leader-length
   length
@@ -108,6 +110,8 @@
   comma-node
   comma?
   whitespace-nodes])
+
+
 
 ;; ## Predicates
 

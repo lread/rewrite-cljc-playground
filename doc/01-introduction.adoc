@@ -284,14 +284,11 @@ user=> (z/position zc2) ;; <8>
 <9> examine updated position of c. It is on the 6th row and 6th column.
 
 
-==== Some `coerce` Guidance for Lists
+==== Dealing with Reader Generated Metadata
 
-Rewrite-cljc offers, where it can, transparent coercion from Clojure to rewrite-cljc nodes.
+Rewrite-cljc offers, where it can, transparent coercion from Clojure forms to rewrite-cljc nodes.
 
-Coercion is complete in that it also includes any attached metadata. This can lead to confusion if you are not
-aware that, in some cases, Clojure automatically adds metadata.
-
-For example, you might not be aware of the metadata Clojure attaches to a quoted list:
+Clojure will, in some cases, add location metadata that is not in the original source code, as illustrated here:
 
 .REPL session
 [source,clojure-repl]
@@ -302,10 +299,19 @@ user=> (meta '(1 2 3))
 {:line 1, :column 8}
 ----
 
-To avoid this metadata, an easy alternative is to use the longer form `(list 1 2 3)` instead of the short form `'(1 2 3)`.
+Rewrite-cljc will, on coercion from Clojure forms to rewrite-cljc nodes, omit location metadata.
+No rewrite-cljc metadata node will will be created if resulting metadata is empty.
 
-This metadata is not added by ClojureScript, but to avoid confusion, we recommend using the longer form in all cases.
+On conversion from rewrite-cljc nodes to Clojure forms via `sexpr`, I don't see a way to omit the location metadata.
+With the assumption that you will generally coerce Clojure forms back to rewrite-cljc nodes, this should not cause an issue.
 
+You can use `rewrite-cljc.node/form-meta` in place of `clojure.core/meta` if you'd like to only see metadata that was actually in original Clojure source code.
+
+To support those using rewrite-cljc under sci, in addition to `:line` and `:column` rewrite-cljc also removes `:end-line` and `:end-column` metadata.
+Note that while Clojure only adds location metadata to quoted lists, sci adds it to all forms that accept metadata.
+
+Omitting location metadata is a deviation from rewrite-clj behavior.
+Should you wish, for whatever reason, to preserve rewrite-clj behavior and not remove location metadata, bind `rewrite-cljc.node/\*elide-metadata*` to `nil`.
 
 ==== Some `sexpr` Guidance
 

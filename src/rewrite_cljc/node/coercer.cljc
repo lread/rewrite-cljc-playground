@@ -21,7 +21,7 @@
         [rewrite-cljc.node.integer :refer [IntNode]]
         [rewrite-cljc.node.keyword :refer [KeywordNode]]
         [rewrite-cljc.node.meta :refer [MetaNode meta-node]]
-        [rewrite-cljc.node.protocols :refer [NodeCoerceable coerce]]
+        [rewrite-cljc.node.protocols :as node :refer [NodeCoerceable coerce]]
         [rewrite-cljc.node.quote :refer [QuoteNode]]
         [rewrite-cljc.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
         [rewrite-cljc.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
@@ -51,7 +51,7 @@
   [n value]
   (if #?(:clj (instance? clojure.lang.IMeta value)
          :cljs (satisfies? IWithMeta value))
-    (let [mta (meta value)]
+    (let [mta (node/form-meta value)]
       (if (empty? mta)
         n
         (meta-node (coerce mta) n)))

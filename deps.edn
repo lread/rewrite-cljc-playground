@@ -69,7 +69,7 @@
            ;; deps only see usage below
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "345e904ccff060e6aad7d630e0002a6f1a707947"
+                                                   :sha "8a886ae8f9ae7c65d139d90e82205f7f1dacc8a6"
                                                    ;; TODO: awkward we only need cheshire to generate reflection json
                                                    :exclusions [checshire/cheshire]}}}
 
@@ -79,7 +79,7 @@
            :gen-reflection {:main-opts ["-m" "sci-test.generate-reflection-file"]
                             ;; TODO: awkward we only need cheshire to generate reflection json
                             :override-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                            :sha "345e904ccff060e6aad7d630e0002a6f1a707947"}}}
+                                                            :sha "8a886ae8f9ae7c65d139d90e82205f7f1dacc8a6"}}}
 
            ;; for native-image
            ;; usage -A:sci-test:native-image

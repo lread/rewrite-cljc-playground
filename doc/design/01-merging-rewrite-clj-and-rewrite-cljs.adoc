@@ -23,6 +23,8 @@ Rewrite-cljc is a merge of https://github.com/xsc/rewrite-clj[rewrite-clj] and h
 == Changes
 === Breaking
 . Root namespace is `rewrite-cljc` instead of `rewrite-clj`
+. Reader generated location metadata on coercion is now elided by default. +
+Bind `rewrite-cljc.node/\*elide-metadata*` to `nil` for rewrite-clj behavior.
 . Minimum versions
 ** Clojure v1.9
 ** Java v1.8
@@ -55,6 +57,14 @@ From what I perceive as public APIs, rewrite-clj has gained:
 [cols="3,1,3"]
 |===
 | public | origin | description
+
+| rewrite-cljc.node/\*elide-metadata*
+| new
+| metadata to omit, used by form-meta and coercion
+
+| rewrite-cljc.node/form-meta
+| new
+| same as clojure core meta but omits reader generated metadata
 
 | rewrite-cljc.node/node?
 | new

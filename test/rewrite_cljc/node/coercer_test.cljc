@@ -47,20 +47,36 @@
     #inst "2014-11-26T00:05:23" :token))
 
 (deftest
-  ^:skip-for-sci ;; sci has its own positional metadata which I strip - so let's just skip this one for sci
-  t-quoted-list-has-meta
-  (are [?sexpr expected-tag]
+  t-quoted-list-reader-location-metadata-elided
+  (are [?sexpr expected-meta-keys]
       (let [n (coerce ?sexpr)]
         (is (node/node? n))
-        (is (= expected-tag (node/tag n)))
+        (is (= expected-meta-keys (node/string n)))
         (is (string? (node/string n)))
         (is (= ?sexpr (node/sexpr n)))
         (is (not (meta n)))
         (is (= (type ?sexpr) (type (node/sexpr n)))))
-    '(1 2 3)  #?(:clj ;; clojure includes :line and :column metadata for non-empty quoted lists
-                 :meta
-                 :cljs ;; cljs does not include metadata for quoted lists
-                 :list)))
+    '(1 2 3) "(1 2 3)"
+    '^:other-meta (4 5 6) "^{:other-meta true} (4 5 6)"))
+
+(deftest
+  ^:skip-for-sci
+  t-quoted-list-reader-location-metadata-included-on-request
+  (binding [node/*elide-metadata* nil]
+    (are [?sexpr expected-meta-keys]
+        (let [n (coerce ?sexpr)]
+          (is (node/node? n))
+          (is (= expected-meta-keys (when (= :meta (node/tag n))
+                                      (set (keys (node/sexpr (first (node/children n))))))))
+          (is (string? (node/string n)))
+          (is (= ?sexpr (node/sexpr n)))
+          (is (not (meta n)))
+          (is (= (type ?sexpr) (type (node/sexpr n)))))
+      '(1 2 3) #?(:clj #{:line :column }
+                  ;; cljs does not add location metadata
+                  :cljs nil)
+      '^:other-meta (4 5 6) #?(:clj #{:line :column :other-meta}
+                               :cljs #{:other-meta}))))
 
 (deftest t-maps
   (are [?sexpr]

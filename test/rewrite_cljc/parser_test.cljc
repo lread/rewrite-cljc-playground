@@ -227,7 +227,7 @@
          (is (= ?t (node/tag n)))
          (is (= s (node/string n)))
          (is (= 's (node/sexpr n)))
-         (is (= {:private true} (meta (node/sexpr n))))
+         (is (= {:private true} (node/form-meta (node/sexpr n))))
          (is (= ?mt (node/tag mta)))
          (is (= :whitespace (node/tag ws)))
          (is (= :token (node/tag sym)))
@@ -248,13 +248,13 @@
          (is (= ?t (node/tag n)))
          (is (= s (node/string n)))
          (is (= 's (node/sexpr n)))
-         (is (= {:private true :awe true} (meta (node/sexpr n))))
+         (is (= {:private true :awe true} (node/form-meta (node/sexpr n))))
          (is (= ?mt (node/tag mta)))
          (is (= :whitespace (node/tag ws)))
 
          ;; inner meta
          (is (= ?t (node/tag n')))
-         (is (= {:awe true} (meta (node/sexpr n'))))
+         (is (= {:awe true} (node/form-meta (node/sexpr n'))))
          (is (= ?mt (node/tag mta2)))
          (is (= :whitespace (node/tag ws2))))
     "^:private ^:awe"                 :meta  :token

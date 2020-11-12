@@ -171,3 +171,16 @@
   [[row col] [row-extent col-extent]]
   [(+ row row-extent)
    (cond-> col-extent (zero? row-extent) (+ col))])
+
+(def ^{:dynamic true
+       :doc "The Clojure reader can add positional metadata.
+            This metadata is not in the original source, and therefore assumed to be uninteresting to users of rewrite-cljc.
+            Clojure will add `:line` and `:column` to quoted lists.
+            Sci, and therefore Babashka does the same for all elements that accept metadata and adds `:end-line` and `:end-column`"}
+  *elide-metadata* [:line :column :end-line :end-column])
+
+(defn form-meta
+  "Same as `clojure.core/meta` but respects [[rewrite-cljc/*elide-metadata*]].
+  Use when you want to omit reader generated metadata on forms."
+  [form]
+  (apply dissoc (meta form) *elide-metadata*))
