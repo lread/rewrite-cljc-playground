@@ -8,10 +8,9 @@ The primary challenge in supporting namespaced elements is in supporting `sexpr`
 You will therefore notice a focus on `sepxr` in this document.
 
 == Nomenclature
-To be clear about what we are discussing in this document, I'll define some terms.
 
 *Namespaced Elements* +
-Clojure docs describe namespaced elements but I did not see clear nomenclature defined.
+Clojure docs describe namespaced elements but I did not see clear terms defined.
 Alex Miller helped out on Slack, I will use:
 
 |===
@@ -43,11 +42,11 @@ See:
 
 * https://blog.jeaye.com/2017/10/31/clojure-keywords/[Jeaye's blog] for a refresher on namespaced keywords.
 * https://clojure.atlassian.net/browse/CLJ-1910[CLJ-1910] for details on namespaced maps.
-* https://groups.google.com/g/clojure/c/i770QaIFiF0/m/v63cZgrlBwAJ[More modern terminology and some history from Alex Miller]
+* https://groups.google.com/g/clojure/c/i770QaIFiF0/m/v63cZgrlBwAJ[Terminology and some history from Alex Miller]
 
 
 *ClojureScript Flavors* +
-ClojureScript has two flavors for which I've not found definitive single terms. I'll use the following:
+ClojureScript has two flavors for which I've not found definitive unique terms. I'll use the following:
 
 [cols="15%,85%"]
 |===
@@ -56,30 +55,18 @@ ClojureScript has two flavors for which I've not found definitive single terms. 
 | _Regular ClojureScript_ | The regular old JVM compiled ClojureScript that most folks are familiar with.
 | _Self-hosted ClojureScript_ | ClojureScript that is compiled by ClojureScript, also known as bootstrap ClojureScript.
 Self-hosted ClojureScript can make runtime use of features that are only available at compile time in _Regular ClojureScript_.
-Self-hosted ClojureScript behaves similarly more similarly to Clojure around namespaces.
+Self-hosted ClojureScript behaves similarly to Clojure around namespaces.
 |===
-
-*Reader Conditionals* +
-Clojure docs use multiple terms here. I'll stick to one.
-
-[cols="15%,85%"]
-|===
-| term | description
-
-| _Clojure platform_ | The `:clj`, `:cljs`, `:clr` or `:default` in a reader conditional.
-It is referred to as a "feature" in other Clojure docs.
-
-|===
-
 
 == What happens now in rewrite-clj and rewrite-cljs?
 
 === General use of sexpr in rewrite-clj
-The general idea was to make it easy to inspect and update nodes using familiar Clojure forms rather than having to deal with rewrite-clj nodes.
+The `sexpr` function is used to convert a rewrite-clj node to a Clojure form.
+Clojure forms are more familiar and can be easier to work with than rewrite-clj nodes.
 
-Rewrite-clj's `sexpr` is also used internally for automatic conversion from a rewrite-clj node to a Clojure form in functions like `find-value`, `find-next-value` and `edit` and some paredit functions inherited from rewrite-cljs.
+Rewrite-clj's `sexpr` is also used internally in functions like `find-value`, `find-next-value` and `edit` and some paredit functions inherited from rewrite-cljs.
 
-The following throw an exception for `sexpr` which is sensible and is as-designed.
+The following rewrite-clj nodes throw an exception for `sexpr` which is sensible and is as-designed.
 
 - comment
 - whitespace
@@ -106,41 +93,41 @@ h|parse h|sexpr h|parse h|sexpr
 `::foo`
 | supported
 | supported, +
-*resolves via* `\*ns*`
+⚠️ *resolves via* `\*ns*`
 | supported
-| *throws*
+| ⚠️ *throws*
 
 | _ns-alias&nbsp;qualified_ +
 `::alias/foo`
 | supported
-| *incorrectly returns* `:alias/foo` for `::alias/foo`
+| ⚠️ *incorrectly returns* `:alias/foo` for `::alias/foo`
 | supported
-| *incorrectly returns* `:alias/foo` for `::alias/foo`
+| ⚠️ *incorrectly returns* `:alias/foo` for `::alias/foo`
 
 1.3+|map | _qualified_ +
 `#:prefix{:a 1}`
 | supported
 | supported
-| *somewhat supported with generic reader macro node*
-a| *returns* `(read&#8209;string "#:prefix{:a&nbsp;1}")`
+| ⚠️ *somewhat supported with generic reader macro node*
+a| ⚠️ *returns* `(read&#8209;string "#:prefix{:a&nbsp;1}")`
 
 | _current&#8209;ns&nbsp;qualified_ +
 `#::{:b 2}`
-| *throws*
-| *not applicable, +
+| ⚠️ *throws*
+| ⚠️ *not applicable, +
 can't parse*
-| *throws*
-| *not applicable, +
+| ⚠️ *throws*
+| ⚠️ *not applicable, +
 can't parse*
 
 | _ns-alias&nbsp;qualified_ +
 `#::alias{:c 3}`
 | supported
-a| awkwardly supported, +
+a| ⚠️ awkwardly supported, +
 *resolves via* +
 `(ns&#8209;aliases&nbsp;\*ns*)`
-| *somewhat supported with generic reader macro node*
-a| *returns* `(read&#8209;string "#::alias{:c&nbsp;3}")`
+| ⚠️ *somewhat supported with generic reader macro node*
+a| ⚠️ *returns* `(read&#8209;string "#::alias{:c&nbsp;3}")`
 
 |===
 
@@ -150,29 +137,29 @@ a| *returns* `(read&#8209;string "#::alias{:c&nbsp;3}")`
 |===
 | status | ref |option | primary impact / notes
 
-| rejected
+| ❌ rejected
 | 1
 | Do nothing
 a| * both Clojure and ClojureScript users can't fully parse Clojure/ClojureScript code.
 
-| rejected
+| ❌ rejected
 | 2
 a| Support parsing and writing, but throw on `sexpr`
 a| * breaks existing API compatibility
 * makes general navigation with certain rewrite-clj functions impossible
 
-| candidate
+| ✅ candidate
 | 3
 a| Support parsing, writing. Have `sexpr` rely on user provided namespace info.
 a| * seems like a good compromise
 
-| candidate
+| ✅ candidate
 | 4
 a| Same as 3 but also ensure backward compatibility with current rewrite-clj implementation
 a| * we'll see how awkward backward compatibility is for namespaced keywords
 * we'll not entertain backward compatibility for namespaced maps
 
-| rejected
+| ❌ rejected
 | 5
 a| Same as 4 but include a rudimentary namespace info resolver
 a| * had a good chat with borkdude on Slack and concluded that a namespace info resolver:
@@ -186,8 +173,7 @@ My current thinking is to explore #4 and not entirely reject #3 if backward comp
 [#sexpr-rabbit-hole]
 .The Rabbit Hole - Automatically Calculating sexpr for Auto-resolved Elements
 ****
-Parsing and writing namespaced elements seems relatively straightforward, but automatically returning a technically correct
-`sexpr` for _auto-resolved_ namespaced elements is a rabbit hole that we'll reject for now.
+Parsing and writing namespaced elements seems relatively straightforward, but automatically parsing and returning a technically correct `sexpr` for _auto-resolved_ namespaced elements is a rabbit hole that we'll reject for now.
 
 Let's tumble down the hole a bit to look at some of the complexities that _auto-resolved_ namespaced elements include:
 
@@ -196,7 +182,7 @@ Let's tumble down the hole a bit to look at some of the complexities that _auto-
 3. The `sexpr` of any namespace element can be affected by reader conditionals:
 
 * within ns declarations
-* surrounding the form being ``sexpr``ed which can be ambiguous in absence of parsing context of the _Clojure platform_
+* surrounding the form being ``sexpr``ed which can be ambiguous in absence of parsing context of the _Clojure platform_ (clj, cljs, clr, sci)
 
 4. In turn, the current namespace can be affected by:
 
@@ -227,15 +213,15 @@ They depend on context outside of the form; namely the current namespace and nam
 
 Rewrite-cljc will:
 
-* NOT take on evaluation of the Clojure code it is parsing determine namespace info.
+* NOT take on evaluation of the Clojure code it is parsing to determine namespace info.
 It will be up to the caller to optionally specify the current namespace and namespace aliases.
 
 * NOT offer any support for reader conditionals around caller provided namespace info
-** caller specified namespace info will not distinguish for _Clojure platforms_
+** caller specified namespace info will not distinguish for _Clojure platforms_ (clj, cljs, clr, sci)
 ** an `sexpr` for a namespaced element will NOT evaluate differently if it is wrapped in a reader conditional
 
 * assume that callers will often have no real interest in an technically correct `sexpr` on _auto-resolved_ namespaced elements.
-This means that we will return a result and not throw if the namespace info is not provided/available.
+This means that it will return a result and not throw if the namespace info is not provided/available.
 
 * break rewrite-clj compatibility for namespaced maps.
 It was a late and incomplete addition to rewrite-clj.
@@ -248,7 +234,7 @@ It was a late and incomplete addition to rewrite-clj.
 
 * preserve compatibility for `sexpr` under the following questionable scenarios, we'll:
 ** fall back to `\*ns*` if namespace is not specified by caller.
-** return `:alias/foo` for _ns-alias qualified_ keyword `::alias/foo` when namespace aliases is not specified by caller
+** return `:alias/foo` for _ns-alias qualified_ keyword `::alias/foo` when namespace aliases are not specified by caller
 
 === Platform Support
 
@@ -265,7 +251,7 @@ Our solution will cover all the above and also be verified when running rewrite-
 [#sexpr-behavior]
 === Sexpr Behaviour
 
-The caller will convey namespace info via `rewrite-cljc.parser/\*ctx*` (final namespace and name TBD during implementation) dynamic variable.
+The caller will convey namespace info via `rewrite-cljc.parser/\*ctx*` dynamic variable (final namespace and name TBD during implementation).
 
 Example value:
 
@@ -278,7 +264,6 @@ Example value:
 
 For backward compatibility, we will support `\*ns*` as a fallback if `:ns` is not provided in `\*ctx*`.
 
-We will drop support for `(ns-aliases \*ns*)` for _ns-alias qualified_ maps.
 If a caller wants to populate `:ns-aliases` using `(ns-aliases \*ns*)`, that's fine, but rewrite-cljc won't do so.
 
 My guess is that the majority of rewrite-cljc users will not make use of the `rewrite-cljc.parser/\*ctx*`.
@@ -291,7 +276,7 @@ None-the-less we will provide the possibility for those who might want/need it.
 
 
 a| `\*ctx*` specifies `:ns`
-a| *_Current-ns qualified_* element will use `:ns` value. +
+a| *_Current-ns qualified_* elements will use `:ns` value. +
 [source,Clojure]
 ----
 (binding [parser/*ctx* {:ns 'my-namespace}]
@@ -373,10 +358,13 @@ We might want to provide some mechanism for users to override this behavior. May
 Maybe they'd like to return a different value. But I think we can add in such support at a later
 date if need be.
 
+Alternative: we could behave the same here as when `:ns-alias` is not specified.
+See next behaviour.
+
 a| `\*ctx*` does not specify `:ns-alias` +
 a| For *_ns-alias qualified_* element, when `:ns-aliases` has NOT been specified
 
-Entirely for backward namespaced keyword compatibility, we will mimic return of rewrite-clj _ns-alias qualified_ keywords:
+Entirely for namespaced keyword backward compatibility, we will mimic return of rewrite-clj _ns-alias qualified_ keywords:
 
 [source,Clojure]
 ----
@@ -394,7 +382,7 @@ The functions are also exposed for general use.
 General usability might not have been a focus.
 
 ==== Map Node
-We are going to abandon rewrite-clj's namespaced map node creation function `namespaced-map-node`.
+We abandon rewrite-clj's namespaced map node creation function `namespaced-map-node`.
 We'll instead add namespaced map node creation support under `map-node`.
 
 Current signature is `(node/map-node children)` where `children` is converted to a `hash-map`.
