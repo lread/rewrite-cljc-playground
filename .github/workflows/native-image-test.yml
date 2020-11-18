@@ -8,11 +8,11 @@ jobs:
     strategy:
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
-        graal: [ 20.2.0.java8, 20.2.0.java11 ]
+        graal: [ 20.3.0.java8, 20.3.0.java11 ]
         test: [ pure, sci ]
         exclude:
           - os: windows-latest
-            graal: 20.2.0.java8
+            graal: 20.3.0.java8
 
     name: ${{ matrix.os }},${{ matrix.graal }},${{ matrix.test }}
 

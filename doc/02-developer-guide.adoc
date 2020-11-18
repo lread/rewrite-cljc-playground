@@ -1,4 +1,5 @@
 = Developer Guide
+:toclevels: 6
 :toc:
 
 == Supported Environments
@@ -16,16 +17,19 @@ both jdk8 and jdk11. On Windows we only test against jdk11 as tool setup for jdk
 == Prerequisites
 * Java JDK 1.8 or above
 * NodeJs v12 or above
-* Clojure v1.10.1.697 for `clojure` command
+* Clojure v1.10.1.697 or above for `clojure` command
 ** Note that rewrite-cljc itself supports Clojure v1.9 and above
-* Babashka
-* GraalVM v20.1.0
+* Babashka v0.2.3 or above
+* GraalVM v20.3.0 (if you want to run GraalVM native image tests)
 
 === Windows Notes
+
+==== Babashka
 The Clojure story on Windows is still in the early chapters. https://scoop.sh/[Scoop] offers an easy way to install tools.
-@littleli is doing a great job maintaining https://github.com/littleli/scoop-clojure[scoop apps for Clojure, Babashka and other tools] and
+@littleli is doing a great job  w/maintaining https://github.com/littleli/scoop-clojure[scoop apps for Clojure, Babashka and other tools] and
 this is how I installed Babashka.
 
+==== Clojure
 We all choose our own paths, but for me, using https://github.com/borkdude/deps.clj[deps.clj] instead of
 https://github.com/clojure/tools.deps.alpha/wiki/clj-on-Windows[Clojure's PowerShell Module] offered me no
 fuss no muss Clojure on Windows and GitHub Actions on Windows. I decided to install deps.clj not through scoop but through
@@ -35,6 +39,21 @@ This makes it simple to treat `deps.exe` as if it were the official `clojure` vi
 ----
 Rename-Item $HOME\deps.clj\deps.exe clojure.exe
 ----
+
+==== GraalVM
+You'll have your own preference, but I find it convenient to install GraalVM on Windows via scoop.
+Both `graalvm11` and `graalvm8` are available.
+
+You'll need to load the appropriate Visual C++ environment variables for GraalVM's native-image to do its work.
+I found it oddly cumbersome to load them from PowerShell, so I work from a cmd shell instead.
+Here's what works on my Windows dev environment:
+
+[source,shell]
+----
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+----
+
+And finally, I never did figure out how to get the Windows prerequisites setup for the jdk8 version of GraalVM, so I only test on the jdk11 version.
 
 == Setup
 After checking out this project from github,

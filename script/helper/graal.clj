@@ -74,7 +74,6 @@
                                "-J-Dclojure.compiler.direct-linking=true"
                                (when graal-reflection-fname
                                  (str "-H:ReflectionConfigurationFiles=" graal-reflection-fname))
-                               "--initialize-at-run-time=java.lang.Math$RandomNumberGeneratorHolder"
                                "--initialize-at-build-time"
                                "-H:Log=registerResource:"
                                "--enable-all-security-services"
