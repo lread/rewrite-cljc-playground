@@ -31,7 +31,7 @@
 (defn cljs-bootstrap-tests []
   (if (some #{(env/get-os)} '(:mac :unix))
     (shell/command ["bb" "./script/cljs_tests.clj" "--env" "planck" "--optimizations" "none"])
-    (status/line :info "* WARNING: skipping planck tests, they can only be run on unix and macOS")) )
+    (status/line :warn "skipping planck tests, they can only be run on linux and macOS")) )
 
 (defn main[]
   (env/assert-min-versions)
