@@ -4,8 +4,7 @@
 
 Herein we study what rewrite-clj and rewrite-cljs currently do for namespaced elements and explore our options for rewrite-cljc.
 
-The primary challenge in supporting namespaced elements is in supporting `sexpr`.
-You will therefore notice a focus on `sepxr` in this document.
+You will a focus on `sepxr` in this document. It is the primary challenge in supporting namespaced elements.
 
 == Nomenclature
 
@@ -233,7 +232,7 @@ It was a late and incomplete addition to rewrite-clj.
 ** have the possibility of returning a more correct Clojure form
 
 * preserve compatibility for `sexpr` under the following questionable scenarios, we'll:
-** fall back to `\*ns*` if namespace is not specified by caller.
+** fall back to `\*ns*` if the current namespace is not specified by caller.
 ** return `:alias/foo` for _ns-alias qualified_ keyword `::alias/foo` when namespace aliases are not specified by caller
 
 === Platform Support
@@ -261,6 +260,9 @@ Example value:
  :ns-aliases {'a1  'another.ns.a1
               'str 'clojure.string}}
 ----
+
+A namespace can be a symbol, string or of namespace type.
+Aliases can be strings or symbols.
 
 For backward compatibility, we will support `\*ns*` as a fallback if `:ns` is not provided in `\*ctx*`.
 
@@ -392,11 +394,11 @@ To support namespaced maps, we'll add `(node/map-node children opts)`.
 Usages:
 
 * `(node/map-node children)` - unqualified map.
-* `(node/map-node children {:auto-resolved false :prefix "my-prefix"})` - qualified map
-* `(node/map-node children {:auto-resolved true  :prefix "my-alias"})` - ns-alias qualified map
-* `(node/map-node children {:auto-resolved true})` - current-ns qualified map
+* `(node/map-node children {:auto-resolved? false :prefix "my-prefix"})` - qualified map
+* `(node/map-node children {:auto-resolved? true})` - current-ns qualified map
+* `(node/map-node children {:auto-resolved? true  :prefix "my-alias"})` - ns-alias qualified map
 
-The `MapNode` record will include `auto-resolved` and `prefix` fields.
+The `MapNode` record will include `auto-resolved?` and `prefix` fields.
 For an unqualified map these fields will be nil.
 
 ==== Keyword Node
@@ -404,21 +406,16 @@ The current way to create namespaced keyword nodes works, but usage is not entir
 [source,clojure]
 ----
 ;; unqualified
-(node/string (node/keyword-node :foo false))           ;; => ":foo"
+(node/keyword-node :foo false)           ;; => ":foo"
 ;; literally qualified
-(node/string (node/keyword-node :prefix-ns/foo false)) ;; => ":prefix-ns/foo"
+(node/keyword-node :prefix-ns/foo false) ;; => ":prefix-ns/foo"
 ;; current-ns qualified
-(node/string (node/keyword-node :foo true))            ;; => "::foo"
+(node/keyword-node :foo true)            ;; => "::foo"
 ;; ns-alias qualified
-(node/string (node/keyword-node :ns-alias/foo true))   ;; => "::ns-alias/foo"
+(node/keyword-node :ns-alias/foo true)   ;; => "::ns-alias/foo"
 ----
 
-Use of booleans in a function signature with more than one argument rarely contributes to readability but we'll need to preserve these functions for backward compatibility.
-
-We'll add the more user friendly and `map-node` consistent:
-
-* `(node/keyword-node2 keyword)`
-* `(node/keyword-node2 keyword opts)`
+Use of booleans in a function signature with more than one argument rarely contributes to readability but we'll stick with these functions for backward compatibility.
 
 Let's study the rewrite-clj `KeywordNode` which currently has fields `k` and `namespaced?`.
 
@@ -431,17 +428,20 @@ Let's study the rewrite-clj `KeywordNode` which currently has fields `k` and `na
 ;; => [:kw nil]
 (-> (p/parse-string ":qual/kw") ((juxt :k :namespaced?)))
 ;; => [:qual/kw nil]
-(-> (p/parse-string "::alias/kw") ((juxt :k :namespaced?)))
-;; => [:alias/kw true]
 (-> (p/parse-string "::kw") ((juxt :k :namespaced?)))
 ;; => [:kw true]
+(-> (p/parse-string "::alias/kw") ((juxt :k :namespaced?)))
+;; => [:alias/kw true]
 ----
 
-* The `namespaced?` field really instead conveys `auto-resolved?`.
-I'll see if I can deprecate `namespaced?` and add synonym `auto-resolved?`.
+* The `namespaced?` field is, in my opinion, misnamed and should be `auto-resolved?`.
+Ideally I would deprecate `namespaced?` and add synonym `auto-resolved?`, but is that even possible?
+As of this writing https://grep.app/search?q=%3Anamespaced%3F[a grep.app for :namespaced?] returns only clj-kondo and it uses its own custom version of rewrite-clj.
+I think I could get away with renaming `namespaced?` to `auto-resolved?`
 * The `prefix` is not stored separately, it is glommed into keyword field `k`.
 ** This is ok for `:qual/kw` but, in my opinion, awkward for auto-resolved variants.
-** We'll preserve this storage behavior for backward compatibility, but add the `prefix` field for consistency with maps.
+** We'll preserve this storage behavior for backward compatibility.
+I will not look into adding a `prefix` field for consistency with maps for the first release.
 
 === Node Traversal
 
@@ -451,10 +451,11 @@ Both keyword and map nodes traversal will remain unchanged (no new child nodes).
 
 * `map-node?` - returns true if rewrite-cljc node is map node
 * `keyword-node?` - return true if rewrite-cljc node is keyword node
-* Both `keyword-node` and `map-node` will gain:
-** `prefix` field
+* Both `keyword-node` and `map-node` will have:
 ** `auto-resolved?` field
 ** `qualified?` fn - returns true if the element is qualified
+* `map-node` will have:
+** `prefix` field
 
 === Notes on Coercion
 Rewrite-clj supports automatic coercion, how does this look in the context of namespaced elements?
@@ -480,7 +481,7 @@ For namespaced maps, the experience is the same:
 ----
 
 == Misc Questions
-Questions I had while writing section.
+Questions I had while writing doc.
 
 *Q:* Does the act of using find-value sometimes blow up if hitting an element that is not sexpressable? +
 *A:* Nope, find-value only searches token nodes and token nodes are always sexpressable (well after we are done our work they should be).
