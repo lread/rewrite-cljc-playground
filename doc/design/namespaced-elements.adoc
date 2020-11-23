@@ -393,11 +393,17 @@ To support namespaced maps, we'll add `(node/map-node children opts)`.
 
 Usages:
 
-* `(node/map-node children)` - unqualified map.
-* `(node/map-node children {:auto-resolved? false :prefix "my-prefix"})` - qualified map
-* `(node/map-node children {:auto-resolved? true})` - current-ns qualified map
-* `(node/map-node children {:auto-resolved? true  :prefix "my-alias"})` - ns-alias qualified map
-
+[source,clojure]
+----
+;; unqualified map
+(node/map-node children)
+;; qualified map
+(node/map-node children {:auto-resolved? false :prefix "my-prefix"})
+;; current-ns qualified map
+(node/map-node children {:auto-resolved? true})
+;; ns-alias qualified map
+(node/map-node children {:auto-resolved? true :prefix "my-alias"})
+----
 The `MapNode` record will include `auto-resolved?` and `prefix` fields.
 For an unqualified map these fields will be nil.
 
@@ -445,12 +451,14 @@ I will not look into adding a `prefix` field for consistency with maps for the f
 
 === Node Traversal
 
-Both keyword and map nodes traversal will remain unchanged (no new child nodes).
+Keyword node traversal will remain unchanged (no new child nodes).
+
+Map node traversal differs in that the prefix is no longer stored in a separate child node.
 
 === Node Interogation
 
-* `map-node?` - returns true if rewrite-cljc node is map node
-* `keyword-node?` - return true if rewrite-cljc node is keyword node
+* `map-node?` - returns true if rewrite-cljc node and map node
+* `keyword-node?` - return true if rewrite-cljc node and keyword node
 * Both `keyword-node` and `map-node` will have:
 ** `auto-resolved?` field
 ** `qualified?` fn - returns true if the element is qualified
@@ -459,6 +467,7 @@ Both keyword and map nodes traversal will remain unchanged (no new child nodes).
 
 === Notes on Coercion
 Rewrite-clj supports automatic coercion, how does this look in the context of namespaced elements?
+I'm not proposing any changes here, just exploring how things work.
 
 If we try to explicitly coerce a namespaced element, we must remember that the Clojure reader will first evaluate in the context of the current ns before the element is converted to a node.
 
