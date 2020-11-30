@@ -55,7 +55,7 @@
     zloc))
 
 (defn map-vals
-  "Returns zipper with function `f` applied to all value current node in `zloc`.
+  "Returns `zloc` with function `f` applied to all value nodes of the current node.
    Current node must be map node."
   [f zloc]
   {:pre [(map? zloc)]}
@@ -70,7 +70,7 @@
         parent))))
 
 (defn map-keys
-  "Returns zipper with function `f` applied to all key nodes of the current node in `zloc`.
+  "Returns `zloc` with function `f` applied to all key nodes of the current node.
    Current node must be map node."
   [f zloc]
   {:pre [(map? zloc)]}
@@ -83,10 +83,10 @@
         (recur (m/right (m/right loc)) parent)))))
 
 (defn map
-  "Returns zipper with function `f` applied to all value nodes of current node in `zloc`.
+  "Returns `zloc` with function `f` applied to all nodes of the current node.
    Current node must be a sequence node.
 
-   Iterates over:
+   `f` is applied to:
    - value nodes of maps
    - each element of a seq"
   [f zloc]
@@ -98,8 +98,11 @@
 ;; ## Get/Assoc
 
 (defn get
-  "Returns value node mapped to key `k` when current node in `zloc` is a map node.
-   Returns nth `k` value node when current node in `zloc` is a sequence node."
+  "Returns `zloc` located to current node's value node matching `k` else `nil`.
+
+  `k` should be:
+  - a key for maps
+  - an index for sequences"
   [zloc k]
   {:pre [(or (map? zloc) (and (seq? zloc) (integer? k)))]}
   (if (map? zloc)
@@ -111,8 +114,11 @@
       k)))
 
 (defn assoc
-  "Returns zipper with key `k` set to value `v` when current node in `zloc` is a map node.
-   Returns zipper with index `k` set to value `v` when current node in `zloc` is a sequence."
+  "Returns `zloc` with current node's `k` set to value `v`.
+
+  `k` should be:
+  - a key for maps
+  - an index for sequences, an exception is thrown if index is out of bounds"
   [zloc k v]
   (if-let [vloc (get zloc k)]
     (-> vloc (e/replace v) m/up)

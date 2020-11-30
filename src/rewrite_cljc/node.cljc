@@ -11,7 +11,6 @@
             [rewrite-cljc.node.integer]
             [rewrite-cljc.node.keyword]
             [rewrite-cljc.node.meta]
-            [rewrite-cljc.node.namespaced-map]
             [rewrite-cljc.node.protocols :as np]
             [rewrite-cljc.node.quote]
             [rewrite-cljc.node.reader-macro]
@@ -65,9 +64,6 @@
   meta-node
   raw-meta-node]
 
- [rewrite-cljc.node.namespaced-map
-  namespaced-map-node]
-
  [rewrite-cljc.node.regex
   regex-node]
 
@@ -81,7 +77,8 @@
   list-node
   map-node
   set-node
-  vector-node]
+  vector-node
+  qualified-map?]
 
  [rewrite-cljc.node.stringz
   string-node]
@@ -111,8 +108,6 @@
   comma?
   whitespace-nodes])
 
-
-
 ;; ## Predicates
 
 (defn whitespace-or-comment?
@@ -133,3 +128,5 @@
             (first)
             ((juxt np/tag np/sexpr)))
     (np/sexpr node)))
+
+(comment (ns-publics 'rewrite-cljc.node))

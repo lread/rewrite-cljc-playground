@@ -9,7 +9,7 @@
 
 (def root
   (base/of-string
-   "(defn f\n  [x]\n  [(+ x 1)])"))
+   "(defn f\n  [x]\n  [(+ x 1) ::a])"))
 
 ;; ## Tests
 
@@ -45,8 +45,8 @@
                     root)
                    (take-while identity)
                    (rest))]
-      (is (= 6 (count tks)))
-      (is (= '[defn f x + x 1] (map base/sexpr tks)))))
+      (is (= 7 (count tks)))
+      (is (= '[defn f x + x 1 :user/a] (map base/sexpr tks)))))
   (deftest t-find-depth-first
     (let [loc (-> root (f/find-depth-first (is? 'f)))]
       (is (= :token (base/tag loc)))
@@ -66,8 +66,8 @@
                     root)
                    (take-while identity)
                    (rest))]
-      (is (= 6 (count tks)))
-      (is (= '[defn f x + x 1] (map base/sexpr tks))))))
+      (is (= 7 (count tks)))
+      (is (= '[defn f x + x 1 :user/a] (map base/sexpr tks))))))
 
 (deftest t-find-tag
   (let [loc (-> root z/down (f/find-tag :vector))]
@@ -80,9 +80,9 @@
   (let [loc (-> root z/down (f/find-next-tag :vector))]
     (is (= :vector (base/tag loc)))
     (is (= '[x] (base/sexpr loc)))
-    (is (= '[(+ x 1)] (-> loc
-                          (f/find-next-tag :vector)
-                          base/sexpr))))
+    (is (= '[(+ x 1) :user/a] (-> loc
+                                  (f/find-next-tag :vector)
+                                  base/sexpr))))
   (let [loc (-> root z/down (f/find-next-tag :set))]
     (is (nil? loc))))
 
@@ -118,7 +118,19 @@
     (is (nil? loc)))
   (let [loc (-> root z/down (f/find-value #{'f 'defn}))]
     (is (= :token (base/tag loc)))
-    (is (= 'defn (base/sexpr loc)))))
+    (is (= 'defn (base/sexpr loc))))
+  (let [loc (f/find-value root z/next #{'foo 'fa :user/a})]
+    (is (= :token (base/tag loc)))
+    (is (= :user/a (base/sexpr loc))))
+  (let [loc (f/find-value root z/next :user/a)]
+    (is (= :token (base/tag loc)))
+    (is (= :user/a (base/sexpr loc))))
+  (let [resolve-opts {:auto-resolve #(if (= :current %)
+                                       'my.current.ns
+                                       (throw (ex-info "unexpected error" {})))}
+        loc (f/find-value root z/next :my.current.ns/a resolve-opts)]
+    (is (= :token (base/tag loc)))
+    (is (= :my.current.ns/a (base/sexpr loc resolve-opts)))))
 
 (deftest t-find-next-value
   (let [loc (-> root z/down (f/find-next-value 'f))]
@@ -130,6 +142,15 @@
                 (f/find-next-value #{'f 'defn}))]
     (is (= :token (base/tag loc)))
     (is (= 'f (base/sexpr loc))))
+  (let [loc (f/find-next-value root z/next #{'foo 'fa :user/a})]
+    (is (= :token (base/tag loc)))
+    (is (= :user/a (base/sexpr loc))))
+  (let [resolve-opts {:auto-resolve #(if (= :current %)
+                                       'my.current.ns
+                                       (throw (ex-info "unexpected error" {})))}
+        loc (f/find-next-value root z/next :my.current.ns/a resolve-opts)]
+    (is (= :token (base/tag loc)))
+    (is (= :my.current.ns/a (base/sexpr loc resolve-opts))))
   (let [locs (->> (iterate
                    #(f/find-next-value
                      % z/next #{'x 'defn})

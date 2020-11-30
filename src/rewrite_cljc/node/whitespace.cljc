@@ -32,11 +32,12 @@
 
 (defrecord WhitespaceNode [whitespace]
   node/Node
-  (tag [_] :whitespace)
-  (printable-only? [_] true)
-  (sexpr [_] (throw (ex-info "unsupported operation" {})))
-  (length [_] (count whitespace))
-  (string [_] whitespace)
+  (tag [_this] :whitespace)
+  (printable-only? [_this] true)
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [_this _opts] (throw (ex-info "unsupported operation" {})))
+  (length [_this] (count whitespace))
+  (string [_this] whitespace)
 
   Object
   (toString [this]
@@ -44,11 +45,12 @@
 
 (defrecord CommaNode [commas]
   node/Node
-  (tag [_] :comma)
-  (printable-only? [_] true)
-  (sexpr [_] (throw (ex-info "unsupported operation" {})))
-  (length [_] (count commas))
-  (string [_] commas)
+  (tag [_this] :comma)
+  (printable-only? [_this] true)
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [_this _opts] (throw (ex-info "unsupported operation" {})))
+  (length [_this] (count commas))
+  (string [_this] commas)
 
   Object
   (toString [this]
@@ -56,11 +58,12 @@
 
 (defrecord NewlineNode [newlines]
   node/Node
-  (tag [_] :newline)
-  (printable-only? [_] true)
-  (sexpr [_] (throw (ex-info "unsupported operation" {})))
-  (length [_] (*count-fn* newlines))
-  (string [_] (*newline-fn* newlines))
+  (tag [_this] :newline)
+  (printable-only? [_this] true)
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [_this _opts] (throw (ex-info "unsupported operation" {})))
+  (length [_this] (*count-fn* newlines))
+  (string [_this] (*newline-fn* newlines))
 
   Object
   (toString [this]

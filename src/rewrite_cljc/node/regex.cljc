@@ -9,7 +9,8 @@
   node/Node
   (tag [_] :regex)
   (printable-only? [_] false)
-  (sexpr [_] (list 're-pattern pattern))
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [_this _opts] (list 're-pattern pattern))
   (length [_] 1)
   (string [_] (str "#\"" pattern "\"")))
 

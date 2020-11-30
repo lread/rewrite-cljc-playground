@@ -9,25 +9,25 @@
 
 (defrecord MetaNode [tag prefix children]
   node/Node
-  (tag [_] tag)
+  (tag [_this] tag)
   (printable-only? [_] false)
-  (sexpr [_]
-    (let [[mta data] (node/sexprs children)]
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [this opts]
+    (let [[mta data] (node/sexprs children opts)]
       (assert (interop/meta-available? data)
               (str "cannot attach metadata to: " (pr-str data)))
-      (vary-meta data merge (if (map? mta) mta {mta true}))))
-  (length [_]
+      (vary-meta data merge (if (map? mta) mta {mta true})))) (length [_this]
     (+ (count prefix) (node/sum-lengths children)))
-  (string [_]
+  (string [_this]
     (str prefix (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_] true)
-  (children [_] children)
+  (inner? [_this] true)
+  (children [_this] children)
   (replace-children [this children']
     (node/assert-sexpr-count children' 2)
     (assoc this :children children'))
-  (leader-length [_]
+  (leader-length [_this]
     (count prefix))
 
   Object

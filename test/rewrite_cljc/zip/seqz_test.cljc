@@ -7,6 +7,7 @@
 
 (let [v (base/of-string "[1 2 3]")
       m (base/of-string "{:a 0, :b 1}")
+      m-ns (base/of-string "#::my-ns-alias{:x 42, ::y 17}")
       e (base/of-string "{}")]
   (deftest t-iteration
     (is (= "[2 3 4]" (base/string (sq/map #(e/edit % inc) v)))))
@@ -17,7 +18,9 @@
     (is (= 0 (-> m (sq/get :a) base/sexpr)))
     (is (= 1 (-> m (sq/get :b) base/sexpr)))
     (is (nil? (sq/get m :c)))
-    (is (= 2 (-> v (sq/get 1) base/sexpr))))
+    (is (= 2 (-> v (sq/get 1) base/sexpr)))
+    (is (= 42 (-> m-ns (sq/get :x) base/sexpr)))
+    (is (= 17 (-> m-ns (sq/get :user/y) base/sexpr))) )
   (deftest t-assoc
     (let [m' (sq/assoc m :a 3)]
       (is (= {:a 3 :b 1} (base/sexpr m')))
@@ -31,6 +34,20 @@
     (let [v' (sq/assoc v 2 4)]
       (is (= [1 2 4] (base/sexpr v')))
       (is (= "[1 2 4]" (base/string v'))))))
+
+(comment
+  (def m (base/of-string "{:a 0, :b 1}"))
+  (def v (base/of-string "[1 2 3]"))
+  (base/string (sq/map-keys #(e/edit % name) m))
+  (-> (base/of-string "#::my-ns-alias{:x 42, ::y 17}")
+      base/sexpr
+      )
+  (:x {:my-ns-alias-unresolved/x 22})
+  (-> (sq/get m :b) base/string)
+  (-> (sq/assoc m :b 122) base/string)
+  (-> (sq/assoc v 3 333) base/string)
+  )
+
 
 (deftest t-check-predicates
   (is (-> "[1 2 3]" base/of-string sq/vector?))

@@ -37,7 +37,7 @@
                [rewrite_cljc.node.meta MetaNode]
                [rewrite_cljc.node.quote QuoteNode]
                [rewrite_cljc.node.reader_macro ReaderNode ReaderMacroNode DerefNode]
-               [rewrite_cljc.node.seq SeqNode]
+               [rewrite_cljc.node.seq SeqNode MapNode]
                [rewrite_cljc.node.stringz StringNode]
                [rewrite_cljc.node.token TokenNode]
                [rewrite_cljc.node.uneval UnevalNode]
@@ -184,5 +184,6 @@
   UnevalNode      (coerce [v] v)
   NewlineNode     (coerce [v] v)
   SeqNode         (coerce [v] v)
+  MapNode         (coerce [v] v)
   TokenNode       (coerce [v] v)
   WhitespaceNode  (coerce [v] v))

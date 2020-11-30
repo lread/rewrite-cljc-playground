@@ -342,6 +342,71 @@ Clojure returns `9007199254741001` +
 ClojureScript returns `9007199254741000`
 [cols="50,50"]
 
+[auto-resolve-support]
+==== Auto-resolve Support
+In Clojure keywords can be qualified:
+
+* `:my-qualifier/kw`
+* `#:my-qualifer{:kw 1}`.
+
+Qualification can also come from auto-resolving:
+
+* to the current namespace:
+** `::kw`
+** `#::{:kw 1}`
+* or the namespace of an alias:
+** `::my-alias/kw`
+** `#::my-alias{:kw 1}`
+
+When calling `sepxr` on auto-resolved keyword or map node, rewrite-cljc will resolve:
+
+* the current ns to `user`
+* namespace alias `x` to `x-unresolved`
+
+[source, clojure-repl]
+----
+user=> (require '[rewrite-cljc.parser :as p]
+                '[rewrite-cljc.node :as n])
+nil
+user=> (-> (p/parse-string "::kw") n/sexpr)
+:user/kw
+user=> (-> (p/parse-string "#::{:a 1 :b 2}") n/sexpr)
+:user{:a 1, :b 2}
+user=> (-> (p/parse-string "::my-alias/kw") n/sexpr)
+:my-alias-unresolved/kw
+user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2}") n/sexpr)
+:my-alias-unresolved{:a 1, :b 2}
+----
+
+This default behavior should be sufficient for most use cases (let us know if we are wrong about that).
+If you'd prefer a different behavior, specify a function for `:auto-resolve` in the optional `opts` arg of `sexpr`.
+
+The auto-resolve function takes a single arg `alias` for lookup and must return symbol.
+The `alias` will be:
+
+* `:current` for a request for the current namespace
+* otherwise it will be a symbol for the namespace alias to lookup
+
+For example, if you know the current namespace and the namespace aliases it loads, you can specify them:
+[source, clojure-repl]
+----
+user=> (require '[rewrite-cljc.parser :as p]
+                '[rewrite-cljc.node :as n])
+nil
+user=> (defn resolver [alias]
+         (or (get {:current 'my.current.ns
+                   'my-alias 'my.aliased.ns} alias)
+             (symbol (str alias "-unresolved"))))
+#'user/resolver
+user=> (-> (p/parse-string "::kw") (n/sexpr {:auto-resolve resolver}))
+:my.current.ns/kw
+user=> (-> (p/parse-string "#::{:a 1 :b 2}") (n/sexpr {:auto-resolve resolver}))
+#:my.current.ns{:a 1, :b 2}
+user=> (-> (p/parse-string "::my-alias/kw") (n/sexpr {:auto-resolve resolver}))
+:my.aliased.ns/kw
+user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2}") (n/sexpr {:auto-resolve resolver}))
+#:my.aliased.ns{:a 1, :b 2}
+----
 === Parser API
 Parses Clojure/ClojureScript/EDN to rewrite-cljc nodes.
 The Zip API makes use of the Parser API to parse Clojure.

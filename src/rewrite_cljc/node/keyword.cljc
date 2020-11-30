@@ -5,30 +5,30 @@
 
 ;; ## Node
 
-;; :foo - plain old
-;; ::foo - to current namespace
-;; :my.ns/foo - to valid explicit namespace
-;; ::my/foo - to valid :as alias
-(defrecord KeywordNode [k namespaced?]
+(defrecord KeywordNode [k auto-resolved?]
   node/Node
-  (tag [_] :token)
+  (tag [_this] :token)
   (printable-only? [_] false)
-  (sexpr [_]
-    (if (and namespaced?
-             (not (namespace k)))
-      (keyword
-       (name (ns-name *ns*))
-       (name k))
+  (sexpr [this]
+    (.sexpr this {}))
+  (sexpr [_this opts]
+    (if auto-resolved?
+      (let [auto-resolve (or (:auto-resolve opts) node/default-auto-resolve)]
+        (keyword
+         (str (if-let [ns-alias (namespace k)]
+                (auto-resolve (symbol ns-alias))
+                (auto-resolve :current)))
+         (name k)))
       k))
   (length [this]
     (let [c (inc (count (name k)))]
-      (if namespaced?
+      (if auto-resolved?
         (inc c)
         (if-let [nspace (namespace k)]
           (+ 1 c (count nspace))
           c))))
-  (string [_]
-    (str (when namespaced? ":")
+  (string [_this]
+    (str (when auto-resolved? ":")
          (pr-str k)))
 
   Object
@@ -40,8 +40,15 @@
 ;; ## Constructor
 
 (defn keyword-node
-  "Create node representing a keyword `k`. If `namespaced?` is `true`
-   a keyword à la `::x` or `::ns/x` (i.e. namespaced/aliased/auto-resolved) is generated."
-  [k & [namespaced?]]
+  "Create a node representing a keyword `k`.
+
+  Examples usages:
+  * `(keyword-node :kw)` - unqualified
+  * `(keyword-node :my-prefix/kw)` - qualified
+
+  You can pass `true` for the optional `auto-resolved?` parameter:
+  * `(keyword-node :kw true)` - auto-resolved to current ns, equivalent to code `::kw`
+  * `(keyword-node :ns-alias/kw true)` - auto-resolved to namespace with alias ns-alias, equivalent to code `::ns-alias/kw`"
+  [k & [auto-resolved?]]
   {:pre [(keyword? k)]}
-  (->KeywordNode k namespaced?))
+  (->KeywordNode k auto-resolved?))

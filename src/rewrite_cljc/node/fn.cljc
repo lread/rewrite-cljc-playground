@@ -68,8 +68,9 @@
   (tag [_] :fn)
   (printable-only? [_]
     false)
-  (sexpr [_]
-    (fn-walk (node/sexprs children)))
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [_this opts]
+    (fn-walk (node/sexprs children opts)))
   (length [_]
     (+ 3 (node/sum-lengths children)))
   (string [_]

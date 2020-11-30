@@ -12,25 +12,29 @@
 ;; ## In-Place Modification
 
 (defn replace
-  "Return zipper with the current node in `zloc` replaced with `value`
-   which will be coerced to a node if possible."
+  "Return `zloc` with the current node replaced by `value`.
+  If `value` is not already a node, an attempt will be made to coerce it to one."
   [zloc value]
   (z/replace zloc (node/coerce value)))
 
 (defn- edit-node
   "Create s-expression from node, apply the function and create
-   node from the result."
+   node from the result.
+
+  Note that internally called `sexpr` uses default [auto-resolve](/doc/01-introduction.adoc#auto-resolve-support)"
   [node f]
   (-> (node/sexpr node)
       (f)
       (node/coerce)))
 
 (defn edit
-  "Return zipper with the current node in `zloc` replaced with the result of:
+  "Return `zloc` with the current node replaced with the result of:
 
    (`f` (s-expression node) `args`)
 
-   The result of `f` will be coerced to a node if possible."
+   The result of `f` will be coerced to a node if possible.
+
+  NOTE: Any namespaced auto-resolve elements will use default [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
   [zloc f & args]
   (z/edit zloc edit-node #(apply f % args)))
 

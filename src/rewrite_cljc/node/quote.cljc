@@ -9,8 +9,9 @@
   node/Node
   (tag [_] tag)
   (printable-only? [_] false)
-  (sexpr [_]
-    (list sym (first (node/sexprs children))))
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [_this opts]
+    (list sym (first (node/sexprs children opts))))
   (length [_]
     (+ (count prefix) (node/sum-lengths children)))
   (string [_]

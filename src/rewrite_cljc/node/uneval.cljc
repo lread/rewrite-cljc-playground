@@ -7,21 +7,22 @@
 
 (defrecord UnevalNode [children]
   node/Node
-  (tag [_] :uneval)
-  (printable-only? [_] true)
-  (sexpr [_]
+  (tag [_node] :uneval)
+  (printable-only? [_node] true)
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [_node _opts]
     (throw (ex-info "unsupported operation for uneval-node" {})))
-  (length [_]
+  (length [_node]
     (+ 2 (node/sum-lengths children)))
-  (string [_]
+  (string [_node]
     (str "#_" (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_] true)
-  (children [_] children)
-  (replace-children [this children']
+  (inner? [_node] true)
+  (children [_node] children)
+  (replace-children [node children']
     (node/assert-single-sexpr children')
-    (assoc this :children children'))
+    (assoc node :children children'))
   (leader-length [_]
     2)
 

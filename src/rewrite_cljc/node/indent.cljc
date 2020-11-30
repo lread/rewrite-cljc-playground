@@ -1,3 +1,4 @@
+;; TODO: Is this used at all?
 (ns ^:no-doc rewrite-cljc.node.indent
   (:require [clojure.string :as string]
             [rewrite-cljc.node.protocols :as node]
@@ -24,8 +25,9 @@
     (node/tag child))
   (printable-only? [_]
     (node/printable-only? child))
-  (sexpr [_]
-    (node/sexpr child))
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [_this opts]
+    (node/sexpr child opts))
   (length [this]
     ;; FIXME: directly calculate length
     (count (node/string this)))

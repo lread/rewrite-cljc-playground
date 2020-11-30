@@ -23,6 +23,16 @@
       0  [1]           "[1]"
       1  #{0}          "[#{0} \"2\" :3]")))
 
+(deftest t-edit-uses-default-auto-resolver
+  (let [root (base/of-string "[::a ::myalias/b]")]
+    (is (= "[::a :b]" (-> root
+                         m/down
+                         m/rightmost
+                         (e/edit #(if (= "myalias-unresolved" (namespace %))
+                                    (keyword (name %))
+                                    :unexpected))
+                         base/root-string)))))
+
 (let [root (base/of-string "[1 [ ] [2 3] [  4  ]]")
       elements (iterate m/next root)]
   (deftest t-splice-operations

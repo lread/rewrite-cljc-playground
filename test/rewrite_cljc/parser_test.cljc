@@ -314,49 +314,101 @@
     ";\n"
     ";;\n"))
 
-(deftest t-parsing-prefix-namespaced-maps
-  (are [?s ?children ?sexpr]
+
+(deftest t-parsing-auto-resolve-keywords
+  (are [?s ?sexpr-default ?sexpr-custom]
       (let [n (p/parse-string ?s)]
-        (is (= :namespaced-map (node/tag n)))
+        (is (= :token (node/tag n)))
+        (is (= ?s (node/string n)))
+        (is (= ?sexpr-default (node/sexpr n)))
+        (is (= ?sexpr-custom (node/sexpr n {:auto-resolve #(if (= :current %)
+                                                  'my.current.ns
+                                                  (get {'xyz 'my.aliased.ns} % 'alias-unresolved))}))))
+    "::key"        :user/key              :my.current.ns/key
+    "::xyz/key"    :xyz-unresolved/key    :my.aliased.ns/key))
+
+(deftest t-parsing-qualified-maps
+  (are [?s ?sexpr]
+      (let [n (p/parse-string ?s)]
+        (is (= :map (node/tag n)))
         (is (= (count ?s) (node/length n)))
         (is (= ?s (node/string n)))
-        (is (= ?children (str (node/children n))))
         (is (= ?sexpr (node/sexpr n))))
     "#:abc{:x 1, :y 1}"
-    "[<token: :abc> <map: {:x 1, :y 1}>]"
     {:abc/x 1, :abc/y 1}
 
     "#:abc   {:x 1, :y 1}"
-    "[<token: :abc> <whitespace: \"   \"> <map: {:x 1, :y 1}>]"
     {:abc/x 1, :abc/y 1}
 
     "#:foo{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
-    "[<token: :foo> <map: {:kw 1, :n/kw 2, :_/bare 3, 0 4}>]"
     {:foo/kw 1, :n/kw 2, :bare 3, 0 4}
 
     "#:abc{:a {:b 1}}"
-    "[<token: :abc> <map: {:a {:b 1}}>]"
     {:abc/a {:b 1}}
 
     "#:abc{:a #:def{:b 1}}"
-    "[<token: :abc> <map: {:a #:def{:b 1}}>]"
     {:abc/a {:def/b 1}}))
 
-(deftest t-parsing-namespaced-map-does-not-require-ns-when-not-calling-sexpr[]
-  (are [?s ?children]
+(deftest t-parsing-auto-resolve-current-ns-maps
+  (are [?s ?sexpr-default ?sexpr-custom]
       (let [n (p/parse-string ?s)]
-        (is (= :namespaced-map (node/tag n)))
+        (is (= :map (node/tag n)))
         (is (= (count ?s) (node/length n)))
         (is (= ?s (node/string n)))
-        (is (= ?children (str (node/children n)))))
-    "#::a{:a #::a{:b 1}}"
-    "[<token: ::a> <map: {:a #::a{:b 1}}>]"
+        (is (= ?sexpr-default (node/sexpr n)))
+        (is (= ?sexpr-custom (node/sexpr n {:auto-resolve #(if (= :current %)
+                                                             'booya.fooya
+                                                             'alias-unresolved)}))))
+    "#::{:x 1, :y 1}"
+    {:user/x 1, :user/y 1}
+    {:booya.fooya/x 1, :booya.fooya/y 1}
 
-    "#:a{:a #:a{:b 1}}"
-    "[<token: :a> <map: {:a #:a{:b 1}}>]"
+    "#::   {:x 1, :y 1}"
+    {:user/x 1, :user/y 1}
+    {:booya.fooya/x 1, :booya.fooya/y 1}
+
+    "#::{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
+    {:user/kw 1, :n/kw 2, :bare 3, 0 4}
+    {:booya.fooya/kw 1, :n/kw 2, :bare 3, 0 4}
+
+    "#::{:a {:b 1}}"
+    {:user/a {:b 1}}
+    {:booya.fooya/a {:b 1}}
 
     "#::{:a #::{:b 1}}"
-    "[<token: ::> <map: {:a #::{:b 1}}>]"))
+    {:user/a {:user/b 1}}
+    {:booya.fooya/a {:booya.fooya/b 1}}))
+
+(deftest parsing-auto-resolve-ns-alias-maps[]
+  (are [?s ?sexpr-default ?sexpr-custom]
+      (let [n (p/parse-string ?s)]
+        (is (= :map (node/tag n)))
+        (is (= (count ?s) (node/length n)))
+        (is (= ?s (node/string n)))
+        (is (= ?sexpr-default (node/sexpr n)))
+        (is (= ?sexpr-custom (node/sexpr n {:auto-resolve #(if (= :current %)
+                                                             'my.current.ns
+                                                             (get {'nsalias 'bing.bang
+                                                                   'nsalias2 'woopa.doopa} % 'alias-unresolved))}))))
+    "#::nsalias{:x 1, :y 1}"
+    '{:nsalias-unresolved/x 1, :nsalias-unresolved/y 1}
+    '{:bing.bang/x 1, :bing.bang/y 1}
+
+    "#::nsalias   {:x 1, :y 1}"
+    '{:nsalias-unresolved/x 1, :nsalias-unresolved/y 1}
+    '{:bing.bang/x 1, :bing.bang/y 1}
+
+    "#::nsalias{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
+    '{:nsalias-unresolved/kw 1, :n/kw 2, :bare 3, 0 4}
+    '{:bing.bang/kw 1, :n/kw 2, :bare 3, 0 4}
+
+    "#::nsalias{:a {:b 1}}"
+    '{:nsalias-unresolved/a {:b 1}}
+    '{:bing.bang/a {:b 1}}
+
+    "#::nsalias{:a #::nsalias2{:b 1}}"
+    '{:nsalias-unresolved/a {:nsalias2-unresolved/b 1}}
+    '{:bing.bang/a {:woopa.doopa/b 1}}))
 
 (deftest t-parsing-exceptions
   (are [?s ?p]
@@ -378,15 +430,15 @@
     "#_"                    #".*:uneval node expects 1 value.*"
     "#'"                    #".*:var node expects 1 value.*"
     "#macro"                #".*:reader-macro node expects 2 values.*"
-    "#:"                    #".*Unexpected EOF.*"
-    "#::"                   #".*Unexpected EOF.*"
-    "#::nsarg"              #".*Unexpected EOF.*"
-    "#:{:a 1}"              #".*:namespaced-map expected namespace prefix*"
-    "#::[a]"                #".*:namespaced-map expected namespace alias or map.*"
-    "#:[a]"                 #".*:namespaced-map expected namespace prefix.*"
-    "#:: token"             #".*:namespaced-map expects a map.*"
-    "#::alias [a]"          #".*:namespaced-map expects a map.*"
-    "#:prefix [a]"          #".*:namespaced-map expects a map.*"))
+    "#:"                    #".*namespaced map expects a namespace*"
+    "#::"                   #".*namespaced map expects a map*"
+    "#::nsarg"              #".*namespaced map expects a map*"
+    "#:{:a 1}"              #".*namespaced map expects a namespace*"
+    "#::[a]"                #".*namespaced map expects a map*"
+    "#:[a]"                 #".*namespaced map expects a namespace*"
+    "#:: token"             #".*namespaced map expects a map*"
+    "#::alias [a]"          #".*namespaced map expects a map*"
+    "#:prefix [a]"          #".*namespaced map expects a map.*"))
 
 (deftest t-sexpr-exceptions
   (are [?s]
@@ -465,3 +517,16 @@
       [3 3]  [3 13] :list   "(println x)"  '(println x)
       [3 4]  [3 10] :token  "println"      'println
       [3 12] [3 13] :token  "x"            'x)))
+
+(comment
+  (-> (p/parse-string "#:my-prefix {:x 1 :y 2}") node/sexpr)
+
+  (-> (p/parse-string "#:my-prefix {:x 1 :y 2}")
+      :children
+      first
+      node/sexpr)
+
+
+  (first (:children (p/parse-string "#:my-prefix {:x 1 :y 2}")))
+
+  )

@@ -46,14 +46,22 @@
   (some-> zloc z/node node/tag))
 
 (defn sexpr
-  "Return s-expression of current node in `zloc`."
-  [zloc]
-  (some-> zloc z/node node/sexpr))
+  "Return s-expression (the Clojure form) of current node in `zloc`.
+
+  Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
+  ([zloc]
+   (sexpr zloc {}))
+  ([zloc opts]
+   (some-> zloc z/node (node/sexpr opts))))
 
 (defn ^{:added "0.4.4"} child-sexprs
-  "Return s-expression of children of current node in `zloc`."
-  [zloc]
-  (some-> zloc z/node node/child-sexprs))
+  "Return s-expression (the Clojure forms) of children of current node in `zloc`.
+
+  Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
+  ([zloc]
+   (child-sexprs zloc {}))
+  ([zloc opts]
+   (some-> zloc z/node (node/child-sexprs opts))))
 
 (defn length
   "Return length of printable string of current node in `zloc`."

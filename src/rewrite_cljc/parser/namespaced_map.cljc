@@ -5,64 +5,37 @@
 
 #?(:clj (set! *warn-on-reflection* true))
 
-(defn- specifies-aliased?
+(defn- parse-prefix
   [reader]
-  (case (reader/peek reader)
-    nil (u/throw-reader reader "Unexpected EOF.")
-    \:  (do (reader/ignore reader) true)
-    false))
+  (let [auto-resolved? (= ":" (reader/read-while reader (fn [c] (= \: c))))
+        prefix (reader/read-until reader (fn [c] (or (reader/boundary? c)
+                                                     (reader/whitespace? c))))]
+    {:auto-resolved? auto-resolved?
+     :prefix (when (seq prefix) prefix)}))
 
-(defn- includes-keyword?
-  [reader]
-  (let [c (reader/peek reader)]
-    (and (not (reader/whitespace? c))
-         (not (= \{ c)))))
+(defn- parse-to-next-elem [reader read-next]
+  (loop [nodes []]
+    (let [n (read-next reader)]
+      (println "-NNNN->" n)
+      (if (and n (= :whitespace (node/tag n)))
+        (recur (conj nodes n))
+        [nodes n]))))
 
-(defn- parse-keyword
-  [reader read-next aliased?]
-  (let [k (read-next reader)]
-    (cond
-      (nil? k)
-      (u/throw-reader reader "Unexpected EOF.")
-
-      (not= :token (node/tag k))
-      (if aliased?
-        (u/throw-reader reader ":namespaced-map expected namespace alias or map")
-        (u/throw-reader reader ":namespaced-map expected namespace prefix"))
-      :else (node/token-node (keyword (str (when aliased? ":") (node/string k)))))))
-
-(defn- parse-upto-printable
-  [reader read-next]
-  (loop [vs []]
-    (if (and
-         (seq vs)
-         (not (node/printable-only? (last vs))))
-      vs
-      (if-let [v (read-next reader)]
-        (recur (conj vs v))
-        nil))))
-
-(defn- parse-for-map
-  [reader read-next]
-  (let [m (parse-upto-printable reader read-next)]
-    (cond
-      (nil? m)
-      (u/throw-reader reader "Unexpected EOF.")
-
-      (not= :map (node/tag (last m)))
-      (u/throw-reader reader ":namespaced-map expects a map")
-      :else m)))
+(if (and nil (= 1 1)) "boo" "bah")
 
 (defn parse-namespaced-map
+  "The caller has parsed up to `#:` and delegates the details to us."
   [reader read-next]
   (reader/ignore reader)
-  (let [aliased? (specifies-aliased? reader)]
-    (if (includes-keyword? reader)
-      (node/namespaced-map-node
-       (into [(parse-keyword reader read-next aliased?)]
-             (parse-for-map reader read-next)))
-      (if aliased?
-        (node/namespaced-map-node
-         (into [(node/token-node (keyword ":"))]
-               (parse-for-map reader read-next)))
-        (u/throw-reader reader ":namespaced-map expected namespace prefix")))))
+  (let [opts (parse-prefix reader)]
+    (println "-popts->" opts)
+    (when (and (not (:auto-resolved? opts))
+               (nil? (:prefix opts)))
+      (u/throw-reader reader "namespaced map expects a namespace"))
+    (let [[whitespace-nodes map-node] (parse-to-next-elem reader read-next)]
+      (println "-wsn->" whitespace-nodes)
+      (println "-mn->" map-node)
+      (when (or (not map-node)
+                (not= :map (node/tag map-node)))
+        (u/throw-reader reader "namespaced map expects a map"))
+      (node/map-node (:children map-node) (assoc opts :prefix-trailing-whitespace whitespace-nodes)))))

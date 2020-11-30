@@ -380,6 +380,13 @@ First line
   (is (= "{1}" (-> (z/of-string "1") (pe/wrap-around :map) z/root-string)))
   (is (= "#{1}" (-> (z/of-string "1") (pe/wrap-around :set) z/root-string))))
 
+(comment
+  (def t (z/of-string "1"))
+  (def w (pe/wrap-around t :map))
+
+
+  )
+
 (deftest wrap-around-keeps-loc
   (let [res (-> "1"
                 z/of-string

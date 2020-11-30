@@ -11,8 +11,9 @@
     :forms)
   (printable-only? [_]
     false)
-  (sexpr [_]
-    (let [es (node/sexprs children)]
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [_this opts]
+    (let [es (node/sexprs children opts)]
       (if (next es)
         (list* 'do es)
         (first es))))

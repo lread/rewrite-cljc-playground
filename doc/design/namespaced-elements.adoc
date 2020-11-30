@@ -4,7 +4,7 @@
 
 Herein we study what rewrite-clj and rewrite-cljs currently do for namespaced elements and explore our options for rewrite-cljc.
 
-You will a focus on `sepxr` in this document. It is the primary challenge in supporting namespaced elements.
+You will see a focus on `sepxr` in this document; it is the primary challenge in supporting namespaced elements.
 
 == Nomenclature
 
@@ -43,6 +43,36 @@ See:
 * https://clojure.atlassian.net/browse/CLJ-1910[CLJ-1910] for details on namespaced maps.
 * https://groups.google.com/g/clojure/c/i770QaIFiF0/m/v63cZgrlBwAJ[Terminology and some history from Alex Miller]
 
+
+Because I have learned that the nuances of namespaced maps are not widely known by even the most experienced Clojure developers,
+I'll paste a subset of CLJ-1910 examples here. The `_` prefix was surprising to many.
+
+[source, Clojure]
+----
+;; same as above - notice you can nest #: maps and this is a case where the printer roundtrips
+user=> #:person{:first "Han" :last "Solo" :ship #:ship{:name "Millenium Falcon" :model "YT-1300f light freighter"}}
+#:person{:first "Han" :last "Solo" :ship #:ship{:name "Millenium Falcon" :model "YT-1300f light freighter"}}
+
+;; effects on keywords with ns, without ns, with _ ns, and non-kw
+user=> #:foo{:kw 1, :n/kw 2, :_/bare 3, 0 4}
+{:foo/kw 1, :n/kw 2, :bare 3, 0 4}
+
+;; auto-resolved namespaces (will use the current namespace, in this case, user as the ns)
+user=> #::{:kw 1, :n/kw 2, :_/bare 3, 0 4}
+:user/kw 1, :n/kw 2, :bare 3, 0 4}
+
+;; auto-resolve alias s to clojure.string
+user=> (require '[clojure.string :as s])
+nil
+user=> #::s{:kw 1, :n/kw 2, :_/bare 3, 0 4}
+{:clojure.string/kw 1, :n/kw 2, :bare 3, 0 4}
+
+;; to show symbol changes, we'll quote the whole thing to avoid evaluation
+user=> '#::{a 1, n/b 2, _/c 3}
+{user/a 1, n/b 2, c 3}
+----
+
+For the last example, my understanding is that it generates invalid Clojure, but since it is not evaluated, it does not produce an error.
 
 *ClojureScript Flavors* +
 ClojureScript has two flavors for which I've not found definitive unique terms. I'll use the following:
@@ -231,9 +261,20 @@ It was a late and incomplete addition to rewrite-clj.
 ** no longer throw for formerly unsupported variants
 ** have the possibility of returning a more correct Clojure form
 
-* preserve compatibility for `sexpr` under the following questionable scenarios, we'll:
-** fall back to `\*ns*` if the current namespace is not specified by caller.
-** return `:alias/foo` for _ns-alias qualified_ keyword `::alias/foo` when namespace aliases are not specified by caller
+* NOT preserve compatibility for `sexpr` under the following questionable scenarios, we'll:
+** NOT fall back to `\*ns*` if the current namespace is not specified by caller.
+** NOT return `:alias/foo` for _ns-alias qualified_ keyword `::alias/foo` when namespace aliases are not specified by caller
+
+* forgetting about `sexpr`, whatever implementation we choose, rewrite-cljc must continue to emit the same code as parsed .
+This should return `true` for any source we throw at rewrite-cljc:
++
+[source,Clojure]
+----
+(def source (slurp "https://raw.githubusercontent.com/borkdude/clj-kondo/master/src/pod/borkdude/clj_kondo.clj"))
+(= source (-> source z/of-string z/root-string))
+----
++
+Note: an exception might me newlines, which rewrite-cljc might normalize.
 
 === Platform Support
 
@@ -250,133 +291,152 @@ Our solution will cover all the above and also be verified when running rewrite-
 [#sexpr-behavior]
 === Sexpr Behaviour
 
-The caller will convey namespace info via `rewrite-cljc.parser/\*ctx*` dynamic variable (final namespace and name TBD during implementation).
+The caller will optionally convey a namespace `:auto-resolve` function in `opts` map argument.
 
-Example value:
+The `:auto-resolve` function will take a single `alias` lookup arg, `alias` will be:
+- `:current` for a request for the current namespace
+- otherwise a request for a lookup for namespaced aliased by `alias`
 
-[source,Clojure]
-----
-{:ns 'name.of.ns
- :ns-aliases {'a1  'another.ns.a1
-              'str 'clojure.string}}
-----
+If not specified, `:auto-resolve` will default a function that resolves:
+- the current namespace to `user`
+- an aliased namespaced `x` to `x-unresolved`
 
-A namespace can be a symbol, string or of namespace type.
-Aliases can be strings or symbols.
+The optionally `opts` arg will be added to the existing `(rewrite-cljc/node/sexpr node)`
 
-For backward compatibility, we will support `\*ns*` as a fallback if `:ns` is not provided in `\*ctx*`.
+If a caller wants their `:auto-resolve` function to make use of `\*ns*` and/or `(ns-aliases \*ns*)` that's fine, but unlike rewrite-clj, rewrite-cljc will not reference `\*ns*`.
 
-If a caller wants to populate `:ns-aliases` using `(ns-aliases \*ns*)`, that's fine, but rewrite-cljc won't do so.
-
-My guess is that the majority of rewrite-cljc users will not make use of the `rewrite-cljc.parser/\*ctx*`.
-This is likely to be especially true of `:ns-aliases` as there is no known easy way to correctly populate them.
-None-the-less we will provide the possibility for those who might want/need it.
+My guess is that the majority of rewrite-cljc users will not make use of `:auto-resolve`.
 
 [cols="20%,80%"]
 |===
 |Condition | Result
 
 
-a| `\*ctx*` specifies `:ns`
-a| *_Current-ns qualified_* elements will use `:ns` value. +
+a| `:auto-resolve` not specified
+a|
 [source,Clojure]
 ----
-(binding [parser/*ctx* {:ns 'my-namespace}]
-  (sexpr (parser/parse-string "::foo"))
-  ;; => :my-namespace/foo
-  (sexpr (parser/parse-string "#::{:a 1 :b 2}"))
-  ;; => {:my-namepace/a 1 :my-namespace/b 2}
-)
-----
-
-Specifying `:ns` via `\*ctx*` will be the recommended approach.
-a| `\*ctx*` does not specify `:ns`
-a| *_Current-ns qualified_* element will fallback to `\*ns*` value, whatever it may be.
-This fallback behavior is for backward compatibility with rewrite-clj namespaced keywords.
-[source,Clojure]
-----
-(binding [*ns* (create-ns 'my-namespace)]
-  (sexpr (parser/parse-string "::foo"))
-  ;; => :my-namespace/foo
-  (sexpr (parser/parse-string "#::{:a 1 :b 2}"))
-  ;; => {:my-namepace/a 1 :my-namespace/b 2}
-)
-----
-
-What happens when `\*ns*` is not specifically bound?
-
-* In Clojure `\*ns*` points to the `user` namespace, so rewrite-cljc will pick that up:
-+
-[source,Clojure]
-----
-(sexpr (parser/parse-string "::foo"))
+(-> (parser/parse-string "::foo") node/sexpr)
 ;; => :user/foo
-(sexpr (parser/parse-string "#::{:a 1 :b 2}"))
+(-> (parser/parse-string "#::{:a 1 :b 2}") node/sexpr)
 ;; => {:user/a 1 :user/b 2}
-----
+(-> (parser/parse-string "::str/foo") node/sexpr)
+;; => :str-unresolved/foo
+(-> (parser/parse-string "#::str{:a 1 :b 2}") node/sexpr)
+;; => {:str-unresolved/a 1 :str-unresolved/b 2}
 
-* In _regular ClojureScript_ `\*ns*` is `nil` at runtime, for consistency with Clojure, I think we'll pretend it is `user` when it is `nil`.
 
-* In _self-hosted ClojureScript_ `\*ns*` takes on a more REPLy behavior. I've not tested extensively and only via planck, but it
-seems to return the current namespace from `ns` declaration.
-
-I'll add appropriate caveats in the docs. +
-We'll recommend `rewrite-cljc.parser/\*ctx*` -> `:ns` over `\*ns*`.
-
-a| `\*ctx*` specifies `:ns-alias` +
-- alias found
-a| For an *_ns-alias qualified_* element, we lookup alias in `:ns-aliases` in `\*ctx*`, when it is found:
+a| `:auto-resolve` specified
+a|
 [source,Clojure]
 ----
-(binding [parser/*ctx* {:ns-aliases {'a1 'another.ns.a1
-                                     'str 'clojure.string}]
-  (sexpr (parser/parse-string "::str/foo"))
-  ;; => :clojure.string/foo
-  (sexpr (parser/parse-string "#::str{:a 1 :b 2}"))
-  ;; => {:clojure.string/a 1 :clojure.string/b 2}
-)
+(def opts {:auto-resolve (fn [alias]
+                            (get {:current my.current.ns
+                                  'str 'clojure.string}
+                                 alias
+                                 (symbol (str alias "-unresolved"))))})
+
+(-> (parser/parse-string "::foo") (node/sexpr opts))
+;; => :my.current.ns/foo
+(-> (parser/parse-string "#::{:a 1 :b 2}") (node/sexpr opts))
+;; => {:my.current.ns/a 1 :my.current.ns/b 2}
+(-> (parser/parse-string "::str/foo") (node/sexpr opts))
+;; => :clojure.string/foo
+(-> (parser/parse-string "#::str{:a 1 :b 2}") (node/sexpr opts))
+;; => {:clojure.string/a 1 :clojure.string/b 2}
 ----
-
-a| `\*ctx*` specifies `:ns-alias` +
-- alias not found
-a| For an *_ns-alias qualified_* element, when lookup of alias in specified `:ns-aliases` returns `nil`
-one might expect we should throw. I think throwing is not a good idea. The user might not be specifically concerned
-with the absolute correctness of this particular `sexpr` within the context of a larger operation that calls `sexpr` on many nodes.
-
-Maybe we could express the not found namespace as `:_<?namespace-not-found?>_`:
-
-[source,Clojure]
-----
-(binding [*ctx* {:ns-aliases {'a1 'another.ns.a1
-                             'str 'clojure.string}]
-  (sexpr (parser/parse-string "::nope/foo"))
-  ;; => :_<?namespace-not-found?>_/foo
-  (sexpr (parser/parse-string "#::nope{:a 1 :b 2}"))
-  ;; => {:_<?namespace-not-found?>_/a 1 :_<?namespace?>_/b 2}
-)
-----
-
-We might want to provide some mechanism for users to override this behavior. Maybe they'd like to throw instead.
-Maybe they'd like to return a different value. But I think we can add in such support at a later
-date if need be.
-
-Alternative: we could behave the same here as when `:ns-alias` is not specified.
-See next behaviour.
-
-a| `\*ctx*` does not specify `:ns-alias` +
-a| For *_ns-alias qualified_* element, when `:ns-aliases` has NOT been specified
-
-Entirely for namespaced keyword backward compatibility, we will mimic return of rewrite-clj _ns-alias qualified_ keywords:
-
-[source,Clojure]
-----
-(sexpr (parser/parse-string "::nope/foo"))
-;; => :nope/foo
-(sexpr (parser/parse-string "#::nope{:a 1 :b 2}"))
-;; => {:nope/a 1 :nope/b 2}
-----
-
 |===
+
+A benefit of `:auto-resolve` being a function rather than data, is flexibility.
+Maybe a caller would like the resolver to throw on an unresolved alias.
+Callers are free to code up whatever they need.
+
+=== Sexpr on a Key in a Namespaced Map
+
+This gets a bit tricky.
+
+If we `sexpr` at the map level, things are simple because a node knows its children and can affect them:
+[source,Clojure]
+----
+(-> (parser/parse-string "#:my-prefix {:x 1 :y 2}") node/sexpr)
+;; => {:my-prefix/x 1 :my-prefix/y 2}
+----
+
+But for an `sexpr` on a key within the map, we currently lose our namespaced context:
+[source,Clojure]
+(-> (p/parse-string "#:my-prefix {:x 1 :y 2}")
+      :children
+      first
+      node/sexpr)
+;; => :x
+
+Some ideas:
+
+. leave as is an document the limitation/behaviour
+. have the keyword-node hold enough namespaced map context
+. have the keyword-node reference its parent namespaced map
+. pass in namespaced map context to keyword-node on sexpr
+
+In a chat on Slack borkdude suggested maybe just fully qualifying all keyword-nodes in a namespaced map and therefore not having to rely on any extra context.
+But this doesn't work for edge case like:
+
+[source,Clojure]
+----
+#:foo {:x 1 :foo/y 2}
+----
+
+So I think we need some sort of context?
+
+This leads to more questions
+
+. What happens when I move a keyword node
+.. to another namespaced map
+.. outside a map
+
+I would expect that the keyword-node should lose its old context and take on the context (if any) of its new parent.
+
+
+
+. What happens when I update a keyword node in a map?
+
+
+
+. What happens when I update a namespaced map attributes `prefix` and `auto-resolved?`
+These are currently fields.
+A function would have to be introduce to support updating children.
+Perhaps a `(refresh-children-contexts)` for map-node.
+
+So on parse the keyword-node context would be correct.
+But if you want to change map-node context, you would also need to `(refresh-children-namespaced-context)` which would simply copy down the context to the child keyword-nodes.
+I guess the same would hold true if you add or modify children.
+
+So what is the context for keyword-node?
+
+- namespaced-map-prefix
+- namespaced-map-autoresolved?
+
+So a keyword-node might have `(clear-namespaced-context)` to support moving the keyword node.
+
+Because the zipper tracks the parent perhaps we could dynamically support context correctly for namespaced elements but only via the zipper api?
+
+=== Sexpr Behaviour from the zip API
+
+The `rewrite-cljc.zip` API exposes functions that make use of `sexpr`:
+
+- `sexpr` - directly exposes `rewrite-cljc.node/sexpr` for the current node in zipper
+- `find-value` - uses `sexpr` internally
+- `find-next-value` - uses `sexpr` internally
+- `edit-node` - uses `sexpr` internally
+- `get` - uses `find-value` internally
+
+Most of these functions lend themselves to adding an optional `opts` map for our `:auto-resolve`.
+Unfortunately `edit-node` is variadic.
+
+Because all zip API functions operate on the zipper, I'm thinking that we could simply hold the `:auto-resolve` in the zipper.
+
+This idea is already in play to for `:track-position?`.
+TODO: But is config only held for the custom-zipper?
+
 
 === Node Creation
 The primary user of rewrite-clj's node creation functions is the rewrite-clj parser.
@@ -454,6 +514,7 @@ I will not look into adding a `prefix` field for consistency with maps for the f
 Keyword node traversal will remain unchanged (no new child nodes).
 
 Map node traversal differs in that the prefix is no longer stored in a separate child node.
+TODO: This is inconsistent with other nodes and forces an odd treatment of trailing whitespace for the prefix.
 
 === Node Interogation
 

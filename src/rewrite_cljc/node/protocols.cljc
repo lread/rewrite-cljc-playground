@@ -10,31 +10,36 @@
 
 (defprotocol+ Node
   "Protocol for EDN/Clojure/ClojureScript nodes."
-  (tag [node]
+  (tag [this]
     "Returns keyword representing type of `node`.")
-  (printable-only? [node]
+  (printable-only? [this]
     "Return true if `node` cannot be converted to an s-expression element.")
-  (sexpr [node]
-    "Return `node` converted to form.")
-  (length [node]
+  (sexpr [node] [node opts]
+    "Return `node` converted to form.
+
+    Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support).")
+  (length [this]
     "Return number of characters for the string version of `node`.")
-  (string [node]
+  (string [this]
     "Return the string version of `node`."))
 
 (extend-protocol Node
   #?(:clj Object :cljs default)
-  (tag [_] :unknown)
-  (printable-only? [_] false)
+  (tag [_this] :unknown)
+  (printable-only? [_this] false)
   (sexpr [this] this)
+  (sexpr [this opts] this)
   (length [this] (count (string this)))
   (string [this] (pr-str this)))
 
 (defn sexprs
   "Return forms for `nodes`. Nodes that do not represent s-expression are skipped."
-  [nodes]
-  (->> nodes
-       (remove printable-only?)
-       (map sexpr)))
+  ([nodes]
+   (sexprs nodes {}))
+  ([nodes opts]
+   (->> nodes
+        (remove printable-only?)
+        (map #(sexpr % opts)))))
 
 (defn ^:no-doc sum-lengths
   "Return total string length for `nodes`."
@@ -70,16 +75,25 @@
     (throw (ex-info "unsupported operation" {}))))
 
 (defn child-sexprs
-  "Returns children for `node` converted to forms."
-  [node]
-  (when (inner? node)
-    (sexprs (children node))))
+  "Returns children for `node` converted to Clojure forms.
+
+  Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
+  ([node]
+   (child-sexprs node {}))
+  ([node opts]
+   (when (inner? node)
+     (sexprs (children node) opts))))
 
 
 (defn node?
   "Returns true if `x` is a rewrite-cljc created node."
   [ x ]
   (not= :unknown (tag x)))
+
+(defn default-auto-resolve [alias]
+  (if (= :current alias)
+    'user
+    (symbol (str alias "-unresolved"))))
 
 ;; ## Coerceable
 

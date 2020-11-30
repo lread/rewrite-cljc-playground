@@ -29,8 +29,8 @@
 ;; ## Find Operations
 
 (defn find
-  "Return the first node satisfying predicate `p?` seaching from the current node
-   in `zloc` traversing by function `f`.
+  "Return `zloc` located to the first node satisfying predicate `p?` else nil.
+   Search starts at the current node and continues via movement function `f`.
 
    `f` defaults to [[rewrite-cljc.zip/right]]"
   ([zloc p?]
@@ -44,8 +44,8 @@
         (first))))
 
 (defn find-last-by-pos
-  "Return the last node spanning position `pos` that satisfies predicate `p?`
-   searching depth-first from the current node in `zloc`.
+  "Return `zloc` located to the last node spanning position `pos` that satisfies predicate `p?` else `nil`.
+   Search is depth-first from the current node.
 
   NOTE: Does not ignore whitespace/comment nodes."
   ([zloc pos] (find-last-by-pos zloc pos (constantly true)))
@@ -59,14 +59,14 @@
         last)))
 
 (defn find-depth-first
-  "Return first node satisfying predicate `p?` searching depth-first from
-   the current node in `zloc`."
+  "Return `zloc` located to the first node satisfying predicate `p?` else `nil`.
+   Search is depth-first from the current node."
   [zloc p?]
   (find zloc m/next p?))
 
 (defn find-next
-  "Return the first node satisfying predicate `p?` searching one movement `f` from the current
-   node in `zloc` traversing by function `f`.
+  "Return `zloc` located to the next node satisfying predicate `p?` else `nil`.
+   Search starts one movement `f` from the current node continues via `f`.
 
    `f` defaults to [[rewrite-cljc.zip/right]]"
   ([zloc p?]
@@ -75,14 +75,14 @@
    (some-> zloc f (find f p?))))
 
 (defn find-next-depth-first
-  "Return the first node satisfying predicate `p?` searching depth-first from one
-   node after the current node in `zloc`"
+  "Return `zloc` located to next node satisfying predicate `p?` else `nil`.
+   Search starts depth-first after the current node."
   [zloc p?]
   (find-next zloc m/next p?))
 
 (defn find-tag
-  "Return the first node with tag `t` searching from the current node in `zloc` traversing by
-   function `f`.
+  "Return `zloc` located to the first node with tag `t` else `nil`.
+   Search starts at the current node and continues via movement function `f`.
 
    `f` defaults to [[rewrite-cljc.zip/right]]"
   ([zloc t]
@@ -91,8 +91,8 @@
    (find zloc f #(= (base/tag %) t))))
 
 (defn find-next-tag
-  "Return the first node with tag `t` searching one movement `f` from the current
-   node in `zloc` traversing by function `f`.
+  "Return `zloc` located to the next node with tag `t` else `nil`.
+  Search starts one movement `f` after the current node and continues via `f`.
 
    `f` defaults to [[rewrite-cljc.zip/right]]"
   ([zloc t]
@@ -102,13 +102,14 @@
         (find-next zloc f))))
 
 (defn find-tag-by-pos
-  "Return the last node spanning position `pos` with tag `t` searching depth-first from the current node in `zloc`."
+  "Return `zloc` located to the last node spanning position `pos` with tag `t` else `nil`.
+  Search is depth-first from the current node."
   ([zloc pos t]
    (find-last-by-pos zloc pos #(= (base/tag %) t))))
 
 (defn find-token
-  "Return the first token node satisfying predicate `p?` searching from the current node in `zloc` traversing
-   by function `f`.
+  "Return `zloc` located to the the first token node satisfying predicate `p?`.
+  Search starts at the current node and continues via movement function `f`.
 
    `f` defaults to [[rewrite-cljc.zip/right]]"
   ([zloc p?]
@@ -118,8 +119,8 @@
         (find zloc f))))
 
 (defn find-next-token
-  "Return the first token node satisfying predicate `p?` searching from the current node in `zloc` traversing
-   by function `f`.
+  "Return `zloc` location to the next token node satisfying predicate `p?` else `nil`.
+  Search starts one movement `f` after the current node and continues via `f`.
 
    `f` defaults to [[rewrite-cljc.zip/right]]"
   ([zloc p?]
@@ -128,28 +129,36 @@
    (find-token (f zloc) f p?)))
 
 (defn find-value
-  "Return the first token node with value `v` searching one movement `f` from the current node in `zloc` traversing
-   by function `f`.
+  "Return `zloc` located to the first token node that `sexpr`esses to `v` else `nil`.
+   Search starts from the current node and continues via movement function `f`.
 
-   `v` can be a single value or a set. When `v` is a set matches on any value in set.
+   `v` can be a single value or a set. When `v` is a set, matches on any value in set.
 
-   `f` defaults to [[rewrite-cljc.zip/right]]"
+   `f` defaults to [[rewrite-cljc.zip/right]] in short form call.
+
+  Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
   ([zloc v]
-   (find-value zloc m/right v))
+   (find-value zloc m/right v {}))
   ([zloc f v]
+   (find-value zloc f v {}))
+  ([zloc f v opts]
    (let [p? (if (set? v)
-              (comp v base/sexpr)
-              #(= (base/sexpr %) v))]
+              (comp v #(base/sexpr % opts))
+              #(= (base/sexpr % opts) v))]
      (find-token zloc f p?))))
 
 (defn find-next-value
-  "Return the first token node with value `v` searching one movement `f` from the current node in `zloc` traversing
-   by function `f`.
+  "Return `zloc` located to the next token node that `sexpr`esses to `v` else `nil`.
+   Search starts one movement `f` from the current location, and continues via `f`.
 
    `v` can be a single value or a set. When `v` is a set matches on any value in set.
 
-   `f` defaults to [[rewrite-cljc.zip/right]]"
+   `f` defaults to [[rewrite-cljc.zip/right]] in short form call.
+
+  Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
   ([zloc v]
-   (find-next-value zloc m/right v))
+   (find-next-value zloc m/right v {}))
   ([zloc f v]
-   (find-value (f zloc) f v)))
+   (find-next-value zloc f v {}))
+  ([zloc f v opts]
+   (find-value (f zloc) f v opts)))

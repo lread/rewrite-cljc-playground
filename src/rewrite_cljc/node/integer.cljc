@@ -10,7 +10,8 @@
   node/Node
   (tag [_] :token)
   (printable-only? [_] false)
-  (sexpr [_] value)
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [_this opts] value)
   (length [this]
     (count (node/string this)))
   (string [_]

@@ -82,3 +82,30 @@
     "#_(+ 2 3)"
     "@(deref x)"
     "#=(+ 1 2)"))
+
+(deftest t-sexpr-applies-auto-resolve-opts-to-nested-elements
+  (are [?sexpr-default ?child-sexprs-default ?sexpr-custom ?child-sexprs-custom]
+      (let [zloc (base/of-string "{:x [[[::a]] #{::myalias2/b} #::myalias{:x 1 :y 2}]}")
+            opts {:auto-resolve #(if (= :current %)
+                                   'my.current.ns
+                                   (get {'myalias 'my.aliased.ns} %
+                                        (symbol (str % "-unresolved"))))}]
+        (is (= ?sexpr-default (base/sexpr zloc)))
+        (is (= ?child-sexprs-default (base/child-sexprs zloc)))
+        (is (= ?sexpr-custom (base/sexpr zloc opts)))
+        (is (= ?child-sexprs-custom (base/child-sexprs zloc opts))))
+    {:x [[[:user/a]]
+         #{:myalias2-unresolved/b}
+         {:myalias-unresolved/x 1, :myalias-unresolved/y 2}]}
+
+    '(:x [[[:user/a]]
+         #{:myalias2-unresolved/b}
+         {:myalias-unresolved/x 1, :myalias-unresolved/y 2}])
+
+    {:x [[[:my.current.ns/a]]
+         #{:myalias2-unresolved/b}
+         {:my.aliased.ns/x 1, :my.aliased.ns/y 2}]}
+
+    '(:x [[[:my.current.ns/a]]
+          #{:myalias2-unresolved/b}
+          {:my.aliased.ns/x 1, :my.aliased.ns/y 2}])))

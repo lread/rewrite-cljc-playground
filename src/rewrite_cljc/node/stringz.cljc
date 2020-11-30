@@ -23,7 +23,8 @@
       :token))
   (printable-only? [_]
     false)
-  (sexpr [_]
+  (sexpr [this] (.sexpr this {}))
+  (sexpr [_this _opts]
     (join-lines
       (map
         (comp edn/read-string wrap-string)
