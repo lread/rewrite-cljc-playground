@@ -58,7 +58,7 @@ And finally, I never did figure out how to get the Windows prerequisites setup f
 == Setup
 After checking out this project from github,
 
-1. Install JavaScript libraries and tools required by https://github.com/bensu/doo[doo]:
+1. Install JavaScript libraries and tools required by https://github.com/bensu/doo[doo] and https://github.com/thheller/shadow-cljs[shadow-cljs]:
 +
 ----
 sudo npm install karma-cli -g
@@ -118,26 +118,18 @@ bb ./script/sci_native_test.clj
 
 To see what new dependencies are available, run:
 ----
-clojure -M:outdated
+bb ./script/outdated.clj
 ----
 
 We use https://github.com/liquidz/antq[antq] which also checks `pom.xml`.
-There should never be a need to manually update dependencies in `pom.xml` as all dependencies
-are carried over from `deps.edn` during the release process.
-
-To avoid confusion, if you see an outdated dependency reported for `pom.xml` after updating `deps.edn`,
-run the following:
+If you see an outdated dependency reported for `pom.xml` after updating `deps.edn`, run the following:
 
 ----
 clojure -Spom
 ----
 
-And then check in the updated `pom.xml`.
-
-You may also choose to check, from time to time, for outdated node dependencies:
-----
-npm outdated
-----
+This script also checks for outdated Node.js dependencies.
+Note that checks are only done against installed `./node_modules`, so you may want to run `npm install` first.
 
 == Linting
 We use https://github.com/borkdude/clj-kondo[clj-kondo] for linting rewrite-cljc source code.
