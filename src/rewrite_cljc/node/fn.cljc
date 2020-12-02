@@ -63,14 +63,16 @@
 
 ;; ## Node
 
+(defn- fn-sexpr [children opts]
+  (fn-walk (node/sexprs children opts)))
+
 (defrecord FnNode [children]
   node/Node
   (tag [_] :fn)
   (printable-only? [_]
     false)
-  (sexpr [this] (.sexpr this {}))
-  (sexpr [_this opts]
-    (fn-walk (node/sexprs children opts)))
+  (sexpr [this] (fn-sexpr children {}))
+  (sexpr [_this opts] (fn-sexpr children opts))
   (length [_]
     (+ 3 (node/sum-lengths children)))
   (string [_]

@@ -24,7 +24,7 @@
         [rewrite-cljc.node.protocols :as node :refer [NodeCoerceable coerce]]
         [rewrite-cljc.node.quote :refer [QuoteNode]]
         [rewrite-cljc.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
-        [rewrite-cljc.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
+        [rewrite-cljc.node.seq :refer [SeqNode MapNode vector-node list-node set-node map-node]]
         [rewrite-cljc.node.stringz :refer [StringNode]]
         [rewrite-cljc.node.token :refer [TokenNode token-node]]
         [rewrite-cljc.node.uneval :refer [UnevalNode]]

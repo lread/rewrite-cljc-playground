@@ -5,13 +5,17 @@
 
 ;; ## Node
 
+(defn- uneval-sexpr []
+  (throw (ex-info "unsupported operation for uneval-node" {})) )
+
 (defrecord UnevalNode [children]
   node/Node
   (tag [_node] :uneval)
   (printable-only? [_node] true)
-  (sexpr [this] (.sexpr this {}))
+  (sexpr [this]
+    (uneval-sexpr))
   (sexpr [_node _opts]
-    (throw (ex-info "unsupported operation for uneval-node" {})))
+    (uneval-sexpr))
   (length [_node]
     (+ 2 (node/sum-lengths children)))
   (string [_node]

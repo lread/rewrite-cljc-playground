@@ -5,21 +5,24 @@
 
 ;; ## Node
 
+(defn- keyword-sexpr [k auto-resolved? opts]
+  (if auto-resolved?
+    (let [auto-resolve (or (:auto-resolve opts) node/default-auto-resolve)]
+      (keyword
+       (str (if-let [ns-alias (namespace k)]
+              (auto-resolve (symbol ns-alias))
+              (auto-resolve :current)))
+       (name k)))
+    k))
+
 (defrecord KeywordNode [k auto-resolved?]
   node/Node
   (tag [_this] :token)
   (printable-only? [_] false)
   (sexpr [this]
-    (.sexpr this {}))
+    (keyword-sexpr k auto-resolved? {}))
   (sexpr [_this opts]
-    (if auto-resolved?
-      (let [auto-resolve (or (:auto-resolve opts) node/default-auto-resolve)]
-        (keyword
-         (str (if-let [ns-alias (namespace k)]
-                (auto-resolve (symbol ns-alias))
-                (auto-resolve :current)))
-         (name k)))
-      k))
+    (keyword-sexpr k auto-resolved? opts))
   (length [this]
     (let [c (inc (count (name k)))]
       (if auto-resolved?

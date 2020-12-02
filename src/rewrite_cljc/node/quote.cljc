@@ -5,13 +5,17 @@
 
 ;; ## Node
 
+(defn- quote-sexpr [sym children opts]
+  (list sym (first (node/sexprs children opts))))
+
 (defrecord QuoteNode [tag prefix sym children]
   node/Node
   (tag [_] tag)
   (printable-only? [_] false)
-  (sexpr [this] (.sexpr this {}))
+  (sexpr [this]
+    (quote-sexpr sym children {}))
   (sexpr [_this opts]
-    (list sym (first (node/sexprs children opts))))
+    (quote-sexpr sym children opts))
   (length [_]
     (+ (count prefix) (node/sum-lengths children)))
   (string [_]

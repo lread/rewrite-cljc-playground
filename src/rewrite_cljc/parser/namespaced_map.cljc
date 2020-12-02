@@ -16,7 +16,6 @@
 (defn- parse-to-next-elem [reader read-next]
   (loop [nodes []]
     (let [n (read-next reader)]
-      (println "-NNNN->" n)
       (if (and n (= :whitespace (node/tag n)))
         (recur (conj nodes n))
         [nodes n]))))
@@ -28,13 +27,10 @@
   [reader read-next]
   (reader/ignore reader)
   (let [opts (parse-prefix reader)]
-    (println "-popts->" opts)
     (when (and (not (:auto-resolved? opts))
                (nil? (:prefix opts)))
       (u/throw-reader reader "namespaced map expects a namespace"))
     (let [[whitespace-nodes map-node] (parse-to-next-elem reader read-next)]
-      (println "-wsn->" whitespace-nodes)
-      (println "-mn->" map-node)
       (when (or (not map-node)
                 (not= :map (node/tag map-node)))
         (u/throw-reader reader "namespaced map expects a map"))

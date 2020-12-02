@@ -6,6 +6,11 @@
 
 ;; ## Node
 
+(defn- reader-sexpr [sexpr-fn children opts]
+  (if sexpr-fn
+    (sexpr-fn (node/sexprs children opts))
+    (throw (ex-info "unsupported operation" {}))))
+
 (defrecord ReaderNode [tag prefix suffix
                        sexpr-fn sexpr-count
                        children]
@@ -13,11 +18,10 @@
   (tag [_] tag)
   (printable-only? [_]
     (not sexpr-fn))
-  (sexpr [this] (.sexpr this {}))
+  (sexpr [this]
+    (reader-sexpr sexpr-fn children {}))
   (sexpr [_this opts]
-    (if sexpr-fn
-      (sexpr-fn (node/sexprs children opts))
-      (throw (ex-info "unsupported operation" {}))))
+    (reader-sexpr sexpr-fn children opts))
   (length [_]
     (-> (node/sum-lengths children)
         (+ 1 (count prefix) (count suffix))))
@@ -39,13 +43,17 @@
   (toString [this]
     (node/string this)))
 
+(defn- reader-macro-sexpr [node]
+  (list 'read-string (node/string node)))
+
 (defrecord ReaderMacroNode [children]
   node/Node
   (tag [_] :reader-macro)
   (printable-only?[_] false)
-  (sexpr [this] (.sexpr this {}))
+  (sexpr [this]
+    (reader-macro-sexpr this))
   (sexpr [this _opts]
-    (list 'read-string (node/string this)))
+    (reader-macro-sexpr this))
   (length [_]
     (inc (node/sum-lengths children)))
   (string [_]
@@ -65,13 +73,17 @@
   (toString [this]
     (node/string this)))
 
+(defn- deref-sexpr [children opts]
+  (list* 'deref (node/sexprs children opts)))
+
 (defrecord DerefNode [children]
   node/Node
   (tag [_] :deref)
   (printable-only?[_] false)
-  (sexpr [this] (.sexpr this {}))
+  (sexpr [this]
+    (deref-sexpr children {}))
   (sexpr [_this opts]
-    (list* 'deref (node/sexprs children opts)))
+    (deref-sexpr children opts))
   (length [_]
     (inc (node/sum-lengths children)))
   (string [_]

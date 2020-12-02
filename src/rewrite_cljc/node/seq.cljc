@@ -6,6 +6,9 @@
 
 ;; ## Node
 
+(defn- seq-sexpr [seq-fn children opts]
+  (seq-fn (node/sexprs children opts)) )
+
 (defrecord SeqNode [tag
                     format-string
                     wrap-length
@@ -15,9 +18,10 @@
   (tag [this]
     tag)
   (printable-only? [_] false)
-  (sexpr [this] (.sexpr this {}))
+  (sexpr [this]
+    (seq-sexpr seq-fn children {}))
   (sexpr [_this opts]
-    (seq-fn (node/sexprs children opts)))
+    (seq-sexpr seq-fn children opts))
   (length [_]
     (+ wrap-length (node/sum-lengths children)))
   (string [this]
@@ -64,16 +68,20 @@
   (and (= :map (node/tag n))
        (or (:auto-resolved? n) (:prefix n))))
 
+(defn- map-sexpr [node children auto-resolved? prefix opts]
+  (let [m (apply hash-map (node/sexprs children opts))]
+    (if (qualified-map? node)
+      (qualify-children m auto-resolved? prefix opts)
+      m)) )
+
 (defrecord MapNode [children auto-resolved? prefix prefix-trailing-whitespace]
   node/Node
   (tag [this] :map)
   (printable-only? [_] false)
-  (sexpr [this] (.sexpr this {}))
+  (sexpr [this]
+    (map-sexpr this children auto-resolved? prefix {}))
   (sexpr [this opts]
-    (let [m (apply hash-map (node/sexprs children opts))]
-      (if (qualified-map? this)
-        (qualify-children m auto-resolved? prefix opts)
-        m)))
+    (map-sexpr this children auto-resolved? prefix opts))
   (length [this]
     (+ 2
        (if (qualified-map? this) 2 0)

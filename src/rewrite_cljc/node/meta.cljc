@@ -7,16 +7,21 @@
 
 ;; ## Node
 
+(defn- meta-sexpr [children opts]
+  (let [[mta data] (node/sexprs children opts)]
+    (assert (interop/meta-available? data)
+            (str "cannot attach metadata to: " (pr-str data)))
+    (vary-meta data merge (if (map? mta) mta {mta true}))))
+
 (defrecord MetaNode [tag prefix children]
   node/Node
   (tag [_this] tag)
   (printable-only? [_] false)
-  (sexpr [this] (.sexpr this {}))
+  (sexpr [this]
+    (meta-sexpr children {}))
   (sexpr [this opts]
-    (let [[mta data] (node/sexprs children opts)]
-      (assert (interop/meta-available? data)
-              (str "cannot attach metadata to: " (pr-str data)))
-      (vary-meta data merge (if (map? mta) mta {mta true})))) (length [_this]
+    (meta-sexpr children opts))
+  (length [_this]
     (+ (count prefix) (node/sum-lengths children)))
   (string [_this]
     (str prefix (node/concat-strings children)))

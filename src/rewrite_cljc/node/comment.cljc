@@ -5,13 +5,15 @@
 
 ;; ## Node
 
+(defn- comment-sexpr []
+  (throw (ex-info "unsupported operation" {})))
+
 (defrecord CommentNode [s]
   node/Node
   (tag [_] :comment)
   (printable-only? [_] true)
-  (sexpr [this] (.sexpr this {}))
-  (sexpr [_this _opts]
-    (throw (ex-info "unsupported operation" {})))
+  (sexpr [_this] (comment-sexpr))
+  (sexpr [_this _opts] (comment-sexpr))
   (length [_]
     (+ 1 (count s)))
   (string [_]

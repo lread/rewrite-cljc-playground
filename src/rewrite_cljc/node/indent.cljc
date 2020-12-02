@@ -19,15 +19,19 @@
 
 ;; ## Nodes
 
+(defn- line-prefix-sexpr [child opts]
+  (node/sexpr child opts))
+
 (defrecord LinePrefixedNode [child prefix prefix-length prefix-all?]
   node/Node
   (tag [_]
     (node/tag child))
   (printable-only? [_]
     (node/printable-only? child))
-  (sexpr [this] (.sexpr this {}))
+  (sexpr [this]
+    (line-prefix-sexpr child {}))
   (sexpr [_this opts]
-    (node/sexpr child opts))
+    (line-prefix-sexpr child opts))
   (length [this]
     ;; FIXME: directly calculate length
     (count (node/string this)))

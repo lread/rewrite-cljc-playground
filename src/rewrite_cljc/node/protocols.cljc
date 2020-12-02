@@ -27,8 +27,9 @@
   #?(:clj Object :cljs default)
   (tag [_this] :unknown)
   (printable-only? [_this] false)
-  (sexpr [this] this)
-  (sexpr [this opts] this)
+  (sexpr
+    ([this] this)
+    ([this opts] this))
   (length [this] (count (string this)))
   (string [this] (pr-str this)))
 

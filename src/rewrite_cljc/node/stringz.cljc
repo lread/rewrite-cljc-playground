@@ -15,6 +15,12 @@
   [lines]
   (string/join "\n" lines))
 
+(defn- string-sexpr [lines]
+  (join-lines
+   (map
+    (comp edn/read-string wrap-string)
+    lines)) )
+
 (defrecord StringNode [lines]
   node/Node
   (tag [_]
@@ -23,12 +29,10 @@
       :token))
   (printable-only? [_]
     false)
-  (sexpr [this] (.sexpr this {}))
+  (sexpr [this]
+    (string-sexpr lines))
   (sexpr [_this _opts]
-    (join-lines
-      (map
-        (comp edn/read-string wrap-string)
-        lines)))
+    (string-sexpr lines))
   (length [_]
     (+ 2 (reduce + (map count lines))))
   (string [_]

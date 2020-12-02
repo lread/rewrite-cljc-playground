@@ -5,18 +5,22 @@
 
 ;; ## Node
 
+(defn- forms-sexpr [children opts]
+  (let [es (node/sexprs children opts)]
+    (if (next es)
+      (list* 'do es)
+      (first es))))
+
 (defrecord FormsNode [children]
   node/Node
   (tag [_]
     :forms)
   (printable-only? [_]
     false)
-  (sexpr [this] (.sexpr this {}))
+  (sexpr [this]
+    (forms-sexpr children {}))
   (sexpr [_this opts]
-    (let [es (node/sexprs children opts)]
-      (if (next es)
-        (list* 'do es)
-        (first es))))
+    (forms-sexpr children opts))
   (length [_]
     (node/sum-lengths children))
   (string [_]

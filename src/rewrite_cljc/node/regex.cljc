@@ -5,12 +5,17 @@
 
 ;; ## Node
 
+(defn- regex-sexpr [pattern]
+  (list 're-pattern pattern))
+
 (defrecord RegexNode [pattern]
   node/Node
   (tag [_] :regex)
   (printable-only? [_] false)
-  (sexpr [this] (.sexpr this {}))
-  (sexpr [_this _opts] (list 're-pattern pattern))
+  (sexpr [this]
+    (regex-sexpr pattern))
+  (sexpr [_this _opts]
+    (regex-sexpr pattern))
   (length [_] 1)
   (string [_] (str "#\"" pattern "\"")))
 
