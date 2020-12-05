@@ -38,6 +38,11 @@
   [zloc]
   (= (base/tag zloc) :map))
 
+(defn namespaced-map?
+  "Returns true if the current node in `zloc` is a namespaced map."
+  [zloc]
+  (= (base/tag zloc) :namespaced-map))
+
 ;; ## Map Operations
 
 (defn- map-seq
@@ -104,9 +109,15 @@
   - a key for maps
   - an index for sequences"
   [zloc k]
-  {:pre [(or (map? zloc) (and (seq? zloc) (integer? k)))]}
-  (if (map? zloc)
+  {:pre [(or (map? zloc) (namespaced-map? zloc) (and (seq? zloc) (integer? k)))]}
+  (cond
+    (map? zloc)
     (some-> zloc m/down (f/find-value k) m/right)
+
+    (namespaced-map? zloc)
+    (some-> zloc m/down m/rightmost m/down (f/find-value k) m/right)
+
+    :else
     (nth
       (some->> (m/down zloc)
                (iterate m/right)

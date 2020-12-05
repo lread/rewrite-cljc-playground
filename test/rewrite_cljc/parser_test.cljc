@@ -330,7 +330,7 @@
 (deftest t-parsing-qualified-maps
   (are [?s ?sexpr]
       (let [n (p/parse-string ?s)]
-        (is (= :map (node/tag n)))
+        (is (= :namespaced-map (node/tag n)))
         (is (= (count ?s) (node/length n)))
         (is (= ?s (node/string n)))
         (is (= ?sexpr (node/sexpr n))))
@@ -352,7 +352,7 @@
 (deftest t-parsing-auto-resolve-current-ns-maps
   (are [?s ?sexpr-default ?sexpr-custom]
       (let [n (p/parse-string ?s)]
-        (is (= :map (node/tag n)))
+        (is (= :namespaced-map (node/tag n)))
         (is (= (count ?s) (node/length n)))
         (is (= ?s (node/string n)))
         (is (= ?sexpr-default (node/sexpr n)))
@@ -382,7 +382,7 @@
 (deftest parsing-auto-resolve-ns-alias-maps[]
   (are [?s ?sexpr-default ?sexpr-custom]
       (let [n (p/parse-string ?s)]
-        (is (= :map (node/tag n)))
+        (is (= :namespaced-map (node/tag n)))
         (is (= (count ?s) (node/length n)))
         (is (= ?s (node/string n)))
         (is (= ?sexpr-default (node/sexpr n)))

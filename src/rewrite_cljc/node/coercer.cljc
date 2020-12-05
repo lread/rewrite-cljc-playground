@@ -24,7 +24,7 @@
         [rewrite-cljc.node.protocols :as node :refer [NodeCoerceable coerce]]
         [rewrite-cljc.node.quote :refer [QuoteNode]]
         [rewrite-cljc.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
-        [rewrite-cljc.node.seq :refer [SeqNode MapNode vector-node list-node set-node map-node]]
+        [rewrite-cljc.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
         [rewrite-cljc.node.stringz :refer [StringNode]]
         [rewrite-cljc.node.token :refer [TokenNode token-node]]
         [rewrite-cljc.node.uneval :refer [UnevalNode]]
@@ -37,7 +37,7 @@
                [rewrite_cljc.node.meta MetaNode]
                [rewrite_cljc.node.quote QuoteNode]
                [rewrite_cljc.node.reader_macro ReaderNode ReaderMacroNode DerefNode]
-               [rewrite_cljc.node.seq SeqNode MapNode]
+               [rewrite_cljc.node.seq SeqNode]
                [rewrite_cljc.node.stringz StringNode]
                [rewrite_cljc.node.token TokenNode]
                [rewrite_cljc.node.uneval UnevalNode]
@@ -184,6 +184,7 @@
   UnevalNode      (coerce [v] v)
   NewlineNode     (coerce [v] v)
   SeqNode         (coerce [v] v)
-  MapNode         (coerce [v] v)
   TokenNode       (coerce [v] v)
   WhitespaceNode  (coerce [v] v))
+
+;; TODO: What about NamespacedMapNode?

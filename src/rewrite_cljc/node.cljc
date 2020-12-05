@@ -11,6 +11,7 @@
             [rewrite-cljc.node.integer]
             [rewrite-cljc.node.keyword]
             [rewrite-cljc.node.meta]
+            [rewrite-cljc.node.namespaced-map]
             [rewrite-cljc.node.protocols :as np]
             [rewrite-cljc.node.quote]
             [rewrite-cljc.node.reader-macro]
@@ -58,11 +59,16 @@
   integer-node]
 
  [rewrite-cljc.node.keyword
-  keyword-node]
+  keyword-node
+  keyword-node?]
 
  [rewrite-cljc.node.meta
   meta-node
   raw-meta-node]
+
+ [rewrite-cljc.node.namespaced-map
+  map-qualifier-node
+  namespaced-map-node]
 
  [rewrite-cljc.node.regex
   regex-node]
@@ -77,8 +83,7 @@
   list-node
   map-node
   set-node
-  vector-node
-  qualified-map?]
+  vector-node]
 
  [rewrite-cljc.node.stringz
   string-node]
@@ -129,4 +134,26 @@
             ((juxt np/tag np/sexpr)))
     (np/sexpr node)))
 
-(comment (ns-publics 'rewrite-cljc.node))
+(comment
+  (def mn (map-node (list (keyword-node :a)
+                          (whitespace-node " ")
+                          (token-node "boo"))))
+  (type mn)
+
+  (def mn2 (replace-children mn [(keyword-node :a)
+                                 (whitespace-node " ")
+                                 (token-node "boo")]))
+
+  (type mn2)
+  (tag mn2)
+
+  (def b (namespaced-map-node
+          (list (map-qualifier-node true "myalias")
+                (whitespace-node " ")
+                (map-node (list (keyword-node :a)
+                                (whitespace-node " ")
+                                (token-node "boo")))) ))
+
+  (children b)
+
+  )
