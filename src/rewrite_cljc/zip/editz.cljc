@@ -41,6 +41,7 @@
 ;; ## Splice
 
 (defn splice
+  ;; TODO: This could use some elaboration, what does it do?
   "Return zipper with the children of the current node in `zloc` merged into itself.
    (akin to Clojure's `unquote-splicing` macro: `~@...`).
    - if the node is not one that can have children, no modification will

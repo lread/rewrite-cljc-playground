@@ -32,8 +32,6 @@
   (children [_]
     children)
   (replace-children [this children']
-    (println "-type->" (type this))
-    (println "-replacing seq children with->" children')
     (assoc this :children children'))
   (leader-length [_]
     (dec wrap-length))

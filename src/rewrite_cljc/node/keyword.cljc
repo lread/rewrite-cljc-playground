@@ -5,15 +5,15 @@
 
 ;; ## Node
 
-(defn- resolve-nsmap-prefix [nsmap-auto-resolved? nsmap-prefix auto-resolve-fn]
+(defn- resolve-nsmap-prefix [map-qualifier auto-resolve-fn]
   (cond
-    (and nsmap-auto-resolved? nsmap-prefix)
-    (auto-resolve-fn (symbol nsmap-prefix))
+    (and (:auto-resolved? map-qualifier) (:prefix map-qualifier))
+    (auto-resolve-fn (symbol (:prefix map-qualifier)))
 
-    nsmap-auto-resolved?
+    (:auto-resolved? map-qualifier)
     (auto-resolve-fn :current)
 
-    :else nsmap-prefix))
+    :else (:prefix map-qualifier)))
 
 (defn- bare-nsmap-keyword? [k]
   (= "_" (namespace k)))
@@ -27,48 +27,60 @@
      (name k))
     k))
 
-(defn- keyword-sexpr-in-nsmap-context [resolved-k nsmap-autoresolved? nsmap-prefix auto-resolve-fn]
-  (if (bare-nsmap-keyword? resolved-k)
+(defn- keyword-sexpr-in-nsmap-context [resolved-k map-qualifier auto-resolve-fn]
+  (cond
+    (bare-nsmap-keyword? resolved-k)
     (keyword (name resolved-k))
-    (if (qualified-keyword? resolved-k)
-      resolved-k
-      (keyword
-       (str (resolve-nsmap-prefix nsmap-autoresolved? nsmap-prefix auto-resolve-fn))
-       (name resolved-k)))))
 
-(defn- keyword-sexpr [k auto-resolved? nsmap-autoresolved? nsmap-prefix {:keys [auto-resolve]}]
+    (qualified-keyword? resolved-k)
+    resolved-k
+
+    :else
+    (keyword
+     (str (resolve-nsmap-prefix map-qualifier auto-resolve-fn))
+     (name resolved-k))))
+
+(defn- keyword-sexpr [k auto-resolved? map-qualifier {:keys [auto-resolve]}]
   (let [auto-resolve-fn (or auto-resolve node/default-auto-resolve)
         resolved-k (keyword-sexpr-in-isolation k auto-resolved? auto-resolve-fn)]
-    (if (or nsmap-autoresolved? nsmap-prefix)
+    (if map-qualifier
       (keyword-sexpr-in-nsmap-context resolved-k
-                                      nsmap-autoresolved?
-                                      nsmap-prefix
+                                      map-qualifier
                                       auto-resolve-fn)
       resolved-k)))
 
 (comment
   ;; usage seems obtuse to me! can I make it easier to reason about?
-  (keyword-sexpr :boo false false nil nil)
-  (keyword-sexpr :boo true false nil nil)
-  (keyword-sexpr :moo/boo true false nil nil)
-  (keyword-sexpr :moo/boo false false nil nil)
-
-  (keyword-sexpr :_/boo false false nil nil)
-  (keyword-sexpr :_/boo false false 'my.current.ns nil)
-  (keyword-sexpr :boo false false 'my.current.ns nil)
-  (keyword-sexpr :boo false true nil nil)
-  (keyword-sexpr :boo false true 'myalias nil)
-  (keyword-sexpr :moo/boo false true 'myalias nil)
+  (keyword-sexpr :boo false nil nil)
+  ;; => :boo
+  (keyword-sexpr :boo true nil nil)
+  ;; => :user/boo
+  (keyword-sexpr :moo/boo true nil nil)
+  ;; => :moo-unresolved/boo
+  (keyword-sexpr :moo/boo false nil nil )
+  ;; => :moo/boo
+  (keyword-sexpr :_/boo false nil nil )
+  ;; => :_/boo
+  (keyword-sexpr :_/boo false {:prefix "my.current.ns"} nil)
+  ;; => :boo
+  (keyword-sexpr :boo false {:prefix "my.current.ns"} nil)
+  ;; => :my.current.ns/boo
+  (keyword-sexpr :boo false {:auto-resolved? true} nil)
+  ;; => :user/boo
+  (keyword-sexpr :boo false {:auto-resolved? true :prefix "myalias"} nil)
+  ;; => :myalias-unresolved/boo
+  (keyword-sexpr :moo/boo false {:auto-resolved? true :prefix "myalias"} nil)
+  ;; => :moo/boo
   )
 
-(defrecord KeywordNode [k auto-resolved? nsmap-autoresolved? nsmap-prefix]
+(defrecord KeywordNode [k auto-resolved? map-qualifier]
   node/Node
   (tag [_this] :token)
   (printable-only? [_] false)
   (sexpr [this]
-    (keyword-sexpr k auto-resolved? nsmap-autoresolved? nsmap-prefix {}))
+    (keyword-sexpr k auto-resolved? map-qualifier {}))
   (sexpr [_this opts]
-    (keyword-sexpr k auto-resolved? nsmap-autoresolved? nsmap-prefix opts))
+    (keyword-sexpr k auto-resolved? map-qualifier opts))
   (length [this]
     (let [c (inc (count (name k)))]
       (if auto-resolved?
@@ -108,4 +120,4 @@
   * `(keyword-node :ns-alias/kw true)` - auto-resolved to namespace with alias ns-alias, equivalent to code `::ns-alias/kw`"
   [k & [auto-resolved?]]
   {:pre [(keyword? k)]}
-  (->KeywordNode k auto-resolved? nil nil))
+  (->KeywordNode k auto-resolved? nil))

@@ -52,35 +52,18 @@
                  (conj new-children (f n true)))))
       new-children)))
 
-(defn- add-context [n q-node]
-  (assoc n
-         :nsmap-autoresolved? (:auto-resolved? q-node)
-         :nsmap-prefix (:prefix q-node)) )
-
-(defn- strip-context [n]
-  (dissoc n :nsmap-autoresolved? :nsmap-prefix))
-
 (defn- apply-context-to-map
   "Apply the context of the qualified map to the keyword keys in the map.
 
   Strips context from keyword-nodes not in keyword position and adds context to keyword nodes in keyword position."
   [m-node q-node]
-  (println "--tag->" (node/tag m-node))
-  (println "--kids->" (node/children m-node))
-  (println "--new kids-->" (edit-map-children (node/children m-node)
-                                              (fn [n is-map-key?]
-                                                (if (keyword/keyword-node? n)
-                                                  (if is-map-key?
-                                                    (add-context n q-node)
-                                                    (strip-context n))
-                                                  n))))
   (node/replace-children m-node
                          (edit-map-children (node/children m-node)
                                             (fn [n is-map-key?]
                                               (if (keyword/keyword-node? n)
                                                 (if is-map-key?
-                                                  (add-context n q-node)
-                                                  (strip-context n))
+                                                  (assoc n :map-qualifier q-node)
+                                                  (dissoc n :map-qualifier))
                                                 n)))))
 
 (defn- apply-context [children]
@@ -107,10 +90,7 @@
 (defn- namespaced-map-sexpr
   "Assumes that appropriate qualifier context has been applied to contained map."
   [children opts]
-  (println "-last kid ->" (last children))
-  (node/sexpr (last children) opts)
-  #_(apply hash-map
-         (node/sexprs (:children (last children)) opts)))
+  (node/sexpr (last children) opts))
 
 (defrecord NamespacedMapNode [children]
   node/Node
