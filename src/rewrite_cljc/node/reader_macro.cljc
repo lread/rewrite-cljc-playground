@@ -15,93 +15,94 @@
                        sexpr-fn sexpr-count
                        children]
   node/Node
-  (tag [_] tag)
-  (printable-only? [_]
+  (tag [_n] tag)
+  (printable-only? [_n]
     (not sexpr-fn))
-  (sexpr [this]
+  (sexpr [_n]
     (reader-sexpr sexpr-fn children {}))
-  (sexpr [_this opts]
+  (sexpr [_n opts]
     (reader-sexpr sexpr-fn children opts))
-  (length [_]
+  (length [_n]
     (-> (node/sum-lengths children)
         (+ 1 (count prefix) (count suffix))))
-  (string [_]
+  (string [_n]
     (str "#" prefix (node/concat-strings children) suffix))
 
   node/InnerNode
-  (inner? [_]
+  (inner? [_n]
     true)
-  (children [_]
+  (children [_n]
     children)
-  (replace-children [this children']
+  (replace-children [n children']
     (when sexpr-count
       (node/assert-sexpr-count children' sexpr-count))
-    (assoc this :children children'))
-  (leader-length [_]
+    (assoc n :children children'))
+  (leader-length [_n]
     (inc (count prefix)))
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (defn- reader-macro-sexpr [node]
   (list 'read-string (node/string node)))
 
 (defrecord ReaderMacroNode [children]
   node/Node
-  (tag [_] :reader-macro)
-  (printable-only?[_] false)
-  (sexpr [this]
-    (reader-macro-sexpr this))
-  (sexpr [this _opts]
-    (reader-macro-sexpr this))
-  (length [_]
+  (tag [_n] :reader-macro)
+  (printable-only?[_n] false)
+  (sexpr [n]
+    (reader-macro-sexpr n))
+  (sexpr [n _opts]
+    (reader-macro-sexpr n))
+  (length [_n]
     (inc (node/sum-lengths children)))
-  (string [_]
+  (string [_n]
     (str "#" (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_]
+  (inner? [_n]
     true)
-  (children [_]
+  (children [_n]
     children)
-  (replace-children [this children']
+  (replace-children [n children']
     (node/assert-sexpr-count children' 2)
-    (assoc this :children children'))
-  (leader-length [_]
+    (assoc n :children children'))
+  (leader-length [_n]
     1)
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (defn- deref-sexpr [children opts]
   (list* 'deref (node/sexprs children opts)))
 
 (defrecord DerefNode [children]
   node/Node
-  (tag [_] :deref)
-  (printable-only?[_] false)
-  (sexpr [this]
+  (tag [_n] :deref)
+  (printable-only?[_n] false)
+  (sexpr [_n]
     (deref-sexpr children {}))
-  (sexpr [_this opts]
+  (sexpr [_n opts]
     (deref-sexpr children opts))
-  (length [_]
+  (length [_n]
     (inc (node/sum-lengths children)))
-  (string [_]
+  (string [_n]
     (str "@" (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_]
+  (inner? [_n]
     true)
-  (children [_]
+  (children [_n]
     children)
-  (replace-children [this children']
+  (replace-children [n children']
     (node/assert-sexpr-count children' 1)
-    (assoc this :children children'))
+    (assoc n :children children'))
   (leader-length [_]
     1)
+
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! ReaderNode)
 (node/make-printable! ReaderMacroNode)

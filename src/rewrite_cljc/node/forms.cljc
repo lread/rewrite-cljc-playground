@@ -13,32 +13,32 @@
 
 (defrecord FormsNode [children]
   node/Node
-  (tag [_]
+  (tag [_n]
     :forms)
-  (printable-only? [_]
+  (printable-only? [_n]
     false)
-  (sexpr [this]
+  (sexpr [_n]
     (forms-sexpr children {}))
-  (sexpr [_this opts]
+  (sexpr [_n opts]
     (forms-sexpr children opts))
-  (length [_]
+  (length [_n]
     (node/sum-lengths children))
-  (string [_]
+  (string [_n]
     (node/concat-strings children))
 
   node/InnerNode
-  (inner? [_]
+  (inner? [_n]
     true)
-  (children [_]
+  (children [_n]
     children)
-  (replace-children [this children']
-    (assoc this :children children'))
-  (leader-length [_]
+  (replace-children [n children']
+    (assoc n :children children'))
+  (leader-length [_n]
     0)
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! FormsNode)
 

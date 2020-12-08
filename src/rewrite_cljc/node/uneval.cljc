@@ -10,29 +10,29 @@
 
 (defrecord UnevalNode [children]
   node/Node
-  (tag [_node] :uneval)
-  (printable-only? [_node] true)
-  (sexpr [this]
+  (tag [_n] :uneval)
+  (printable-only? [_n] true)
+  (sexpr [_n]
     (uneval-sexpr))
-  (sexpr [_node _opts]
+  (sexpr [_n _opts]
     (uneval-sexpr))
-  (length [_node]
+  (length [_n]
     (+ 2 (node/sum-lengths children)))
-  (string [_node]
+  (string [_n]
     (str "#_" (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_node] true)
-  (children [_node] children)
-  (replace-children [node children']
+  (inner? [_n] true)
+  (children [_n] children)
+  (replace-children [n children']
     (node/assert-single-sexpr children')
-    (assoc node :children children'))
-  (leader-length [_]
+    (assoc n :children children'))
+  (leader-length [_n]
     2)
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! UnevalNode)
 

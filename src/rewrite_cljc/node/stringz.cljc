@@ -23,24 +23,24 @@
 
 (defrecord StringNode [lines]
   node/Node
-  (tag [_]
+  (tag [_n]
     (if (next lines)
       :multi-line
       :token))
-  (printable-only? [_]
+  (printable-only? [_n]
     false)
-  (sexpr [this]
+  (sexpr [_n]
     (string-sexpr lines))
-  (sexpr [_this _opts]
+  (sexpr [_n _opts]
     (string-sexpr lines))
-  (length [_]
+  (length [_n]
     (+ 2 (reduce + (map count lines))))
-  (string [_]
+  (string [_n]
     (wrap-string (join-lines lines)))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! StringNode)
 

@@ -1,4 +1,4 @@
-;; TODO: Is this used at all?
+;; TODO: Is this used at all? There are no tests...
 (ns ^:no-doc rewrite-cljc.node.indent
   (:require [clojure.string :as string]
             [rewrite-cljc.node.protocols :as node]
@@ -24,25 +24,25 @@
 
 (defrecord LinePrefixedNode [child prefix prefix-length prefix-all?]
   node/Node
-  (tag [_]
+  (tag [_n]
     (node/tag child))
-  (printable-only? [_]
+  (printable-only? [_n]
     (node/printable-only? child))
-  (sexpr [this]
+  (sexpr [_n]
     (line-prefix-sexpr child {}))
-  (sexpr [_this opts]
+  (sexpr [_n opts]
     (line-prefix-sexpr child opts))
-  (length [this]
+  (length [n]
     ;; FIXME: directly calculate length
-    (count (node/string this)))
-  (string [_]
+    (count (node/string n)))
+  (string [_n]
     (ws/with-newline-fn
       #(add-to-lines prefix-all? prefix %)
       (str prefix (node/string child))))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! LinePrefixedNode)
 

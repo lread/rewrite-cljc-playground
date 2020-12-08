@@ -10,17 +10,17 @@
 
 (defprotocol+ Node
   "Protocol for EDN/Clojure/ClojureScript nodes."
-  (tag [this]
+  (tag [node]
     "Returns keyword representing type of `node`.")
-  (printable-only? [this]
+  (printable-only? [node]
     "Return true if `node` cannot be converted to an s-expression element.")
   (sexpr [node] [node opts]
     "Return `node` converted to form.
 
     Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support).")
-  (length [this]
+  (length [node]
     "Return number of characters for the string version of `node`.")
-  (string [this]
+  (string [node]
     "Return the string version of `node`."))
 
 (extend-protocol Node
@@ -29,7 +29,7 @@
   (printable-only? [_this] false)
   (sexpr
     ([this] this)
-    ([this opts] this))
+    ([this _opts] this))
   (length [this] (count (string this)))
   (string [this] (pr-str this)))
 
@@ -67,12 +67,12 @@
 
 (extend-protocol InnerNode
   #?(:clj Object :cljs default)
-  (inner? [_] false)
-  (children [_]
+  (inner? [_this] false)
+  (children [_this]
     (throw (ex-info "unsupported operation" {})))
-  (replace-children [_ _]
+  (replace-children [_this _children]
     (throw (ex-info "unsupported operation" {})))
-  (leader-length [_]
+  (leader-length [_this]
     (throw (ex-info "unsupported operation" {}))))
 
 (defn child-sexprs
@@ -91,6 +91,7 @@
   [ x ]
   (not= :unknown (tag x)))
 
+;; TODO: probably not the right spot for this, this more of a default config
 (defn default-auto-resolve [alias]
   (if (= :current alias)
     'user

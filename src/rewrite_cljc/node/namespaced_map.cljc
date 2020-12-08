@@ -35,6 +35,7 @@
   - `is-map-key?` true if the node is in keyword position
   and should return `n` or a new version of `n`."
   [children f]
+  ;; TODO: should this be applied lazy?
   (loop [r children
          last-key nil
          new-children []]
@@ -51,6 +52,7 @@
                  n
                  (conj new-children (f n true)))))
       new-children)))
+
 
 (defn- apply-context-to-map
   "Apply the context of the qualified map to the keyword keys in the map.
@@ -94,30 +96,30 @@
 
 (defrecord NamespacedMapNode [children]
   node/Node
-  (tag [this] :namespaced-map)
-  (printable-only? [_] false)
-  (sexpr [this]
+  (tag [_n] :namespaced-map)
+  (printable-only? [_n] false)
+  (sexpr [_n]
     (namespaced-map-sexpr children {}))
-  (sexpr [this opts]
+  (sexpr [_n opts]
     (namespaced-map-sexpr children opts))
-  (length [this]
+  (length [_n]
     (node/sum-lengths children))
-  (string [this]
+  (string [_n]
     (node/concat-strings children))
 
   node/InnerNode
-  (inner? [_]
+  (inner? [_n]
     true)
-  (children [_]
+  (children [_n]
     children)
-  (replace-children [this children']
-    (assoc this :children (apply-context children')))
-  (leader-length [_]
+  (replace-children [n children']
+    (assoc n :children (apply-context children')))
+  (leader-length [_n]
     (dec 2))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! MapQualifierNode)
 (node/make-printable! NamespacedMapNode)

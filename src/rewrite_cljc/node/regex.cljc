@@ -10,14 +10,14 @@
 
 (defrecord RegexNode [pattern]
   node/Node
-  (tag [_] :regex)
-  (printable-only? [_] false)
-  (sexpr [this]
+  (tag [_n] :regex)
+  (printable-only? [_n] false)
+  (sexpr [_n]
     (regex-sexpr pattern))
-  (sexpr [_this _opts]
+  (sexpr [_n _opts]
     (regex-sexpr pattern))
-  (length [_] 1)
-  (string [_] (str "#\"" pattern "\"")))
+  (length [_n] 1)
+  (string [_n] (str "#\"" pattern "\"")))
 
 (node/make-printable! RegexNode)
 

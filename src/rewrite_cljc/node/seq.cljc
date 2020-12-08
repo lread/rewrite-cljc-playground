@@ -15,30 +15,30 @@
                     seq-fn
                     children]
   node/Node
-  (tag [this]
+  (tag [_n]
     tag)
-  (printable-only? [_] false)
-  (sexpr [this] (seq-sexpr seq-fn children {}))
-  (sexpr [this opts] (seq-sexpr seq-fn children opts))
-  (length [_]
+  (printable-only? [_n] false)
+  (sexpr [_n] (seq-sexpr seq-fn children {}))
+  (sexpr [_n opts] (seq-sexpr seq-fn children opts))
+  (length [_n]
     (+ wrap-length (node/sum-lengths children)))
-  (string [this]
+  (string [_n]
     (->> (node/concat-strings children)
          (interop/simple-format format-string)))
 
   node/InnerNode
-  (inner? [_]
+  (inner? [_n]
     true)
-  (children [_]
+  (children [_n]
     children)
-  (replace-children [this children']
-    (assoc this :children children'))
-  (leader-length [_]
+  (replace-children [n children']
+    (assoc n :children children'))
+  (leader-length [_n]
     (dec wrap-length))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! SeqNode)
 

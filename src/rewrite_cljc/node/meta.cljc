@@ -15,29 +15,29 @@
 
 (defrecord MetaNode [tag prefix children]
   node/Node
-  (tag [_this] tag)
+  (tag [_n] tag)
   (printable-only? [_] false)
-  (sexpr [this]
+  (sexpr [_n]
     (meta-sexpr children {}))
-  (sexpr [this opts]
+  (sexpr [_n opts]
     (meta-sexpr children opts))
-  (length [_this]
+  (length [_n]
     (+ (count prefix) (node/sum-lengths children)))
-  (string [_this]
+  (string [_n]
     (str prefix (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_this] true)
-  (children [_this] children)
-  (replace-children [this children']
+  (inner? [_n] true)
+  (children [_n] children)
+  (replace-children [n children']
     (node/assert-sexpr-count children' 2)
-    (assoc this :children children'))
-  (leader-length [_this]
+    (assoc n :children children'))
+  (leader-length [_n]
     (count prefix))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! MetaNode)
 

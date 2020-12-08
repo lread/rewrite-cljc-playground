@@ -10,18 +10,18 @@
 
 (defrecord CommentNode [s]
   node/Node
-  (tag [_] :comment)
-  (printable-only? [_] true)
-  (sexpr [_this] (comment-sexpr))
-  (sexpr [_this _opts] (comment-sexpr))
-  (length [_]
+  (tag [_n] :comment)
+  (printable-only? [_n] true)
+  (sexpr [_n] (comment-sexpr))
+  (sexpr [_n _opts] (comment-sexpr))
+  (length [_n]
     (+ 1 (count s)))
-  (string [_]
+  (string [_n]
     (str ";" s))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! CommentNode)
 

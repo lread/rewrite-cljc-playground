@@ -8,13 +8,13 @@
 
 (defrecord IntNode [value base]
   node/Node
-  (tag [_] :token)
-  (printable-only? [_] false)
-  (sexpr [this] value)
-  (sexpr [_this opts] value)
-  (length [this]
-    (count (node/string this)))
-  (string [_]
+  (tag [_n] :token)
+  (printable-only? [_n] false)
+  (sexpr [_n] value)
+  (sexpr [_n _opts] value)
+  (length [n]
+    (count (node/string n)))
+  (string [_n]
     (let [sign (when (< value 0)
                  "-")
           abs-value (cond-> value (< value 0) -)
@@ -27,8 +27,8 @@
       (str sign prefix s)))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! IntNode)
 

@@ -68,29 +68,29 @@
 
 (defrecord FnNode [children]
   node/Node
-  (tag [_] :fn)
-  (printable-only? [_]
+  (tag [_n] :fn)
+  (printable-only? [_n]
     false)
-  (sexpr [this] (fn-sexpr children {}))
-  (sexpr [_this opts] (fn-sexpr children opts))
-  (length [_]
+  (sexpr [_n] (fn-sexpr children {}))
+  (sexpr [_n opts] (fn-sexpr children opts))
+  (length [_n]
     (+ 3 (node/sum-lengths children)))
-  (string [_]
+  (string [_n]
     (str "#(" (node/concat-strings children) ")"))
 
   node/InnerNode
-  (inner? [_]
+  (inner? [_n]
     true)
-  (children [_]
+  (children [_n]
     children)
   (replace-children [this children']
     (assoc this :children children'))
-  (leader-length [_]
+  (leader-length [_n]
     2)
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! FnNode)
 

@@ -10,29 +10,29 @@
 
 (defrecord QuoteNode [tag prefix sym children]
   node/Node
-  (tag [_] tag)
-  (printable-only? [_] false)
-  (sexpr [this]
+  (tag [_n] tag)
+  (printable-only? [_n] false)
+  (sexpr [_n]
     (quote-sexpr sym children {}))
-  (sexpr [_this opts]
+  (sexpr [_n opts]
     (quote-sexpr sym children opts))
-  (length [_]
+  (length [_n]
     (+ (count prefix) (node/sum-lengths children)))
-  (string [_]
+  (string [_n]
     (str prefix (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_] true)
-  (children [_] children)
-  (replace-children [this children']
+  (inner? [_n] true)
+  (children [_n] children)
+  (replace-children [n children']
     (node/assert-single-sexpr children')
-    (assoc this :children children'))
-  (leader-length [_]
+    (assoc n :children children'))
+  (leader-length [_n]
     (count prefix))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! QuoteNode)
 

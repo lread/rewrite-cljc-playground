@@ -7,12 +7,12 @@
 
 (defrecord TokenNode [value string-value]
   node/Node
-  (tag [_this] :token)
-  (printable-only? [_this] false)
-  (sexpr [_this] value)
-  (sexpr [_this _opts] value)
-  (length [_this] (count string-value))
-  (string [_this] string-value)
+  (tag [_n] :token)
+  (printable-only? [_n] false)
+  (sexpr [_n] value)
+  (sexpr [_n _opts] value)
+  (length [_n] (count string-value))
+  (string [_n] string-value)
 
   Object
   (toString [this]
