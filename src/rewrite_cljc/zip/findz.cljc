@@ -136,15 +136,14 @@
 
    `f` defaults to [[rewrite-cljc.zip/right]] in short form call.
 
+  TODO: update note
   Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
   ([zloc v]
-   (find-value zloc m/right v {}))
+   (find-value zloc m/right v))
   ([zloc f v]
-   (find-value zloc f v {}))
-  ([zloc f v opts]
    (let [p? (if (set? v)
-              (comp v #(base/sexpr % opts))
-              #(= (base/sexpr % opts) v))]
+              (comp v #(base/sexpr %))
+              #(= (base/sexpr %) v))]
      (find-token zloc f p?))))
 
 (defn find-next-value
@@ -157,8 +156,6 @@
 
   Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
   ([zloc v]
-   (find-next-value zloc m/right v {}))
+   (find-next-value zloc m/right v))
   ([zloc f v]
-   (find-next-value zloc f v {}))
-  ([zloc f v opts]
-   (find-value (f zloc) f v opts)))
+   (find-value (f zloc) f v)))

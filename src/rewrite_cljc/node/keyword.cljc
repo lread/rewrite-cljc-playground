@@ -5,49 +5,24 @@
 
 ;; ## Node
 
-(defn- resolve-nsmap-prefix [map-qualifier auto-resolve-fn]
-  (cond
-    (and (:auto-resolved? map-qualifier) (:prefix map-qualifier))
-    (auto-resolve-fn (symbol (:prefix map-qualifier)))
+(defn- choose-qualifier [map-qualifier kw-qualifier]
+  (when (not (and map-qualifier (= "_" (:prefix kw-qualifier))))
+    (or kw-qualifier map-qualifier)))
 
-    (:auto-resolved? map-qualifier)
-    (auto-resolve-fn :current)
+(defn kw-qualifier [k auto-resolved?]
+  (when (or auto-resolved? (namespace k))
+    {:auto-resolved? auto-resolved?
+     :prefix (namespace k)}))
 
-    :else (:prefix map-qualifier)))
-
-(defn- bare-nsmap-keyword? [k]
-  (= "_" (namespace k)))
-
-(defn- keyword-sexpr-in-isolation [k auto-resolved? auto-resolve-fn]
-  (if auto-resolved?
-    (keyword
-     (str (if-let [ns-alias (namespace k)]
-            (auto-resolve-fn (symbol ns-alias))
-            (auto-resolve-fn :current)))
-     (name k))
-    k))
-
-(defn- keyword-sexpr-in-nsmap-context [resolved-k map-qualifier auto-resolve-fn]
-  (cond
-    (bare-nsmap-keyword? resolved-k)
-    (keyword (name resolved-k))
-
-    (qualified-keyword? resolved-k)
-    resolved-k
-
-    :else
-    (keyword
-     (str (resolve-nsmap-prefix map-qualifier auto-resolve-fn))
-     (name resolved-k))))
-
-(defn- keyword-sexpr [k auto-resolved? map-qualifier {:keys [auto-resolve]}]
-  (let [auto-resolve-fn (or auto-resolve node/default-auto-resolve)
-        resolved-k (keyword-sexpr-in-isolation k auto-resolved? auto-resolve-fn)]
-    (if map-qualifier
-      (keyword-sexpr-in-nsmap-context resolved-k
-                                      map-qualifier
-                                      auto-resolve-fn)
-      resolved-k)))
+(defn keyword-sexpr [kw kw-auto-resolved? map-qualifier {:keys [auto-resolve]}]
+  (let [q (choose-qualifier map-qualifier (kw-qualifier kw kw-auto-resolved?))]
+    (keyword (some-> (if (:auto-resolved? q)
+                       ((or auto-resolve node/default-auto-resolve)
+                        (or (some-> (:prefix q) symbol)
+                            :current))
+                       (:prefix q))
+                     str)
+             (name kw))))
 
 (comment
   ;; usage seems obtuse to me! can I make it easier to reason about?
@@ -75,26 +50,26 @@
 
 (defrecord KeywordNode [k auto-resolved? map-qualifier]
   node/Node
-  (tag [_this] :token)
-  (printable-only? [_] false)
-  (sexpr [this]
+  (tag [_n] :token)
+  (printable-only? [_n] false)
+  (sexpr [_n]
     (keyword-sexpr k auto-resolved? map-qualifier {}))
-  (sexpr [_this opts]
+  (sexpr [_n opts]
     (keyword-sexpr k auto-resolved? map-qualifier opts))
-  (length [this]
+  (length [_n]
     (let [c (inc (count (name k)))]
       (if auto-resolved?
         (inc c)
         (if-let [nspace (namespace k)]
           (+ 1 c (count nspace))
           c))))
-  (string [_this]
+  (string [_n]
     (str (when auto-resolved? ":")
          (pr-str k)))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [n]
+    (node/string n)))
 
 (node/make-printable! KeywordNode)
 

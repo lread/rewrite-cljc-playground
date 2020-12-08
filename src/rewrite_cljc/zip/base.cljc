@@ -2,10 +2,20 @@
   (:refer-clojure :exclude [print])
   (:require [rewrite-cljc.custom-zipper.core :as z]
             [rewrite-cljc.node :as node]
+            [rewrite-cljc.node.protocols :as protocols]
             [rewrite-cljc.parser :as p]
             [rewrite-cljc.zip.whitespace :as ws]))
 
 #?(:clj (set! *warn-on-reflection* true))
+
+(defn ^:no-doc get-opts [zloc]
+  (:rewrite-cljc.zip/opts (meta zloc)))
+
+(defn ^:no-doc set-opts [zloc opts]
+  (with-meta zloc
+    (merge (meta zloc)
+           {:rewrite-cljc.zip/opts (merge {:auto-resolve protocols/default-auto-resolve}
+                                          opts)})))
 
 ;; ## Zipper
 (defn edn*
@@ -23,20 +33,24 @@
      (z/zipper node))))
 
 (defn edn
-  "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-cljc.parse]])
-   and move to the first non-whitespace/non-comment child.
+  "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-cljc.parse]]),
+  and move to the first non-whitespace/non-comment child. If node is not forms node, is wrapped in forms node
+  for a consistent root.
 
    Set `:track-position?` in `options` to enable ones-based row/column tracking.
    See [[rewrite-cljc.zip/position]].
 
    NOTE: when position tracking is enabled, `clojure.zip` is not interchangeable with `rewrite-cljc.zip`, you must use `rewrite-cljc.zip`."
   ([node] (edn node {}))
-  ([node options]
-   (if (= (node/tag node) :forms)
-     (let [top (edn* node options)]
-       (or (-> top z/down ws/skip-whitespace)
-           top))
-     (recur (node/forms-node [node]) options))))
+  ([node opts]
+   ;; TODO: loop is a bit awkward here.
+   (-> (loop [node node opts opts]
+         (if (= (node/tag node) :forms)
+           (let [top (edn* node opts)]
+             (or (-> top z/down ws/skip-whitespace)
+                 top))
+           (recur (node/forms-node [node]) opts)))
+       (set-opts opts))))
 
 ;; ## Inspection
 
@@ -48,20 +62,18 @@
 (defn sexpr
   "Return s-expression (the Clojure form) of current node in `zloc`.
 
+  TODO: update note
   Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
   ([zloc]
-   (sexpr zloc {}))
-  ([zloc opts]
-   (some-> zloc z/node (node/sexpr opts))))
+   (some-> zloc z/node (node/sexpr (get-opts zloc)))))
 
 (defn ^{:added "0.4.4"} child-sexprs
   "Return s-expression (the Clojure forms) of children of current node in `zloc`.
 
+  TODO: update note
   Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
   ([zloc]
-   (child-sexprs zloc {}))
-  ([zloc opts]
-   (some-> zloc z/node (node/child-sexprs opts))))
+   (some-> zloc z/node (node/child-sexprs (get-opts zloc)))))
 
 (defn length
   "Return length of printable string of current node in `zloc`."
@@ -83,8 +95,13 @@
 
    NOTE: when position tracking is enabled, `clojure.zip` is not interchangeable with `rewrite-cljc.zip`, you must use `rewrite-cljc.zip`."
   ([s] (of-string s {}))
-  ([s options]
-   (some-> s p/parse-string-all (edn options))))
+  ([s opts]
+   (some-> s p/parse-string-all (edn opts))))
+
+(comment
+  (meta (of-string "{:a 1}" {:auto-resolve 1}))
+
+  )
 
 #?(:clj
    (defn of-file

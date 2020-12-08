@@ -37,16 +37,11 @@
     (are [?sin ?sout]
         (is (= ?sout (->> ?sin
                           base/of-string
-                          ;; TODO: This is a little misleading.. edit works on sexpr of keyword
-                          ;; and namespaced map keyword sexpr will be affected
                           (sq/map-keys #(e/edit % name))
                           base/string)))
       "{:a 0, :b 1}"
-      "{\"a\" 0, \"b\" 1}"
-
-      "#:my-prefix {:x 7, :y 123}"
-      "#:my-prefix {\"x\" 7, \"y\" 123}"))
-  (testing "map works for seqs and preserve whitespace"
+      "{\"a\" 0, \"b\" 1}"))
+  (testing "map works for seqs and preserves whitespace"
     (is (= "[ 5\n6\n7]" (->> "[ 1\n2\n3]"
                              base/of-string
                              (sq/map #(e/edit % + 4))
@@ -60,11 +55,7 @@
       "{:a 0 :b 1}" :a 0
       "{:a 3, :b 4}" :b 4
       "{:x 10 :y 20}" :z nil
-      "[1 2 3]" 1 2
-      ;; TODO: is this usable? having to specify the resolved prefix?
-      "#:my-prefix{:c 10 :d 11}" :my-prefix/d 11
-      "#::my-ns-alias{:x 42, ::y 17}" :my-ns-alias-unresolved/x 42
-      "#::my-ns-alias{:x 42, ::y 17}" :user/y 17))
+      "[1 2 3]" 1 2))
 
   (testing "assoc map and vector"
     (are [?sin ?key ?value ?sout]
@@ -75,38 +66,84 @@
       "{:a 0, :b 1}" :a 3 "{:a 3, :b 1}"
       "{:a 0, :b 1}" :c 2 "{:a 0, :b 1 :c 2}"
       "{}" :x 0 "{:x 0}"
-      "[1 2 3]" 2 703 "[1 2 703]"
-      ;; TODO: review namespaced maps and keywords.
-      "#:my-prefix{:c 10 :d 11}" :my-prefix/d "new-d-val" "#:my-prefix{:c 10 :d \"new-d-val\"}"
-      "#::my-ns-alias{:x 42, ::y 17}" :my-ns-alias-unresolved/x "new-x-val" "#::my-ns-alias{:x \"new-x-val\", ::y 17}"))
+      "[1 2 3]" 2 703 "[1 2 703]"))
   (testing "out of bounds assoc on vector should throw"
     (is (thrown? #?(:clj IndexOutOfBoundsException :cljs js/Error)
                  (-> "[5 10 15]" base/of-string (sq/get 5))))))
 
-;; TODO: These aren't seq operation tests
+;; TODO: a bit repetetive?
+(deftest t-seq-namespaced-maps
+  (let [opts {:auto-resolve (fn [ns-alias]
+                              (if (= :current ns-alias)
+                                'my.current.ns
+                                (get {'my-ns-alias 'my.aliased.ns}
+                                     ns-alias
+                                     (symbol (str ns-alias "-unresolved")))))}]
+    (testing "get"
+      (testing "default resolver"
+        (let [tget (fn [s k] (-> s base/of-string (sq/get k) base/string))]
+          (is (= "11" (tget "#:my-prefix{:c 10 :d 11}" :my-prefix/d)))
+          (is (= "42" (tget "#::my-ns-alias{:x 42, ::y 17}" :my-ns-alias-unresolved/x)))
+          (is (= "17" (tget "#::my-ns-alias{:x 42, ::y 17}" :user/y)))))
+      (testing "custom resolver"
+        (let [tget (fn [s k] (-> s (base/of-string opts) (sq/get k) base/string))]
+          (is (= "11" (tget "#:my-prefix{:c 10 :d 11}" :my-prefix/d)))
+          (is (= "42" (tget "#::my-ns-alias{:x 42, ::y 17}" :my.aliased.ns/x)))
+          (is (= "17" (tget "#::my-ns-alias{:x 42, ::y 17}" :my.current.ns/y))))))
+    (testing "map-keys"
+      (testing "default resolver"
+        (let [tmap-keys (fn [s] (->> s
+                                     base/of-string
+                                     ;; TODO: this might be a bit misleading we are taking the name of the key which may be autoresolved
+                                     ;; TODO: Oh right, I don't NEED to use edit
+                                     (sq/map-keys #(e/edit % name))
+                                     base/string))]
+          (is (= "#:my-prefix {\"x\" 7, \"y\" 123}" (tmap-keys "#:my-prefix {:x 7, :y 123}")))
+          (is (= "#::my-ns-alias{\"x\" 42, \"y\" 17}" (tmap-keys "#::my-ns-alias{:x 42, ::y 17}")))))
+
+      (testing "custom resolver"
+        (let [tmap-keys (fn [s] (->> (base/of-string s opts)
+                                     ;; TODO: this might be a bit misleading we are taking the name of the key which may be autoresolved
+                                     ;; TODO: Oh right, I don't NEED to use edit
+                                     (sq/map-keys #(e/edit % name))
+                                     base/string))]
+          (is (= "#:my-prefix {\"x\" 7, \"y\" 123}" (tmap-keys "#:my-prefix {:x 7, :y 123}")))
+          (is (= "#::my-ns-alias{\"x\" 42, \"y\" 17}" (tmap-keys "#::my-ns-alias{:x 42, ::y 17}")))) ))
+    (testing "assoc"
+      (testing "default resolver"
+        (let [tassoc (fn [s k v] (-> s base/of-string (sq/assoc k v) base/string))]
+          (is (= "#:my-prefix{:c 10 :d \"new-d-val\"}" (tassoc "#:my-prefix{:c 10 :d 11}" :my-prefix/d "new-d-val")))
+          (is (= "#::my-ns-alias{:x \"new-x-val\", ::y 17}" (tassoc "#::my-ns-alias{:x 42, ::y 17}" :my-ns-alias-unresolved/x "new-x-val")))))
+      (testing "custom resolver"
+        (let [tassoc (fn [s k v] (-> s (base/of-string opts) (sq/assoc k v) base/string))]
+          (is (= "#:my-prefix{:c 10 :d \"new-d-val\"}" (tassoc "#:my-prefix{:c 10 :d 11}" :my-prefix/d "new-d-val")))
+          (is (= "#::my-ns-alias{:x \"new-x-val\", ::y 17}" (tassoc "#::my-ns-alias{:x 42, ::y 17}" :my.aliased.ns/x "new-x-val"))) )))))
+
+
+;; TODO: These aren't seq operation tests they more actually keyword tests? Or the fact that namespaced map context gets applied to keywords
 (deftest t-sexpr-namespaced-maps
-  (let [m (base/of-string "{:a 1 :b 2}")
-        m-q (base/of-string "#:prefix{:a 1 :b 2}")
-        m-ar-alias (base/of-string "#::my-ns-alias{:a 1 :b 2}")
-        m-ar-cur-ns (base/of-string "#::{:a 1 :b 2}")
-        opts {:auto-resolve (fn [ns-alias]
+  (let [opts {:auto-resolve (fn [ns-alias]
                               (if (= :current ns-alias)
                                 'my.current.ns
                                 (get {'my-ns-alias 'my.aliased.ns}
                                      ns-alias
                                      (symbol (str ns-alias "-unresolved")))))}]
     (testing "unqualified map keys are unaffected by resolvers"
-      (is (= {:a 1 :b 2} (base/sexpr m)))
-      (is (= {:a 1 :b 2} (base/sexpr m opts))))
+      (is (= {:a 1 :b 2} (-> "{:a 1 :b 2}" base/of-string base/sexpr)))
+      (is (= {:a 1 :b 2} (-> "{:a 1 :b 2}" (base/of-string opts) base/sexpr))))
     (testing "qualified map keys are unaffected by resolvers"
-      (is (= {:prefix/a 1 :prefix/b 2} (base/sexpr m-q)))
-      (is (= {:prefix/a 1 :prefix/b 2} (base/sexpr m-q opts))) )
+      (is (= {:prefix/a 1 :prefix/b 2} (-> "#:prefix{:a 1 :b 2}" base/of-string base/sexpr)))
+      (is (= {:prefix/a 1 :prefix/b 2} (-> "#:prefix{:a 1 :b 2}" (base/of-string opts) base/sexpr))))
     (testing "auto-resolve ns-alias map keys are affected by resolvers"
-      (is (= {:my-ns-alias-unresolved/a 1 :my-ns-alias-unresolved/b 2} (base/sexpr m-ar-alias)))
-      (is (= {:my.aliased.ns/a 1 :my.aliased.ns/b 2} (base/sexpr m-ar-alias opts))) )
+      (is (= {:my-ns-alias-unresolved/a 1 :my-ns-alias-unresolved/b 2}
+             (-> "#::my-ns-alias{:a 1 :b 2}" base/of-string base/sexpr)))
+      (is (= {:my.aliased.ns/a 1 :my.aliased.ns/b 2}
+             (-> "#::my-ns-alias{:a 1 :b 2}" (base/of-string opts) base/sexpr))))
     (testing "auto-resolve current-ns map keys are affected by resolvers"
-      (is (= {:user/a 1 :user/b 2} (base/sexpr m-ar-cur-ns)))
-      (is (= {:my.current.ns/a 1 :my.current.ns/b 2} (base/sexpr m-ar-cur-ns opts))) )
-    (testing "changing a map's namespaced type needs to be explicitly reflected to child keys"
-      (is (= {:user/a 1 :user/b 2} (base/sexpr m-ar-cur-ns)))
-      (is (= {:my.current.ns/a 1 :my.current.ns/b 2} (base/sexpr m-ar-cur-ns opts))))))
+      (is (= {:user/a 1 :user/b 2}
+             (-> "#::{:a 1 :b 2}" base/of-string base/sexpr)))
+      (is (= {:my.current.ns/a 1 :my.current.ns/b 2}
+             (-> "#::{:a 1 :b 2}" (base/of-string opts) base/sexpr))))))
+
+
+(comment (base/of-string "#::{:a 1 :b 2}"))
