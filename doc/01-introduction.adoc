@@ -29,27 +29,30 @@ If rewrite-cljc is not your cup of tea, consider following alternatives:
 |===
 
 == History
-@xsc created https://github.com/xsc/rewrite-clj[rewrite-clj] in 2013. Its original use was to upgrade dependencies in https://leiningen.org[lein] project.clj files. The library quickly took off in popularity and is the default choice for modifying Clojure/EDN from Clojure.
+@xsc created https://github.com/xsc/rewrite-clj[rewrite-clj] in 2013.
+Its original use was to upgrade dependencies in https://leiningen.org[lein] project.clj files.
+The library quickly took off in popularity and is the default choice for modifying Clojure/EDN from Clojure.
 
-@rundis created rewrite-cljs in 2015 to match the features of rewrite-clj for ClojureScript developers. It was originally used for refactoring support in https://github.com/LightTable/LightTable[Light Table]. In January of 2019, @rundis graciously https://github.com/clj-commons/rewrite-cljs[transferred rewrite-cljs to clj-commons].
+@rundis created rewrite-cljs in 2015 to match the features of rewrite-clj for ClojureScript developers.
+It was originally used for refactoring support in https://github.com/LightTable/LightTable[Light Table].
+In January of 2019, @rundis graciously https://github.com/clj-commons/rewrite-cljs[transferred rewrite-cljs to clj-commons].
 
-Seeing an opportunity to give back to the Clojure community, in 2019 @lread, with guidance and help from many friendly Clojurians, created rewrite-cljc under clj-commons. The goal is to provide a thoughtfully maintained feature-complete library that can be used from either Clojure or ClojureScript. While the merge was not trivial the real hard work was done over many years under the leadership of @xsc and @rundis (thanks guys!). Read link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs] for details on the merge.
+Seeing an opportunity to give back to the Clojure community, in 2019 @lread, with guidance and help from many friendly Clojurians, started work on rewrite-cljc.
+The goal is to provide a thoughtfully maintained feature-complete library that can be used from either Clojure or ClojureScript.
+While the merging rewrite-clj and rewrite-cljs to create rewrite-cljc was not trivial, the real hard work was done over many years in rewrite-clj and rewrite-cljs under the leadership of @xsc and @rundis (thanks guys!).
+Read link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs] for details on the rewrite-cljc merge.
 
 == Upgrading from rewrite-clj and/or rewrite-cljs
-
 Both rewrite-clj and rewrite-cljs have a root namespace of `rewrite-clj`.
 The rewrite-cljc library has a root namespace of `rewrite-cljc`.
 
-To upgrade to rewrite-cljc, update your project dependencies, and rename
-your `ns` `:requires` from `rewrite-clj` to `rewrite-cljc` in your source files.
+To upgrade to rewrite-cljc, update your project dependencies, and rename your `ns` `:requires` from `rewrite-clj` to `rewrite-cljc` in your source files.
 
 Need to know more? link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc#_changes[Details of changes].
 
-== Usage
-
-With the exception of the different root namespace of `rewrite-cljc`, rewrite-cljc is
-intended to be an API compatible replacement for rewrite-clj and/or
-rewrite-cljs. There are 4 public API namespaces:
+== Rewrite-cljc APIs
+With the exception of the different root namespace of `rewrite-cljc`, rewrite-cljc is intended to be a mostly API compatible replacement for rewrite-clj and/or rewrite-cljs.
+There are 4 public API namespaces:
 
 . `rewrite-cljc.zip`
 . `rewrite-cljc.parser`
@@ -57,14 +60,14 @@ rewrite-cljs. There are 4 public API namespaces:
 . `rewrite-cljc.paredit`
 
 === Zip API
-Traverse and modify Clojure/ClojureScript/EDN. This is the main rewrite-cljc API and might very well be all you need.
+Traverse and modify Clojure/ClojureScript/EDN.
+This is the main rewrite-cljc API and might very well be all you need.
 
 [TIP]
 ====
-rewrite-clj uses a customized version of
+Rewrite-cljc uses a customized version of
 https://clojure.github.io/clojure/clojure.zip-api.html[Clojure's clojure.zip].
-If you are not familiar with zippers, you may find the following resources
-helpful:
+If you are not familiar with zippers, you may find the following resources helpful:
 
 * https://clojure.org/reference/other_libraries#_zippers_functional_tree_editing_clojure_zip[Clojure overview of zippers]
 * https://lambdaisland.com/blog/2018-11-26-art-tree-shaping-clojure-zip[Arne Brasseur - The Art of Tree Shaping with Clojure Zippers]
@@ -115,23 +118,21 @@ user=> (-> zloc
 <2> explore what we've parsed into our zipper
 
 <3> rename my-function to my-function2 and return resulting s-expression.
-`rewrite-cljc.zip/edit` and `rewrite-cljc.zip/replace`
-transparently coerce between the node representation (`<token: my-function>`)
-and its corresponding s-expression (`my-function`).
+`rewrite-cljc.zip/edit` and `rewrite-cljc.zip/replace` transparently coerce between the node representation (`<token: my-function>`) and its corresponding s-expression (`my-function`).
 
 <4> rename my-function to my-function2 and print from root node. Original whitespace is preserved.
 
-TIP: The zip location movement functions (`right`, `left`, `up`, `down`, etc)
-skip over whitespace nodes. If you want to see all nodes, use the `+*+`
-counterparts (`right*`, `left*`, `up*`, `down*`, etc).
+TIP: The zip location movement functions (`right`, `left`, `up`, `down`, etc) skip over whitespace nodes.
+If you want to see all nodes, use the `+*+` counterparts (`right*`, `left*`, `up*`, `down*`, etc).
 
 See link:{cljdoc-api-url}/rewrite-cljc.zip[zip API docs].
 
 ==== Finding Elements with the Zip API
 
-`rewrite-cljc.zip` includes find operations to navigate to locations of interest
-in your zipper. Let's assume you want to modify the following minimal `project.clj` by
-replacing the `:description` placeholder text with something more meaningful:
+TODO: Finding uses `sexpr` internally and therefore has caveats.
+
+The `rewrite-cljc.zip` namespace includes find operations to navigate to locations of interest in your zipper.
+Let's assume you want to modify the following minimal `project.clj` by replacing the `:description` placeholder text with something more meaningful:
 
 .project.clj snippet
 [source, clojure]
@@ -140,10 +141,12 @@ replacing the `:description` placeholder text with something more meaningful:
   :description "Enter description")
 ----
 
-Most find functions accept an optional location movement function. To perform a
-depth-first search use `rewrite-cljc.zip/next`, to search sibling nodes to the
-right, use `rewrite-cljc.zip/right` (the default), and to search siblings to left,
-use `rewrite-cljc.zip/left`.
+Most find functions accept an optional location movement function.
+Use:
+
+* `rewrite-cljc.zip/right` (the default) - to search sibling nodes to the right
+* `rewrite-cljc.zip/left` to search siblings to left
+* `rewrite-cljc.zip/next` for a depth-first tree search
 
 .REPL session
 [source, clojure-repl]
@@ -173,16 +176,17 @@ nil
 
 <2> navigate depth-first to the project map by searching for `'defproject`.
 
-<3> navigate to the description text by searching right for `:description` and
-then moving one node to the right. Remember that while whitespace is preserved,
-it is automatically skipped during navigation.
+<3> navigate to the description text by searching right for `:description` and then moving one node to the right.
+Remember that while whitespace is preserved, it is automatically skipped during navigation.
 
 <4> replace the description, zip up and print the result.
 
-==== Handling Clojure Data Structures with the Zip API
+==== Familiar Functions for Updating Nodes with the Zip API
 
-The zip api provides familiar ways to work with Clojure data structures. It
-offers functions that correspond to the standard seq functions, for example:
+TODO: get, assoc and edit use `sexpr` internally and therefore have caveats
+
+The zip API provides familiar ways to work with parsed Clojure data structures.
+It offers functions that correspond to the standard seq functions, for example:
 
 .REPL session
 [source, clojure-repl]
@@ -211,7 +215,8 @@ user=> (->> zloc (z/map #(z/edit % + 4)) z/->root-string)
 
 ==== Tracking Position with the Zip API
 
-If you need to track the source row and column while reading and manipulating your zipper, create your zipper with `:track-position true` option. Note that the row and column are 1-based.
+If you need to track the source row and column while reading and manipulating your zipper, create your zipper with `:track-position true` option.
+Note that the row and column are 1-based.
 
 .REPL session
 [source,clojure-repl]
@@ -284,136 +289,13 @@ user=> (z/position zc2) ;; <8>
 <9> examine updated position of c. It is on the 6th row and 6th column.
 
 
-==== Dealing with Reader Generated Metadata
-
-Rewrite-cljc offers, where it can, transparent coercion from Clojure forms to rewrite-cljc nodes.
-
-Clojure will, in some cases, add location metadata that is not in the original source code, as illustrated here:
-
-.REPL session
-[source,clojure-repl]
-----
-Clojure 1.10.1
-user=> ;; a quoted list has :line and :column metadata
-user=> (meta '(1 2 3))
-{:line 1, :column 8}
-----
-
-Rewrite-cljc will, on coercion from Clojure forms to rewrite-cljc nodes, omit location metadata.
-No rewrite-cljc metadata node will will be created if resulting metadata is empty.
-
-On conversion from rewrite-cljc nodes to Clojure forms via `sexpr`, I don't see a way to omit the location metadata.
-With the assumption that you will generally coerce Clojure forms back to rewrite-cljc nodes, this should not cause an issue.
-
-You can use `rewrite-cljc.node/form-meta` in place of `clojure.core/meta` if you'd like to only see metadata that was actually in original Clojure source code.
-
-To support those using rewrite-cljc under sci, in addition to `:line` and `:column` rewrite-cljc also removes `:end-line` and `:end-column` metadata.
-Note that while Clojure only adds location metadata to quoted lists, sci adds it to all forms that accept metadata.
-
-Omitting location metadata is a deviation from rewrite-clj behavior.
-Should you wish, for whatever reason, to preserve rewrite-clj behavior and not remove location metadata, bind `rewrite-cljc.node/\*elide-metadata*` to `nil`.
-
-==== Some `sexpr` Guidance
-
-Parsing arbitrary valid Clojure/ClojureScript code should work fine (please let
-us know of any cases where it does not), but converting parsed code to
-s-expressions via rewrite-cljc's `sexpr` should be used with care.
-
-Illustrations of some of the limitations of `sexpr`:
-
-[source, clojure]
-----
-(require '[rewrite-cljc.zip :as z])
-
-(-> (z/of-string "#_42") z/sexpr) ;; <1>
-(-> (z/of-string ";; can’t sexpr me!") z/next* z/sexpr) ;; <1>
-(-> (z/of-string " ") z/next* z/sexpr) ;; <1>
-
-(-> (z/sexpr (z/of-string "3/4"))) ;; <2>
-(+ 10 (z/sexpr (z/of-string "9007199254740991"))) ;; <3>
-
-----
-<1> Reader ignore/discard `#_`, comment and whitespace all throw an "unsupported operation" exception. +
-Notice the use of `*next` to include normally skipped nodes.
-<2> Clojure returns Ratio `3/4`, +
-ClojureScript has no Ratio and returns `0.75`
-<3> Clojure and ClojureScript inherit integral types and behavior from their host platforms. +
-Clojure returns `9007199254741001` +
-ClojureScript returns `9007199254741000`
-[cols="50,50"]
-
-[auto-resolve-support]
-==== Auto-resolve Support
-In Clojure keywords can be qualified:
-
-* `:my-qualifier/kw`
-* `#:my-qualifer{:kw 1}`.
-
-Qualification can also come from auto-resolving:
-
-* to the current namespace:
-** `::kw`
-** `#::{:kw 1}`
-* or the namespace of an alias:
-** `::my-alias/kw`
-** `#::my-alias{:kw 1}`
-
-When calling `sepxr` on auto-resolved keyword or map node, rewrite-cljc will resolve:
-
-* the current ns to `user`
-* namespace alias `x` to `x-unresolved`
-
-[source, clojure-repl]
-----
-user=> (require '[rewrite-cljc.parser :as p]
-                '[rewrite-cljc.node :as n])
-nil
-user=> (-> (p/parse-string "::kw") n/sexpr)
-:user/kw
-user=> (-> (p/parse-string "#::{:a 1 :b 2}") n/sexpr)
-:user{:a 1, :b 2}
-user=> (-> (p/parse-string "::my-alias/kw") n/sexpr)
-:my-alias-unresolved/kw
-user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2}") n/sexpr)
-:my-alias-unresolved{:a 1, :b 2}
-----
-
-This default behavior should be sufficient for most use cases (let us know if we are wrong about that).
-If you'd prefer a different behavior, specify a function for `:auto-resolve` in the optional `opts` arg of `sexpr`.
-
-The auto-resolve function takes a single arg `alias` for lookup and must return symbol.
-The `alias` will be:
-
-* `:current` for a request for the current namespace
-* otherwise it will be a symbol for the namespace alias to lookup
-
-For example, if you know the current namespace and the namespace aliases it loads, you can specify them:
-[source, clojure-repl]
-----
-user=> (require '[rewrite-cljc.parser :as p]
-                '[rewrite-cljc.node :as n])
-nil
-user=> (defn resolver [alias]
-         (or (get {:current 'my.current.ns
-                   'my-alias 'my.aliased.ns} alias)
-             (symbol (str alias "-unresolved"))))
-#'user/resolver
-user=> (-> (p/parse-string "::kw") (n/sexpr {:auto-resolve resolver}))
-:my.current.ns/kw
-user=> (-> (p/parse-string "#::{:a 1 :b 2}") (n/sexpr {:auto-resolve resolver}))
-#:my.current.ns{:a 1, :b 2}
-user=> (-> (p/parse-string "::my-alias/kw") (n/sexpr {:auto-resolve resolver}))
-:my.aliased.ns/kw
-user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2}") (n/sexpr {:auto-resolve resolver}))
-#:my.aliased.ns{:a 1, :b 2}
-----
 === Parser API
 Parses Clojure/ClojureScript/EDN to rewrite-cljc nodes.
-The Zip API makes use of the Parser API to parse Clojure.
+The zip API makes use of the Parser API to parse Clojure.
 If your focus is parsing instead of rewriting, you might find this lower level API useful.
 You can choose to parse one or all https://www.braveclojure.com/do-things/#Forms[forms] from a string or a file.footnote:file[]
 
-The Parser API takes advantage of https://github.com/clojure/tools.reader[clojure.tools.reader] for simple forms.
+The parser API takes advantage of https://github.com/clojure/tools.reader[clojure.tools.reader] for simple forms.
 
 Here we parse a single form from a string:
 
@@ -480,3 +362,172 @@ See link:{cljdoc-api-url}/rewrite-cljc.node[node API docs].
 Structured editing was introduce by rewrite-cljs and carried over to rewrite-cljc.
 
 See link:{cljdoc-api-url}/rewrite-cljc.paredit[current paredit API docs].
+
+
+== Sexpr Nuances
+
+Rewrite-cljc parses arbitrary Clojure/ClojureScript source code into rewrite-cljc nodes.
+Converting rewrite-cljc nodes to Clojure forms via `sexpr` is convenient, but it does come with some caveats.
+
+=== Whitespace
+The whitespace that a rewrite-cljc node so carefully preserves is lost when converting to a Clojure form.
+
+[source, clojure-repl]
+----
+Clojure 1.10.1
+user=> (require '[rewrite-cljc.parser :as p] '[rewrite-cljc.node :as n])
+nil
+user=> (def n (p/parse-string "{  :a 1\n\n   :b 2}"))
+#'user/n
+user=> n  ;; <1>
+<map:
+  {  :a 1
+
+     :b 2}
+>
+nil
+user=> (n/children n) ;; <2>
+(<whitespace: "  "> <token: :a> <whitespace: " "> <token: 1> <newline: "\n\n"> <whitespace: "   "> <token: :b> <whitespace: " "> <token: 2>)
+user=> (n/sexpr n) ;; <3>
+{:b 2, :a 1}
+----
+<1> Rewrite-cljc prints out nodes in a debug friendly format, here we see whitespace is preserved
+<2> If we look at the map node's child nodes, we clearly see the whitespace nodes
+<3> When we convert to the map node to an sexpr we get the Clojure form which does not include the specifics of the original whitespace
+
+=== Not all Source is Sexpr-able
+
+Some source code elements are not sexpr-able.
+Reader ignore/discard `#_`, comment and whitespace all throw an "unsupported operation" exception.
+
+[source, clojure]
+----
+(require '[rewrite-cljc.zip :as z])
+
+(-> (z/of-string "#_42") z/sexpr) ;;
+(-> (z/of-string ";; can’t sexpr me!") z/next* z/sexpr) ;; <1>
+(-> (z/of-string " ") z/next* z/sexpr) ;; <1>
+----
+<1> Notice the use of `next*` to include normally skipped nodes.
+
+=== Differences in Clojure Platforms
+
+Clojure and ClojureScript have differences, some examples you might run into when using `sexpr` are:
+
+[source, clojure]
+----
+(require '[rewrite-cljc.zip :as z])
+
+(-> (z/of-string "3/4") z/sexpr) ;; <1>
+;; clj => 3/4
+;; cljs => 0.75
+(+ 10 (z/of-string "9007199254740991") z/sexpr) ;; <2>
+;; clj => 9007199254741001
+;; cljs => 9007199254741000
+(-> (z/of-string "\\a") z/sexpr) ;; <3>
+;; clj => \a
+;; cljs => "a"
+
+----
+<1> Clojure returns Ratio `3/4`, +
+ClojureScript has no Ratio and returns `0.75`
+<2> Clojure and ClojureScript inherit integral types and behavior from their host platforms. +
+<3> Clojure has a character type but ClojureScript does not and represents characters as strings
+
+
+=== Namespaced Elements
+
+[auto-resolve-support]
+==== Auto-resolve Support
+In Clojure keywords can be qualified:
+
+* `:my-qualifier/kw`
+* `#:my-qualifer{:kw 1}`.
+
+Qualification can also come from auto-resolving:
+
+* to the current namespace:
+** `::kw`
+** `#::{:kw 1}`
+* or the namespace of an alias:
+** `::my-alias/kw`
+** `#::my-alias{:kw 1}`
+
+When calling `sepxr` on auto-resolved keyword or map node, rewrite-cljc will resolve:
+
+* the current ns to `user`
+* namespace alias `x` to `x-unresolved`
+
+[source, clojure-repl]
+----
+user=> (require '[rewrite-cljc.parser :as p]
+                '[rewrite-cljc.node :as n])
+nil
+user=> (-> (p/parse-string "::kw") n/sexpr)
+:user/kw
+user=> (-> (p/parse-string "#::{:a 1 :b 2}") n/sexpr)
+:user{:a 1, :b 2}
+user=> (-> (p/parse-string "::my-alias/kw") n/sexpr)
+:my-alias-unresolved/kw
+user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2}") n/sexpr)
+:my-alias-unresolved{:a 1, :b 2}
+----
+
+This default behavior should be sufficient for most use cases (let us know if we are wrong about that).
+If you'd prefer a different behavior, specify a function for `:auto-resolve` in the optional `opts` arg of `sexpr`.
+
+The auto-resolve function takes a single arg `alias` for lookup and must return symbol.
+The `alias` will be:
+
+* `:current` for a request for the current namespace
+* otherwise it will be a symbol for the namespace alias to lookup
+
+For example, if you know the current namespace and the namespace aliases it loads, you can specify them:
+[source, clojure-repl]
+----
+user=> (require '[rewrite-cljc.parser :as p]
+                '[rewrite-cljc.node :as n])
+nil
+user=> (defn resolver [alias]
+         (or (get {:current 'my.current.ns
+                   'my-alias 'my.aliased.ns} alias)
+             (symbol (str alias "-unresolved"))))
+#'user/resolver
+user=> (-> (p/parse-string "::kw") (n/sexpr {:auto-resolve resolver}))
+:my.current.ns/kw
+user=> (-> (p/parse-string "#::{:a 1 :b 2}") (n/sexpr {:auto-resolve resolver}))
+#:my.current.ns{:a 1, :b 2}
+user=> (-> (p/parse-string "::my-alias/kw") (n/sexpr {:auto-resolve resolver}))
+:my.aliased.ns/kw
+user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2}") (n/sexpr {:auto-resolve resolver}))
+#:my.aliased.ns{:a 1, :b 2}
+----
+
+== Dealing with Reader Generated Metadata
+
+Rewrite-cljc offers, where it can, transparent coercion from Clojure forms to rewrite-cljc nodes.
+
+Clojure will, in some cases, add location metadata that is not in the original source code, as illustrated here:
+
+.REPL session
+[source,clojure-repl]
+----
+Clojure 1.10.1
+user=> ;; a quoted list has :line and :column metadata
+user=> (meta '(1 2 3))
+{:line 1, :column 8}
+----
+
+Rewrite-cljc will, on coercion from Clojure forms to rewrite-cljc nodes, omit location metadata.
+No rewrite-cljc metadata node will will be created if resulting metadata is empty.
+
+On conversion from rewrite-cljc nodes to Clojure forms via `sexpr`, I don't see a way to omit the location metadata.
+With the assumption that you will generally coerce Clojure forms back to rewrite-cljc nodes, this should not cause an issue.
+
+You can use `rewrite-cljc.node/form-meta` in place of `clojure.core/meta` if you'd like to only see metadata that was actually in original Clojure source code.
+
+To support those using rewrite-cljc under sci, in addition to `:line` and `:column` rewrite-cljc also removes `:end-line` and `:end-column` metadata.
+Note that while Clojure only adds location metadata to quoted lists, sci adds it to all forms that accept metadata.
+
+Omitting location metadata is a deviation from rewrite-clj behavior.
+Should you wish, for whatever reason, to preserve rewrite-clj behavior and not remove location metadata, bind `rewrite-cljc.node/\*elide-metadata*` to `nil`.
