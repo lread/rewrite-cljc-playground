@@ -24,30 +24,6 @@
                      str)
              (name kw))))
 
-(comment
-  ;; usage seems obtuse to me! can I make it easier to reason about?
-  (keyword-sexpr :boo false nil nil)
-  ;; => :boo
-  (keyword-sexpr :boo true nil nil)
-  ;; => :user/boo
-  (keyword-sexpr :moo/boo true nil nil)
-  ;; => :moo-unresolved/boo
-  (keyword-sexpr :moo/boo false nil nil )
-  ;; => :moo/boo
-  (keyword-sexpr :_/boo false nil nil )
-  ;; => :_/boo
-  (keyword-sexpr :_/boo false {:prefix "my.current.ns"} nil)
-  ;; => :boo
-  (keyword-sexpr :boo false {:prefix "my.current.ns"} nil)
-  ;; => :my.current.ns/boo
-  (keyword-sexpr :boo false {:auto-resolved? true} nil)
-  ;; => :user/boo
-  (keyword-sexpr :boo false {:auto-resolved? true :prefix "myalias"} nil)
-  ;; => :myalias-unresolved/boo
-  (keyword-sexpr :moo/boo false {:auto-resolved? true :prefix "myalias"} nil)
-  ;; => :moo/boo
-  )
-
 (defrecord KeywordNode [k auto-resolved? map-qualifier]
   node/Node
   (tag [_n] :token)
