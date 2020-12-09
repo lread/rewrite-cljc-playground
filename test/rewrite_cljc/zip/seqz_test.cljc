@@ -143,7 +143,17 @@
       (is (= {:user/a 1 :user/b 2}
              (-> "#::{:a 1 :b 2}" base/of-string base/sexpr)))
       (is (= {:my.current.ns/a 1 :my.current.ns/b 2}
-             (-> "#::{:a 1 :b 2}" (base/of-string opts) base/sexpr))))))
-
-
-(comment (base/of-string "#::{:a 1 :b 2}"))
+             (-> "#::{:a 1 :b 2}" (base/of-string opts) base/sexpr))))
+    (testing "symbols are affected by qualified maps"
+      (is (= '{prefix/a 1 prefix/b 2 c 3 foo/d 4}
+             (-> "#:prefix{a 1 b 2 _/c 3 foo/d 4}" base/of-string base/sexpr)))
+      (is (= '{prefix/a 1 prefix/b 2 c 3 foo/d 4}
+             (-> "#:prefix{a 1 b 2 _/c 3 foo/d 4}" (base/of-string opts) base/sexpr)))
+      (is (= '{my-ns-alias-unresolved/a 1 my-ns-alias-unresolved/b 2 c 3 foo/d 4}
+             (-> "#::my-ns-alias{a 1 b 2 _/c 3 foo/d 4}" base/of-string base/sexpr)))
+      (is (= '{my.aliased.ns/a 1 my.aliased.ns/b 2 c 3 foo/d 4}
+             (-> "#::my-ns-alias{a 1 b 2 _/c 3 foo/d 4}" (base/of-string opts) base/sexpr)))
+      (is (= '{user/a 1 user/b 2 c 3 foo/d 4}
+             (-> "#::{a 1 b 2 _/c 3 foo/d 4}" base/of-string base/sexpr)))
+      (is (= '{my.current.ns/a 1 my.current.ns/b 2 c 3 foo/d 4}
+             (-> "#::{a 1 b 2 _/c 3 foo/d 4}" (base/of-string opts) base/sexpr))))))

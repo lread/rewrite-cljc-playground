@@ -1,6 +1,7 @@
 (ns ^:no-doc rewrite-cljc.node.namespaced-map
   (:require [rewrite-cljc.node.keyword :as keyword]
-            [rewrite-cljc.node.protocols :as node]))
+            [rewrite-cljc.node.protocols :as node]
+            [rewrite-cljc.node.token :as token] ))
 
 #?(:clj (set! *warn-on-reflection* true))
 
@@ -62,7 +63,7 @@
   (node/replace-children m-node
                          (edit-map-children (node/children m-node)
                                             (fn [n is-map-key?]
-                                              (if (keyword/keyword-node? n)
+                                              (if (or (keyword/keyword-node? n) (token/symbol-node? n))
                                                 (if is-map-key?
                                                   (assoc n :map-qualifier q-node)
                                                   (dissoc n :map-qualifier))

@@ -95,7 +95,8 @@
   unquote-splicing-node]
 
  [rewrite-cljc.node.token
-  token-node]
+  token-node
+  symbol-node?]
 
  [rewrite-cljc.node.uneval
   uneval-node]
