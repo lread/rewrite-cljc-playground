@@ -17,7 +17,7 @@
            ;;
            ;; Test support
            ;;
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:git/url "git@github.com:borkdude/clj-kondo.git"
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:git/url "https://github.com/borkdude/clj-kondo.git"
                                                          :sha "9451727a86ec5ad97026edec1136d96cd22a6d05"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
