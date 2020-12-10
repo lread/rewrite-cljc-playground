@@ -48,8 +48,13 @@ The rewrite-cljc library has a root namespace of `rewrite-cljc`.
 
 To upgrade to rewrite-cljc, update your project dependencies, and rename your `ns` `:requires` from `rewrite-clj` to `rewrite-cljc` in your source files.
 
-Need to know more? link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc#_changes[Details of changes].
+The most notable breaking changes relate to handling of namespaced elements:
 
+* Namespaced map handling was incomplete in rewrite-clj and has been reworked a bit and now supports namespaced symbols
+* An `sexpr` on a namespaced key or symbol should now work even when navigating down to the node in question
+* An `sexpr` that involves auto resolve never consults `\*ns*` you can plugin your own auto-resolve behavior, see link:#namespaced-elements[namespaced elements]
+
+Need to know more? link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc#_changes[Details of changes].
 
 == Intro to Rewrite-cljc Nodes
 
@@ -394,7 +399,7 @@ Rewrite-cljc parses arbitrary Clojure/ClojureScript source code into rewrite-clj
 Converting rewrite-cljc nodes to Clojure forms via `sexpr` is convenient, but it does come with some caveats.
 
 === Whitespace
-The whitespace that a rewrite-cljc node so carefully preserves is lost when converting to a Clojure form.
+The whitespace that a rewrite-cljc so carefully preserves is lost when converting to a Clojure form.
 
 [source, clojure-repl]
 ----
@@ -461,25 +466,59 @@ ClojureScript has no Ratio and returns `0.75`
 Note that these differences affect `sexpr` only.
 Rewrite-cljc should be able to parse and rewrite all valid Clojure/ClojureScript code.
 
+[#namespaced-elements]
 === Namespaced Elements
 
-[auto-resolve-support]
-==== Auto-resolve Support
-In Clojure keywords can be qualified:
+In Clojure keywords and symbols can be qualified.
+A recap via examples:
 
-* `:my-qualifier/kw`
-* `#:my-qualifer{:kw 1}`.
+* Stand-alone keyword and symbols:
++
+|===
+| |keyword|symbol
 
-Qualification can also come from auto-resolving:
+|unqualified
+a|`:my-kw`
+a|`'my-symbol`
 
-* to the current namespace:
-** `::kw`
-** `#::{:kw 1}`
-* or the namespace of an alias:
-** `::my-alias/kw`
-** `#::my-alias{:kw 1}`
+|qualified
+a|`:prefix/my-kw`
+a|`'prefix/my-symbol`
 
-When calling `sepxr` on auto-resolved keyword or map node, rewrite-cljc will resolve:
+|auto-resolved current namespace
+a|`::my-kw`
+a|n/a
+
+|auto-resolved namespaced alias
+a|`::my-ns-alias/my-kw`
+a|n/a
+
+|===
+
+* Namespaced keyword and symbols:
++
+|===
+| |keyword|symbol
+
+|unqualified
+a|`#:prefix{:_/my-kw 1}`
+a|`'#:prefix{_/my-symbol =}`
+
+|qualified
+a|`#:prefix{:my-kw 1}`
+a|`'#:prefix{my-symbol 1}`
+
+|auto-resolved current namespace
+a|`#::{:my-kw 1}`
+a|`'#::{my-symbol 1}`
+
+|auto-resolved namespaced alias
+a|`#::my-ns-alias{:my-kw 1}`
+a|`'#::my-ns-alias{my-symbol 1}`
+
+|===
+
+When calling `sepxr` on auto-resolved keyword or symbol node, rewrite-cljc will resolve:
 
 * the current ns to `user`
 * namespace alias `x` to `x-unresolved`
@@ -491,24 +530,16 @@ user=> (require '[rewrite-cljc.parser :as p]
 nil
 user=> (-> (p/parse-string "::kw") n/sexpr)
 :user/kw
-user=> (-> (p/parse-string "#::{:a 1 :b 2}") n/sexpr)
-:user{:a 1, :b 2}
+user=> (-> (p/parse-string "#::{:a 1 :b 2 s1 3}") n/sexpr)
+#:user{s1 3, :b 2, :a 1}
 user=> (-> (p/parse-string "::my-alias/kw") n/sexpr)
 :my-alias-unresolved/kw
-user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2}") n/sexpr)
-:my-alias-unresolved{:a 1, :b 2}
+user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2 s1 3}") n/sexpr)
+:my-alias-unresolved{s1 3, :a 1, :b 2}
 ----
 
 This default behavior should be sufficient for most use cases (let us know if we are wrong about that).
-If you'd prefer a different behavior, specify a function for `:auto-resolve` in the optional `opts` arg of:
-
-* The rewrite-cljc.node namespace functions `sexpr` and `child-sexpr`.
-* The rewrite-cljc.zip namespace zipper creation functions `edn*`, `edn`, `of-string` and `of-file`.
-The resulting zipper will then automatically apply your auto-resolve within any zip operation that makes use of sexpr. These are:
-** `sexpr`
-** `find-value` and `find-next-value` - sexpr is applied to each node to get the "value" for comparison
-** `edit` - the current node is sexpr-ed
-** `get` and `assoc` - sexpr is applied to the map key
+If you'd prefer a different behavior, you can specify your own auto-resolve function.
 
 The `:auto-resolve` function takes a single arg `alias` for lookup and must return symbol.
 The `alias` will be:
@@ -529,13 +560,24 @@ user=> (defn resolver [alias]
 #'user/resolver
 user=> (-> (p/parse-string "::kw") (n/sexpr {:auto-resolve resolver}))
 :my.current.ns/kw
-user=> (-> (p/parse-string "#::{:a 1 :b 2}") (n/sexpr {:auto-resolve resolver}))
-#:my.current.ns{:a 1, :b 2}
+user=> (-> (p/parse-string "#::{:a 1 :b 2 s1 3}") (n/sexpr {:auto-resolve resolver}))
+#:my.current.ns{s1 3, :a 1, :b 2}
 user=> (-> (p/parse-string "::my-alias/kw") (n/sexpr {:auto-resolve resolver}))
 :my.aliased.ns/kw
-user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2}") (n/sexpr {:auto-resolve resolver}))
-#:my.aliased.ns{:a 1, :b 2}
+user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2 s1 3}") (n/sexpr {:auto-resolve resolver}))
+#:my.aliased.ns{s1 3, :a 1, :b 2}
 ----
+
+The `:auto-resolve` option is accepted in the `opts` map arg for:
+
+* The `rewrite-cljc.node` namespace functions `sexpr` and `child-sexpr`.
+* The `rewrite-cljc.zip` namespace zipper creation functions `edn*`, `edn`, `of-string` and `of-file`.
+The resulting zipper will then automatically apply your auto-resolve within any zip operation that makes use of sexpr. These are:
+** `sexpr`
+** `find-value` and `find-next-value` - sexpr is applied to each node to get the "value" for comparison
+** `edit` - the current node is sexpr-ed
+** `get` and `assoc` - sexpr is applied to the map key
+
 
 == Dealing with Reader Generated Metadata
 TODO: maybe hardcode? Either that or move from dynamic var to passed opt.
