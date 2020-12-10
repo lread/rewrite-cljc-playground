@@ -50,6 +50,21 @@ To upgrade to rewrite-cljc, update your project dependencies, and rename your `n
 
 Need to know more? link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc#_changes[Details of changes].
 
+
+== Intro to Rewrite-cljc Nodes
+
+Rewrite-cljc parses Clojure source into rewrite-cljc nodes.
+
+While reviewing the following example, it helps to remember that Clojure source is simply data.
+
+image::introduction-parsed-nodes.png[introduction parsed nodes]
+
+You can work with these link:#parser-api[nodes directly] or take advantage of the power of the link:#zip-api[zip API].
+
+Rewrite-cljc offers easy conversion from rewrite-cljc nodes to Clojure forms and back.
+This is usually very convenient but does come with some caveats.
+As you get more experienced with rewrite-cljc, you will want to review link:#sexpr-nuances[sexpr nuances].
+
 == Rewrite-cljc APIs
 With the exception of the different root namespace of `rewrite-cljc`, rewrite-cljc is intended to be a mostly API compatible replacement for rewrite-clj and/or rewrite-cljs.
 There are 4 public API namespaces:
@@ -59,9 +74,12 @@ There are 4 public API namespaces:
 . `rewrite-cljc.node`
 . `rewrite-cljc.paredit`
 
+[#zip-api]
 === Zip API
 Traverse and modify Clojure/ClojureScript/EDN.
-This is the main rewrite-cljc API and might very well be all you need.
+This is considered the main rewrite-cljc API and might very well be all you need.
+
+==== A Brief Introduction to Zippers
 
 [TIP]
 ====
@@ -73,6 +91,14 @@ If you are not familiar with zippers, you may find the following resources helpf
 * https://lambdaisland.com/blog/2018-11-26-art-tree-shaping-clojure-zip[Arne Brasseur - The Art of Tree Shaping with Clojure Zippers]
 * https://tbaldridge.pivotshare.com/media/zippers-episode-1/11348/feature?t=0[Tim Baldrige - PivotShare - Series of 7 Videos on Clojure Zippers]
 ====
+
+A rewrite-cljc zipper holds:
+
+* a tree of rewrite-cljc nodes representing your parsed Clojure source
+* your current location within the zipper
+
+Because the zipper holds both the tree and your location within the tree, its variable is commonly named `zloc`.
+The zipper is immutable, as such, location changes and node modifications are always returned in a new zipper.
 
 .REPL session
 [source, clojure-repl]
@@ -113,9 +139,9 @@ user=> (-> zloc
   ;; a comment
   (* a 3))nil
 ----
-<1> use `of-string` to parse and zip in one step
+<1> use `of-string` to parse nodes and create zipper in one step
 
-<2> explore what we've parsed into our zipper
+<2> explore what we've parsed via our zipper
 
 <3> rename my-function to my-function2 and return resulting s-expression.
 `rewrite-cljc.zip/edit` and `rewrite-cljc.zip/replace` transparently coerce between the node representation (`<token: my-function>`) and its corresponding s-expression (`my-function`).
@@ -128,8 +154,6 @@ If you want to see all nodes, use the `+*+` counterparts (`right*`, `left*`, `up
 See link:{cljdoc-api-url}/rewrite-cljc.zip[zip API docs].
 
 ==== Finding Elements with the Zip API
-
-TODO: Finding uses `sexpr` internally and therefore has caveats.
 
 The `rewrite-cljc.zip` namespace includes find operations to navigate to locations of interest in your zipper.
 Let's assume you want to modify the following minimal `project.clj` by replacing the `:description` placeholder text with something more meaningful:
@@ -154,10 +178,10 @@ Use:
 user=> (require '[rewrite-cljc.zip :as z])
 nil
 
-user=> (def data (z/of-file "project.clj")) ;; <1>
-#'user/data
+user=> (def zloc (z/of-file "project.clj")) ;; <1>
+#'user/zloc
 
-user=> (def zloc-prj-map (z/find-value data z/next 'defproject)) ;; <2>
+user=> (def zloc-prj-map (z/find-value zloc z/next 'defproject)) ;; <2>
 #'user/zloc-prj-map
 
 user=> (def zloc-desc (-> zloc-prj-map (z/find-value :description) z/right)) ;; <3>
@@ -172,7 +196,7 @@ user=> (-> zloc-desc (z/replace "My first Project.") z/print-root) ;; <4>
 nil
 
 ----
-<1> load the `project.clj` file.footnote:file[reading from a file is only available from Clojure.]
+<1> parse the `project.clj` into a zipper.footnote:file[reading from a file is only available from Clojure.]
 
 <2> navigate depth-first to the project map by searching for `'defproject`.
 
@@ -182,8 +206,6 @@ Remember that while whitespace is preserved, it is automatically skipped during 
 <4> replace the description, zip up and print the result.
 
 ==== Familiar Functions for Updating Nodes with the Zip API
-
-TODO: get, assoc and edit use `sexpr` internally and therefore have caveats
 
 The zip API provides familiar ways to work with parsed Clojure data structures.
 It offers functions that correspond to the standard seq functions, for example:
@@ -289,9 +311,10 @@ user=> (z/position zc2) ;; <8>
 <9> examine updated position of c. It is on the 6th row and 6th column.
 
 
+[#parser-api]
 === Parser API
 Parses Clojure/ClojureScript/EDN to rewrite-cljc nodes.
-The zip API makes use of the Parser API to parse Clojure.
+The zip API makes use of the Parser API to parse Clojure into zippers.
 If your focus is parsing instead of rewriting, you might find this lower level API useful.
 You can choose to parse one or all https://www.braveclojure.com/do-things/#Forms[forms] from a string or a file.footnote:file[]
 
@@ -364,6 +387,7 @@ Structured editing was introduce by rewrite-cljs and carried over to rewrite-clj
 See link:{cljdoc-api-url}/rewrite-cljc.paredit[current paredit API docs].
 
 
+[#sexpr-nuances]
 == Sexpr Nuances
 
 Rewrite-cljc parses arbitrary Clojure/ClojureScript source code into rewrite-cljc nodes.
@@ -393,7 +417,7 @@ user=> (n/sexpr n) ;; <3>
 ----
 <1> Rewrite-cljc prints out nodes in a debug friendly format, here we see whitespace is preserved
 <2> If we look at the map node's child nodes, we clearly see the whitespace nodes
-<3> When we convert to the map node to an sexpr we get the Clojure form which does not include the specifics of the original whitespace
+<3> When we convert to the map node to an sexpr we get the Clojure form. This does not include the specifics of the original whitespace.
 
 === Not all Source is Sexpr-able
 
@@ -434,6 +458,8 @@ ClojureScript has no Ratio and returns `0.75`
 <2> Clojure and ClojureScript inherit integral types and behavior from their host platforms. +
 <3> Clojure has a character type but ClojureScript does not and represents characters as strings
 
+Note that these differences affect `sexpr` only.
+Rewrite-cljc should be able to parse and rewrite all valid Clojure/ClojureScript code.
 
 === Namespaced Elements
 
@@ -474,9 +500,17 @@ user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2}") n/sexpr)
 ----
 
 This default behavior should be sufficient for most use cases (let us know if we are wrong about that).
-If you'd prefer a different behavior, specify a function for `:auto-resolve` in the optional `opts` arg of `sexpr`.
+If you'd prefer a different behavior, specify a function for `:auto-resolve` in the optional `opts` arg of:
 
-The auto-resolve function takes a single arg `alias` for lookup and must return symbol.
+* The rewrite-cljc.node namespace functions `sexpr` and `child-sexpr`.
+* The rewrite-cljc.zip namespace zipper creation functions `edn*`, `edn`, `of-string` and `of-file`.
+The resulting zipper will then automatically apply your auto-resolve within any zip operation that makes use of sexpr. These are:
+** `sexpr`
+** `find-value` and `find-next-value` - sexpr is applied to each node to get the "value" for comparison
+** `edit` - the current node is sexpr-ed
+** `get` and `assoc` - sexpr is applied to the map key
+
+The `:auto-resolve` function takes a single arg `alias` for lookup and must return symbol.
 The `alias` will be:
 
 * `:current` for a request for the current namespace
@@ -504,6 +538,7 @@ user=> (-> (p/parse-string "#::my-alias{:a 1 :b 2}") (n/sexpr {:auto-resolve res
 ----
 
 == Dealing with Reader Generated Metadata
+TODO: maybe hardcode? Either that or move from dynamic var to passed opt.
 
 Rewrite-cljc offers, where it can, transparent coercion from Clojure forms to rewrite-cljc nodes.
 

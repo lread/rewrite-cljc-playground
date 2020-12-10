@@ -23,6 +23,7 @@
 
   Note that internally called `sexpr` uses default [auto-resolve](/doc/01-introduction.adoc#auto-resolve-support)"
   [node f]
+  ;; TODO: apply auto-resole opts
   (-> (node/sexpr node)
       (f)
       (node/coerce)))
