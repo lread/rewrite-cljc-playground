@@ -272,7 +272,7 @@ Use:
 The zip API provides familiar ways to work with parsed Clojure data structures.
 It offers some functions that correspond to the standard seq functions, for example:
 
-[source, clojure-repl]
+[source, clojure]
 ----
 (require '[rewrite-cljc.zip :as z])
 
@@ -397,7 +397,7 @@ See link:{cljdoc-api-url}/rewrite-cljc.parser[parser API docs].
 === Node API
 Inspect, analyze and create rewrite-cljc nodes.
 
-[source, clojure-repl]
+[source, clojure]
 ----
 (require '[rewrite-cljc.parser :as p]
          '[rewrite-cljc.node :as n])
@@ -714,12 +714,10 @@ Rewrite-cljc offers, where it can, transparent coercion from Clojure forms to re
 Clojure will, in some cases, add location metadata that is not in the original source code, as illustrated here:
 
 .REPL session
-[source,clojure-repl]
+[source,clojure]
 ----
-Clojure 1.10.1
-user=> ;; a quoted list has :line and :column metadata
-user=> (meta '(1 2 3))
-{:line 1, :column 8}
+(meta '(1 2 3))
+;; => {:line 1, :column 8}
 ----
 
 Rewrite-cljc will, on coercion from Clojure forms to rewrite-cljc nodes, omit location metadata.
