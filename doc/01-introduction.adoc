@@ -517,6 +517,7 @@ Rewrite-cljc should be able to parse and rewrite all valid Clojure/ClojureScript
 [#namespaced-elements]
 === Namespaced Elements
 
+==== Recap
 In Clojure keywords and symbols can be qualified.
 A recap via examples:
 
@@ -566,8 +567,9 @@ a|`'#::my-ns-alias{my-symbol 1}`
 
 |===
 
-When calling `sepxr` on auto-resolved keyword or symbol node, rewrite-cljc will resolve:
+==== Rewrite-cljc Default Handling
 
+When calling `sepxr` on auto-resolved keyword or symbol node, rewrite-cljc will resolve:
 
 * the current ns to `user`
 * namespace alias `x` to `x-unresolved`
@@ -589,6 +591,9 @@ When calling `sepxr` on auto-resolved keyword or symbol node, rewrite-cljc will 
 
 This default behavior should be sufficient for most use cases (let us know if we are wrong about that).
 TODO: are these really useful defaults?
+
+==== Custom Auto-Resolve Handling
+
 If you'd prefer a different behavior, you can specify your own auto-resolve function.
 
 The `:auto-resolve` function takes a single arg `alias` for lookup and must return symbol.
@@ -628,7 +633,9 @@ The resulting zipper will then automatically apply your auto-resolve within any 
 ** `edit` - the current node is sexpr-ed
 ** `get` and `assoc` - sexpr is applied to the map key
 
-Let's illustrate how these functions are affected by exploring `rewrite-cljc.zip/get`:
+==== Impact of Auto-Resolve
+
+Let's illustrate how functions that use sexpr internally are affected by exploring `rewrite-cljc.zip/get`:
 
 [source,clojure]
 ----
@@ -657,6 +664,47 @@ Let's illustrate how these functions are affected by exploring `rewrite-cljc.zip
 (-> "#::{:a 1 :b 2 c 3}" z/of-string (z/get 'user/c) z/node)
 ;; => <token: 3>
 ----
+
+==== Impact of Namespaced Map Context on Sexpr
+
+Namespaced map context is automatically applied to symbols and keywords in the namespaced map.
+
+To illustrate:
+
+[source,clojure]
+----
+(require '[rewrite-cljc.zip :as z])
+
+(def zloc (z/of-string "#:my-prefix {:a 1 :b 2 c 3}"))
+
+;; The Clojure form for the namespaced looks good
+( -> zloc z/sexpr)
+;; => #:my-prefix{:b 2, c 3, :a 1}
+
+;; To the correct sexpr when navigating down to a map key,
+(-> zloc z/down z/rightmost z/down z/sexpr)
+;; => :my-prefix/a
+
+;; the key actually holds the namespaced map context
+(-> zloc z/down z/rightmost z/down
+    z/node
+    :map-qualifier
+    (select-keys [:auto-resolved? :prefix]))
+;; => {:auto-resolved? false, :prefix "my-prefix"}
+----
+
+TODO: More thought is required here.
+
+The namespaced map context is automatically reapplied when map children are replaced, but only for namespaced maps.
+
+A node with namespaced map context can be added, updated or moved.
+
+* perhaps there is an `apply-context` that walks the tree and
+** removes map context for symbols and keywords that are not in a namespaced map
+** updates map context for symbols and keywords that are in a namespaced map
+
+Or do we update context as we are navigating the tree? Maybe z/up reapplies nsmap context?
+But we must not forget about users who are working with nodes directly and not using zippers.
 
 == Dealing with Reader Generated Metadata
 TODO: maybe hardcode? Either that or move from dynamic var to passed opt.
