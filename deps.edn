@@ -83,7 +83,7 @@
            ;; for native-image
            ;; usage -A:sci-test:native-image
            ;; or    -A:native-test:native-image
-           :native-image {:override-deps {org.clojure/clojure {:mvn/version "1.10.2-alpha4"}}}
+           :native-image {:override-deps {org.clojure/clojure {:mvn/version "1.10.2-rc1"}}}
 
            ;; add ins if running on jdk11
            :jdk11-reflect {:extra-deps {borkdude/clj-reflector-graal-java11-fix {:mvn/version "0.0.1-graalvm-20.3.0"
