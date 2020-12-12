@@ -177,7 +177,7 @@ You may want to refer to link:#nodes[Rewrite-cljc Nodes] while reviewing this in
   ;; a comment
   (* a 3))")
 
-;; parse nodes and create zipper in one step
+;; parse code to nodes, create a zipper, and navigate to the first non-whitespace node
 (def zloc (z/of-string data-string))
 
 ;; explore what we've parsed
