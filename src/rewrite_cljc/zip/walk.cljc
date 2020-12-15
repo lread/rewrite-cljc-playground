@@ -18,8 +18,9 @@
 (defn prewalk
   "Return zipper modified by an isolated depth-first pre-order traversal.
    Traversal starts at the current node in `zloc` and continues to the end of the isolated sub-tree.
-   Function `f` is called on the zipper locations satisfying predicate `p?`, or all locations when `p?` is absent,
-   and must return a valid zipper - modified or not.
+   Function `f` is called on the zipper locations satisfying predicate `p?` and must return a valid zipper - modified or not.
+
+   When `p?` is not specified `f` is called all locations.
 
    Note that by default a newly created zipper automatically navigates to the first non-whitespace
    node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:
@@ -49,8 +50,9 @@
 (defn ^{:added "0.4.9"} postwalk
   "Return zipper modified by an isolated depth-first post-order traversal.
    Traversal starts at the current node in `zloc` and continues to the end of the isolated sub-tree.
-   Function `f` is called on the zipper locations satisfying predicate `p?`, or all locations when `p?` is absent,
-   and must return a valid zipper - modified or not.
+   Function `f` is called on the zipper locations satisfying predicate `p?`, and must return a valid zipper - modified or not.
+
+   When `p?` is not specified `f` is called all locations.
 
    Note that by default a newly created zipper automatically navigates to the first non-whitespace
    node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:
