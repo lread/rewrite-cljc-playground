@@ -4,8 +4,9 @@
        [[rewrite-cljc.node.comment]
         [rewrite-cljc.node.forms]
         [rewrite-cljc.node.integer]
-        [rewrite-cljc.node.keyword]
+        [rewrite-cljc.node.keyword :refer [keyword-node]]
         [rewrite-cljc.node.meta :refer [meta-node]]
+        [rewrite-cljc.node.namespaced-map]
         [rewrite-cljc.node.protocols :as node :refer [NodeCoerceable coerce]]
         [rewrite-cljc.node.quote]
         [rewrite-cljc.node.reader-macro :refer [reader-macro-node var-node]]
@@ -35,15 +36,41 @@
                [rewrite_cljc.node.integer IntNode]
                [rewrite_cljc.node.keyword KeywordNode]
                [rewrite_cljc.node.meta MetaNode]
+               [rewrite_cljc.node.namespaced_map MapQualifierNode]
                [rewrite_cljc.node.quote QuoteNode]
                [rewrite_cljc.node.reader_macro ReaderNode ReaderMacroNode DerefNode]
                [rewrite_cljc.node.seq SeqNode]
                [rewrite_cljc.node.stringz StringNode]
-               [rewrite_cljc.node.token TokenNode]
+               [rewrite_cljc.node.token TokenNode SymbolNode]
                [rewrite_cljc.node.uneval UnevalNode]
                [rewrite_cljc.node.whitespace WhitespaceNode NewlineNode])))
 
 #?(:clj (set! *warn-on-reflection* true))
+
+;; ## rewrite-cljc nodes coerce to themselves
+
+;; these are records so it is important that they come before our default record type handling
+(extend-protocol NodeCoerceable
+  CommentNode     (coerce [v] v)
+  FormsNode       (coerce [v] v)
+  IntNode         (coerce [v] v)
+  KeywordNode     (coerce [v] v)
+  MetaNode        (coerce [v] v)
+  QuoteNode       (coerce [v] v)
+  ReaderNode      (coerce [v] v)
+  ReaderMacroNode (coerce [v] v)
+  DerefNode       (coerce [v] v)
+  StringNode      (coerce [v] v)
+  UnevalNode      (coerce [v] v)
+  NewlineNode     (coerce [v] v)
+  SeqNode         (coerce [v] v)
+  SymbolNode      (coerce [v] v)
+  TokenNode       (coerce [v] v)
+  WhitespaceNode  (coerce [v] v)
+  MapQualifierNode (coerce [v] v))
+
+;; TODO: What about NamespacedMapNode?
+
 
 ;; ## Helpers
 
@@ -77,6 +104,13 @@
                    (let [s (pr-str m)]
                      (symbol (subs s 1 (clojure.string/index-of s "{"))))))
     (map-node (map->children m))]))
+
+
+;; TODO: cljs
+(extend-protocol NodeCoerceable
+  clojure.lang.Keyword
+  (coerce [v]
+    (keyword-node v)))
 
 ;; ## Tokens
 
@@ -168,23 +202,3 @@
         (vector)
         (var-node))))
 
-;; ## rewrite-cljc nodes coerce to themselves
-
-(extend-protocol NodeCoerceable
-  CommentNode     (coerce [v] v)
-  FormsNode       (coerce [v] v)
-  IntNode         (coerce [v] v)
-  KeywordNode     (coerce [v] v)
-  MetaNode        (coerce [v] v)
-  QuoteNode       (coerce [v] v)
-  ReaderNode      (coerce [v] v)
-  ReaderMacroNode (coerce [v] v)
-  DerefNode       (coerce [v] v)
-  StringNode      (coerce [v] v)
-  UnevalNode      (coerce [v] v)
-  NewlineNode     (coerce [v] v)
-  SeqNode         (coerce [v] v)
-  TokenNode       (coerce [v] v)
-  WhitespaceNode  (coerce [v] v))
-
-;; TODO: What about NamespacedMapNode?
