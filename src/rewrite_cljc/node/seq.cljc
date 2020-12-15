@@ -15,8 +15,8 @@
                     seq-fn
                     children]
   node/Node
-  (tag [_n]
-    tag)
+  (tag [_n] tag)
+  (node-type [_n] :seq)
   (printable-only? [_n] false)
   (sexpr [_n] (seq-sexpr seq-fn children {}))
   (sexpr [_n opts] (seq-sexpr seq-fn children opts))

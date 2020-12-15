@@ -11,6 +11,7 @@
 (defrecord UnevalNode [children]
   node/Node
   (tag [_n] :uneval)
+  (node-type [_n] :uneval)
   (printable-only? [_n] true)
   (sexpr [_n]
     (uneval-sexpr))

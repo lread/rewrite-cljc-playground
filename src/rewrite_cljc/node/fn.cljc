@@ -69,6 +69,7 @@
 (defrecord FnNode [children]
   node/Node
   (tag [_n] :fn)
+  (node-type [_n] :fn)
   (printable-only? [_n]
     false)
   (sexpr [_n] (fn-sexpr children {}))

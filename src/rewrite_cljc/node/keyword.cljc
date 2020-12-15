@@ -27,6 +27,7 @@
 (defrecord KeywordNode [k auto-resolved? map-qualifier]
   node/Node
   (tag [_n] :token)
+  (node-type [_n] :keyword)
   (printable-only? [_n] false)
   (sexpr [_n]
     (keyword-sexpr k auto-resolved? map-qualifier {}))
@@ -42,6 +43,13 @@
   (string [_n]
     (str (when auto-resolved? ":")
          (pr-str k)))
+
+  node/MapQualifiable
+  (add-map-context [n map-qualifier]
+    (println "-amc->" n map-qualifier)
+    (assoc n :map-qualifier map-qualifier))
+  (clear-map-context [n]
+    (assoc n :map-qualifier nil))
 
   Object
   (toString [n]

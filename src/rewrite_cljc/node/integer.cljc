@@ -1,3 +1,4 @@
+;; TODO: The parse never parses to integer nodes
 (ns ^:no-doc rewrite-cljc.node.integer
   (:require [rewrite-cljc.interop :as interop]
             [rewrite-cljc.node.protocols :as node]))
@@ -9,6 +10,7 @@
 (defrecord IntNode [value base]
   node/Node
   (tag [_n] :token)
+  (node-type [_n] :int)
   (printable-only? [_n] false)
   (sexpr [_n] value)
   (sexpr [_n _opts] value)

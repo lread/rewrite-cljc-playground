@@ -11,6 +11,7 @@
 (defrecord CommentNode [s]
   node/Node
   (tag [_n] :comment)
+  (node-type [_n] :comment)
   (printable-only? [_n] true)
   (sexpr [_n] (comment-sexpr))
   (sexpr [_n _opts] (comment-sexpr))

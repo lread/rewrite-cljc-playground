@@ -36,6 +36,7 @@
 (defrecord WhitespaceNode [whitespace]
   node/Node
   (tag [_n] :whitespace)
+  (node-type [_n] :whitespace)
   (printable-only? [_n] true)
   (sexpr [_n] (sexpr-unsupported))
   (sexpr [_n _opts] (sexpr-unsupported))
@@ -49,6 +50,7 @@
 (defrecord CommaNode [commas]
   node/Node
   (tag [_n] :comma)
+  (node-type [_n] :comma)
   (printable-only? [_n] true)
   (sexpr [_n] (sexpr-unsupported))
   (sexpr [_n _opts] (sexpr-unsupported))
@@ -62,6 +64,7 @@
 (defrecord NewlineNode [newlines]
   node/Node
   (tag [_n] :newline)
+  (node-type [_n] :newline)
   (printable-only? [_n] true)
   (sexpr [_n] (sexpr-unsupported))
   (sexpr [_n _opts] (sexpr-unsupported))

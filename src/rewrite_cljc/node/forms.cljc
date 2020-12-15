@@ -13,8 +13,8 @@
 
 (defrecord FormsNode [children]
   node/Node
-  (tag [_n]
-    :forms)
+  (tag [_n] :forms)
+  (node-type [_n] :forms)
   (printable-only? [_n]
     false)
   (sexpr [_n]

@@ -11,6 +11,7 @@
 (defrecord QuoteNode [tag prefix sym children]
   node/Node
   (tag [_n] tag)
+  (node-type [_n] :quote)
   (printable-only? [_n] false)
   (sexpr [_n]
     (quote-sexpr sym children {}))

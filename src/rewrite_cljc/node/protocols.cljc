@@ -12,6 +12,9 @@
   "Protocol for EDN/Clojure/ClojureScript nodes."
   (tag [node]
     "Returns keyword representing type of `node`.")
+  (node-type [node]
+    "Returns keyword representing the node type for `node`.
+     Currently internal and used to support testing.")
   (printable-only? [node]
     "Return true if `node` cannot be converted to an s-expression element.")
   (sexpr [node] [node opts]
@@ -26,6 +29,7 @@
 (extend-protocol Node
   #?(:clj Object :cljs default)
   (tag [_this] :unknown)
+  (node-type [_this] :unknown)
   (printable-only? [_this] false)
   (sexpr
     ([this] this)
@@ -102,6 +106,13 @@
 (defprotocol+ NodeCoerceable
   "Protocol for values that can be coerced to nodes."
   (coerce [form] "Coerce `form` to node."))
+
+(defprotocol+ MapQualifiable
+  "Protocol for nodes that can be namespaced map qualified"
+  (add-map-context [node map-qualifier]
+    "Applies `map-qualifier` context to `node`")
+  (clear-map-context [node]
+    "Removes map-qualifier context for `node`"))
 
 (defn- ^:no-doc node->string
   #?(:clj ^String [node]

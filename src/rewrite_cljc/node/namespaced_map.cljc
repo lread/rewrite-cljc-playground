@@ -1,7 +1,5 @@
 (ns ^:no-doc rewrite-cljc.node.namespaced-map
-  (:require [rewrite-cljc.node.keyword :as keyword]
-            [rewrite-cljc.node.protocols :as node]
-            [rewrite-cljc.node.token :as token] ))
+  (:require [rewrite-cljc.node.protocols :as node]))
 
 #?(:clj (set! *warn-on-reflection* true))
 
@@ -9,6 +7,7 @@
 (defrecord MapQualifierNode [auto-resolved? prefix]
   node/Node
   (tag [_n] :token)
+  (node-type [_n] :map-qualifier)
   (printable-only? [_n] true)
   (sexpr [_n]
     (throw (ex-info "unsupported operation" {})))
@@ -54,7 +53,7 @@
                  (conj new-children (f n true)))))
       new-children)))
 
-
+;; TODO: this is probably short-sighted? We want to do more.
 (defn- apply-context-to-map
   "Apply the context of the qualified map to the keyword keys in the map.
 
@@ -63,10 +62,10 @@
   (node/replace-children m-node
                          (edit-map-children (node/children m-node)
                                             (fn [n is-map-key?]
-                                              (if (or (keyword/keyword-node? n) (token/symbol-node? n))
+                                              (if (satisfies? node/MapQualifiable n)
                                                 (if is-map-key?
-                                                  (assoc n :map-qualifier q-node)
-                                                  (dissoc n :map-qualifier))
+                                                  (node/add-map-context n q-node)
+                                                  (node/clear-map-context n))
                                                 n)))))
 
 (defn- apply-context [children]
@@ -98,6 +97,7 @@
 (defrecord NamespacedMapNode [children]
   node/Node
   (tag [_n] :namespaced-map)
+  (node-type [_n] :namespaced-map)
   (printable-only? [_n] false)
   (sexpr [_n]
     (namespaced-map-sexpr children {}))

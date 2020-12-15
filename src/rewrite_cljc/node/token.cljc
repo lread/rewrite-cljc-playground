@@ -6,8 +6,6 @@
 ;; ## Node
 
 ;; TODO: some nsmap code is common to keyword
-;; TODO: consider splitting out SymbolNode to its own record? After that could add a NamespacedMapable protocol...
-
 ;; A symbol is different than a keyword in that it can only be auto-resolve qualified by a namespaced map
 (defn- choose-qualifier [map-qualifier sym-qualifier]
   (when (not (and map-qualifier (= "_" (:prefix sym-qualifier))))
@@ -27,27 +25,44 @@
                     str)
             (name value))))
 
-(defn- token-sexpr [value map-qualifier opts]
-  (if (symbol? value)
-    (symbol-sexpr value map-qualifier opts)
-    value))
-
-(defrecord TokenNode [value string-value map-qualifier]
+(defrecord TokenNode [value string-value]
   node/Node
   (tag [_n] :token)
+  (node-type [_n] :token)
   (printable-only? [_n] false)
-  (sexpr [_n]
-    (token-sexpr value map-qualifier {}))
-  (sexpr [_n opts]
-    (token-sexpr value map-qualifier opts))
+  (sexpr [_n] value)
+  (sexpr [_n _opts] value)
   (length [_n] (count string-value))
   (string [_n] string-value)
+
+  Object
+  (toString [n]
+    (node/string n)))
+
+(defrecord SymbolNode [value string-value map-qualifier]
+  node/Node
+  (tag [_n] :token)
+  (node-type [_n] :symbol)
+  (printable-only? [_n] false)
+  (sexpr [_n]
+    (symbol-sexpr value map-qualifier {}))
+  (sexpr [_n opts]
+    (symbol-sexpr value map-qualifier opts))
+  (length [_n] (count string-value))
+  (string [_n] string-value)
+
+  node/MapQualifiable
+  (add-map-context [n map-qualifier]
+    (assoc n :map-qualifier map-qualifier))
+  (clear-map-context [n]
+    (assoc n :map-qualifier nil))
 
   Object
   (toString [this]
     (node/string this)))
 
 (node/make-printable! TokenNode)
+(node/make-printable! SymbolNode)
 
 (defn symbol-node? [n]
   (and (= :token (node/tag n))
@@ -60,4 +75,14 @@
   ([value]
    (token-node value (pr-str value)))
   ([value string-value]
-  (->TokenNode value string-value nil)))
+    (if (symbol? value)
+      (->SymbolNode value string-value nil)
+      (->TokenNode value string-value))))
+
+
+(defn token-node2
+  "Create node for an unspecified token of `value`."
+  ([value]
+   (token-node value (pr-str value)))
+  ([value string-value]
+   (->TokenNode value string-value)))

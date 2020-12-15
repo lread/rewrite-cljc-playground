@@ -16,6 +16,7 @@
 (defrecord MetaNode [tag prefix children]
   node/Node
   (tag [_n] tag)
+  (node-type [_n] :meta)
   (printable-only? [_] false)
   (sexpr [_n]
     (meta-sexpr children {}))

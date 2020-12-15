@@ -27,6 +27,7 @@
     (if (next lines)
       :multi-line
       :token))
+  (node-type [_n] :string)
   (printable-only? [_n]
     false)
   (sexpr [_n]

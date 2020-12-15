@@ -11,6 +11,7 @@
 (defrecord RegexNode [pattern]
   node/Node
   (tag [_n] :regex)
+  (node-type [_n] :regex)
   (printable-only? [_n] false)
   (sexpr [_n]
     (regex-sexpr pattern))
