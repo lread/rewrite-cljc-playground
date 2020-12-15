@@ -20,14 +20,15 @@
         [rewrite-cljc.node.comment :refer [CommentNode]]
         [rewrite-cljc.node.forms :refer [FormsNode]]
         [rewrite-cljc.node.integer :refer [IntNode]]
-        [rewrite-cljc.node.keyword :refer [KeywordNode]]
+        [rewrite-cljc.node.keyword :refer [KeywordNode keyword-node]]
         [rewrite-cljc.node.meta :refer [MetaNode meta-node]]
+        [rewrite-cljc.node.namespaced-map :refer [MapQualifierNode]]
         [rewrite-cljc.node.protocols :as node :refer [NodeCoerceable coerce]]
         [rewrite-cljc.node.quote :refer [QuoteNode]]
         [rewrite-cljc.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
         [rewrite-cljc.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
         [rewrite-cljc.node.stringz :refer [StringNode]]
-        [rewrite-cljc.node.token :refer [TokenNode token-node]]
+        [rewrite-cljc.node.token :refer [TokenNode SymbolNode token-node]]
         [rewrite-cljc.node.uneval :refer [UnevalNode]]
         [rewrite-cljc.node.whitespace :refer [WhitespaceNode NewlineNode] :as ws]]))
    #?(:clj
@@ -106,9 +107,8 @@
     (map-node (map->children m))]))
 
 
-;; TODO: cljs
 (extend-protocol NodeCoerceable
-  clojure.lang.Keyword
+  #?(:clj clojure.lang.Keyword :cljs Keyword)
   (coerce [v]
     (keyword-node v)))
 

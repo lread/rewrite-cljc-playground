@@ -46,7 +46,6 @@
 
   node/MapQualifiable
   (add-map-context [n map-qualifier]
-    (println "-amc->" n map-qualifier)
     (assoc n :map-qualifier map-qualifier))
   (clear-map-context [n]
     (assoc n :map-qualifier nil))
