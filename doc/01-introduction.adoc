@@ -57,21 +57,6 @@ The most notable breaking changes relate to handling of namespaced elements:
 
 Need to know more? link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc#_changes[Details of changes].
 
-[#nodes]
-=== Rewrite-cljc Nodes
-
-Rewrite-cljc parses Clojure source into rewrite-cljc nodes.
-
-While reviewing the following example, it helps to remember that Clojure source is simply data.
-
-image::introduction-parsed-nodes.png[introduction parsed nodes]
-
-You can work with these link:#parser-api[nodes directly] or take advantage of the power of the link:#zip-api[zip API].
-
-Rewrite-cljc offers easy conversion from rewrite-cljc nodes to Clojure forms and back.
-This is usually very convenient but does come with some caveats.
-As you get more experienced with rewrite-cljc, you will want to review link:#sexpr-nuances[sexpr nuances].
-
 === Conventions
 As is the common convention, example code shows results of expression evaluation like so:
 
@@ -97,37 +82,29 @@ And we show output like so:
 ;; hello there
 ----
 
+[#nodes]
+=== Rewrite-cljc Nodes
+
+Rewrite-cljc parses Clojure source into rewrite-cljc nodes.
+
+While reviewing the following example, it helps to remember that Clojure source is simply data.
+
+image::introduction-parsed-nodes.png[introduction parsed nodes]
+
+You can work with these link:#parser-api[nodes directly] or take advantage of the power of the link:#zip-api[zip API].
+
+Rewrite-cljc offers easy conversion from rewrite-cljc nodes to Clojure forms and back.
+This is usually very convenient but does come with some caveats.
+As you get more experienced with rewrite-cljc, you will want to review link:#sexpr-nuances[sexpr nuances].
+
+
 === Terminology
 
-Rewrite-cljc has an `sexpr` function that is described as returning Clojure forms.
-Its usage of the terms "s-expression" and "forms" might be less nuanced than some formal definitions.
+Rewrite-cljc has an `sexpr` function that returns Clojure forms.
+Our usage of the terms "s-expression" and "forms" might be less nuanced than some formal definitions.
 I think we are in line with https://www.braveclojure.com/do-things/#Forms[Clojure for the Brave and True's description of forms].
-To us a Clojure form is any parsed (but not evaluated) Clojure as it would be returned by the Clojure reader.
+To us, a Clojure form is any parsed (but not evaluated) Clojure as it would be returned by the Clojure reader.
 
-Within reason, Clojure's `read-string` and rewrite-cljc's `sexpr` functions should return equivalent Clojure forms.
-To illustrate, some code:
-
-[source, clojure]
-----
-(require '[rewrite-cljc.zip :as z]
-         '[rewrite-clj.parser :as p]
-         '[rewrite-cljc.node :as n])
-
-(defn form-test [s]
-  (let [forms [(-> s read-string)
-               (-> s z/of-string z/sexpr)
-               (-> s p/parse-string n/sexpr)]]
-    (if (apply = forms)
-      (first forms)
-      [:not-equal forms])))
-
-(form-test "a")
-;; => a
-(form-test "[1 2 3]")
-;; => [1 2 3]
-(form-test "(defn hello [name] (println \"Hello\" name))")
-;; => (defn hello [name] (println "Hello" name))
-----
 
 == Rewrite-cljc APIs
 There are 4 public API namespaces:
@@ -142,7 +119,7 @@ There are 4 public API namespaces:
 Traverse and modify Clojure/ClojureScript/EDN.
 This is considered the main rewrite-cljc API and might very well be all you need.
 
-You'll optionally use the link:#node-api[node API] on the returned nodes.
+You'll optionally use the link:#node-api[node API] on the rewrite-cljc nodes in the zipper.
 
 ==== A Brief Introduction to Zippers
 
@@ -165,7 +142,7 @@ At a conceptual level, the rewrite-cljc zipper holds:
 Because the zipper holds both the tree and your location within the tree, its variable is commonly named `zloc`.
 The zipper is immutable, as such, location changes and node modifications are always returned in a new zipper.
 
-You may want to refer to link:#nodes[Rewrite-cljc Nodes] while reviewing this introductory example:
+You may want to refer to link:#nodes[rewrite-cljc nodes] while reviewing this introductory example:
 
 [source, clojure]
 ----
@@ -369,8 +346,11 @@ Note that the row and column are 1-based.
 === Parser API
 Parses Clojure/ClojureScript/EDN to rewrite-cljc nodes.
 The link:#zip-api[zip API] makes use of the parser API to parse Clojure into zippers.
+
 If your focus is parsing instead of rewriting, you might find this lower level API useful.
-You can choose to parse one or all forms from a string or a file.footnote:file[]
+Keep in mind that if you forgo the zip API, you forgo niceties such as the automatic handling of whitespace.
+
+You can choose to parse the first, or all forms from a string or a file.footnote:file[]
 
 The parser API takes advantage of https://github.com/clojure/tools.reader[clojure.tools.reader] for simple forms.
 
@@ -442,11 +422,61 @@ We might expand this section if there is interest, but the docstrings should get
 See link:{cljdoc-api-url}/rewrite-cljc.paredit[current paredit API docs].
 
 
+== Map Nodes
+Rewrite-cljc parses two types of maps.
+
+1. unqualified `{:a 1 :b 2}`
+2. namespaced `#:prefix {:x 1 :y 2}`
+
+Rewrite-cljc models nodes as they appear in the original source.
+
+
+image::map-nodes.png[map nodes]
+
+This is convenient when navigating through the source, but when we want to logically treat a map as a map the difference is a bit awkward.
+
+[horizontal]
+*TODO: Anything we can/want to do here?*::
+
+I was thinking a protocol for map nodes, but this would only be useful for the non-zipper (direct node) user:
+
+* `(get-map-children n)`
+* `(replace-map-children n)`?
+
++
+So... not sure what might help.
+In a previous experiment, I modeled all maps the same, but this made dealing the space that can occur after the prefix inconsistent with the rest of the whitespace treatment in rewrite-cljc.
+
 [#sexpr-nuances]
 == Sexpr Nuances
 
 Rewrite-cljc parses arbitrary Clojure/ClojureScript source code into rewrite-cljc nodes.
 Converting rewrite-cljc nodes to Clojure forms via `sexpr` is convenient, but it does come with some caveats.
+
+Within reason, Clojure's `read-string` and rewrite-cljc's `sexpr` functions should return equivalent Clojure forms.
+To illustrate, some code:
+
+[source, clojure]
+----
+(require '[rewrite-cljc.zip :as z]
+         '[rewrite-clj.parser :as p]
+         '[rewrite-cljc.node :as n])
+
+(defn form-test [s]
+  (let [forms [(-> s read-string)
+               (-> s z/of-string z/sexpr)
+               (-> s p/parse-string n/sexpr)]]
+    (if (apply = forms)
+      (first forms)
+      [:not-equal forms])))
+
+(form-test "a")
+;; => a
+(form-test "[1 2 3]")
+;; => [1 2 3]
+(form-test "(defn hello [name] (println \"Hello\" name))")
+;; => (defn hello [name] (println "Hello" name))
+----
 
 === Whitespace
 The whitespace that a rewrite-cljc so carefully preserves is lost when converting to a Clojure form.
@@ -517,6 +547,8 @@ Rewrite-cljc should be able to parse and rewrite all valid Clojure/ClojureScript
 [#namespaced-elements]
 === Namespaced Elements
 
+If the code you are parsing doesn't use namespaced maps or you have no interest in using `sexpr` on the keys in those maps, the details in this section probably won't be of concern to you.
+
 ==== Recap
 In Clojure keywords and symbols can be qualified.
 A recap via examples:
@@ -549,9 +581,9 @@ a|n/a
 |===
 | |keyword|symbol
 
-|unqualified
+a|unqualified (via `_` prefix)
 a|`#:prefix{:_/my-kw 1}`
-a|`'#:prefix{_/my-symbol =}`
+a|`'#:prefix{_/my-symbol}`
 
 |qualified
 a|`#:prefix{:my-kw 1}`
@@ -569,10 +601,19 @@ a|`'#::my-ns-alias{my-symbol 1}`
 
 ==== Rewrite-cljc Default Handling
 
-When calling `sepxr` on auto-resolved keyword or symbol node, rewrite-cljc will resolve:
+When calling `sepxr` on an auto-resolved keyword or symbol node, rewrite-cljc will resolve:
 
 * the current ns to `user`
 * namespace alias `x` to `x-unresolved`
+
+[horizontal]
+TODO: consider alternative::
+
+With argument that `user` will rarely be correct and that an unusual resolution makes it easy to see these have not been resolved to something correct:
+
+** the current ns to `?\_current-ns_?`
+** namespaced alias `x` to `??\_x_??`
+
 
 [source, clojure]
 ----
@@ -590,11 +631,11 @@ When calling `sepxr` on auto-resolved keyword or symbol node, rewrite-cljc will 
 ----
 
 This default behavior should be sufficient for most use cases (let us know if we are wrong about that).
-TODO: are these really useful defaults?
 
 ==== Custom Auto-Resolve Handling
 
-If you'd prefer a different behavior, you can specify your own auto-resolve function.
+Rewrite-cljc will not attempt to determine the current and alias namespace mappings of the code it is parsing.
+It does, though, allow you to specify your own auto-resolve behavior.
 
 The `:auto-resolve` function takes a single arg `alias` for lookup and must return symbol.
 The `alias` will be:
@@ -602,7 +643,7 @@ The `alias` will be:
 * `:current` for a request for the current namespace
 * otherwise it will be a symbol for the namespace alias to lookup
 
-For example, if you know the current namespace and the namespace aliases it loads, you can specify them:
+For example, if you know namespace and alias info for the code rewrite-cljc is operating on, you can specify it:
 [source, clojure]
 ----
 (require '[rewrite-cljc.parser :as p]
@@ -627,7 +668,7 @@ The `:auto-resolve` option is accepted in the `opts` map arg for:
 
 * The `rewrite-cljc.node` namespace functions `sexpr` and `child-sexpr`.
 * The `rewrite-cljc.zip` namespace zipper creation functions `edn*`, `edn`, `of-string` and `of-file`.
-The resulting zipper will then automatically apply your auto-resolve within any zip operation that makes use of sexpr. These are:
+The resulting zipper will then automatically apply your auto-resolve within any zip operation that makes use of sexpr, namely:
 ** `sexpr`
 ** `find-value` and `find-next-value` - sexpr is applied to each node to get the "value" for comparison
 ** `edit` - the current node is sexpr-ed
@@ -635,7 +676,7 @@ The resulting zipper will then automatically apply your auto-resolve within any 
 
 ==== Impact of Auto-Resolve
 
-Let's illustrate how functions that use sexpr internally are affected by exploring `rewrite-cljc.zip/get`:
+Let's illustrate how functions that use `sexpr` internally are affected by exploring `rewrite-cljc.zip/get`:
 
 [source,clojure]
 ----
@@ -665,11 +706,11 @@ Let's illustrate how functions that use sexpr internally are affected by explori
 ;; => <token: 3>
 ----
 
-==== Impact of Namespaced Map Context on Sexpr
+==== Impact of Namespaced Map Context on Keywords and Symbols
 
-Namespaced map context is automatically applied to symbols and keywords in the namespaced map.
+Namespaced map context is automatically applied to symbols and keywords in namespaced maps.
 
-To illustrate:
+To illustrate with the zip API:
 
 [source,clojure]
 ----
@@ -677,34 +718,85 @@ To illustrate:
 
 (def zloc (z/of-string "#:my-prefix {:a 1 :b 2 c 3}"))
 
-;; The Clojure form for the namespaced looks good
+;; An sexpr on the namespaced map returns the expected Clojure form
 ( -> zloc z/sexpr)
 ;; => #:my-prefix{:b 2, c 3, :a 1}
 
-;; To the correct sexpr when navigating down to a map key,
+;; An sepxr on the an individual key in the namespaced map returns the expected Clojure form
 (-> zloc z/down z/rightmost z/down z/sexpr)
 ;; => :my-prefix/a
-
-;; the key actually holds the namespaced map context
-(-> zloc z/down z/rightmost z/down
-    z/node
-    :map-qualifier
-    (select-keys [:auto-resolved? :prefix]))
-;; => {:auto-resolved? false, :prefix "my-prefix"}
 ----
 
-TODO: More thought is required here.
+Rewrite-cljc applies the namespaced map context the namespaced map node children:
 
-The namespaced map context is automatically reapplied when map children are replaced, but only for namespaced maps.
+* at create time (which is also parse time)
+* when the nodes children are replaced
 
-A node with namespaced map context can be added, updated or moved.
+This works well with the mechanics of the zipper.
+Updates are applied when moving `up` through the zipper:
 
-* perhaps there is an `apply-context` that walks the tree and
-** removes map context for symbols and keywords that are not in a namespaced map
-** updates map context for symbols and keywords that are in a namespaced map
+[source,clojure]
+----
+(require '[rewrite-cljc.zip :as z])
 
-Or do we update context as we are navigating the tree? Maybe z/up reapplies nsmap context?
-But we must not forget about users who are working with nodes directly and not using zippers.
+(def s "#:prefix {:a 1 :b 2 c 3}")
+
+;; sexpr works fine on unchanged zipper
+(-> s z/of-string z/sexpr)
+;; => #:prefix{:b 2, c 3, :a 1}
+
+;; changing the namespaced map prefix reapplies the context to the children
+(-> s
+    z/of-string
+    z/down
+    (z/replace (n/map-qualifier-node false "my-new-prefix"))
+    z/up
+    z/sexpr)
+;; => #:my-new-prefix{:b 2, c 3, :a 1}
+
+;; a new key/val gets the namespaced map context
+(-> s
+    z/of-string
+    z/down z/rightmost
+    (z/append-child :d)
+    (z/append-child 33)
+    z/up
+    z/sexpr)
+;; => #:prefix{:b 2, c 3, :d 33, :a 1}
+
+;; a replaced key gets namespaced map context
+(-> s
+    z/of-string
+    z/down z/rightmost z/down
+    (z/replace :a2)
+    z/up z/up
+    z/sexpr)
+;; => #:prefix{:a2 1, :b 2, c 3}
+
+;; but... be aware that the context is not applied...
+(-> s
+    z/of-string
+    z/down z/rightmost z/down
+    (z/replace :a2)
+    z/sexpr)
+;; => :a2
+
+;; ... until we move up to the namespaced map node:
+(-> s
+    z/of-string
+    z/down z/rightmost z/down
+    (z/replace :a2)
+    z/up z/up
+    z/down z/rightmost z/down
+    z/sexpr)
+;; => :prefix/a2
+----
+
+Some limitations:
+
+* Keyword and symbol nodes will continue to hold their namespaced map context even when moved outside a namespaced map.
+Should you need to, you can use the zip API's `reapply-context` to manually apply context from the current node downward.
+* The context auto-update is a feature of the zip API, when working with link:#node-api[nodes directly] the context will be applied at parse time, and when namespaed map node children are replaced only.
 
 == Dealing with Reader Generated Metadata
 TODO: maybe hardcode? Either that or move from dynamic var to passed opt.
