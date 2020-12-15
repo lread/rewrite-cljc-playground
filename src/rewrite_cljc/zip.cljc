@@ -65,6 +65,7 @@
   [[vector?]]
   [[set?]]
   [[map?]]
+  [[namespaced-map?]]
 
   **Find**
   [[find]]
@@ -90,6 +91,7 @@
   **Convert**
   [[sexpr]]
   [[child-sexpr]]
+  [[reapply-context]]
 
   **Update**
   [[replace]]
@@ -149,6 +151,7 @@
   (:require [rewrite-cljc.custom-zipper.core]
             #?(:clj [rewrite-cljc.potemkin.clojure :refer [import-vars import-vars-with-mods]])
             [rewrite-cljc.zip.base]
+            [rewrite-cljc.zip.context]
             [rewrite-cljc.zip.editz]
             [rewrite-cljc.zip.findz]
             [rewrite-cljc.zip.insert]
@@ -182,6 +185,9 @@
   replace edit splice
   prefix suffix]
 
+ [rewrite-cljc.zip.context
+  reapply-context]
+
  [rewrite-cljc.zip.findz
   find find-next
   find-depth-first
@@ -206,7 +212,7 @@
   remove-preserve-newline]
 
  [rewrite-cljc.zip.seqz
-  seq? list? vector? set? map?
+  seq? list? vector? set? map? namespaced-map?
   map map-keys map-vals
   get assoc]
 
