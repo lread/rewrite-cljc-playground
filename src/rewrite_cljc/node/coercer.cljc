@@ -18,33 +18,37 @@
        :cljs
        [[clojure.string :as string]
         [rewrite-cljc.node.comment :refer [CommentNode]]
+        [rewrite-cljc.node.fn :refer [FnNode]]
         [rewrite-cljc.node.forms :refer [FormsNode]]
         [rewrite-cljc.node.integer :refer [IntNode]]
         [rewrite-cljc.node.keyword :refer [KeywordNode keyword-node]]
         [rewrite-cljc.node.meta :refer [MetaNode meta-node]]
-        [rewrite-cljc.node.namespaced-map :refer [MapQualifierNode]]
+        [rewrite-cljc.node.namespaced-map :refer [NamespacedMapNode MapQualifierNode]]
         [rewrite-cljc.node.protocols :as node :refer [NodeCoerceable coerce]]
         [rewrite-cljc.node.quote :refer [QuoteNode]]
         [rewrite-cljc.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
+        [rewrite-cljc.node.regex :refer [RegexNode]]
         [rewrite-cljc.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
         [rewrite-cljc.node.stringz :refer [StringNode]]
         [rewrite-cljc.node.token :refer [TokenNode SymbolNode token-node]]
         [rewrite-cljc.node.uneval :refer [UnevalNode]]
-        [rewrite-cljc.node.whitespace :refer [WhitespaceNode NewlineNode] :as ws]]))
+        [rewrite-cljc.node.whitespace :refer [WhitespaceNode CommaNode NewlineNode] :as ws]]))
    #?(:clj
       (:import [rewrite_cljc.node.comment CommentNode]
                [rewrite_cljc.node.forms FormsNode]
+               [rewrite_cljc.node.fn FnNode]
                [rewrite_cljc.node.integer IntNode]
                [rewrite_cljc.node.keyword KeywordNode]
                [rewrite_cljc.node.meta MetaNode]
-               [rewrite_cljc.node.namespaced_map MapQualifierNode]
+               [rewrite_cljc.node.namespaced_map NamespacedMapNode MapQualifierNode]
                [rewrite_cljc.node.quote QuoteNode]
                [rewrite_cljc.node.reader_macro ReaderNode ReaderMacroNode DerefNode]
+               [rewrite_cljc.node.regex RegexNode]
                [rewrite_cljc.node.seq SeqNode]
                [rewrite_cljc.node.stringz StringNode]
                [rewrite_cljc.node.token TokenNode SymbolNode]
                [rewrite_cljc.node.uneval UnevalNode]
-               [rewrite_cljc.node.whitespace WhitespaceNode NewlineNode])))
+               [rewrite_cljc.node.whitespace WhitespaceNode CommaNode NewlineNode])))
 
 #?(:clj (set! *warn-on-reflection* true))
 
@@ -52,23 +56,27 @@
 
 ;; these are records so it is important that they come before our default record type handling
 (extend-protocol NodeCoerceable
-  CommentNode     (coerce [v] v)
-  FormsNode       (coerce [v] v)
-  IntNode         (coerce [v] v)
-  KeywordNode     (coerce [v] v)
-  MetaNode        (coerce [v] v)
-  QuoteNode       (coerce [v] v)
-  ReaderNode      (coerce [v] v)
-  ReaderMacroNode (coerce [v] v)
-  DerefNode       (coerce [v] v)
-  StringNode      (coerce [v] v)
-  UnevalNode      (coerce [v] v)
-  NewlineNode     (coerce [v] v)
-  SeqNode         (coerce [v] v)
-  SymbolNode      (coerce [v] v)
-  TokenNode       (coerce [v] v)
-  WhitespaceNode  (coerce [v] v)
-  MapQualifierNode (coerce [v] v))
+  CommentNode        (coerce [v] v)
+  FormsNode          (coerce [v] v)
+  FnNode             (coerce [v] v)
+  IntNode            (coerce [v] v)
+  KeywordNode        (coerce [v] v)
+  MetaNode           (coerce [v] v)
+  NamespacedMapNode  (coerce [v] v)
+  QuoteNode          (coerce [v] v)
+  ReaderNode         (coerce [v] v)
+  ReaderMacroNode    (coerce [v] v)
+  RegexNode          (coerce [v] v)
+  DerefNode          (coerce [v] v)
+  StringNode         (coerce [v] v)
+  UnevalNode         (coerce [v] v)
+  NewlineNode        (coerce [v] v)
+  SeqNode            (coerce [v] v)
+  SymbolNode         (coerce [v] v)
+  TokenNode          (coerce [v] v)
+  WhitespaceNode     (coerce [v] v)
+  CommaNode          (coerce [v] v)
+  MapQualifierNode   (coerce [v] v))
 
 ;; TODO: What about NamespacedMapNode?
 

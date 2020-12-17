@@ -1,6 +1,7 @@
 (ns rewrite-cljc.node.coercer-test
-  (:require [clojure.test :refer [deftest is are]]
-            [rewrite-cljc.node.protocols :as node :refer [coerce]]
+  (:require [clojure.test :refer [deftest testing is are]]
+            [rewrite-cljc.node :as node :refer [coerce]]
+            [rewrite-cljc.node.protocols :as protocols]
             [rewrite-cljc.parser :as p]))
 
 (deftest t-sexpr->node->sexpr-roundtrip
@@ -8,7 +9,7 @@
       (let [n (coerce ?sexpr)]
         (is (node/node? n))
         (is (= expected-tag (node/tag n)))
-        (is (= expected-type (node/node-type n)))
+        (is (= expected-type (protocols/node-type n)))
         (is (string? (node/string n)))
         (is (= ?sexpr (node/sexpr n)))
         (is (not (meta n)))
@@ -69,7 +70,8 @@
 (deftest
   ^:skip-for-sci
   t-quoted-list-reader-location-metadata-included-on-request
-  (binding [node/*elide-metadata* nil]
+  ;; TODO: *elide-metadata* should work off node ns... but might be going away so maybe moot
+  (binding [protocols/*elide-metadata* nil]
     (are [?sexpr expected-meta-keys]
         (let [n (coerce ?sexpr)]
           (is (node/node? n))
@@ -90,7 +92,7 @@
       (let [n (coerce ?sexpr)]
         (is (node/node? n))
         (is (= :map (node/tag n)))
-        (is (= :seq (node/node-type n)))
+        (is (= :seq (protocols/node-type n)))
         (is (string? (node/string n)))
         (is (= ?sexpr (node/sexpr n)))
         ;; we do not restore to original map (hash-map or array-map),
@@ -108,7 +110,7 @@
       (let [n (coerce ?sexpr)]
         (is (node/node? n))
         (is (= :map (node/tag n)))
-        (is (= :seq (node/node-type n)))
+        (is (= :seq (protocols/node-type n)))
         (is (string? (node/string n)))
         (is (= ?sexpr (node/sexpr n)))
         (is (map? (node/sexpr n))))
@@ -123,7 +125,7 @@
         n (coerce sexpr)]
     (is (node/node? n))
     (is (= :token (node/tag n)))
-    (is (= :token (node/node-type n)))
+    (is (= :token (protocols/node-type n)))
     (is (string? (node/string n)))
     (is (= (str sexpr) (str (node/sexpr n))))
     (is (= (type sexpr) (type (node/sexpr n))))))
@@ -134,14 +136,14 @@
   (let [n (coerce #'identity)]
     (is (node/node? n))
     (is (= :var (node/tag n)))
-    (is (= :reader (node/node-type n)))
+    (is (= :reader (protocols/node-type n)))
     (is (= '(var #?(:clj clojure.core/identity :cljs cljs.core/identity)) (node/sexpr n)))))
 
 (deftest t-nil
   (let [n (coerce nil)]
     (is (node/node? n))
     (is (= :token (node/tag n)))
-    (is (= :token (node/node-type n)))
+    (is (= :token (protocols/node-type n)))
     (is (= nil (node/sexpr n)))
     (is (= n (p/parse-string "nil")))))
 
@@ -156,3 +158,44 @@
     ;; TODO: why is a record tagged as a :reader-macro?
     (is (= :reader-macro (node/tag n)))
     (is (= (pr-str v) (node/string n)))))
+
+
+(deftest t-nodes-coerce-to-themselves
+  (testing "parsed nodes"
+    ;; lean on the parser to create node structures
+    (are [?s ?tag ?type]
+        (let [n (p/parse-string ?s)]
+          (is (= n (node/coerce n)))
+          (is (= ?tag (node/tag n)))
+          (is (= ?type (protocols/node-type n))))
+      ";; comment"      :comment        :comment
+      "#(+ 1 %)"        :fn             :fn
+      ":my-kw"          :token          :keyword
+      "^:m1 [1 2 3]"    :meta           :meta
+      "#:p1{:a 1 :b 2}" :namespaced-map :namespaced-map
+      "'a"              :quote          :quote
+      "#'var"           :var            :reader
+      "#=eval"          :eval           :reader
+      "@deref"          :deref          :deref
+      "#mymacro 44"     :reader-macro   :reader-macro
+      "#\"regex\""      :regex          :regex
+      "[1 2 3]"         :vector         :seq
+      "42"              :token          :token
+      "sym"             :token          :symbol
+      "#_ 99"           :uneval         :uneval
+      " "               :whitespace     :whitespace
+      ","               :comma          :comma
+      "\n"              :newline        :newline))
+  (testing "parsed forms nodes"
+    (let [n (p/parse-string-all "(def a 1)")]
+      (is (= n (node/coerce n)))
+      (is (= :forms (node/tag n)))) )
+  (testing "map qualifier node"
+    (let [n (node/map-qualifier-node false "prefix")]
+      (is (= n (node/coerce n)))) )
+  (testing "nodes that are not parsed, but can be created manually"
+    ;; TODO: there is also indent nodes, but I think it is unused
+    (let [n (node/integer-node 10)]
+      (is (= n (node/coerce n))))
+    (let [n (node/string-node "my-string")]
+      (is (= n (node/coerce n))))))
