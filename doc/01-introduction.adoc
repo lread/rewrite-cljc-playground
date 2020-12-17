@@ -6,7 +6,7 @@
 :toc:
 
 == Introduction
-The rewrite-cljc library reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] source code while preserving whitespace and comments.
+Rewrite-cljc is a library that can read, update and write Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] source code while preserving whitespace and comments.
 
 
 === Interesting Alternatives
@@ -49,7 +49,7 @@ The rewrite-cljc library has a root namespace of `rewrite-cljc`.
 
 To upgrade to rewrite-cljc, update your project dependencies, and rename your `ns` `:requires` from `rewrite-clj` to `rewrite-cljc` in your source files.
 
-The most notable breaking changes relate to handling of namespaced elements:
+The most notable breaking changes from rewrite-clj relate to handling of namespaced elements:
 
 * Namespaced map handling was incomplete in rewrite-clj and has been reworked a bit and now supports namespaced symbols
 * An `sexpr` on a namespaced key or symbol should now work even when navigating down to the key node
@@ -58,7 +58,7 @@ The most notable breaking changes relate to handling of namespaced elements:
 Need to know more? link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc#_changes[Details of changes].
 
 === Conventions
-As is the common convention, example code shows results of expression evaluation like so:
+As is a common convention, example code shows results of expression evaluation like so:
 
 [source, clojure]
 ----
@@ -82,22 +82,6 @@ And we show output like so:
 ;; hello there
 ----
 
-[#nodes]
-=== Rewrite-cljc Nodes
-
-Rewrite-cljc parses Clojure source into rewrite-cljc nodes.
-
-While reviewing the following example, it helps to remember that Clojure source is simply data.
-
-image::introduction-parsed-nodes.png[introduction parsed nodes]
-
-You can work with these link:#parser-api[nodes directly] or take advantage of the power of the link:#zip-api[zip API].
-
-Rewrite-cljc offers easy conversion from rewrite-cljc nodes to Clojure forms and back.
-This is usually very convenient but does come with some caveats.
-As you get more experienced with rewrite-cljc, you will want to review link:#sexpr-nuances[sexpr nuances].
-
-
 === Terminology
 
 Rewrite-cljc has an `sexpr` function that returns Clojure forms.
@@ -105,6 +89,20 @@ Our usage of the terms "s-expression" and "forms" might be less nuanced than som
 I think we are in line with https://www.braveclojure.com/do-things/#Forms[Clojure for the Brave and True's description of forms].
 To us, a Clojure form is any parsed (but not evaluated) Clojure as it would be returned by the Clojure reader.
 
+[#nodes]
+=== Rewrite-cljc Nodes
+
+Rewrite-cljc parses Clojure source into rewrite-cljc nodes.
+
+While reviewing the following example, it helps to remember that Clojure source is data.
+
+image::introduction-parsed-nodes.png[introduction parsed nodes]
+
+You can link:#parser-api[parse] and work with link:#node-api[nodes] directly or take advantage of the power of the link:#zip-api[zip API].
+
+Rewrite-cljc offers easy conversion from rewrite-cljc nodes to Clojure forms and back.
+This is convenient but does come with some caveats.
+As you get more experienced with rewrite-cljc, you will want to review link:#sexpr-nuances[sexpr nuances].
 
 == Rewrite-cljc APIs
 There are 4 public API namespaces:
@@ -247,7 +245,7 @@ Use:
 ==== Familiar Functions for Updating Nodes with the Zip API
 
 The zip API provides familiar ways to work with parsed Clojure data structures.
-It offers some functions that correspond to the standard seq functions, for example:
+It offers some functions that correspond to the standard Clojure seq functions, for example:
 
 [source, clojure]
 ----
@@ -307,7 +305,7 @@ Note that the row and column are 1-based.
 ;; navigate to second z in zipper
 (def zloc-c (-> zloc
             (z/find-value z/next '+)
-            (z/find-value z/next 'c))) ;; <3>
+            (z/find-value z/next 'c)))
 
 ;; check if current node is as expected
 (z/string zloc-c)
@@ -375,7 +373,7 @@ See link:{cljdoc-api-url}/rewrite-cljc.parser[parser API docs].
 
 [#node-api]
 === Node API
-Inspect, analyze and create rewrite-cljc nodes.
+Inspect, analyze, create and render rewrite-cljc nodes.
 
 [source, clojure]
 ----
@@ -429,7 +427,6 @@ Rewrite-cljc parses two types of maps.
 2. namespaced `#:prefix {:x 1 :y 2}`
 
 Rewrite-cljc models nodes as they appear in the original source.
-
 
 image::map-nodes.png[map nodes]
 
@@ -519,7 +516,8 @@ Reader ignore/discard `#_`, comment and whitespace all throw an "unsupported ope
 
 === Differences in Clojure Platforms
 
-Clojure and ClojureScript have differences, some examples you might run into when using `sexpr` are:
+Clojure and ClojureScript have differences.
+Some examples of what you might run into when using `sexpr` are:
 
 [source, clojure]
 ----
@@ -535,7 +533,7 @@ Clojure and ClojureScript have differences, some examples you might run into whe
 ;; =clj=> 9007199254741001
 ;; =cljs=> 9007199254741000
 
-;; ClojureScript has not character type, characters are expressed as strings
+;; ClojureScript has no character type, characters are expressed as strings
 (-> (z/of-string "\\a") z/sexpr)
 ;; =clj=> \a
 ;; =cljs=> "a"
@@ -599,7 +597,7 @@ a|`'#::my-ns-alias{my-symbol 1}`
 
 |===
 
-==== Rewrite-cljc Default Handling
+==== Rewrite-cljc Default Auto-Resolve Handling
 
 When calling `sepxr` on an auto-resolved keyword or symbol node, rewrite-cljc will resolve:
 
@@ -634,7 +632,7 @@ This default behavior should be sufficient for most use cases (let us know if we
 
 ==== Custom Auto-Resolve Handling
 
-Rewrite-cljc will not attempt to determine the current and alias namespace mappings of the code it is parsing.
+Rewrite-cljc will not attempt to determine the current namespace and alias namespace mappings of the code it is parsing.
 It does, though, allow you to specify your own auto-resolve behavior.
 
 The `:auto-resolve` function takes a single arg `alias` for lookup and must return symbol.
@@ -668,7 +666,7 @@ The `:auto-resolve` option is accepted in the `opts` map arg for:
 
 * The `rewrite-cljc.node` namespace functions `sexpr` and `child-sexpr`.
 * The `rewrite-cljc.zip` namespace zipper creation functions `edn*`, `edn`, `of-string` and `of-file`.
-The resulting zipper will then automatically apply your auto-resolve within any zip operation that makes use of sexpr, namely:
+The resulting zipper will then automatically apply your `:auto-resolve` within any zip operation that makes use of sexpr, namely:
 ** `sexpr`
 ** `find-value` and `find-next-value` - sexpr is applied to each node to get the "value" for comparison
 ** `edit` - the current node is sexpr-ed
@@ -730,10 +728,10 @@ To illustrate with the zip API:
 Rewrite-cljc applies the namespaced map context the namespaced map node children:
 
 * at create time (which is also parse time)
-* when the nodes children are replaced
+* when the node's children are replaced
 
 This works well with the mechanics of the zipper.
-Updates are applied when moving `up` through the zipper:
+Updates are automatically applied when moving `up` through the zipper:
 
 [source,clojure]
 ----

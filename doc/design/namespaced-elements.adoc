@@ -44,8 +44,8 @@ See:
 * https://groups.google.com/g/clojure/c/i770QaIFiF0/m/v63cZgrlBwAJ[Terminology and some history from Alex Miller]
 
 
-Because I have learned that the nuances of namespaced maps are not widely known by even the most experienced Clojure developers,
-I'll paste a subset of CLJ-1910 examples here. The `_` prefix was surprising to many.
+Because the nuances of namespaced maps are not widely known by even the most experienced Clojure developers, I'll paste a subset of CLJ-1910 examples here.
+The `_` prefix and the fact that namespaced maps qualify symbols in addition to keywords is not widely understood.
 
 [source, Clojure]
 ----
@@ -71,8 +71,6 @@ user=> #::s{:kw 1, :n/kw 2, :_/bare 3, 0 4}
 user=> '#::{a 1, n/b 2, _/c 3}
 {user/a 1, n/b 2, c 3}
 ----
-
-For the last example, my understanding is that it generates invalid Clojure, but since it is not evaluated, it does not produce an error.
 
 *ClojureScript Flavors* +
 ClojureScript has two flavors for which I've not found definitive unique terms. I'll use the following:
@@ -177,12 +175,12 @@ a| Support parsing and writing, but throw on `sexpr`
 a| * breaks existing API compatibility
 * makes general navigation with certain rewrite-clj functions impossible
 
-| ✅ candidate
+| ✅ current choice
 | 3
 a| Support parsing, writing. Have `sexpr` rely on user provided namespace info.
 a| * seems like a good compromise
 
-| ✅ candidate
+| ❌ rejected
 | 4
 a| Same as 3 but also ensure backward compatibility with current rewrite-clj implementation
 a| * we'll see how awkward backward compatibility is for namespaced keywords
@@ -197,10 +195,10 @@ a| * had a good chat with borkdude on Slack and concluded that a namespace info 
 
 |===
 
-My current thinking is to explore #4 and not entirely reject #3 if backward compatibility proves more onerous/awkward than it is worth.
+Option #4 was a candidate, but decided against maintaining/explaining the complexity the current rewrite-clj implementation.
 
 [#sexpr-rabbit-hole]
-.The Rabbit Hole - Automatically Calculating sexpr for Auto-resolved Elements
+=== The Rabbit Hole - Automatically Calculating sexpr for Auto-resolved Elements
 ****
 Parsing and writing namespaced elements seems relatively straightforward, but automatically parsing and returning a technically correct `sexpr` for _auto-resolved_ namespaced elements is a rabbit hole that we'll reject for now.
 
@@ -286,7 +284,7 @@ Rewrite-cljc supports the following Clojure platforms:
 
 It also supports Clojure source that includes a mix of the above in `.cljc` files.
 
-Our solution will cover all the above and also be verified when running rewrite-cljc under sci.
+Our solution will cover all the above and also be verified when GraalVM natively compiled rewrite-cljc and a rewrite-cljc exposed via sci.
 
 [#sexpr-behavior]
 === Sexpr Behaviour
@@ -353,71 +351,22 @@ Callers are free to code up whatever they need.
 
 === Sexpr on a Key in a Namespaced Map
 
-This gets a bit tricky.
+To support `sexpr` when navigating down to a key in a namespaced map, the key will hold the namespaced map context, namely a copy of the namespaced map qualifier.
 
-If we `sexpr` at the map level, things are simple because a node knows its children and can affect them:
-[source,Clojure]
-----
-(-> (parser/parse-string "#:my-prefix {:x 1 :y 2}") node/sexpr)
-;; => {:my-prefix/x 1 :my-prefix/y 2}
-----
+This context will appropriately applied to symbols and keyword keys in namespaced maps:
 
-But for an `sexpr` on a key within the map, we currently lose our namespaced context:
-[source,Clojure]
-(-> (p/parse-string "#:my-prefix {:x 1 :y 2}")
-      :children
-      first
-      node/sexpr)
-;; => :x
+* at parse time
+* when node children are updated
 
-Some ideas:
+The zip API applies updates when moving up through the zipper.
+The update includes replacing children.
+Therefore the context will be reapplied to namespaced map keys when moving up through the zipper.
 
-. leave as is an document the limitation/behaviour
-. have the keyword-node hold enough namespaced map context
-. have the keyword-node reference its parent namespaced map
-. pass in namespaced map context to keyword-node on sexpr
+We'll provide some mechanism for zipper users to reapply the context throughout the zipper.
+This will remove context from any keywords and symbols that are no longer under a namespaced map.
 
-In a chat on Slack borkdude suggested maybe just fully qualifying all keyword-nodes in a namespaced map and therefore not having to rely on any extra context.
-But this doesn't work for edge case like:
-
-[source,Clojure]
-----
-#:foo {:x 1 :foo/y 2}
-----
-
-So I think we need some sort of context?
-
-This leads to more questions
-
-. What happens when I move a keyword node
-.. to another namespaced map
-.. outside a map
-
-I would expect that the keyword-node should lose its old context and take on the context (if any) of its new parent.
-
-
-
-. What happens when I update a keyword node in a map?
-
-
-
-. What happens when I update a namespaced map attributes `prefix` and `auto-resolved?`
-These are currently fields.
-A function would have to be introduce to support updating children.
-Perhaps a `(refresh-children-contexts)` for map-node.
-
-So on parse the keyword-node context would be correct.
-But if you want to change map-node context, you would also need to `(refresh-children-namespaced-context)` which would simply copy down the context to the child keyword-nodes.
-I guess the same would hold true if you add or modify children.
-
-So what is the context for keyword-node?
-
-- namespaced-map-prefix
-- namespaced-map-autoresolved?
-
-So a keyword-node might have `(clear-namespaced-context)` to support moving the keyword node.
-
-Because the zipper tracks the parent perhaps we could dynamically support context correctly for namespaced elements but only via the zipper api?
+Not sure what we'll provide for non-zipper users.
+Perhaps just exposing a clear-map-context for keywords and symbols would suffice.
 
 === Sexpr Behaviour from the zip API
 
@@ -435,8 +384,6 @@ Unfortunately `edit-node` is variadic.
 Because all zip API functions operate on the zipper, I'm thinking that we could simply hold the `:auto-resolve` in the zipper.
 
 This idea is already in play to for `:track-position?`.
-TODO: But is config only held for the custom-zipper?
-
 
 === Node Creation
 The primary user of rewrite-clj's node creation functions is the rewrite-clj parser.
@@ -444,28 +391,20 @@ The functions are also exposed for general use.
 General usability might not have been a focus.
 
 ==== Map Node
-We abandon rewrite-clj's namespaced map node creation function `namespaced-map-node`.
-We'll instead add namespaced map node creation support under `map-node`.
+Map node creation remains as is.
 
-Current signature is `(node/map-node children)` where `children` is converted to a `hash-map`.
+==== Namespaced Map Node
 
-To support namespaced maps, we'll add `(node/map-node children opts)`.
+We tweak rewrite-clj's `namespaced-map-node`.
 
-Usages:
+The children will remain:
 
-[source,clojure]
-----
-;; unqualified map
-(node/map-node children)
-;; qualified map
-(node/map-node children {:auto-resolved? false :prefix "my-prefix"})
-;; current-ns qualified map
-(node/map-node children {:auto-resolved? true})
-;; ns-alias qualified map
-(node/map-node children {:auto-resolved? true :prefix "my-alias"})
-----
-The `MapNode` record will include `auto-resolved?` and `prefix` fields.
-For an unqualified map these fields will be nil.
+* prefix
+* optional whitespace
+* map
+
+The prefix will now be encoded as a new `map-qualifier-node` node which will have `auto-resolved?` and `prefix` fields.
+This cleanly and explicitly adds support for auto-resolve current-ns namespaced maps which will be expressed with `auto-resolved?` as `true` and a `nil` `prefix`.
 
 ==== Keyword Node
 The current way to create namespaced keyword nodes works, but usage is not entirely self-evident:
@@ -501,26 +440,38 @@ Let's study the rewrite-clj `KeywordNode` which currently has fields `k` and `na
 ----
 
 * The `namespaced?` field is, in my opinion, misnamed and should be `auto-resolved?`.
-Ideally I would deprecate `namespaced?` and add synonym `auto-resolved?`, but is that even possible?
 As of this writing https://grep.app/search?q=%3Anamespaced%3F[a grep.app for :namespaced?] returns only clj-kondo and it uses its own custom version of rewrite-clj.
 I think I could get away with renaming `namespaced?` to `auto-resolved?`
 * The `prefix` is not stored separately, it is glommed into keyword field `k`.
 ** This is ok for `:qual/kw` but, in my opinion, awkward for auto-resolved variants.
 ** We'll preserve this storage behavior for backward compatibility.
-I will not look into adding a `prefix` field for consistency with maps for the first release.
+I will NOT look into adding a `prefix` field for consistency with maps for the first release.
+
+==== Symbol Node
+We'll separate out a new SymbolNode out from under TokenNode.
+
+It is probably simplest to have the existing `token-node` creator fn simply create a SymbolNode when passed value is a Clojure symbol.
+
+==== Symbol and Keyword Context
+
+The SymbolNode and KeywordNode will be MapQualifiable.
+This means they will have `(set-map-context map-qualifier-node)` and `(clear-map-context)` functions.
+
+I don't think we need to expose the methods to our APIs but am not sure yet.
 
 === Node Traversal
 
 Keyword node traversal will remain unchanged (no new child nodes).
 
-Map node traversal differs in that the prefix is no longer stored in a separate child node.
-TODO: This is inconsistent with other nodes and forces an odd treatment of trailing whitespace for the prefix.
+Map node traversal remains the same.
+The prefix is now stored as a `map-qualifier-node`, in rewrite-clj the prefix was encoded in a keyword.
 
 === Node Interogation
 
 * `map-node?` - returns true if rewrite-cljc node and map node
 * `keyword-node?` - return true if rewrite-cljc node and keyword node
-* Both `keyword-node` and `map-node` will have:
+* `symbol-node?` - return true if rewrite-cljc node and symbol node
+* Both `keyword-node` and `map-qualifier-node` will have:
 ** `auto-resolved?` field
 ** `qualified?` fn - returns true if the element is qualified
 * `map-node` will have:
