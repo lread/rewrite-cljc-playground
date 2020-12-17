@@ -144,14 +144,14 @@
 ;; ## Get/Assoc
 
 (defn get
-  "Returns `zloc` located to current node's value node matching `k` else `nil`.
+  "Returns `zloc` located to map key node's sexpr value matching `k` else `nil`.
 
   `k` should be:
   - a key for maps
   - a zero-based index for sequences
 
-  Note `k` will be compared against resolved keywords in maps.
-  See TODO link"
+  NOTE: `k` will be compared against resolved keywords in maps.
+  See docs for sexpr behavior on [namespaced elements](/doc/01-introduction.adoc#namespaced-elements)."
   [zloc k]
   {:pre [(or (map? zloc) (namespaced-map? zloc) (and (seq? zloc) (integer? k)))]}
   (cond
@@ -177,8 +177,8 @@
   - a key for maps
   - a zero-based index for sequences, an exception is thrown if index is out of bounds
 
-  Note `k` will be compared against resolved keywords in maps.
-  See TODO link"
+  NOTE: `k` will be compared against resolved keywords in maps.
+  See docs for sexpr behavior on [namespaced elements](/doc/01-introduction.adoc#namespaced-elements)."
   [zloc k v]
   (container-loc zloc
                  (if-let [value-loc (get zloc k)]

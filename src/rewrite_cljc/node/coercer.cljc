@@ -2,6 +2,7 @@
   (:require
    #?@(:clj
        [[rewrite-cljc.node.comment]
+        [rewrite-cljc.node.fn]
         [rewrite-cljc.node.forms]
         [rewrite-cljc.node.integer]
         [rewrite-cljc.node.keyword :refer [keyword-node]]
@@ -10,6 +11,7 @@
         [rewrite-cljc.node.protocols :as node :refer [NodeCoerceable coerce]]
         [rewrite-cljc.node.quote]
         [rewrite-cljc.node.reader-macro :refer [reader-macro-node var-node]]
+        [rewrite-cljc.node.regex]
         [rewrite-cljc.node.seq :refer [vector-node list-node set-node map-node]]
         [rewrite-cljc.node.string]
         [rewrite-cljc.node.token :refer [token-node]]
@@ -35,8 +37,8 @@
         [rewrite-cljc.node.whitespace :refer [WhitespaceNode CommaNode NewlineNode] :as ws]]))
    #?(:clj
       (:import [rewrite_cljc.node.comment CommentNode]
-               [rewrite_cljc.node.forms FormsNode]
                [rewrite_cljc.node.fn FnNode]
+               [rewrite_cljc.node.forms FormsNode]
                [rewrite_cljc.node.integer IntNode]
                [rewrite_cljc.node.keyword KeywordNode]
                [rewrite_cljc.node.meta MetaNode]
@@ -56,30 +58,27 @@
 
 ;; these are records so it is important that they come before our default record type handling
 (extend-protocol NodeCoerceable
+  CommaNode          (coerce [v] v)
   CommentNode        (coerce [v] v)
-  FormsNode          (coerce [v] v)
+  DerefNode          (coerce [v] v)
   FnNode             (coerce [v] v)
+  FormsNode          (coerce [v] v)
   IntNode            (coerce [v] v)
   KeywordNode        (coerce [v] v)
+  MapQualifierNode   (coerce [v] v)
   MetaNode           (coerce [v] v)
   NamespacedMapNode  (coerce [v] v)
-  QuoteNode          (coerce [v] v)
-  ReaderNode         (coerce [v] v)
-  ReaderMacroNode    (coerce [v] v)
-  RegexNode          (coerce [v] v)
-  DerefNode          (coerce [v] v)
-  StringNode         (coerce [v] v)
-  UnevalNode         (coerce [v] v)
   NewlineNode        (coerce [v] v)
+  QuoteNode          (coerce [v] v)
+  ReaderMacroNode    (coerce [v] v)
+  ReaderNode         (coerce [v] v)
+  RegexNode          (coerce [v] v)
   SeqNode            (coerce [v] v)
+  StringNode         (coerce [v] v)
   SymbolNode         (coerce [v] v)
   TokenNode          (coerce [v] v)
-  WhitespaceNode     (coerce [v] v)
-  CommaNode          (coerce [v] v)
-  MapQualifierNode   (coerce [v] v))
-
-;; TODO: What about NamespacedMapNode?
-
+  UnevalNode         (coerce [v] v)
+  WhitespaceNode     (coerce [v] v))
 
 ;; ## Helpers
 

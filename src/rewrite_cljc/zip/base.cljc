@@ -21,10 +21,9 @@
 (defn edn*
   "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-cljc.parse]]).
 
-   Set `:track-position?` in `options` to enable ones-based row/column tracking.
-   See [[rewrite-cljc.zip/position]].
-
-   NOTE: when position tracking is enabled, `clojure.zip` is not interchangeable with `rewrite-cljc.zip`, you must use `rewrite-cljc.zip`."
+  Optional `opts` can specify:
+  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-element)"
   ([node]
    (edn* node {}))
   ([node {:keys [track-position?]}]
@@ -37,13 +36,11 @@
   and move to the first non-whitespace/non-comment child. If node is not forms node, is wrapped in forms node
   for a consistent root.
 
-   Set `:track-position?` in `options` to enable ones-based row/column tracking.
-   See [[rewrite-cljc.zip/position]].
-
-   NOTE: when position tracking is enabled, `clojure.zip` is not interchangeable with `rewrite-cljc.zip`, you must use `rewrite-cljc.zip`."
+  Optional `opts` can specify:
+  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-element)"
   ([node] (edn node {}))
   ([node opts]
-   ;; TODO: loop is a bit awkward here.
    (-> (loop [node node opts opts]
          (if (= (node/tag node) :forms)
            (let [top (edn* node opts)]
@@ -62,16 +59,14 @@
 (defn sexpr
   "Return s-expression (the Clojure form) of current node in `zloc`.
 
-  TODO: update note
-  Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
+  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
   ([zloc]
    (some-> zloc z/node (node/sexpr (get-opts zloc)))))
 
 (defn ^{:added "0.4.4"} child-sexprs
   "Return s-expression (the Clojure forms) of children of current node in `zloc`.
 
-  TODO: update note
-  Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
+  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
   ([zloc]
    (some-> zloc z/node (node/child-sexprs (get-opts zloc)))))
 
@@ -90,27 +85,20 @@
 (defn of-string
   "Create and return zipper from all forms in Clojure/ClojureScript/EDN string `s`.
 
-   Set `:track-position?` in `options` to enable ones-based row/column tracking.
-   See [[rewrite-cljc.zip/position]].
-
-   NOTE: when position tracking is enabled, `clojure.zip` is not interchangeable with `rewrite-cljc.zip`, you must use `rewrite-cljc.zip`."
+  Optional `opts` can specify:
+  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-element)"
   ([s] (of-string s {}))
   ([s opts]
    (some-> s p/parse-string-all (edn opts))))
-
-(comment
-  (meta (of-string "{:a 1}" {:auto-resolve 1}))
-
-  )
 
 #?(:clj
    (defn of-file
      "Create and return zipper from all forms in Clojure/ClojureScript/EDN File `f`.
 
-      Set `:track-position?` in `options` to enable ones-based row/column tracking.
-      See [[rewrite-cljc.zip/position]].
-
-      NOTE: when position tracking is enabled, `clojure.zip` is not interchangeable with `rewrite-cljc.zip`, you must use `rewrite-cljc.zip`."
+     Optional `opts` can specify:
+     - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
+     - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-element)"
      ([f] (of-file f {}))
      ([f options]
       (some-> f p/parse-file-all (edn options)))))

@@ -45,7 +45,7 @@
          (pr-str k)))
 
   node/MapQualifiable
-  (add-map-context [n map-qualifier]
+  (apply-map-context [n map-qualifier]
     (assoc n :map-qualifier map-qualifier))
   (clear-map-context [n]
     (assoc n :map-qualifier nil))
@@ -56,15 +56,10 @@
 
 (node/make-printable! KeywordNode)
 
-;; TODO: hacky - refine this maybe add type to complement tag? type would be :keyword
 (defn keyword-node? [n]
-  (and (= :token (node/tag n))
-       (:k n)))
-
-;; TODO: add support for clearing nsmap qualifier context?
+  (= :keyword (node/node-type n)))
 
 ;; ## Constructor
-
 
 (defn keyword-node
   "Create a node representing a keyword `k`.

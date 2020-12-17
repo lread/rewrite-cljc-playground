@@ -517,16 +517,3 @@
       [3 3]  [3 13] :list   "(println x)"  '(println x)
       [3 4]  [3 10] :token  "println"      'println
       [3 12] [3 13] :token  "x"            'x)))
-
-(comment
-  (-> (p/parse-string "#:my-prefix {:x 1 :y 2}") node/sexpr)
-
-  (-> (p/parse-string "#:my-prefix {:x 1 :y 2}")
-      :children
-      first
-      node/sexpr)
-
-
-  (first (:children (p/parse-string "#:my-prefix {:x 1 :y 2}")))
-
-  )

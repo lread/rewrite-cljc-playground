@@ -5,8 +5,6 @@
 
 ;; ## Node
 
-;; TODO: some nsmap code is common to keyword
-;; A symbol is different than a keyword in that it can only be auto-resolve qualified by a namespaced map
 (defn- choose-qualifier [map-qualifier sym-qualifier]
   (when (not (and map-qualifier (= "_" (:prefix sym-qualifier))))
     (or sym-qualifier map-qualifier)))
@@ -15,6 +13,7 @@
   (when (qualified-symbol? value)
     {:prefix (namespace value)}))
 
+;; A symbol is different than a keyword in that it can only be auto-resolve qualified by a namespaced map
 (defn- symbol-sexpr [value map-qualifier {:keys [auto-resolve]}]
   (let [q (choose-qualifier map-qualifier (symbol-qualifier value))]
     (symbol (some-> (if (:auto-resolved? q)
@@ -52,7 +51,7 @@
   (string [_n] string-value)
 
   node/MapQualifiable
-  (add-map-context [n map-qualifier]
+  (apply-map-context [n map-qualifier]
     (assoc n :map-qualifier map-qualifier))
   (clear-map-context [n]
     (assoc n :map-qualifier nil))

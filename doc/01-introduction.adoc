@@ -279,6 +279,8 @@ It offers some functions that correspond to the standard Clojure seq functions, 
 ;; => "{:prefix/a 10 :prefix/b 20}"
 ----
 
+// Targetted from docstrings
+[#position-tracking]
 ==== Tracking Position with the Zip API
 
 If you need to track the source row and column while reading and manipulating your zipper, create your zipper with `:track-position true` option.
@@ -542,6 +544,7 @@ Some examples of what you might run into when using `sexpr` are:
 Note that these differences affect `sexpr` only.
 Rewrite-cljc should be able to parse and rewrite all valid Clojure/ClojureScript code.
 
+// NOTE: target of some docstrings
 [#namespaced-elements]
 === Namespaced Elements
 
@@ -672,6 +675,8 @@ The resulting zipper will then automatically apply your `:auto-resolve` within a
 ** `edit` - the current node is sexpr-ed
 ** `get` and `assoc` - sexpr is applied to the map key
 
+// NOTE: targetted from docstrings
+[#impact-of-auto-resolve]
 ==== Impact of Auto-Resolve
 
 Let's illustrate how functions that use `sexpr` internally are affected by exploring `rewrite-cljc.zip/get`:

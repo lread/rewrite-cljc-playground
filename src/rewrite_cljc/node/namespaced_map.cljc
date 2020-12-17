@@ -35,7 +35,6 @@
   - `is-map-key?` true if the node is in keyword position
   and should return `n` or a new version of `n`."
   [children f]
-  ;; TODO: should this be applied lazy?
   (loop [r children
          last-key nil
          new-children []]
@@ -53,7 +52,6 @@
                  (conj new-children (f n true)))))
       new-children)))
 
-;; TODO: this is probably short-sighted? We want to do more.
 (defn- apply-context-to-map
   "Apply the context of the qualified map to the keyword keys in the map.
 
@@ -64,7 +62,7 @@
                                             (fn [n is-map-key?]
                                               (if (satisfies? node/MapQualifiable n)
                                                 (if is-map-key?
-                                                  (node/add-map-context n q-node)
+                                                  (node/apply-map-context n q-node)
                                                   (node/clear-map-context n))
                                                 n)))))
 

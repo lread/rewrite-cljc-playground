@@ -136,8 +136,7 @@
 
    `f` defaults to [[rewrite-cljc.zip/right]] in short form call.
 
-  TODO: update note
-  Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
+  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
   ([zloc v]
    (find-value zloc m/right v))
   ([zloc f v]
@@ -154,7 +153,7 @@
 
    `f` defaults to [[rewrite-cljc.zip/right]] in short form call.
 
-  Optionally specify `opts` map for custom [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
+  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
   ([zloc v]
    (find-next-value zloc m/right v))
   ([zloc f v]

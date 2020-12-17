@@ -63,5 +63,3 @@
   "Create a node representing an map with `children`."
   [children]
   (->SeqNode :map "{%s}" 2 #(apply hash-map %) children))
-
-;; TODO consider clearing any namespaced map qualifier context from children on create and reaplace for map-node

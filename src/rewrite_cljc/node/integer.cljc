@@ -1,4 +1,3 @@
-;; TODO: The parse never parses to integer nodes
 (ns ^:no-doc rewrite-cljc.node.integer
   (:require [rewrite-cljc.interop :as interop]
             [rewrite-cljc.node.protocols :as node]))
@@ -39,7 +38,9 @@
 (defn integer-node
   "Create node representing an integer `value` in `base`.
 
-  `base` defaults to 10."
+  `base` defaults to 10.
+
+  Note: the parser does not currently parse to integer-nodes, but the write can handle them just fine."
   ([value]
    (integer-node value 10))
   ([value base]

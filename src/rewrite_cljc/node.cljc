@@ -134,27 +134,3 @@
             (first)
             ((juxt np/tag np/sexpr)))
     (np/sexpr node)))
-
-(comment
-  (def mn (map-node (list (keyword-node :a)
-                          (whitespace-node " ")
-                          (token-node "boo"))))
-  (type mn)
-
-  (def mn2 (replace-children mn [(keyword-node :a)
-                                 (whitespace-node " ")
-                                 (token-node "boo")]))
-
-  (type mn2)
-  (tag mn2)
-
-  (def b (namespaced-map-node
-          (list (map-qualifier-node true "myalias")
-                (whitespace-node " ")
-                (map-node (list (keyword-node :a)
-                                (whitespace-node " ")
-                                (token-node "boo")))) ))
-
-  (children b)
-
-  )

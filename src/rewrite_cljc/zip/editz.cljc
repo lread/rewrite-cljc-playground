@@ -17,39 +17,40 @@
   [zloc value]
   (z/replace zloc (node/coerce value)))
 
-(defn- edit-node
+(defn- node-editor
   "Create s-expression from node, apply the function and create
-   node from the result.
-
-  Note that internally called `sexpr` uses default [auto-resolve](/doc/01-introduction.adoc#auto-resolve-support)"
-  [node f]
-  ;; TODO: apply auto-resole opts
-  (-> (node/sexpr node)
-      (f)
-      (node/coerce)))
+   node from the result."
+  [opts]
+  (fn
+    [node f]
+    (-> (node/sexpr node opts)
+        (f)
+        (node/coerce))))
 
 (defn edit
   "Return `zloc` with the current node replaced with the result of:
 
    (`f` (s-expression node) `args`)
 
-   The result of `f` will be coerced to a node if possible.
+  `f` should return a node.
+  The result of `f` will be coerced to a node if possible.
 
-  NOTE: Any namespaced auto-resolve elements will use default [auto-resolve support](/doc/01-introduction.adoc#auto-resolve-support)."
+  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
   [zloc f & args]
-  (z/edit zloc edit-node #(apply f % args)))
+  (z/edit zloc (node-editor (base/get-opts zloc)) #(apply f % args)))
 
 ;; ## Splice
 
 (defn splice
-  ;; TODO: This could use some elaboration, what does it do?
   "Return zipper with the children of the current node in `zloc` merged into itself.
    (akin to Clojure's `unquote-splicing` macro: `~@...`).
    - if the node is not one that can have children, no modification will
      be performed.
    - if the node has no or only whitespace children, it will be removed.
    - otherwise, splicing will be performed, moving the zipper to the first
-     non-whitespace child afterwards."
+     non-whitespace spliced child node.
+
+  For example, given `[[1 2 3] 4 5 6]`, if zloc is located at vector `[1 2 3]`, a splice will result in raising the vector's children up `[1 2 3 4 5 6]` and locating the zipper at node `1`."
   [zloc]
   (if (z/branch? zloc)
     (if-let [children (->> (z/children zloc)
