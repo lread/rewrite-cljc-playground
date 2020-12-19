@@ -1,6 +1,6 @@
 (ns rewrite-cljc.node-test
   "This test namespace originated from rewrite-cljs."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.test :refer [deftest is are testing]]
             [rewrite-cljc.node :as n]
             [rewrite-cljc.parser :as p]))
 
@@ -20,13 +20,10 @@
     (is (= sample2 (-> sample2 p/parse-string n/string)))
     (is (= sample3 (-> sample3 p/parse-string n/string)))))
 
-
 (deftest regex-with-newlines
   (let [sample "(re-find #\"Hello
         \\nJalla\")"]
     (is (= sample (-> sample p/parse-string n/string)))))
-
-
 
 (deftest reader-conditionals
   (testing "Simple reader conditional"
@@ -61,68 +58,75 @@
   (is (n/node? (n/list-node (list 1 2 3))))
   (is (n/node? (n/string-node "123"))))
 
-(deftest t-keyword-node-sexpr
+(deftest t-sexpr-on-map-qualifiable-nodes
   (let [opts {:auto-resolve (fn [alias]
                               (if (= :current alias)
                                 'my.current.ns
                                 (get {'my-alias 'my.aliased.ns
                                       'nsmap-alias 'nsmap.aliased.ns}
                                      alias
-                                     (symbol (str alias "-unresolved")))))}]
-    (testing "keyword with default resolver"
-      (is (= :my-kw (-> (n/keyword-node :my-kw) n/sexpr)))
-      (is (= :_/my-kw (-> (n/keyword-node :_/my-kw) n/sexpr)))
-      (is (= :my-prefix/my-kw (-> (n/keyword-node :my-prefix/my-kw) n/sexpr)))
-      (is (= :user/my-kw (-> (n/keyword-node :my-kw true) n/sexpr)))
-      (is (= :my-alias-unresolved/my-kw (-> (n/keyword-node :my-alias/my-kw true) n/sexpr))))
-    (testing "keyword with custom resolver"
-      (is (= :my-kw (-> (n/keyword-node :my-kw) (n/sexpr opts))))
-      (is (= :my-prefix/my-kw (-> (n/keyword-node :my-prefix/my-kw) (n/sexpr opts))))
-      (is (= :my.current.ns/my-kw (-> (n/keyword-node :my-kw true) (n/sexpr opts))))
-      (is (= :my.aliased.ns/my-kw (-> (n/keyword-node :my-alias/my-kw true) (n/sexpr opts)))))
-    (testing "map qualified keyword with default resolver"
-      (is (= :my-kw
-             (-> (n/keyword-node :_/my-kw)
-                 (assoc :map-qualifier {:auto-resolved? false :prefix "nsmap-prefix"})
-                 n/sexpr)))
-      (is (= :nsmap-prefix/my-kw
-             (-> (n/keyword-node :my-kw)
-                 (assoc :map-qualifier {:auto-resolved? false :prefix "nsmap-prefix"})
-                 n/sexpr)))
-      (is (= :user/my-kw
-             (-> (n/keyword-node :my-kw)
-                 (assoc :map-qualifier {:auto-resolved? true})
-                 n/sexpr)))
-      (is (= :nsmap-alias-unresolved/my-kw
-             (-> (n/keyword-node :my-kw)
-                 (assoc :map-qualifier {:auto-resolved? true :prefix "nsmap-alias"})
-                 n/sexpr)))
-      (is (= :kw-prefix/my-kw
-             (-> (n/keyword-node :kw-prefix/my-kw)
-                 (assoc :map-qualifier {:auto-resolved? false :prefix "nsmap-prefix"})
-                 n/sexpr))))
-    (testing "map qualified keyword with custom rsolver"
-      (is (= :my-kw
-             (-> (n/keyword-node :_/my-kw)
-                 (assoc :map-qualifier {:auto-resolved? false :prefix "nsmap-prefix"})
-                 (n/sexpr opts))))
-      (is (= :nsmap-prefix/my-kw
-             (-> (n/keyword-node :my-kw)
-                 (assoc :map-qualifier {:auto-resolved? false :prefix "nsmap-prefix"})
-                 (n/sexpr opts))))
-      (is (= :my.current.ns/my-kw
-             (-> (n/keyword-node :my-kw)
-                 (assoc :map-qualifier {:auto-resolved? true})
-                 (n/sexpr opts))))
-      (is (= :nsmap.aliased.ns/my-kw
-             (-> (n/keyword-node :my-kw)
-                 (assoc :map-qualifier {:auto-resolved? true :prefix "nsmap-alias"})
-                 (n/sexpr opts))))
-      (is (= :kw-prefix/my-kw
-             (-> (n/keyword-node :kw-prefix/my-kw)
-                 (assoc :map-qualifier {:auto-resolved? false :prefix "nsmap-prefix"})
-                 (n/sexpr opts)))))
+                                     (symbol (str alias "-unresolved")))))}
+        sexpr-default n/sexpr
+        sexpr-custom #(n/sexpr % opts)
+        map-qualifier (n/map-qualifier-node false "nsmap-prefix")
+        map-qualifier-current-ns (n/map-qualifier-node true nil)
+        map-qualifier-ns-alias (n/map-qualifier-node true "nsmap-alias")]
+    (testing "qualified nodes are unaffected by resolver"
+      (are [?result ?node]
+          (do
+            (is (= ?result (-> ?node sexpr-default)))
+            (is (= ?result (-> ?node sexpr-custom))))
+        :my-kw            (n/keyword-node :my-kw)
+        'my-sym           (n/token-node 'my-sym)
+        :_/my-kw          (n/keyword-node :_/my-kw)
+        '_/my-sym         (n/token-node '_/my-sym)
+        :my-prefix/my-kw  (n/keyword-node :my-prefix/my-kw)
+        'my-prefix/my-sym (n/token-node 'my-prefix/my-sym)))
+    (testing "auto-resolve qualified key nodes are affected by resolver"
+      (are [?result-default ?result-custom ?node]
+          (do
+            (is (= ?result-default (-> ?node sexpr-default)))
+            (is (= ?result-custom (-> ?node sexpr-custom))))
+        :user/my-kw                :my.current.ns/my-kw   (n/keyword-node :my-kw true)
+        :my-alias-unresolved/my-kw :my.aliased.ns/my-kw   (n/keyword-node :my-alias/my-kw true)))
+    (testing "map qualified nodes can be affected by resolver"
+      (are [?result ?node]
+          (do
+            (is (= ?result (-> ?node (n/apply-map-context map-qualifier) sexpr-default)))
+            (is (= ?result (-> ?node (n/apply-map-context map-qualifier) sexpr-custom))) )
+        :nsmap-prefix/my-kw   (n/keyword-node :my-kw)
+        'nsmap-prefix/my-sym  (n/token-node 'my-sym)))
+    (testing "map qualified auto-resolve current-ns nodes can be affected by resolver"
+      (are [?result-default ?result-custom ?node]
+          (do
+            (is (= ?result-default (-> ?node (n/apply-map-context map-qualifier-current-ns) sexpr-default)))
+            (is (= ?result-custom (-> ?node (n/apply-map-context map-qualifier-current-ns) sexpr-custom))))
+        :user/my-kw  :my.current.ns/my-kw  (n/keyword-node :my-kw)
+        'user/my-sym 'my.current.ns/my-sym (n/token-node 'my-sym)))
+    (testing "map qualified auto-resolve ns-alias nodes can be affected by resolver"
+      (are [?result-default ?result-custom ?node]
+          (do
+            (is (= ?result-default (-> ?node (n/apply-map-context map-qualifier-ns-alias) sexpr-default)))
+            (is (= ?result-custom (-> ?node (n/apply-map-context map-qualifier-ns-alias) sexpr-custom))))
+        :nsmap-alias-unresolved/my-kw  :nsmap.aliased.ns/my-kw  (n/keyword-node :my-kw)
+        'nsmap-alias-unresolved/my-sym 'nsmap.aliased.ns/my-sym (n/token-node 'my-sym)))
+    (testing "map qualified nodes that are unaffected by resolver"
+      (are [?result ?node]
+          (do
+            (is (= ?result (-> ?node (n/apply-map-context map-qualifier) sexpr-default)))
+            (is (= ?result (-> ?node (n/apply-map-context map-qualifier) sexpr-custom)))
+
+            (is (= ?result (-> ?node (n/apply-map-context map-qualifier-current-ns) sexpr-default)))
+            (is (= ?result (-> ?node (n/apply-map-context map-qualifier-current-ns) sexpr-custom)))
+
+            (is (= ?result (-> ?node (n/apply-map-context map-qualifier-ns-alias) sexpr-default)))
+            (is (= ?result (-> ?node (n/apply-map-context map-qualifier-ns-alias) sexpr-custom)))  )
+        :my-kw    (n/keyword-node :_/my-kw)
+        'my-sym   (n/token-node '_/my-sym)
+        :my-prefix/my-kw  (n/keyword-node :my-prefix/my-kw)
+        'my-prefix/my-sym (n/token-node 'my-prefix/my-sym)))
     (testing "when auto-resolver returns nil, bare or already qualified kw is returned"
+      ;; TODO: is this what we really want?
       (let [opts {:auto-resolve (fn [_alias])}]
         (is (= :my-kw (-> (n/keyword-node :my-kw true) (n/sexpr opts))))
         (is (= :my-kw (-> (n/keyword-node :my-alias/my-kw true) (n/sexpr opts))))
