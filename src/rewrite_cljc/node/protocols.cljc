@@ -21,7 +21,7 @@
     "Return `node` converted to form.
 
      Optional `opts` can specify:
-     - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-element)")
+     - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)")
   (length [node]
     "Return number of characters for the string version of `node`.")
   (string [node]
@@ -42,7 +42,7 @@
   "Return forms for `nodes`. Nodes that do not represent s-expression are skipped.
 
   Optional `opts` can specify:
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-element)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
   ([nodes]
    (sexprs nodes {}))
   ([nodes opts]
@@ -87,7 +87,7 @@
   "Returns children for `node` converted to Clojure forms.
 
   Optional `opts` can specify:
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-element)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
   ([node]
    (child-sexprs node {}))
   ([node opts]
@@ -114,9 +114,9 @@
 
 (defprotocol+ MapQualifiable
   "Protocol for nodes that can be namespaced map qualified"
-  (apply-map-context [node map-qualifier]
+  (map-context-apply [node map-qualifier]
     "Applies `map-qualifier` context to `node`")
-  (clear-map-context [node]
+  (map-context-clear [node]
     "Removes map-qualifier context for `node`"))
 
 (defn- ^:no-doc node->string

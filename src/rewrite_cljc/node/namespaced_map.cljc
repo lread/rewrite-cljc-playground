@@ -62,8 +62,8 @@
                                             (fn [n is-map-key?]
                                               (if (satisfies? node/MapQualifiable n)
                                                 (if is-map-key?
-                                                  (node/apply-map-context n q-node)
-                                                  (node/clear-map-context n))
+                                                  (node/map-context-apply n q-node)
+                                                  (node/map-context-clear n))
                                                 n)))))
 
 (defn- apply-context [children]

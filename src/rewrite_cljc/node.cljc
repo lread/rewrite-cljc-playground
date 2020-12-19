@@ -42,8 +42,8 @@
   replace-children
   sexpr
   sexprs
-  apply-map-context
-  clear-map-context
+  map-context-apply
+  map-context-clear
   string
   tag]
 

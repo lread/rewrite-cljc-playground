@@ -51,9 +51,9 @@
   (string [_n] string-value)
 
   node/MapQualifiable
-  (apply-map-context [n map-qualifier]
+  (map-context-apply [n map-qualifier]
     (assoc n :map-qualifier map-qualifier))
-  (clear-map-context [n]
+  (map-context-clear [n]
     (assoc n :map-qualifier nil))
 
   Object

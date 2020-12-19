@@ -23,7 +23,7 @@
 
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-element)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
   ([node]
    (edn* node {}))
   ([node {:keys [track-position?]}]
@@ -38,7 +38,7 @@
 
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-element)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
   ([node] (edn node {}))
   ([node opts]
    (-> (loop [node node opts opts]
@@ -87,7 +87,7 @@
 
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-element)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
   ([s] (of-string s {}))
   ([s opts]
    (some-> s p/parse-string-all (edn opts))))
@@ -98,7 +98,7 @@
 
      Optional `opts` can specify:
      - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
-     - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-element)"
+     - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
      ([f] (of-file f {}))
      ([f options]
       (some-> f p/parse-file-all (edn options)))))

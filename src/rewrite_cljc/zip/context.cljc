@@ -1,4 +1,4 @@
-(ns rewrite-cljc.zip.context
+(ns ^:no-doc rewrite-cljc.zip.context
   (:require [rewrite-cljc.custom-zipper.core :as z]
             [rewrite-cljc.node.protocols :as protocols]
             [rewrite-cljc.zip.seqz :as seqz]
@@ -27,5 +27,5 @@
                    (let [parent (-> zloc z/up z/up)
                          nsmap (when (and parent (seqz/namespaced-map? parent)) parent)]
                      (if (and nsmap (is-map-key? zloc))
-                       (z/replace zloc (protocols/apply-map-context (z/node zloc) (first (protocols/children (z/node nsmap)))))
-                       (z/replace zloc (protocols/clear-map-context (z/node zloc))))))))
+                       (z/replace zloc (protocols/map-context-apply (z/node zloc) (first (protocols/children (z/node nsmap)))))
+                       (z/replace zloc (protocols/map-context-clear (z/node zloc))))))))

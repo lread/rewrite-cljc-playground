@@ -103,7 +103,7 @@
                           z/down
                           z/rightmost
                           z/down)
-                 move-me1 (-> zloc z/node n/clear-map-context) ;; if we don't clear the map context it will remain
+                 move-me1 (-> zloc z/node n/map-context-clear) ;; if we don't clear the map context it will remain
                  zloc (-> zloc z/remove z/down)
                  move-me2 (-> zloc z/node)
                  zloc (z/remove zloc)]

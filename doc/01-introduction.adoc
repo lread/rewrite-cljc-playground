@@ -66,7 +66,7 @@ As is a common convention, example code shows results of expression evaluation l
 ;; => 6
 ----
 
-We show distinctions between Clojure and Clojuescript results like so:
+We show distinctions between Clojure and Clojurescript results like so:
 [source, clojure]
 ----
 \c

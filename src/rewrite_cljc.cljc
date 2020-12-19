@@ -1,9 +1,10 @@
 (ns rewrite-cljc
   "APIs to navigate and update Clojure/ClojureScript/EDN source code.
 
-  Start with the [[rewrite-cljc.parser]] or [[rewrite-cljc.zip]] to ingest your source code to nodes,
-  then use the [[rewrite-cljc.zip]] to navigate and/or change it. [[rewrite-cljc.node]]
-  will help you to work with nodes in the zipper tree.
+  Use [[rewrite-cljc.zip]] to ingest your source code into a zipper of nodes and then again to navigate and/or change it.
 
-  [[rewrite-cljc.paredit]] first appeared in the ClojureScript only version of
-  rewrite-clj and supports structured editing of the zipper tree.")
+  Optionally use [[rewrite-cljc.parser]] to instead work with raw nodes.
+
+  [[rewrite-cljc.node]] will help you to inspect and create nodes.
+
+  [[rewrite-cljc.paredit]] first appeared in the ClojureScript only version of rewrite-clj and supports structured editing of the zipper tree.")

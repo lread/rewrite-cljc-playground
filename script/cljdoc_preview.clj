@@ -242,7 +242,7 @@
         nil)
 
       ;; else
-      (do (println "Usage: cljdoc-docker-preview.clj [start|ingest|view|stop|status]")
+      (do (println "Usage: bb script/cljdoc_preview.clj [start|ingest|view|stop|status]")
           (println "")
           (println " start  - start docker containers supporting cljdoc preview")
           (println " ingest - locally publishes your project for cljdoc preview")
