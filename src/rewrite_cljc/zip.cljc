@@ -90,7 +90,7 @@
 
   **Convert**
   [[sexpr]]
-  [[child-sexpr]]
+  [[child-sexprs]]
   [[reapply-context]]
 
   **Update**
