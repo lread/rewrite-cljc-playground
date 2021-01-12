@@ -45,7 +45,7 @@ See:
 
 
 Because the nuances of namespaced maps are not widely known by even the most experienced Clojure developers, I'll paste a subset of CLJ-1910 examples here.
-The `_` prefix and the fact that namespaced maps qualify symbols in addition to keywords is not widely understood.
+The `_` prefix and the fact that namespaced maps qualify symbols in addition to keywords is not widely understood:
 
 [source, Clojure]
 ----
@@ -101,7 +101,7 @@ The following rewrite-clj nodes throw an exception for `sexpr` which is sensible
 
 === Sexpr support for namespaced elements in rewrite-clj and rewrite-cljs
 _Auto-resolved_ keywords have been around https://groups.google.com/g/clojure/c/i770QaIFiF0/m/v63cZgrlBwAJ[since at least Clojure 1.0, which was released in May 2009].
-https://github.com/clojure/clojure/blob/master/changes.md#12-support-for-working-with-maps-with-qualified-keys[Namespaced maps were introduce in Clojure 1.9, released in December 2017].
+https://github.com/clojure/clojure/blob/master/changes.md#12-support-for-working-with-maps-with-qualified-keys[Namespaced maps were introduced in Clojure 1.9, released in December 2017].
 When you take into account that rewrite-clj was released in 2013 and rewrite-cljs in 2015, we can understand why support for newer features is spotty.
 
 [cols="10%,10%,20%,20%,20%,20%"]
@@ -183,12 +183,12 @@ a| * seems like a good compromise
 | ❌ rejected
 | 4
 a| Same as 3 but also ensure backward compatibility with current rewrite-clj implementation
-a| * we'll see how awkward backward compatibility is for namespaced keywords
+a| * decided that backward compatibility for namespaced keywords sexpr is too awkward
 * we'll not entertain backward compatibility for namespaced maps
 
 | ❌ rejected
 | 5
-a| Same as 4 but include a rudimentary namespace info resolver
+a| Same as 4 but include a rudimentary namespace info resolver that parses namespace info from source
 a| * had a good chat with borkdude on Slack and concluded that a namespace info resolver:
 ** is a potential link:#sexpr-rabbit-hole[rabbit hole] (well, not potential - if only you knew the number of times I rewrote this section!)
 ** could be a separate concern that is addressed if there is a want/need in the future.
@@ -252,8 +252,13 @@ This means that it will return a result and not throw if the namespace info is n
 
 * break rewrite-clj compatibility for namespaced maps.
 It was a late and incomplete addition to rewrite-clj.
-** We will drop `namespaced-map-node` and instead move support into `map-node`.
+** The prefix will be stored in a new `map-qualifier-node`. 
+Previously the prefix was stored as a keyword.
 ** Unlike rewrite-clj, rewrite-cljc will not call `(ns-aliases \*ns*)` to lookup namespace aliases.
+
+* break rewrite-clj compatability for keywords:
+** node field `namespaced?` will be renamed to be `auto-resolved?` to represent what it really is (a grep.app search suggests this won't be impacting)
+** will no longer do any lookups on `*ns*`.
 
 * break compatibility for `sexpr` on some namespaced elements, in that it will:
 ** no longer throw for formerly unsupported variants
@@ -292,12 +297,14 @@ Our solution will cover all the above and also be verified when GraalVM natively
 The caller will optionally convey a namespace `:auto-resolve` function in `opts` map argument.
 
 The `:auto-resolve` function will take a single `alias` lookup arg, `alias` will be:
+
 - `:current` for a request for the current namespace
 - otherwise a request for a lookup for namespaced aliased by `alias`
 
 If not specified, `:auto-resolve` will default a function that resolves:
-- the current namespace to `user`
-- an aliased namespaced `x` to `x-unresolved`
+
+- the current namespace to `?\_current-ns_?`
+- an aliased namespaced `x` to `??\_x_??`
 
 The optionally `opts` arg will be added to the existing `(rewrite-cljc/node/sexpr node)`
 
@@ -315,13 +322,13 @@ a|
 [source,Clojure]
 ----
 (-> (parser/parse-string "::foo") node/sexpr)
-;; => :user/foo
+;; => :?_current-ns_?/foo
 (-> (parser/parse-string "#::{:a 1 :b 2}") node/sexpr)
-;; => {:user/a 1 :user/b 2}
+;; => {:?_current-ns_?/a 1 :?_current-ns_?/b 2}
 (-> (parser/parse-string "::str/foo") node/sexpr)
-;; => :str-unresolved/foo
+;; => :??_str_??/foo
 (-> (parser/parse-string "#::str{:a 1 :b 2}") node/sexpr)
-;; => {:str-unresolved/a 1 :str-unresolved/b 2}
+;; => {:??_str_??/a 1 :??_str_??/b 2}
 
 
 a| `:auto-resolve` specified
@@ -366,7 +373,7 @@ We'll provide some mechanism for zipper users to reapply the context throughout 
 This will remove context from any keywords and symbols that are no longer under a namespaced map.
 
 Not sure what we'll provide for non-zipper users.
-Perhaps just exposing a clear-map-context for keywords and symbols would suffice.
+Perhaps just exposing a clear-map-context for keyword and symbol nodes would suffice.
 
 === Sexpr Behaviour from the zip API
 
@@ -389,9 +396,6 @@ This idea is already in play to for `:track-position?`.
 The primary user of rewrite-clj's node creation functions is the rewrite-clj parser.
 The functions are also exposed for general use.
 General usability might not have been a focus.
-
-==== Map Node
-Map node creation remains as is.
 
 ==== Namespaced Map Node
 
@@ -445,7 +449,7 @@ I think I could get away with renaming `namespaced?` to `auto-resolved?`
 * The `prefix` is not stored separately, it is glommed into keyword field `k`.
 ** This is ok for `:qual/kw` but, in my opinion, awkward for auto-resolved variants.
 ** We'll preserve this storage behavior for backward compatibility.
-I will NOT look into adding a `prefix` field for consistency with maps for the first release.
+I will NOT look into adding a `prefix` field for consistency with maps at this time.
 
 ==== Symbol Node
 We'll separate out a new SymbolNode out from under TokenNode.
@@ -458,15 +462,20 @@ The SymbolNode and KeywordNode will be MapQualifiable.
 This means they will have `(set-map-context map-qualifier-node)` and `(clear-map-context)` functions.
 
 I don't think we need to expose the methods to our APIs but am not sure yet.
+If we do, we might need a `(get-map-context)`.
+Why not just update/retrieve via the `map-qualifier-node` node field?
+Clojure turns a record into a map when a dissoc is done on a field, and I think abstracting away from that nuance makes sense.
 
 === Node Traversal
 
 Keyword node traversal will remain unchanged (no new child nodes).
 
-Map node traversal remains the same.
+Namespaced map node traversal remains unchanged except:
 The prefix is now stored as a `map-qualifier-node`, in rewrite-clj the prefix was encoded in a keyword.
 
 === Node Interogation
+
+TODO: verify this.
 
 * `map-node?` - returns true if rewrite-cljc node and map node
 * `keyword-node?` - return true if rewrite-cljc node and keyword node
@@ -474,12 +483,10 @@ The prefix is now stored as a `map-qualifier-node`, in rewrite-clj the prefix wa
 * Both `keyword-node` and `map-qualifier-node` will have:
 ** `auto-resolved?` field
 ** `qualified?` fn - returns true if the element is qualified
-* `map-node` will have:
-** `prefix` field
 
 === Notes on Coercion
 Rewrite-clj supports automatic coercion, how does this look in the context of namespaced elements?
-I'm not proposing any changes here, just exploring how things work.
+I'm not proposing any changes here, just demonstrating how things work.
 
 If we try to explicitly coerce a namespaced element, we must remember that the Clojure reader will first evaluate in the context of the current ns before the element is converted to a node.
 
