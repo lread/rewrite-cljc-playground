@@ -36,7 +36,7 @@
     (is (= "[::a :b]" (-> root
                          m/down
                          m/rightmost
-                         (e/edit #(if (= "myalias-unresolved" (namespace %))
+                         (e/edit #(if (= "??_myalias_??" (namespace %))
                                     (keyword (name %))
                                     :unexpected))
                          base/root-string)))))

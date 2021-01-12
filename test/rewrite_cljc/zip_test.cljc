@@ -85,7 +85,7 @@
                z/rightmost
                z/child-sexprs))))
   (testing "namespaced map qualifier can be changed and affect sexpr of its map keys"
-    (is (= '(:ns-alias-unresolved/a 1 :ns-alias-unresolved/b 2 :c 3)
+    (is (= '(:??_ns-alias_??/a 1 :??_ns-alias_??/b 2 :c 3)
            (-> "#:prefix {:a 1 :b 2 :_/c 3}"
                z/of-string
                z/down

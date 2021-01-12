@@ -44,7 +44,7 @@
                      (take-while identity)
                      (rest))]
         (is (= 7 (count tks)))
-        (is (= '[defn f x + x 1 :user/a] (map base/sexpr tks)))))
+        (is (= '[defn f x + x 1 :?_current-ns_?/a] (map base/sexpr tks)))))
 
     (testing "find-depth-first"
       (let [loc (-> root (f/find-depth-first (is? 'f)))]
@@ -67,7 +67,7 @@
                      (take-while identity)
                      (rest))]
         (is (= 7 (count tks)))
-        (is (= '[defn f x + x 1 :user/a] (map base/sexpr tks)))))
+        (is (= '[defn f x + x 1 :?_current-ns_?/a] (map base/sexpr tks)))))
 
     (testing "find-tag"
       (let [loc (-> root z/down (f/find-tag :vector))]
@@ -80,9 +80,9 @@
       (let [loc (-> root z/down (f/find-next-tag :vector))]
         (is (= :vector (base/tag loc)))
         (is (= '[x] (base/sexpr loc)))
-        (is (= '[(+ x 1) :user/a] (-> loc
-                                      (f/find-next-tag :vector)
-                                      base/sexpr))))
+        (is (= '[(+ x 1) :?_current-ns_?/a] (-> loc
+                                                (f/find-next-tag :vector)
+                                                base/sexpr))))
       (let [loc (-> root z/down (f/find-next-tag :set))]
         (is (nil? loc))))
 
@@ -119,12 +119,12 @@
       (let [loc (-> root z/down (f/find-value #{'f 'defn}))]
         (is (= :token (base/tag loc)))
         (is (= 'defn (base/sexpr loc))))
-      (let [loc (f/find-value root z/next #{'foo 'fa :user/a})]
+      (let [loc (f/find-value root z/next #{'foo 'fa :?_current-ns_?/a})]
         (is (= :token (base/tag loc)))
-        (is (= :user/a (base/sexpr loc))))
-      (let [loc (f/find-value root z/next :user/a)]
+        (is (= :?_current-ns_?/a (base/sexpr loc))))
+      (let [loc (f/find-value root z/next :?_current-ns_?/a)]
         (is (= :token (base/tag loc)))
-        (is (= :user/a (base/sexpr loc)))))
+        (is (= :?_current-ns_?/a (base/sexpr loc)))))
 
     (testing "find-next-value"
       (let [loc (-> root z/down (f/find-next-value 'f))]
@@ -136,9 +136,9 @@
                     (f/find-next-value #{'f 'defn}))]
         (is (= :token (base/tag loc)))
         (is (= 'f (base/sexpr loc))))
-      (let [loc (f/find-next-value root z/next #{'foo 'fa :user/a})]
+      (let [loc (f/find-next-value root z/next #{'foo 'fa :?_current-ns_?/a})]
         (is (= :token (base/tag loc)))
-        (is (= :user/a (base/sexpr loc))))
+        (is (= :?_current-ns_?/a (base/sexpr loc))))
       (let [locs (->> (iterate
                        #(f/find-next-value
                          % z/next #{'x 'defn})

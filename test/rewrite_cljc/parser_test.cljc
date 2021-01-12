@@ -324,8 +324,8 @@
         (is (= ?sexpr-custom (node/sexpr n {:auto-resolve #(if (= :current %)
                                                   'my.current.ns
                                                   (get {'xyz 'my.aliased.ns} % 'alias-unresolved))}))))
-    "::key"        :user/key              :my.current.ns/key
-    "::xyz/key"    :xyz-unresolved/key    :my.aliased.ns/key))
+    "::key"        :?_current-ns_?/key    :my.current.ns/key
+    "::xyz/key"    :??_xyz_??/key         :my.aliased.ns/key))
 
 (deftest t-parsing-qualified-maps
   (are [?s ?sexpr]
@@ -360,23 +360,23 @@
                                                              'booya.fooya
                                                              'alias-unresolved)}))))
     "#::{:x 1, :y 1}"
-    {:user/x 1, :user/y 1}
+    {:?_current-ns_?/x 1, :?_current-ns_?/y 1}
     {:booya.fooya/x 1, :booya.fooya/y 1}
 
     "#::   {:x 1, :y 1}"
-    {:user/x 1, :user/y 1}
+    {:?_current-ns_?/x 1, :?_current-ns_?/y 1}
     {:booya.fooya/x 1, :booya.fooya/y 1}
 
     "#::{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
-    {:user/kw 1, :n/kw 2, :bare 3, 0 4}
+    {:?_current-ns_?/kw 1, :n/kw 2, :bare 3, 0 4}
     {:booya.fooya/kw 1, :n/kw 2, :bare 3, 0 4}
 
     "#::{:a {:b 1}}"
-    {:user/a {:b 1}}
+    {:?_current-ns_?/a {:b 1}}
     {:booya.fooya/a {:b 1}}
 
     "#::{:a #::{:b 1}}"
-    {:user/a {:user/b 1}}
+    {:?_current-ns_?/a {:?_current-ns_?/b 1}}
     {:booya.fooya/a {:booya.fooya/b 1}}))
 
 (deftest parsing-auto-resolve-ns-alias-maps[]
@@ -391,23 +391,23 @@
                                                              (get {'nsalias 'bing.bang
                                                                    'nsalias2 'woopa.doopa} % 'alias-unresolved))}))))
     "#::nsalias{:x 1, :y 1}"
-    '{:nsalias-unresolved/x 1, :nsalias-unresolved/y 1}
+    '{:??_nsalias_??/x 1, :??_nsalias_??/y 1}
     '{:bing.bang/x 1, :bing.bang/y 1}
 
     "#::nsalias   {:x 1, :y 1}"
-    '{:nsalias-unresolved/x 1, :nsalias-unresolved/y 1}
+    '{:??_nsalias_??/x 1, :??_nsalias_??/y 1}
     '{:bing.bang/x 1, :bing.bang/y 1}
 
     "#::nsalias{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
-    '{:nsalias-unresolved/kw 1, :n/kw 2, :bare 3, 0 4}
+    '{:??_nsalias_??/kw 1, :n/kw 2, :bare 3, 0 4}
     '{:bing.bang/kw 1, :n/kw 2, :bare 3, 0 4}
 
     "#::nsalias{:a {:b 1}}"
-    '{:nsalias-unresolved/a {:b 1}}
+    '{:??_nsalias_??/a {:b 1}}
     '{:bing.bang/a {:b 1}}
 
     "#::nsalias{:a #::nsalias2{:b 1}}"
-    '{:nsalias-unresolved/a {:nsalias2-unresolved/b 1}}
+    '{:??_nsalias_??/a {:??_nsalias2_??/b 1}}
     '{:bing.bang/a {:woopa.doopa/b 1}}))
 
 (deftest t-parsing-exceptions

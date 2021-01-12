@@ -87,8 +87,8 @@
           (do
             (is (= ?result-default (-> ?node sexpr-default)))
             (is (= ?result-custom (-> ?node sexpr-custom))))
-        :user/my-kw                :my.current.ns/my-kw   (n/keyword-node :my-kw true)
-        :my-alias-unresolved/my-kw :my.aliased.ns/my-kw   (n/keyword-node :my-alias/my-kw true)))
+        :?_current-ns_?/my-kw :my.current.ns/my-kw   (n/keyword-node :my-kw true)
+        :??_my-alias_??/my-kw :my.aliased.ns/my-kw   (n/keyword-node :my-alias/my-kw true)))
     (testing "map qualified nodes can be affected by resolver"
       (are [?result ?node]
           (do
@@ -101,15 +101,15 @@
           (do
             (is (= ?result-default (-> ?node (n/map-context-apply map-qualifier-current-ns) sexpr-default)))
             (is (= ?result-custom (-> ?node (n/map-context-apply map-qualifier-current-ns) sexpr-custom))))
-        :user/my-kw  :my.current.ns/my-kw  (n/keyword-node :my-kw)
-        'user/my-sym 'my.current.ns/my-sym (n/token-node 'my-sym)))
+        :?_current-ns_?/my-kw  :my.current.ns/my-kw  (n/keyword-node :my-kw)
+        '?_current-ns_?/my-sym 'my.current.ns/my-sym (n/token-node 'my-sym)))
     (testing "map qualified auto-resolve ns-alias nodes can be affected by resolver"
       (are [?result-default ?result-custom ?node]
           (do
             (is (= ?result-default (-> ?node (n/map-context-apply map-qualifier-ns-alias) sexpr-default)))
             (is (= ?result-custom (-> ?node (n/map-context-apply map-qualifier-ns-alias) sexpr-custom))))
-        :nsmap-alias-unresolved/my-kw  :nsmap.aliased.ns/my-kw  (n/keyword-node :my-kw)
-        'nsmap-alias-unresolved/my-sym 'nsmap.aliased.ns/my-sym (n/token-node 'my-sym)))
+        :??_nsmap-alias_??/my-kw  :nsmap.aliased.ns/my-kw  (n/keyword-node :my-kw)
+        '??_nsmap-alias_??/my-sym 'nsmap.aliased.ns/my-sym (n/token-node 'my-sym)))
     (testing "map qualified nodes that are unaffected by resolver"
       (are [?result ?node]
           (do

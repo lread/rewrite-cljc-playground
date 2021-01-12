@@ -103,8 +103,8 @@
 ;; TODO: probably not the right spot for this, this more of a default config
 (defn default-auto-resolve [alias]
   (if (= :current alias)
-    'user
-    (symbol (str alias "-unresolved"))))
+    '?_current-ns_?
+    (symbol (str "??_" alias "_??"))))
 
 ;; ## Coerceable
 

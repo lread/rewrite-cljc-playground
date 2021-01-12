@@ -96,13 +96,13 @@
         (is (= ?child-sexprs-default (base/child-sexprs zloc)))
         (is (= ?sexpr-custom (base/sexpr zloc-custom-opts)))
         (is (= ?child-sexprs-custom (base/child-sexprs zloc-custom-opts))))
-    {:x [[[:user/a]]
-         #{:myalias2-unresolved/b}
-         {:myalias-unresolved/x 1, :myalias-unresolved/y 2}]}
+    {:x [[[:?_current-ns_?/a]]
+         #{:??_myalias2_??/b}
+         {:??_myalias_??/x 1, :??_myalias_??/y 2}]}
 
-    '(:x [[[:user/a]]
-         #{:myalias2-unresolved/b}
-         {:myalias-unresolved/x 1, :myalias-unresolved/y 2}])
+    '(:x [[[:?_current-ns_?/a]]
+         #{:??_myalias2_??/b}
+         {:??_myalias_??/x 1, :??_myalias_??/y 2}])
 
     {:x [[[:my.current.ns/a]]
          #{:myalias2-unresolved/b}

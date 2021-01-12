@@ -83,8 +83,8 @@
       (testing "default resolver"
         (let [tget (fn [s k] (-> s base/of-string (sq/get k) base/string))]
           (is (= "11" (tget "#:my-prefix{:c 10 :d 11}" :my-prefix/d)))
-          (is (= "42" (tget "#::my-ns-alias{:x 42, ::y 17}" :my-ns-alias-unresolved/x)))
-          (is (= "17" (tget "#::my-ns-alias{:x 42, ::y 17}" :user/y)))))
+          (is (= "42" (tget "#::my-ns-alias{:x 42, ::y 17}" :??_my-ns-alias_??/x)))
+          (is (= "17" (tget "#::my-ns-alias{:x 42, ::y 17}" :?_current-ns_?/y)))))
       (testing "custom resolver"
         (let [tget (fn [s k] (-> s (base/of-string opts) (sq/get k) base/string))]
           (is (= "11" (tget "#:my-prefix{:c 10 :d 11}" :my-prefix/d)))
@@ -113,7 +113,7 @@
       (testing "default resolver"
         (let [tassoc (fn [s k v] (-> s base/of-string (sq/assoc k v) base/string))]
           (is (= "#:my-prefix{:c 10 :d \"new-d-val\"}" (tassoc "#:my-prefix{:c 10 :d 11}" :my-prefix/d "new-d-val")))
-          (is (= "#::my-ns-alias{:x \"new-x-val\", ::y 17}" (tassoc "#::my-ns-alias{:x 42, ::y 17}" :my-ns-alias-unresolved/x "new-x-val")))))
+          (is (= "#::my-ns-alias{:x \"new-x-val\", ::y 17}" (tassoc "#::my-ns-alias{:x 42, ::y 17}" :??_my-ns-alias_??/x "new-x-val")))))
       (testing "custom resolver"
         (let [tassoc (fn [s k v] (-> s (base/of-string opts) (sq/assoc k v) base/string))]
           (is (= "#:my-prefix{:c 10 :d \"new-d-val\"}" (tassoc "#:my-prefix{:c 10 :d 11}" :my-prefix/d "new-d-val")))
@@ -135,12 +135,12 @@
       (is (= {:prefix/a 1 :prefix/b 2} (-> "#:prefix{:a 1 :b 2}" base/of-string base/sexpr)))
       (is (= {:prefix/a 1 :prefix/b 2} (-> "#:prefix{:a 1 :b 2}" (base/of-string opts) base/sexpr))))
     (testing "auto-resolve ns-alias map keys are affected by resolvers"
-      (is (= {:my-ns-alias-unresolved/a 1 :my-ns-alias-unresolved/b 2}
+      (is (= {:??_my-ns-alias_??/a 1 :??_my-ns-alias_??/b 2}
              (-> "#::my-ns-alias{:a 1 :b 2}" base/of-string base/sexpr)))
       (is (= {:my.aliased.ns/a 1 :my.aliased.ns/b 2}
              (-> "#::my-ns-alias{:a 1 :b 2}" (base/of-string opts) base/sexpr))))
     (testing "auto-resolve current-ns map keys are affected by resolvers"
-      (is (= {:user/a 1 :user/b 2}
+      (is (= {:?_current-ns_?/a 1 :?_current-ns_?/b 2}
              (-> "#::{:a 1 :b 2}" base/of-string base/sexpr)))
       (is (= {:my.current.ns/a 1 :my.current.ns/b 2}
              (-> "#::{:a 1 :b 2}" (base/of-string opts) base/sexpr))))
@@ -149,11 +149,11 @@
              (-> "#:prefix{a 1 b 2 _/c 3 foo/d 4}" base/of-string base/sexpr)))
       (is (= '{prefix/a 1 prefix/b 2 c 3 foo/d 4}
              (-> "#:prefix{a 1 b 2 _/c 3 foo/d 4}" (base/of-string opts) base/sexpr)))
-      (is (= '{my-ns-alias-unresolved/a 1 my-ns-alias-unresolved/b 2 c 3 foo/d 4}
+      (is (= '{??_my-ns-alias_??/a 1 ??_my-ns-alias_??/b 2 c 3 foo/d 4}
              (-> "#::my-ns-alias{a 1 b 2 _/c 3 foo/d 4}" base/of-string base/sexpr)))
       (is (= '{my.aliased.ns/a 1 my.aliased.ns/b 2 c 3 foo/d 4}
              (-> "#::my-ns-alias{a 1 b 2 _/c 3 foo/d 4}" (base/of-string opts) base/sexpr)))
-      (is (= '{user/a 1 user/b 2 c 3 foo/d 4}
+      (is (= '{?_current-ns_?/a 1 ?_current-ns_?/b 2 c 3 foo/d 4}
              (-> "#::{a 1 b 2 _/c 3 foo/d 4}" base/of-string base/sexpr)))
       (is (= '{my.current.ns/a 1 my.current.ns/b 2 c 3 foo/d 4}
              (-> "#::{a 1 b 2 _/c 3 foo/d 4}" (base/of-string opts) base/sexpr))))))
