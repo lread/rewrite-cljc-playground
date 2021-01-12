@@ -4,6 +4,7 @@
 /checkouts
 /node_modules
 /dumps
+/.lsp
 /.clj-kondo/.cache
 /.cpcache
 /.shadow-cljs
