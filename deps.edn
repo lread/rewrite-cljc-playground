@@ -23,6 +23,13 @@
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
                          :extra-paths ["test"]}
 
+           :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:git/url "https://github.com/lread/test-doc-blocks.git"
+                                                                   :sha "06338ed95c05f9d327ae0dedbab74b0c02e5a80a"}}
+                             :ns-default lread.test-doc-blocks
+                             :exec-args {:docs ["doc/01-introduction.adoc"]}}
+
+           :test-docs {:extra-paths ["target/test-doc-blocks/test"]}
+
            ;; koacha for clojure testing
            :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.700"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}

@@ -16,6 +16,9 @@
 (defn lint[]
   (shell/command ["bb" "./script/lint.clj"]))
 
+(defn doc-tests[]
+  (shell/command ["bb" "./script/doc_tests.clj"]))
+
 (defn clojure-tests []
   (doseq [version ["1.9" "1.10"]]
     (shell/command ["bb" "./script/clj_tests.clj" "--clojure-version" version])) )
@@ -37,6 +40,7 @@
   (env/assert-min-versions)
   (clean)
   (lint)
+  (doc-tests)
   (clojure-tests)
   (cljs-tests)
   (shadow-cljs-tests)

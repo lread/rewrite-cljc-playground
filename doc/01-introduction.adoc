@@ -8,7 +8,6 @@
 == Introduction
 Rewrite-cljc is a library that can read, update and write Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] source code while preserving whitespace and comments.
 
-
 === Interesting Alternatives
 If rewrite-cljc is not your cup of tea, consider following alternatives:
 
@@ -79,7 +78,7 @@ And we show output like so:
 ----
 (println "hello there")
 ;; =stdout=>
-;; hello there
+; hello there
 ----
 
 === Terminology
@@ -142,7 +141,7 @@ The zipper is immutable, as such, location changes and node modifications are al
 
 You may want to refer to link:#nodes[rewrite-cljc nodes] while reviewing this introductory example:
 
-[source, clojure]
+[source,clojure]
 ----
 (require '[rewrite-cljc.zip :as z])
 
@@ -158,13 +157,14 @@ You may want to refer to link:#nodes[rewrite-cljc nodes] while reviewing this in
 ;; explore what we've parsed
 (z/sexpr zloc)
 ;; => (defn my-function [a] (* a 3))
-(-> zloc z/down z/right z/node)
-;; => <token: my-function>
+(-> zloc z/down z/right z/node pr)
+;; =stdout=>
+; <token: my-function>
 (-> zloc z/down z/right z/sexpr)
 ;; => my-function
 
 ;; rename my-function to my-function2 and return resulting s-expression
-(- zloc
+(-> zloc
     z/down
     z/right
     (z/edit (comp symbol str) "2")
@@ -180,9 +180,9 @@ You may want to refer to link:#nodes[rewrite-cljc nodes] while reviewing this in
     z/root-string
     println)
 ;; =stdout=>
-;; (defn my-function2 [a]
-;;  ;; a comment
-;;  (* a 3))
+; (defn my-function2 [a]
+;   ;; a comment
+;   (* a 3))
 
 ----
 
@@ -196,6 +196,7 @@ See link:{cljdoc-api-url}/rewrite-cljc.zip[zip API docs].
 The `rewrite-cljc.zip` namespace includes find operations to navigate to locations of interest in your zipper.
 Let's assume you want to modify the following minimal `project.clj` by replacing the `:description` placeholder text with something more meaningful:
 
+//:test-doc-blocks/skip
 .project.clj snippet
 [source, clojure]
 ----
@@ -214,12 +215,13 @@ Use:
 ----
 (require '[rewrite-cljc.zip :as z])
 
-;; parse and create a zipper from the project.clj file
-(def zloc (z/of-file "project.clj")) ;; <1>
-;; for convenience, here's the same but from a string
+;; for sake of an runnable example we'll load from a string:
 (def zloc (z/of-string
 "(defproject my-project \"0.1.0-SNAPSHOT\"
   :description \"Enter description\")"))
+
+;; loading from a file, looks like so:
+;; (def zloc (z/of-file "project.clj")) ;; <1>
 
 ;; find defproject by navigating depth-first
 (def zloc-defproject (z/find-value zloc z/next 'defproject))
@@ -236,8 +238,8 @@ Use:
 ;; replace node at current location and return the result
 (-> zloc-desc (z/replace "My first Project.") z/root-string println)
 ;; =stdout=>
-;; (defproject my-project "0.1.0-SNAPSHOT"
-;;   :description "My first Project.")
+; (defproject my-project "0.1.0-SNAPSHOT"
+;   :description "My first Project.")
 ----
 <1> reading from a file is only available from Clojure
 <2> Remember that while whitespace is preserved, it is automatically skipped during navigation.
@@ -256,8 +258,9 @@ It offers some functions that correspond to the standard Clojure seq functions, 
 ;; => true
 (z/sexpr zloc)
 ;; => [1 2 3]
-(-> zloc (z/get 1) z/node)
-;; => <token: 2>
+(-> zloc (z/get 1) z/node pr)
+;; =stdout=>
+; <token: 2>
 (-> zloc (z/assoc 1 5) z/sexpr)
 ;; => [1 5 3]
 (->> zloc (z/map #(z/edit % + 4)) z/root-string)
@@ -266,8 +269,9 @@ It offers some functions that correspond to the standard Clojure seq functions, 
 (def zloc (z/of-string "{:a 10 :b 20}"))
 (z/map? zloc)
 ;; => true
-(-> zloc (z/get :b) z/node)
-;; => <token: 20>
+(-> zloc (z/get :b) z/node pr)
+;; =stdout=>
+; <token: 20>
 (-> zloc (z/assoc :b 42) z/sexpr)
 ;; => {:b 42, :a 10}
 (->> zloc (z/map-vals #(z/edit % inc)) z/root-string)
@@ -298,11 +302,11 @@ Note that the row and column are 1-based.
 ;; let's see what that looks like printed out
 (println (z/root-string zloc))
 ;; =stdout=>
-;; (defn sum-me
-;;   "Add 'em up!"
-;;   [a b c]
-;;   (+ a
-;;      c))
+; (defn sum-me
+;   "Add 'em up!"
+;   [a b c]
+;   (+ a
+;      c))
 
 ;; navigate to second z in zipper
 (def zloc-c (-> zloc
@@ -319,9 +323,11 @@ Note that the row and column are 1-based.
 
 ;; insert new element b with indentation and alignment
 (def zloc-c2 (-> zloc-c
-                 (z/insert-left 'b)
-                 (z/insert-newline-left)
-                 (z/insert-space-left 5)))
+                 (z/insert-left 'b)        ;; insert b to the left of c
+                 (z/left)                  ;; move to b
+                 (z/insert-newline-right)  ;; insert a newline after b
+                 (z/right)                 ;; move to c
+                 (z/insert-space-left 4))) ;; c has 1 space before it, add 4 more to line it up
 
 ;; we should still be at c
 (z/string zloc-c2)
@@ -330,12 +336,12 @@ Note that the row and column are 1-based.
 ;; output our updated Clojure
 (println (z/root-string zloc-c2))
 ;; =stdout=>
-;; (defn sum-me
-;;   "Add 'em up!"
-;;   [a b c]
-;;   (+ a
-;;      b
-;;      c))
+; (defn sum-me
+;   "Add 'em up!"
+;   [a b c]
+;   (+ a
+;      b
+;      c))
 
 ;; and check that location of c has been updated, it should now be on the 6th column of the 6th row
 (z/position zloc-c2)
@@ -361,12 +367,6 @@ Here we parse a single form from a string:
 (require '[rewrite-cljc.parser :as p])
 
 (def form-nodes (p/parse-string "(defn my-function [a]\n  (* a 3))"))
-
-form-nodes
-;; => <list:
-  (defn my-function [a]
-    (* a 3))
->
 ----
 
 You'll likely use the link:#node-api[node API] on the returned nodes.
@@ -388,8 +388,9 @@ Inspect, analyze, create and render rewrite-cljc nodes.
 (n/tag nodes)
 ;; => :list
 
-(n/children nodes)
-;; => (<token: defn> <whitespace: " "> <token: my-function> <whitespace: " "> <vector: [a]> <newline: "\n"> <whitespace: "  "> <list: (* a 3)>)
+(pr (n/children nodes))
+;; =stdout=>
+; (<token: defn> <whitespace: " "> <token: my-function> <whitespace: " "> <vector: [a]> <newline: "\n"> <whitespace: "  "> <list: (* a 3)>)
 
 (n/sexpr nodes)
 ;; => (defn my-function [a] (* a 3))
@@ -402,14 +403,16 @@ Inspect, analyze, create and render rewrite-cljc nodes.
 ;; => "(defn my-function [a]\n  (* a 3))"
 
 ;; coerce clojure forms to rewrite-cljc nodes
-(n/coerce '[a b c])
-;; => <vector: [a b c]>
+(pr (n/coerce '[a b c]))
+;; =stdout=>
+; <vector: [a b c]>
 
 ;; create rewrite-cljc nodes by hand
-(n/meta-node
- (n/token-node :private)
- (n/token-node 'sym))
-;; => <meta: ^:private sym>
+(pr (n/meta-node
+  (n/token-node :private)
+  (n/token-node 'sym)))
+;; =stdout=>
+; <meta: ^:private sym>
 ----
 
 See link:{cljdoc-api-url}/rewrite-cljc.node[node API docs].
@@ -458,8 +461,9 @@ To illustrate, some code:
 [source, clojure]
 ----
 (require '[rewrite-cljc.zip :as z]
-         '[rewrite-clj.parser :as p]
-         '[rewrite-cljc.node :as n])
+         '[rewrite-cljc.parser :as p]
+         '[rewrite-cljc.node :as n]
+         #?(:cljs '[cljs.reader :refer [read-string]]))
 
 (defn form-test [s]
   (let [forms [(-> s read-string)
@@ -491,14 +495,14 @@ The whitespace that a rewrite-cljc so carefully preserves is lost when convertin
 ;; print it out to show the whitespace
 (println (n/string nodes))
 ;; =stdout=>
-;; {  :a 1
-;;
-;;    :b 2}
+; {  :a 1
+;
+;    :b 2}
 
 ;; print out Clojure forms and notice the loss of the specifics of whitespace and element ordering
 (pr (n/sexpr nodes))
 ;; =stdout=>
-;; {:b 2, :a 1}
+; {:b 2, :a 1}
 ----
 
 === Not all Source is Sexpr-able
@@ -510,9 +514,25 @@ Reader ignore/discard `#_`, comment and whitespace all throw an "unsupported ope
 ----
 (require '[rewrite-cljc.zip :as z])
 
-(-> (z/of-string "#_42") z/sexpr)
-(-> (z/of-string ";; can’t sexpr me!") z/next* z/sexpr) ;; <1>
-(-> (z/of-string " ") z/next* z/sexpr) ;; <1>
+#?(:clj (import clojure.lang.ExceptionInfo))
+
+(try
+  (-> (z/of-string "#_42") z/sexpr)
+  (catch ExceptionInfo e
+    (ex-message e)))
+;; => "unsupported operation for uneval-node"
+
+(try
+  (-> (z/of-string ";; can’t sexpr me!") z/next* z/sexpr) ;; <1>
+  (catch ExceptionInfo e
+    (ex-message e)))
+;; => "unsupported operation"
+
+(try
+  (-> (z/of-string " ") z/next* z/sexpr) ;; <1>
+  (catch ExceptionInfo e
+    (ex-message e)))
+;; => "unsupported operation"
 ----
 <1> Notice the use of `next*` to include normally skipped nodes.
 
@@ -531,7 +551,7 @@ Some examples of what you might run into when using `sexpr` are:
 ;; =cljs=> 0.75
 
 ;; Integral type and behaviour is defined by host platforms
-(+ 10 (z/of-string "9007199254740991") z/sexpr)
+(+ 10 (-> (z/of-string "9007199254740991") z/sexpr))
 ;; =clj=> 9007199254741001
 ;; =cljs=> 9007199254741000
 
@@ -686,27 +706,35 @@ Let's illustrate how functions that use `sexpr` internally are affected by explo
 (require '[rewrite-cljc.zip :as z])
 
 ;; get on unqualified keys is straightforward:
-(-> "{:a 1 :b 2 c 3}" z/of-string (z/get :b) z/node)
-;; => <token: 2>
+(-> "{:a 1 :b 2 c 3}" z/of-string (z/get :b) z/node pr)
+;; =stdout=>
+; <token: 2>
 
 ;; get on qualified keys is also easy to grok
-(-> "{:a 1 :prefix/b 2 c 3}" z/of-string (z/get :prefix/b) z/node)
-;; => <token: 2>
-(-> "#:prefix{:a 1 :b 2 c 3}" z/of-string (z/get :prefix/b) z/node)
-;; => <token: 2>
-(-> "#:prefix{:a 1 :b 2 c 3}" z/of-string (z/get 'prefix/c) z/node)
-;; => <token: 3>
+(-> "{:a 1 :prefix/b 2 c 3}" z/of-string (z/get :prefix/b) z/node pr)
+;; =stdout=>
+; <token: 2>
+(-> "#:prefix{:a 1 :b 2 c 3}" z/of-string (z/get :prefix/b) z/node pr)
+;; =stdout=>
+; <token: 2>
+(-> "#:prefix{:a 1 :b 2 c 3}" z/of-string (z/get 'prefix/c) z/node pr)
+;; =stdout=>
+; <token: 3>
 
 ;; but when we introduce auto-resolved elements, the default resolver comes into play
 ;; and must be considered
-(-> "{::ns-alias/a 1 ::b 2 c 3}" z/of-string (z/get :user/b) z/node)
-;; => <token: 2>
-(-> "{::ns-alias/a 1 ::b 2 c 3}" z/of-string (z/get :ns-alias-unresolved/a) z/node)
-;; => <token: 1>
-(-> "#::{:a 1 :b 2 c 3}" z/of-string (z/get :user/b) z/node)
-;; => <token: 2>
-(-> "#::{:a 1 :b 2 c 3}" z/of-string (z/get 'user/c) z/node)
-;; => <token: 3>
+(-> "{::ns-alias/a 1 ::b 2 c 3}" z/of-string (z/get :user/b) z/node pr)
+;; =stdout=>
+; <token: 2>
+(-> "{::ns-alias/a 1 ::b 2 c 3}" z/of-string (z/get :ns-alias-unresolved/a) z/node pr)
+;; =stdout=>
+; <token: 1>
+(-> "#::{:a 1 :b 2 c 3}" z/of-string (z/get :user/b) z/node pr)
+;; =stdout=>
+; <token: 2>
+(-> "#::{:a 1 :b 2 c 3}" z/of-string (z/get 'user/c) z/node pr)
+;; =stdout=>
+; <token: 3>
 ----
 
 ==== Impact of Namespaced Map Context on Keywords and Symbols
@@ -808,6 +836,7 @@ Rewrite-cljc offers, where it can, transparent coercion from Clojure forms to re
 
 Clojure will, in some cases, add location metadata that is not in the original source code, as illustrated here:
 
+//:test-doc-blocks/skip
 .REPL session
 [source,clojure]
 ----
