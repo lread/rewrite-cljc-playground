@@ -2,7 +2,7 @@
 :figure-caption!:
 :imagesdir: ./doc
 
-image:rewrite-cljc-logo.png[rewrite-cljc,234,60]
+image:rewrite-clj-logo.png[rewrite-clj,270,60]
 
 image:https://github.com/lread/rewrite-cljc-playground/workflows/Unit%20Tests/badge.svg[unit tests, link=https://github.com/lread/rewrite-cljc-playground/actions?query=workflow%3A%22Unit+Tests%22]
 image:https://github.com/lread/rewrite-cljc-playground/workflows/Native%20Image%20Tests/badge.svg[native image tests, link=https://github.com/lread/rewrite-cljc-playground/actions?query=workflow%3A%22Native+Image+Tests%22]
