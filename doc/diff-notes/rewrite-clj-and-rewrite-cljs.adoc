@@ -1,9 +1,0 @@
-The apis of the last released version of rewrite-cljs and the last released
-version of rewrite-cljc are compared here.
-
-In short, rewrite-cljs lagged far behind rewrite-cljs, but rewrite-cljs had
-added some features of its own.
-
-See
-link:../../design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[rewrite-cljc's
-design docs] for more details.

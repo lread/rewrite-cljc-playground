@@ -29,7 +29,7 @@ See: https://github.com/lread/rewrite-cljc-playground/projects/1[GitHub project 
 
 == Versioning
 
-rewrite-cljc versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
+Rewrite-clj versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 
 * `major` increments when the API has been broken - something, as a rule, we'd like to avoid.
 * `minor` increments to convey significant new features have been added.

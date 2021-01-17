@@ -5,9 +5,9 @@
   ["Design" {}
    ["Merging rewrite-clj and rewrite-cljs" {:file "doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc"}]
    ["API Differences" {}
-    ["rewrite-clj  vs rewrite-cljs" {:file "doc/generated/api-diffs/rewrite-clj-and-rewrite-cljs.adoc"}]
-    ["rewrite-clj  vs rewrite-cljc" {:file "doc/generated/api-diffs/rewrite-clj-and-rewrite-cljc-clj.adoc"}]
-    ["rewrite-cljs vs rewrite-cljc" {:file "doc/generated/api-diffs/rewrite-cljs-and-rewrite-cljc-cljs.adoc"}]
-    ["rewrite-cljc clj vs cljs all" {:file "doc/generated/api-diffs/rewrite-cljc.adoc"}]
-    ["rewrite-cljc clj vs cljs public" {:file "doc/generated/api-diffs/rewrite-cljc-documented-only.adoc"}]]]
+    ["rewrite-clj v0     vs rewrite-cljs"    {:file "doc/generated/api-diffs/rewrite-clj-v0-lang-clj-and-rewrite-cljs-lang-cljs.adoc"}]
+    ["rewrite-clj v0     vs rewrite-clj v1"  {:file "doc/generated/api-diffs/rewrite-clj-v0-lang-clj-and-rewrite-clj-v1-lang-clj.adoc"}]
+    ["rewrite-cljs       vs rewrite-clj v1"  {:file "doc/generated/api-diffs/rewrite-cljs-lang-cljs-and-rewrite-clj-v1-lang-cljs.adoc"}]
+    ["rewrite-clj v1 clj vs cljs all"        {:file "doc/generated/api-diffs/rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj.adoc"}]
+    ["rewrite-clj v1 clj vs cljs public"     {:file "doc/generated/api-diffs/rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj-documented-only.adoc"}]]]
   ["Frequently Asked Questions" {:file "doc/03-faq.adoc"}]]}

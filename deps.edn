@@ -24,9 +24,11 @@
                          :extra-paths ["test"]}
 
            :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:git/url "https://github.com/lread/test-doc-blocks.git"
-                                                                   :sha "06338ed95c05f9d327ae0dedbab74b0c02e5a80a"}}
+                                                                   :sha "a462679f1ecada6160a3c23489477cbddde88e3c"}}
                              :ns-default lread.test-doc-blocks
-                             :exec-args {:docs ["doc/01-introduction.adoc"]}}
+                             :exec-args {:docs ["doc/01-introduction.adoc"
+                                                "doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc"
+                                                "doc/design/namespaced-elements.adoc"] }}
 
            :test-docs {:extra-paths ["target/test-doc-blocks/test"]}
 
@@ -69,7 +71,7 @@
            ;; Running tests under graal
            ;;
            ;; We have two main graal scenarios:
-           ;; sci-test - interpret tests via sci over natively compiled rewrite-cljc
+           ;; sci-test - interpret tests via sci over natively compiled rewrite-clj
            ;; native-test - natively compile src and tests and run
 
            ;; deps only see usage below

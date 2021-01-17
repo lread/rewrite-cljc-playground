@@ -9,7 +9,7 @@
          '[helper.status :as status])
 
 (env/assert-min-versions)
-(status/line :info "Exposing rewrite-cljc API to sci")
+(status/line :info "Exposing rewrite-clj API to sci")
 (shell/command ["clojure" "-M:script" "-m" "sci-test-gen-publics"])
 
 (status/line :info "Interpreting tests with sci from using JVM")

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>lread</groupId>
-  <artifactId>rewrite-cljc-playground</artifactId>
+  <groupId>rewrite-clj</groupId>
+  <artifactId>rewrite-clj</artifactId>
+  <!-- temporary version until first release --> 
   <version>1.0.0-alpha</version>
-  <name>rewrite-cljc-playground</name>
+  <name>rewrite-clj</name>
   <dependencies>
     <dependency>
       <groupId>org.clojure</groupId>
@@ -29,6 +30,7 @@
     </resources>
   </build>
   <scm>
+    <!-- TODO: migrate to clj-commons/rewrite-clj scm -->
     <connection>scm:git:git@github.com:lread/rewrite-cljc-playground.git</connection>
     <developerConnection>scm:git:git@github.com:lread/rewrite-cljc-playground.git</developerConnection>
     <tag>fbcd5de7e1a40b3d90e28e0e62aa5d3351b96a74</tag>

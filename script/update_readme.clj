@@ -1,3 +1,5 @@
+;; currently needs to be run through Clojure, won't work under babashka
+
 (ns update-readme
   "Script to update README.adoc to credit contributors
   Run manually as needed.
@@ -12,13 +14,12 @@
            (org.apache.commons.io FileUtils)))
 
 (def contributions-lookup
-  {:code-rewrite-cljc "💻 rewrite-cljc"
-   :code-rewrite-cljs "💻 rewrite-cljs"
-   :code-rewrite-clj "💻 rewrite-clj"
-   :encouragement "🌞 encouragement"
-   :education     "🎓 enlightenment"
-   :original-author "👑 original author"})
-
+  {:code-rewrite-clj-v1  "💻 rewrite-clj v1"
+   :code-rewrite-cljs    "💻 rewrite-cljs"
+   :code-rewrite-clj-v0  "💻 rewrite-clj v0"
+   :encouragement        "🌞 encouragement"
+   :education            "🎓 enlightenment"
+   :original-author      "👑 original author"})
 
 (defn- generate-asciidoc [contributors {:keys [images-dir image-width]}]
   (str ":imagesdir: " images-dir "\n"
@@ -141,7 +142,7 @@
 
 (defn- generate-contributor-images [contributors image-opts]
   (println "--[generating images]--")
-  (let [work-dir (temp-Path "rewrite-cljc-update-readme")]
+  (let [work-dir (temp-Path "rewrite-clj-update-readme")]
     (try
       (doall
        (for [ctype (keys contributors)]

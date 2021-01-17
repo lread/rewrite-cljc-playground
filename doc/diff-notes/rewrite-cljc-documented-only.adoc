@@ -1,2 +1,0 @@
-When we exclude api elements that are considered internal, we are left with the expected
-feature differences between cljs and clj versions, namely: file support.

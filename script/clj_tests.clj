@@ -54,7 +54,7 @@
              "--plugin" "kaocha.plugin/junit-xml"
              "--junit-xml-file"  (str "target/out/test-results/clj-v" clojure-version "/results.xml")]
         cmd (if coverage
-              (concat cmd ["--plugin" "cloverage" "--codecov" "--cov-ns-exclude-regex" "rewrite-cljc.potemkin.cljs"])
+              (concat cmd ["--plugin" "cloverage" "--codecov" "--cov-ns-exclude-regex" "rewrite-clj.potemkin.cljs"])
               cmd)]
     (if coverage
       (status/line :info (str "generating test coverage report against clojure v" clojure-version))

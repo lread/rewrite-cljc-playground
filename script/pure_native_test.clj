@@ -23,7 +23,7 @@
 (defn -main [ & _args ]
   (env/assert-min-versions)
   (let [native-image-xmx "6g"
-        target-exe "target/rewrite-cljc-test"]
+        target-exe "target/rewrite-clj-test"]
     (status/line :info "Creating native image for test")
     (status/line :detail "java -version")
     (shell/command ["java" "-version"])

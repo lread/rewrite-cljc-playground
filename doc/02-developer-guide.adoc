@@ -3,7 +3,7 @@
 :toc:
 
 == Supported Environments
-Rewrite-cljc is verified on each push on macOS, Ubuntu and Windows via GitHub Actions.
+Rewrite-clj is verified on each push on macOS, Ubuntu and Windows via GitHub Actions.
 
 All scripts are written in Clojure and most invoked via https://github.com/borkdude/babashka[babashka]. This gives us a cross platform
 scripting language that is familiar, fun and consistent. These docs will show babashka scripts invoked explicitly via babashka's `bb`; on
@@ -18,7 +18,7 @@ both jdk8 and jdk11. On Windows we only test against jdk11 as tool setup for jdk
 * Java JDK 1.8 or above
 * NodeJs v12 or above
 * Clojure v1.10.1.697 or above for `clojure` command
-** Note that rewrite-cljc itself supports Clojure v1.9 and above
+** Note that rewrite-clj v1 itself supports Clojure v1.9 and above
 * Babashka v0.2.3 or above
 * GraalVM v20.3.0 (if you want to run GraalVM native image tests)
 
@@ -110,7 +110,7 @@ Unit tests are run via:
 ----
 bb ./script/ci_tests.clj
 ----
-We also verify that rewrite-cljc functions as expected when compiled via Graal's `native-image`.
+We also verify that rewrite-clj functions as expected when compiled via Graal's `native-image`.
 
 1. Tests and library natively compiled:
 +
@@ -141,7 +141,7 @@ This script also checks for outdated Node.js dependencies.
 Note that checks are only done against installed `./node_modules`, so you may want to run `npm install` first.
 
 == Linting
-We use https://github.com/borkdude/clj-kondo[clj-kondo] for linting rewrite-cljc source code.
+We use https://github.com/borkdude/clj-kondo[clj-kondo] for linting rewrite-clj source code.
 
 We fail the build on any lint violations. The ci server runs:
 ----
@@ -152,10 +152,10 @@ and you can too.
 https://github.com/borkdude/clj-kondo/blob/master/doc/editor-integration.md[Integrate clj-kondo into your editor] to catch mistakes as they happen.
 
 == API diffs
-Rewrite-cljc's primary goals include remaining compatible with rewrite-clj and rewrite-cljs and avoiding breaking changes.
+Rewrite-clj v1's primary goals include remaining compatible with rewrite-clj v0 and rewrite-cljs and avoiding breaking changes.
 
-To generate reports on differences between rewrite-clj, rewrite-cljs and
-rewrite-cljc APIs, run:
+To generate reports on differences between rewrite-clj v0, rewrite-cljs and
+rewrite-clj v1 APIs, run:
 
 ----
 bb ./script/gen_api_diffs.clj
@@ -199,12 +199,12 @@ current production version of cljdoc.
 
 **Ingest Docs**
 
-To ingest rewrite-cljc API and docs into the local cljdoc database:
+To ingest rewrite-clj API and docs into the local cljdoc database:
 ----
 bb ./script/cljdoc_preview.clj ingest
 ----
 
-The ingest command automatically publishes rewrite-cljc to your local maven repository
+The ingest command automatically publishes rewrite-clj to your local maven repository
 (cljdoc only works with published jars), but you'll have to remember to git commit and git push
 your changes before ingesting.
 
@@ -229,7 +229,7 @@ bb ./script/cljdoc_preview.clj stop
 This will also delete temporary files created to support your preview session, most notably the local
 cljdoc database.
 
-Note that NO cleanup is done for any rewrite-cljc artifacts published to your local maven repository.
+Note that NO cleanup is done for any rewrite-clj artifacts published to your local maven repository.
 
 **Container Status**
 
@@ -248,7 +248,7 @@ We have no specific goals for code coverage, but new code is generally expected 
 So why measure coverage? It simply offers us some idea of what code our test suite hits.
 
 == Contributors
-We honor current and past contributors to rewrite-cljc in our README file.
+We honor current and past contributors to rewrite-clj in our README file.
 
 To update contributors, update `doc/contributors.edn` then run:
 

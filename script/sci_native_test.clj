@@ -12,7 +12,7 @@
          '[helper.status :as status])
 
 (defn expose-api-to-sci []
-  (status/line :info "Expose rewrite-cljc API to sci")
+  (status/line :info "Expose rewrite-clj API to sci")
   (shell/command ["clojure" "-M:script" "-m" "sci-test-gen-publics"]))
 
 (defn generate-reflection-file [fname]
@@ -24,8 +24,8 @@
 (defn interpret-tests []
   (status/line :info "Interpreting tests with sci using natively compiled binary")
   (let [exe-fname (if (= :win (env/get-os))
-                    "target/sci-test-rewrite-cljc.exe"
-                    "target/sci-test-rewrite-cljc")]
+                    "target/sci-test-rewrite-clj.exe"
+                    "target/sci-test-rewrite-clj")]
     (when (not (.exists (io/file exe-fname)))
       (status/fatal (str "native image " exe-fname " not found.") 1))
     (shell/command [exe-fname "--file" "script/sci_test_runner.clj" "--classpath" "test"])))
@@ -34,7 +34,7 @@
   (env/assert-min-versions)
   (let [native-image-xmx "6g"
         graal-reflection-fname "target/native-image/reflection.json"
-        target-exe "target/sci-test-rewrite-cljc"]
+        target-exe "target/sci-test-rewrite-clj"]
     (status/line :info "Creating native image for testing via sci")
     (status/line :detail "java -version" )
     (shell/command ["java" "-version"])
