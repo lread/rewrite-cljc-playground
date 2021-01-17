@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns sci_test_jvm
+(ns sci_jvm_test
   (:require [babashka.classpath :as cp]))
 
 (cp/add-classpath "./script")

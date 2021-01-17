@@ -1,7 +1,7 @@
 {:paths ["src"]
 
  :deps {org.clojure/clojure {:mvn/version "1.10.1"}
-        org.clojure/tools.reader {:mvn/version "1.3.2"}}
+        org.clojure/tools.reader {:mvn/version "1.3.4"}}
 
  :aliases {;;
            ;; Clojure versions we support
@@ -33,9 +33,9 @@
            :test-docs {:extra-paths ["target/test-doc-blocks/test"]}
 
            ;; koacha for clojure testing
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.700"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.732"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
-                                 lambdaisland/kaocha-cloverage {:mvn/version "1.0.63"}}
+                                 lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}
 
            ;; figwheel for clojurescript testing during dev
@@ -64,7 +64,7 @@
            ;; General script deps
            ;;
            :script {:extra-paths ["script"]
-                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.0.0"}
+                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.1.0"}
                                  cli-matic/cli-matic {:mvn/version "0.4.3"}}}
 
            ;;
@@ -77,9 +77,9 @@
            ;; deps only see usage below
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "8a886ae8f9ae7c65d139d90e82205f7f1dacc8a6"
+                                                   :sha "b171c848715ac30648f11abd3078271029fa1958"
                                                    ;; TODO: awkward we only need cheshire to generate reflection json
-                                                   :exclusions [checshire/cheshire]}}}
+                                                   :exclusions [cheshire/cheshire]}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
@@ -87,12 +87,12 @@
            :gen-reflection {:main-opts ["-m" "sci-test.generate-reflection-file"]
                             ;; TODO: awkward we only need cheshire to generate reflection json
                             :override-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                            :sha "8a886ae8f9ae7c65d139d90e82205f7f1dacc8a6"}}}
+                                                            :sha "b171c848715ac30648f11abd3078271029fa1958"}}}
 
            ;; for native-image
            ;; usage -A:sci-test:native-image
            ;; or    -A:native-test:native-image
-           :native-image {:override-deps {org.clojure/clojure {:mvn/version "1.10.2-rc1"}}}
+           :native-image {:override-deps {org.clojure/clojure {:mvn/version "1.10.2-rc3"}}}
 
            ;; add ins if running on jdk11
            :jdk11-reflect {:extra-deps {borkdude/clj-reflector-graal-java11-fix {:mvn/version "0.0.1-graalvm-20.3.0"
@@ -111,7 +111,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {antq/antq {:mvn/version "0.8.0"}
+           :outdated {:extra-deps {antq/antq {:mvn/version "0.10.2"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.30"} ;; to rid ourselves of logger warnings
                                    }
                       :main-opts ["-m" "antq.core"
