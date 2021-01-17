@@ -105,7 +105,7 @@
            ;;
            :diff-apis {:extra-paths ["script/resources"]
                        :extra-deps {lread/diff-apis {:git/url "https://github.com/lread/diff-apis"
-                                                     :sha "193c3621aa972cc51ad7f6c0357843a4f237a2fd"}}
+                                                     :sha "cd8096e0b5e0c0ea4850cb9eafe2d085d8912442"}}
                        :main-opts ["-m" "diff-apis.main" "projects"]}
 
            ;;
