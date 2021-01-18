@@ -1,5 +1,8 @@
 {:cljdoc.doc/tree
  [["Readme" {:file "README.adoc"}]
+  ["Changelog" {:file "CHANGELOG.adoc"}]
+  ["Contributing" {:file "CONTRIBUTING.md"}]
+  ["Code of Conduct" {:file "CODE_OF_CONDUCT.md"}]
   ["Introduction" {:file "doc/01-introduction.adoc"}]
   ["Developer Guide" {:file "doc/02-developer-guide.adoc"}]
   ["Design" {}
