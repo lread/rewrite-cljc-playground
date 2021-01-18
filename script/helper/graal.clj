@@ -77,7 +77,6 @@
                                "--initialize-at-build-time"
                                "-H:Log=registerResource:"
                                "--enable-all-security-services"
-                               "--native-image-info"
                                "--verbose"
                                "-H:ServiceLoaderFeatureExcludeServices=javax.sound.sampled.spi.AudioFileReader"
                                "-H:ServiceLoaderFeatureExcludeServices=javax.sound.midi.spi.MidiFileReader"
