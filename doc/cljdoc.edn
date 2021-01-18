@@ -12,6 +12,6 @@
     ["rwt-cljs vs rwt-clj v1"  {:file "doc/generated/api-diffs/rewrite-cljs-lang-cljs-and-rewrite-clj-v1-lang-cljs.adoc"}]
     ["rwt-clj v1 clj vs cljs all"  {:file "doc/generated/api-diffs/rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj.adoc"}]
     ["rwt-clj v1 clj vs cljs public" {:file "doc/generated/api-diffs/rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj-documented-only.adoc"}]]]
-  ["Frequently Asked Questions" {:file "doc/03-faq.adoc"}]]
+  ["Frequently Asked Questions" {:file "doc/03-faq.adoc"}]
   ["Contributing" {:file "CONTRIBUTING.md"}]
-  ["Code of Conduct" {:file "CODE_OF_CONDUCT.md"}]}
+  ["Code of Conduct" {:file "CODE_OF_CONDUCT.md"}]]}
