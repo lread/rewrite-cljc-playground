@@ -291,7 +291,7 @@ During development, I found the following helpful:
 
 == General Decisions
 
-=== * Library version scheme - [red]*in progress*
+=== Library version scheme
 I see plenty of version scheme variations out there these days. 
 Here are a few examples I find interesting:
 
@@ -656,5 +656,5 @@ I personally prefer the map notation, but, as a rule, favor rewrite-clj v0 over 
 
 The most glaring breaking change for ClojureScript is that it must now create the zipper with positional support enabled, for example: `(z/of-string "[1 2 3]" {:track-position true})`
 
-=== link:namespaced-elements.adoc[* Namespaced maps and keywords - [red]*in progress*]
+=== link:namespaced-elements.adoc[Namespaced maps and keywords]
 

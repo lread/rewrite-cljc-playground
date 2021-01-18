@@ -1,7 +1,7 @@
 = Introduction
 // TODO update these to real values
 :cljdoc-host: https://cljdoc.org
-:cljdoc-api-url: {cljdoc-host}/d/xsc/rewrite-clj/CURRENT/api
+:cljdoc-api-url: {cljdoc-host}/d/rewrite-clj/rewrite-clj/CURRENT/api
 :toclevels: 5
 :toc:
 
