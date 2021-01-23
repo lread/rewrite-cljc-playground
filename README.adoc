@@ -9,15 +9,21 @@ image:https://github.com/lread/rewrite-cljc-playground/workflows/Native%20Image%
 image:https://codecov.io/gh/lread/rewrite-cljc-playground/branch/master/graph/badge.svg[code coverage, link=https://codecov.io/gh/lread/rewrite-cljc-playground]
 image:https://img.shields.io/badge/slack-join_chat-brightgreen.svg[join chat, link=https://clojurians.slack.com/messages/CHB5Q2XUJ]
 
-TODO: more badges here... cljdoc, clojars
-
 A library that reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] from Clojure and ClojureScript in a whitespace and comment preserving way.
 
-[WARNING]
-====
-Status: Solid, but still conservatively pre-alpha, will release on clojars after moving to clj-commons. +
-See: https://github.com/lread/rewrite-cljc-playground/projects/1[GitHub project page for current priorities].
-====
+== Exciting News :tada:
+@xsc has graciously transfered rewrite-clj to clj-commons.
+I am working to merge rewrite-cljc-playground work into https://github.com/clj-commons/rewrite-clj[clj-commons/rewrite-clj].
+
+I've gotten rewrite-cljc merge-ready in a `lread-rewrite-clj-commons` branch here.
+It is from this branch I'll trickle rewrite-cljc efforts back into rewrite-clj, starting on a `v1` branch over there.
+I am making some efforts to not share my meandering path of discovery and learning here on rewrite-cljc-playground as I commit to rewrite-clj.
+This will take a bit of time, I'll let you know when I've merged to the main branch on clj-commons/rewrite-clj.
+
+You can assume no further work on rewrite-cljc-playground will occur.
+I have already migrated all relevant rewrite-cljc-playground GitHub issues over to clj-commons/rewrite-clj.
+
+Rewrite-cljc is dead. Long live rewrite-clj!
 
 == Docs
 
