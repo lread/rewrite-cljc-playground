@@ -12,17 +12,9 @@ image:https://img.shields.io/badge/slack-join_chat-brightgreen.svg[join chat, li
 A library that reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] from Clojure and ClojureScript in a whitespace and comment preserving way.
 
 == Exciting News :tada:
-@xsc has graciously transfered rewrite-clj to clj-commons.
-I am working to merge rewrite-cljc-playground work into https://github.com/clj-commons/rewrite-clj[clj-commons/rewrite-clj].
 
-I've gotten rewrite-cljc merge-ready in a `lread-rewrite-clj-commons` branch here.
-It is from this branch I'll trickle rewrite-cljc efforts back into rewrite-clj, starting on a `v1` branch over there.
-I am making some efforts to not share my meandering path of discovery and learning here on rewrite-cljc-playground as I commit to rewrite-clj.
-This will take a bit of time, I'll let you know when I've merged to the main branch on clj-commons/rewrite-clj.
-
-You can assume no further work on rewrite-cljc-playground will occur.
-I have already migrated all relevant rewrite-cljc-playground GitHub issues over to clj-commons/rewrite-clj.
-
+Rewrite-cljc-playground is now officially archived. +
+All efforts have been migrated to https://github.com/clj-commons/rewrite-clj[clj-commons/rewrite-clj]. +
 Rewrite-cljc is dead. Long live rewrite-clj!
 
 == Docs
